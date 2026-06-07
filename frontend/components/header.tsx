@@ -69,6 +69,8 @@ export function Header() {
   }, [isSearchOpen]);
 
   const isHomePage = pathname === "/";
+  const isWholesalePage = pathname === "/wholesale";
+  const useFloatingHeader = isHomePage || isWholesalePage;
 
   return (
     <>
@@ -76,7 +78,7 @@ export function Header() {
         {/* Visual Header Wrapper (The part that actually animates and has background) */}
         <div 
           className={`mx-auto pointer-events-auto transition-all duration-500 ease-in-out ${
-            isHomePage
+            useFloatingHeader
               ? isScrolled 
                 ? "mt-4 w-[98%] max-w-7xl bg-white/70 backdrop-blur-md border border-white/20 shadow-xl rounded-full h-16" 
                 : "mt-0 w-full max-w-7xl bg-transparent border-transparent h-16"
