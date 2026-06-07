@@ -5,45 +5,45 @@ import { FadeImage } from "@/components/fade-image";
 const accessories = [
   {
     id: 1,
-    name: "Wireless Charging Stand",
-    description: "Induction charging dock for effortless power",
-    price: "$89",
-    image: "/images/accessory-charger.png",
+    name: "Fermion V60 Dripper",
+    description: "Artisan glass dripper for precision brewing",
+    price: "Rp 325k",
+    image: "https://placehold.co/600x900/7a9cff/ffffff?text=V60+Dripper",
   },
   {
     id: 2,
-    name: "Protective Silicone Sleeve",
-    description: "Textured grip sleeve for enhanced durability",
-    price: "$45",
-    image: "/images/accessory-sleeve.png",
+    name: "Coffee Server 600ml",
+    description: "Heat-resistant borosilicate glass server",
+    price: "Rp 245k",
+    image: "https://placehold.co/600x900/ffd700/0f172a?text=Glass+Server",
   },
   {
     id: 3,
-    name: "Carbon Fiber Bike Mount",
-    description: "Ultra-light mounting system for cycling",
-    price: "$129",
-    image: "/images/accessory-bike-mount.png",
+    name: "Precision Scale",
+    description: "Digital scale with 0.1g accuracy and timer",
+    price: "Rp 850k",
+    image: "https://placehold.co/600x900/ff4b4b/ffffff?text=Digital+Scale",
   },
   {
     id: 4,
-    name: "Premium Carry Strap",
-    description: "Adjustable strap with quick-release clips",
-    price: "$39",
-    image: "/images/accessory-strap.png",
+    name: "Electric Gooseneck",
+    description: "Fast-heating kettle with flow control",
+    price: "Rp 1.250k",
+    image: "https://placehold.co/600x900/0f172a/ffffff?text=Electric+Kettle",
   },
   {
     id: 5,
-    name: "Carabiner Clip System",
-    description: "Secure attachment for hands-free carrying",
-    price: "$29",
-    image: "/images/accessory-carabiner.png",
+    name: "Fermion Tote Bag",
+    description: "Organic cotton bag for coffee lovers",
+    price: "Rp 85k",
+    image: "https://placehold.co/600x900/7a9cff/ffffff?text=Tote+Bag",
   },
   {
     id: 6,
-    name: "Bluetooth Speaker Base",
-    description: "High-fidelity audio dock with grip stabilizers",
-    price: "$149",
-    image: "/images/accessory-speaker-base.png",
+    name: "Canister 250g",
+    description: "Air-tight storage for maximum freshness",
+    price: "Rp 185k",
+    image: "https://placehold.co/600x900/ffd700/0f172a?text=Canister",
   },
 ];
 
@@ -52,8 +52,8 @@ export function CollectionSection() {
     <section id="accessories" className="bg-background">
       {/* Section Title */}
       <div className="px-6 py-20 md:px-12 lg:px-20 md:py-10">
-        <h2 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl">
-          Essential Accessories
+        <h2 className="text-3xl font-black tracking-tighter text-foreground md:text-4xl uppercase italic">
+          Brewing Essentials
         </h2>
       </div>
 

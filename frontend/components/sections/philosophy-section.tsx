@@ -83,7 +83,7 @@ export function PhilosophySection() {
                 }}
               >
                 <Image
-                  src="/images/product-backpack.png"
+                  src="https://placehold.co/800x800/f3f6ff/7a9cff?text=Fermion+Coffee"
                   alt="V1 Expedition Backpack in alpine setting"
                   fill
                   className="object-cover"
@@ -106,7 +106,7 @@ export function PhilosophySection() {
                 }}
               >
                 <Image
-                  src="/images/02cdc426-dff4-4dff-b131-1b134c3699b5.png"
+                  src="https://placehold.co/800x800/f3f6ff/7a9cff?text=Fermion+Coffee"
                   alt="V1 Thermal mug in forest setting"
                   fill
                   className="object-cover"

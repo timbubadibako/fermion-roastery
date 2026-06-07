@@ -3,30 +3,30 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-const word = "EVASION";
+const word = "FERMION";
 
 const sideImages = [
   {
-    src: "https://images.unsplash.com/photo-1517824806704-9040b037703b?q=80&w=1000",
-    alt: "Mountain hiking adventure",
+    src: "https://placehold.co/600x800/7a9cff/ffffff?text=Direct+Trade",
+    alt: "Coffee Farmer Partnership",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?q=80&w=1000",
-    alt: "Camping under stars",
+    src: "https://placehold.co/600x800/ffd700/0f172a?text=Roast+Lab",
+    alt: "Fermion Roasting Lab",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1533873984035-25970ab07461?q=80&w=1000",
-    alt: "Forest exploration",
+    src: "https://placehold.co/600x800/ff4b4b/ffffff?text=Cupping",
+    alt: "Quality Cupping Session",
     position: "right",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?q=80&w=1000",
-    alt: "Lake camping view",
+    src: "https://placehold.co/600x800/0f172a/ffffff?text=Packaging",
+    alt: "Handcrafted Packaging",
     position: "right",
     span: 1,
   },
@@ -126,8 +126,8 @@ export function HeroSection() {
               }}
             >
               <Image
-                src="/images/hero-main.png"
-                alt="Mountain landscape with camping tent at sunset"
+                src="https://placehold.co/1200x800/7a9cff/ffffff?text=FERMION+ROASTERY"
+                alt="Fermion Roastery Main Image"
                 fill
                 className="object-cover"
                 priority
@@ -195,9 +195,9 @@ export function HeroSection() {
       {/* Tagline Section */}
       <div className="px-6 pt-32 pb-28 md:pt-48 md:px-12 md:pb-36 lg:px-20 lg:pt-56 lg:pb-44">
         <p className="mx-auto max-w-2xl text-center text-2xl leading-relaxed text-muted-foreground md:text-3xl lg:text-[2.5rem] lg:leading-snug">
-          Lightweight, durable
+          Curated, roasted, and revered.
           <br />
-          and adventure-ready.
+          Bringing happiness into your cup.
         </p>
       </div>
     </section>

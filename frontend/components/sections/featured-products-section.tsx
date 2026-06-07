@@ -4,34 +4,34 @@ import { FadeImage } from "@/components/fade-image";
 
 const features = [
   {
-    title: "Smart Temperature Control",
-    description: "Innovation",
-    image: "/images/d18fe616-5596-4559-90f5-a90f5397d0d8.png",
+    title: "Precision Roasting",
+    description: "Technology",
+    image: "https://placehold.co/800x800/7a9cff/ffffff?text=Micro+Roast",
   },
   {
-    title: "Ultra-Light Carbon Frame",
-    description: "Performance",
-    image: "/images/e26fa9c3-966d-4966-94a4-954a1e511c1c.png",
+    title: "Direct Sourcing",
+    description: "Ethical",
+    image: "https://placehold.co/800x800/ffd700/0f172a?text=Green+Beans",
   },
   {
-    title: "Weather-Resistant Design",
-    description: "Durability",
-    image: "/images/car.jpg",
+    title: "Sensory Analysis",
+    description: "Quality",
+    image: "https://placehold.co/800x800/ff4b4b/ffffff?text=Cupping+Lab",
   },
   {
-    title: "Integrated GPS Tracking",
-    description: "Navigation",
-    image: "/images/204cee22-9e85-49e8-9303-1d309af626b0.png",
+    title: "Eco-Friendly Packing",
+    description: "Sustainability",
+    image: "https://placehold.co/800x800/0f172a/ffffff?text=Eco+Bag",
   },
   {
-    title: "Built-In LED Flashlight",
-    description: "Visibility",
-    image: "/images/led-flashlight-bottle.png",
+    title: "Artisan Blending",
+    description: "Craft",
+    image: "https://placehold.co/800x800/7a9cff/ffffff?text=Signature+Blend",
   },
   {
-    title: "Self-Heating Technology",
-    description: "Comfort",
-    image: "/images/heating-campfire.png",
+    title: "Freshness Tracking",
+    description: "Science",
+    image: "https://placehold.co/800x800/ffd700/0f172a?text=Roast+Date",
   },
 ];
 
@@ -40,13 +40,13 @@ export function FeaturedProductsSection() {
     <section id="technology" className="bg-background">
       {/* Section Title */}
       <div className="px-6 py-20 text-center md:px-12 md:py-28 lg:px-20 lg:py-32 lg:pb-20">
-        <h2 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl">
-          Engineered for Excellence.
+        <h2 className="text-3xl font-black tracking-tighter text-foreground md:text-4xl lg:text-5xl uppercase italic">
+          Science Meets Happiness.
           <br />
-          Designed for Adventure.
+          Crafted in Every Bean.
         </h2>
-        <p className="mx-auto mt-6 max-w-md text-sm text-muted-foreground">
-          Technology
+        <p className="mx-auto mt-6 max-w-md text-xs font-bold tracking-widest text-muted-foreground uppercase">
+          The Fermion Way
         </p>
       </div>
 

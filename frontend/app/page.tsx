@@ -9,9 +9,12 @@ import { EditorialSection } from "@/components/sections/editorial-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { FooterSection } from "@/components/sections/footer-section";
 
+import { LoadingCover } from "@/components/loading-cover";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
+      <LoadingCover />
       <Header />
       <HeroSection />
       <PhilosophySection />

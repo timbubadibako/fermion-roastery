@@ -5,30 +5,33 @@
 - [x] Architecture selection (Engine-Heavy Hybrid)
 - [x] Backend Setup (Express v5, Supabase, Axios)
 - [x] Frontend Setup (Next.js 15, Tailwind v4)
-- [x] Fix Frontend Build Error (`tw-animate-css` resolution)
-- [x] Fix Frontend Runtime Error (`next/image` domain configuration)
+- [x] Fix Frontend Build & Runtime Errors
+- [x] Finalize Artisan Navigation (Our Coffee, Wholesale, Subscription, Journal, Our Story)
+- [x] Implement Dynamic Floating Navbar (Pill transition + Glassmorphism)
+- [x] Setup Multi-page Routing & Under Construction placeholders
 
 ## ⏳ To Do
 
-### Phase 1: Infrastructure & Auth
-- [ ] Initialize Root Git Repository
-- [ ] Setup Supabase Schema (Profiles, Roles, RLS)
-- [ ] Connect Backend to Supabase Admin
-- [ ] Setup Frontend Auth flow (Login/Register)
+### Phase 1: Core Engine & Data Architecture (Postgres)
+- [x] Initialize Root Git Repository
+- [ ] Setup Production Postgres Database
+- [ ] Implement Core Schema (Products, Batches, Pricing)
+- [ ] Connect Express Backend to Postgres
+- [ ] Build Basic Product API (CRUD)
 
 ### Phase 2: B2B Core Logic
 - [ ] Implement Google Places API in Backend
-- [ ] Create B2B Verification Page (Frontend)
-- [ ] Setup Tiered Pricing Logic
+- [ ] Create B2B Onboarding Flow (Non-Auth version)
+- [ ] Setup Tiered Pricing & Contract Logic
 - [ ] Automated Invoicing System (Express)
 
-### Phase 3: Marketplace & Features
+### Phase 3: Marketplace & Auth
+- [ ] Setup Clerk/Kinde Auth Integration
+- [ ] Link Profiles & Roles to Postgres
 - [ ] Product Catalog with "Interactive Stickers"
-- [ ] Cart & Checkout with Midtrans Integration
-- [ ] Real-time Chat (Supabase)
-- [ ] Roast Date Tracking System
+- [ ] Cart & Checkout (Midtrans Integration)
 
 ### Phase 4: Production Polish
-- [ ] Final UI Refinement (Modern Playful Minimalism)
-- [ ] Responsive Design Audit
+- [ ] Real-time Chat (Pusher/Ably alternative)
+- [ ] Final UI Refinement & Responsive Audit
 - [ ] Production Deployment (Vercel & Render)

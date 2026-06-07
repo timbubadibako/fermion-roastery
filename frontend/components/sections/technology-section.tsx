@@ -60,26 +60,26 @@ function ScrollRevealText({ text }: { text: string }) {
 
 const sideImages = [
   {
-    src: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000",
-    alt: "Forest trail",
+    src: "https://placehold.co/600x800/f3f6ff/7a9cff?text=Coffee+Farm",
+    alt: "Coffee farm origin",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?q=80&w=1000",
-    alt: "Mountain peak",
+    src: "https://placehold.co/600x800/f3f6ff/7a9cff?text=Roastery",
+    alt: "Professional roasting",
     position: "left",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000",
-    alt: "Alpine landscape",
+    src: "https://placehold.co/600x800/f3f6ff/7a9cff?text=Precision",
+    alt: "Precision tools",
     position: "right",
     span: 1,
   },
   {
-    src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000",
-    alt: "Snow mountain",
+    src: "https://placehold.co/600x800/f3f6ff/7a9cff?text=Cup+Testing",
+    alt: "Coffee cup testing",
     position: "right",
     span: 1,
   },
@@ -91,7 +91,7 @@ export function TechnologySection() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [textProgress, setTextProgress] = useState(0);
   
-  const descriptionText = "Experience outdoor gear reimagined with cutting-edge technology. Alpine & Forest accessories combine ultra-lightweight materials, intelligent temperature control, and weather-resistant engineering to elevate every adventure. From mountain peaks to forest trails, your gear adapts to the conditions.";
+  const descriptionText = "Experience coffee roasting reimagined with cutting-edge technology. Fermion Roastery combines precision temperature control, intelligent air-flow management, and micro-batch engineering to elevate every cup. From origin selection to final roast, our science adapts to the beans.";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -144,9 +144,6 @@ export function TechnologySection() {
   const borderRadius = imageProgress * 24; // 0px to 24px
   const gap = imageProgress * 16; // 0px to 16px
 
-  // Calculate grayscale for text section based on textProgress
-  const grayscaleAmount = Math.round((1 - textProgress) * 100);
-
   return (
     <section ref={sectionRef} className="relative bg-foreground">
       {/* Sticky container for scroll animation */}
@@ -198,8 +195,8 @@ export function TechnologySection() {
               }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=2000"
-                alt="Aerial view of camping expedition in wilderness"
+                src="https://placehold.co/1200x800/7a9cff/ffffff?text=FERMION+LAB"
+                alt="Aerial view of roasting lab"
                 fill
                 className="object-cover"
               />
@@ -210,13 +207,13 @@ export function TechnologySection() {
                 className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
               >
                 <h2 className="max-w-3xl font-medium leading-tight tracking-tight text-white md:text-5xl lg:text-7xl text-5xl">
-                  {["Technology", "Meets", "Wilderness."].map((word, index) => {
+                  {["Technology", "Meets", "Coffee."].map((word, index) => {
                     // Each word fades out sequentially based on scrollProgress
-                    const wordFadeStart = index * 0.07; // Technology: 0, Meets: 0.07, Wilderness: 0.14
+                    const wordFadeStart = index * 0.07;
                     const wordFadeEnd = wordFadeStart + 0.07;
                     const wordProgress = Math.max(0, Math.min(1, (scrollProgress - wordFadeStart) / (wordFadeEnd - wordFadeStart)));
                     const wordOpacity = 1 - wordProgress;
-                    const wordBlur = wordProgress * 10; // 0px to 10px blur
+                    const wordBlur = wordProgress * 10;
                     
                     return (
                       <span
@@ -279,9 +276,6 @@ export function TechnologySection() {
         ref={textSectionRef}
         className="relative overflow-hidden bg-background px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40"
       >
-        {/* Background Image with Grayscale Filter */}
-        
-
         {/* Text Content */}
         <div className="relative z-10 mx-auto max-w-4xl">
           <ScrollRevealText text={descriptionText} />

@@ -14,16 +14,11 @@ Fermion Roastery is a boutique, single-brand coffee roastery transitioning to a 
 
 1.  **Frontend (Next.js 15, React 19, Tailwind CSS v4):**
     *   **Multi-page Architecture:** Distinct routes for Home, Wholesale, Retail, and Account.
-    *   **Evasion Foundation:** Adopting the full landing page structure from the Evasion template (Hero, Features, Pricing, etc.) as the base, removing internal anchor links ("jump-to" navigation).
-    *   **Custom Theming:** Injecting Fermion's modern-playful tokens into the Evasion components.
-
-## Core Features
-1.  **Production-Grade Landing Page:** A multi-section home page based on Evasion UI, customized for Fermion's brand.
-2.  **Seamless B2B Onboarding:** Automated verification via Google Places API.
-3.  **Role-Based Access Control:** Admin, Staff, B2B Partner, and Retail.
-4.  **Modern Product Catalog:** Refined, modern icon set and layout for coffee specs.
-
-## Next Steps
-*   Finalize implementation plan.
-*   Setup Supabase and Express boilerplate.
-*   Refine Evasion template components with Fermion's modern-playful tokens.
+    *   **Custom Theming:** Modern-playful design tokens injected into Evasion components.
+2.  **Core Engine (Express.js v5):**
+    *   Handles secure B2B logic, API integrations, and complex transactions.
+3.  **Database (PostgreSQL - Production/Self-Hosted):**
+    *   Primary relational storage for products, orders, and business data.
+    *   Vendor-neutral PostgreSQL setup to allow hosting on VPS (Hostinger) or managed services.
+4.  **Authentication (Future: Clerk or Kinde):**
+    *   Deferred to a later phase; focus currently on data architecture and engine logic.

@@ -16,7 +16,7 @@ export function TestimonialsSection() {
       {/* About Image */}
       <div className="relative aspect-[16/9] w-full">
         <Image
-          src="/images/3d4046a0-b072-4b07-941f-9141ee3ed4a7.png"
+          src="https://placehold.co/200x200/f3f6ff/7a9cff?text=Avatar"
           alt="Mountain peaks at sunrise"
           fill
           className="object-cover"

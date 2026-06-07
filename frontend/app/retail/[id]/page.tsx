@@ -1,0 +1,359 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp, Coffee, Beaker, MapPin, ShoppingBag } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
+// Expanded Mock Data for Recommendations
+const MOCK_COFFEE = [
+  {
+    id: 1,
+    name: "NOT ONLY INTENSE",
+    notes: "black cherry, red apple, tamarind, brown sugar, toffee",
+    origin: "Kendal x Sumedang",
+    process: "NATURAL YEAST",
+    altitude: "700 MDPL",
+    price: 145000,
+    roastProfile: "Espresso Roast",
+    character: { fermentation: 4, sweetness: 5, acidity: 3, body: 4 },
+    description: "A bold exploration of flavor, this unique blend combines the best of Kendal and Sumedang harvests. Processed with natural yeast fermentation to bring out deep fruity undertones.",
+    farm: "Produced by various smallholder farmers in the highlands of Central and West Java.",
+    image: "https://placehold.co/800x1000/7a9cff/ffffff?text=NOT+ONLY+INTENSE",
+  },
+  {
+    id: 2,
+    name: "SUMEDANG ANAEROB",
+    notes: "pineapple, passion fruit, cacao nibs, caramel",
+    origin: "Sumedang, West Java",
+    process: "ANAEROB NATURAL",
+    altitude: "1200 MDPL",
+    price: 165000,
+    roastProfile: "Filter Roast",
+    character: { fermentation: 5, sweetness: 4, acidity: 4, body: 3 },
+    description: "Experience the vibrant profile of Sumedang Anaerob. The anaerobic natural process accentuates the tropical notes and creamy mouthfeel.",
+    farm: "Sourced from the lush slopes of Mt. Tampomas, curated by local processing pioneers.",
+    image: "https://placehold.co/800x1000/ffd700/0f172a?text=SUMEDANG+ANAEROB",
+  },
+  {
+    id: 3,
+    name: "GAYO WASHED",
+    notes: "citrus, jasmine, black tea, honey",
+    origin: "Aceh Gayo",
+    process: "FULLY WASHED",
+    altitude: "1500 MDPL",
+    price: 115000,
+    roastProfile: "Filter Roast",
+    character: { fermentation: 1, sweetness: 4, acidity: 5, body: 2 },
+    description: "A clean and bright cup from the highlands of Aceh.",
+    farm: "Gayo Organic Cooperative.",
+    image: "https://placehold.co/800x1000/ff4b4b/ffffff?text=GAYO+WASHED",
+  },
+  {
+    id: 4,
+    name: "KENDAL HONEY",
+    notes: "orange, red grape, maple syrup",
+    origin: "Kendal",
+    process: "HONEY PROCESS",
+    altitude: "800 MDPL",
+    price: 135000,
+    roastProfile: "Espresso Roast",
+    character: { fermentation: 3, sweetness: 5, acidity: 2, body: 4 },
+    description: "Sweet and balanced honey process from Kendal.",
+    farm: "Kendal Farmers Group.",
+    image: "https://placehold.co/800x1000/0f172a/ffffff?text=KENDAL+HONEY",
+  },
+  {
+    id: 5,
+    name: "FERMION ESPRESSO",
+    notes: "dark chocolate, roasted almond, palm sugar",
+    origin: "House Blend",
+    process: "WASHED x NATURAL",
+    altitude: "VARIOUS",
+    price: 125000,
+    roastProfile: "Espresso Roast",
+    character: { fermentation: 2, sweetness: 4, acidity: 1, body: 5 },
+    description: "Our signature house blend for the perfect daily espresso.",
+    farm: "Regional Selection.",
+    image: "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+ESPRESSO",
+  },
+  {
+    id: 6,
+    name: "BLUEBERRY PIE",
+    notes: "blueberry, vanilla, cookies, floral",
+    origin: "West Java",
+    process: "SPECIAL PROCESS",
+    altitude: "1400 MDPL",
+    price: 185000,
+    roastProfile: "Filter Roast",
+    character: { fermentation: 5, sweetness: 5, acidity: 4, body: 3 },
+    description: "A dessert-like coffee experience with intense fruit notes.",
+    farm: "Frinsa Estate.",
+    image: "https://placehold.co/800x1000/ff4b4b/ffffff?text=BLUEBERRY+PIE",
+  },
+];
+
+function CharacterLevel({ label, level }: { label: string; level: number }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
+      <div className="flex gap-1.5">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div 
+            key={i} 
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i <= level ? "bg-fermion-blue" : "bg-slate-200"}`} 
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ProductPage() {
+  const { id } = useParams();
+  const product = MOCK_COFFEE.find(p => p.id === Number(id)) || MOCK_COFFEE[0];
+
+  const [quantity, setQuantity] = useState(1);
+  const [weight, setWeight] = useState("250g");
+  const [grind, setGrind] = useState("Whole Beans");
+  const [activeTab, setActiveTab] = useState<string | null>("description");
+
+  const toggleTab = (tab: string) => setActiveTab(activeTab === tab ? null : tab);
+
+  // Filter Related Products (Same Roast Profile, excluding current)
+  const relatedProducts = MOCK_COFFEE
+    .filter(p => p.roastProfile === product.roastProfile && p.id !== product.id)
+    .slice(0, 4);
+
+  return (
+    <div className="bg-[#FDFBF7] min-h-screen pt-32 pb-24 px-6 md:px-12 lg:px-20">
+      <div className="max-w-6xl mx-auto px-12">
+        {/* Back Link */}
+        <Link href="/retail" className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 transition-colors mb-12 uppercase text-left">
+          <ArrowLeft size={14} /> Back to selection
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start mb-16 relative">
+          
+          {/* Left Column: Image & Brewing Guide (STICKY) */}
+          <div className="lg:sticky lg:top-32 space-y-12 h-fit">
+            <div className="relative aspect-[4/5] bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100">
+               <Image src={product.image} alt={product.name} fill className="object-cover" priority />
+               <div className="absolute top-8 right-8 w-16 h-16 bg-slate-900 rounded-full flex flex-col items-center justify-center text-white border-2 border-white shadow-xl rotate-12">
+                  <span className="text-[8px] font-bold tracking-tighter opacity-70 uppercase">Cup Score</span>
+                  <span className="text-xs font-black italic tracking-tighter">85-87</span>
+               </div>
+            </div>
+
+            {/* Brewing Guide Section */}
+            <div className="bg-white/40 backdrop-blur-sm rounded-[2rem] p-8 border border-slate-100 space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white rounded-2xl shadow-sm">
+                  <Coffee size={24} className="text-fermion-blue" />
+                </div>
+                <div>
+                   <h3 className="text-sm font-black tracking-widest uppercase">Brewing Guide</h3>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Master your cup</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black text-slate-800 tracking-widest uppercase italic border-b border-slate-100 pb-2">FOR ESPRESSO</p>
+                  <div className="space-y-2 text-[11px] font-bold text-slate-600">
+                    <div className="flex justify-between uppercase tracking-tighter"><span>DOSE</span> <span>18 - 20g</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>YIELD</span> <span>32 - 36g</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>TIME</span> <span>22 - 26s</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>RATIO</span> <span>1 : 1.8</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>TEMP</span> <span>90°C - 93°C</span></div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black text-slate-800 tracking-widest uppercase italic border-b border-slate-100 pb-2">WITH MILK</p>
+                  <div className="space-y-2 text-[11px] font-bold text-slate-600">
+                    <div className="flex justify-between uppercase tracking-tighter"><span>DOSE</span> <span>18 - 20g</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>YIELD</span> <span>27 - 30g</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>TIME</span> <span>20 - 24s</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>RATIO</span> <span>1 : 1.5</span></div>
+                    <div className="flex justify-between uppercase tracking-tighter"><span>TEMP</span> <span>90°C - 93°C</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Details & Actions */}
+          <div className="flex flex-col space-y-12">
+            <div className="space-y-4 text-left">
+              <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase italic leading-none">
+                {product.name}
+              </h1>
+              <p className="text-sm font-bold text-fermion-blue uppercase tracking-widest">
+                {product.notes}
+              </p>
+              <div className="pt-4">
+                <span className="text-3xl font-mono font-bold text-slate-800">
+                  Rp {product.price.toLocaleString('id-ID')}
+                </span>
+              </div>
+            </div>
+
+            {/* Accordions */}
+            <div className="border-y border-slate-100 py-4 space-y-4">
+              {/* Description */}
+              <div className="space-y-4">
+                <button onClick={() => toggleTab('description')} className="w-full flex items-center justify-between text-xs font-black tracking-[0.2em] uppercase py-2">
+                  Description {activeTab === 'description' ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                </button>
+                {activeTab === 'description' && (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 text-left">
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{product.description}</p>
+                    <div className="grid grid-cols-1 gap-3 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                       <CharacterLevel label="Fermentation" level={product.character.fermentation} />
+                       <CharacterLevel label="Sweetness" level={product.character.sweetness} />
+                       <CharacterLevel label="Acidity" level={product.character.acidity} />
+                       <CharacterLevel label="Body" level={product.character.body} />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Separator className="bg-slate-50" />
+              {/* Farm & Producer */}
+              <div className="space-y-4">
+                <button onClick={() => toggleTab('farm')} className="w-full flex items-center justify-between text-xs font-black tracking-[0.2em] uppercase py-2">
+                  The Farm and Producer {activeTab === 'farm' ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                </button>
+                {activeTab === 'farm' && (
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed animate-in fade-in slide-in-from-top-2 text-left">{product.farm}</p>
+                )}
+              </div>
+              <Separator className="bg-slate-50" />
+              {/* Coffee & Process */}
+              <div className="space-y-4">
+                <button onClick={() => toggleTab('process')} className="w-full flex items-center justify-between text-xs font-black tracking-[0.2em] uppercase py-2">
+                  The Coffee and The Process {activeTab === 'process' ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                </button>
+                {activeTab === 'process' && (
+                  <div className="space-y-2 text-sm text-slate-500 font-medium leading-relaxed animate-in fade-in slide-in-from-top-2 text-left">
+                    <p>Origin: {product.origin}</p>
+                    <p>Process: {product.process}</p>
+                    <p>Altitude: {product.altitude}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Selectors */}
+            <div className="space-y-8 text-left">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center bg-white border-2 border-slate-100 rounded-xl p-1">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-lg transition-all"><Minus size={14}/></button>
+                  <span className="w-10 text-center text-sm font-black">{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-lg transition-all"><Plus size={14}/></button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Weight | <span className="text-slate-900">{weight}</span></p>
+                <div className="flex gap-3">
+                  {["250g", "500g"].map(w => (
+                    <button 
+                      key={w} 
+                      onClick={() => setWeight(w)} 
+                      className={`px-10 py-4 rounded-xl text-[10px] font-black tracking-widest transition-all duration-300 ${
+                        weight === w 
+                          ? "bg-slate-900 text-white shadow-xl translate-y-[-2px]" 
+                          : "bg-white border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900"
+                      }`}
+                    >
+                      {w.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Roast Profile</p>
+                <div className="flex items-center gap-3 py-1">
+                   <div className="w-2 h-2 rounded-full bg-fermion-blue animate-pulse" />
+                   <span className="text-xs font-black text-slate-900 tracking-widest uppercase italic">
+                      {product.roastProfile}
+                   </span>
+                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+                      (Recommended for best flavor)
+                   </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Grind Size | <span className="text-slate-900">{grind}</span></p>
+                <div className="flex flex-wrap gap-3">
+                  {["Whole Beans", "Espresso Grind", "Filter Grind"].map(g => (
+                    <button 
+                      key={g} 
+                      onClick={() => setGrind(g)} 
+                      className={`px-8 py-4 rounded-xl text-[10px] font-black tracking-widest transition-all duration-300 ${
+                        grind === g 
+                          ? "bg-slate-900 text-white shadow-xl translate-y-[-2px]" 
+                          : "bg-white border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900"
+                      }`}
+                    >
+                      {g.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="space-y-4 pt-6 border-t border-slate-50 mt-6">
+              <button className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.15em] hover:bg-slate-900 hover:text-white transition-all duration-500 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 uppercase text-center">
+                Add to Cart • Rp {(product.price * quantity).toLocaleString('id-ID')}
+              </button>
+              
+              <button className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center">
+                <ShoppingBag size={18} strokeWidth={2.5} />
+                Buy It Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="space-y-12 border-t border-slate-100">
+            <div className="flex items-end justify-between text-left">
+              <div className="space-y-2">
+                <p className="text-[10px] font-black text-fermion-blue tracking-[0.3em] uppercase">Recommendations</p>
+                <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">You may also like</h2>
+              </div>
+              <Link href="/retail" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">
+                View All
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
+              {relatedProducts.map((p) => (
+                <Link key={p.id} href={`/retail/${p.id}`} className="group space-y-4">
+                  <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
+                    <Image src={p.image} alt={p.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute top-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[8px] font-black tracking-widest text-slate-900 shadow-sm border border-slate-100">
+                       {p.roastProfile.split(' ')[0].toUpperCase()}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-black tracking-tight text-slate-900 uppercase leading-none">{p.name}</h3>
+                    <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">{p.process}</p>
+                    <p className="text-xs font-mono font-bold text-slate-800 pt-2">Rp {p.price.toLocaleString('id-ID')}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -12,14 +12,14 @@ export function GallerySection() {
   const lastScrollRef = useRef(0);
 
   const images = [
-    { src: "/images/bottle-bike.png", alt: "Thermal bottle on bike" },
-    { src: "/images/bottle-lake.png", alt: "Thermal bottle by lake" },
-    { src: "/images/bottle-water.png", alt: "Thermal bottle in water" },
-    { src: "/images/bottle-stream.png", alt: "Thermal bottle by stream" },
-    { src: "/images/bottle-fire.png", alt: "Thermal bottle by fire" },
-    { src: "/images/bottle-snow.png", alt: "Thermal bottle in snow" },
-    { src: "/images/bottle-mountain.png", alt: "Thermal bottle on mountain" },
-    { src: "/images/bottle-canyon.png", alt: "Thermal bottle at canyon" },
+    { src: "https://placehold.co/600x800/7a9cff/ffffff?text=Natural+Process", alt: "Natural Coffee Process" },
+    { src: "https://placehold.co/600x800/ffd700/0f172a?text=Washed+Yeast", alt: "Washed Yeast Process" },
+    { src: "https://placehold.co/600x800/ff4b4b/ffffff?text=Liberika+Gold", alt: "Liberika Varietal" },
+    { src: "https://placehold.co/600x800/0f172a/ffffff?text=Anaerobic", alt: "Anaerobic Fermentation" },
+    { src: "https://placehold.co/600x800/7a9cff/ffffff?text=Kendal+Origin", alt: "Kendal Coffee Origin" },
+    { src: "https://placehold.co/600x800/ffd700/0f172a?text=Sumedang+Beans", alt: "Sumedang Single Origin" },
+    { src: "https://placehold.co/600x800/ff4b4b/ffffff?text=Roast+Profile", alt: "Roast Profile Analysis" },
+    { src: "https://placehold.co/600x800/0f172a/ffffff?text=Fermion+Brew", alt: "Fermion Brewed Coffee" },
   ];
 
   // Calculate section height based on content width

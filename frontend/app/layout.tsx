@@ -2,13 +2,15 @@ import React from "react"
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 import './globals.css'
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'VILDMARK | Go Further',
-  description: 'High-performance outdoor gear engineered for the modern explorer. Lightweight, durable, adventure-ready.',
+  title: 'FERMION | Micro Roastery',
+  description: 'Premium artisan coffee roasted in Cirebon. Curated, roasted, and revered.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -37,7 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <Header />
         {children}
+        <Toaster position="bottom-right" expand={false} richColors />
         <Analytics />
       </body>
     </html>
