@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Backend
+backend/node_modules/
+backend/.env
+
+# Environments
+.env
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prototypes (Optional to ignore)
+# prototype.html

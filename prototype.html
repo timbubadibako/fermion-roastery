@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fermion Roastery - Modern Playful Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fermion: {
+                            blue: '#7A9CFF',
+                            soft: '#F3F6FF',
+                            charcoal: '#0F172A',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+        }
+
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center p-6 bg-slate-50">
+
+    <!-- Modern Product Card -->
+    <div class="max-w-sm w-full bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 product-card transition-all duration-300">
+        
+        <!-- Header Image Area -->
+        <div class="w-full h-56 bg-fermion-soft rounded-[1.5rem] mb-6 relative overflow-hidden flex items-center justify-center">
+            <!-- Subtle Abstract Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="2" cy="2" r="2" fill="#7A9CFF" />
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#dots)" />
+                </svg>
+            </div>
+            
+            <div class="z-10 text-center">
+                <span class="text-[0.65rem] font-bold tracking-widest uppercase text-fermion-blue mb-2 block">Special Batch</span>
+                <h2 class="text-2xl font-bold text-fermion-charcoal leading-tight">
+                    Not Only Intense
+                </h2>
+            </div>
+            
+            <!-- Minimalist Floating Badge -->
+            <div class="absolute top-4 right-4 bg-white/80 backdrop-blur-sm border border-white/20 shadow-sm rounded-full px-3 py-1 font-bold text-[0.7rem] text-fermion-blue">
+                New
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-6">
+            <p class="text-[0.8rem] text-slate-500 font-medium mb-3">
+                Orange followed by bright raspberry and Red Apple. A fruity and pronounce cup with balanced tones.
+            </p>
+        </div>
+
+        <!-- Modern Specs Grid -->
+        <div class="grid grid-cols-2 gap-3 mb-8">
+            <!-- Spec Item -->
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
+                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Origin</p>
+                    <p class="text-[0.75rem] font-semibold text-slate-700">Kendal</p>
+                </div>
+            </div>
+
+            <!-- Spec Item -->
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
+                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
+                    <i data-lucide="mountain" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Altitude</p>
+                    <p class="text-[0.75rem] font-semibold text-slate-700">700 MDPL</p>
+                </div>
+            </div>
+
+            <!-- Spec Item -->
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
+                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
+                    <i data-lucide="beaker" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Process</p>
+                    <p class="text-[0.75rem] font-semibold text-slate-700">Natural</p>
+                </div>
+            </div>
+
+            <!-- Spec Item -->
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
+                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Roast</p>
+                    <p class="text-[0.75rem] font-semibold text-slate-700">Medium</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modern Action Button -->
+        <button class="w-full bg-fermion-blue hover:bg-[#6688FF] text-white font-semibold py-4 rounded-2xl shadow-lg shadow-fermion-blue/20 transition-all duration-300 btn-bounce flex items-center justify-center gap-2">
+            <span class="text-sm">Add to Cart</span>
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+        </button>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
