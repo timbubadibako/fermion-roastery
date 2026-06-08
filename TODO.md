@@ -24,16 +24,17 @@
 - [x] Build Basic Product API (CRUD)
 
 ### Phase 2: B2B Core Logic
-- [ ] Implement Google Places API in Backend (Scraping/API Proxy)
+- [ ] Implement Google Places API in Backend (Scraping/API Proxy) - *Skipped/Pending API Key*
 - [x] Create B2B Onboarding Flow (Full-stack integration)
-- [ ] Setup Tiered Pricing & Contract Logic (Pricing Engine)
+- [x] Setup Tiered Pricing & Contract Logic (Pricing Engine)
 - [ ] Automated Invoicing System (Express)
+- [x] B2B Partner Admin Approval Dashboard
 
 ### Phase 3: Marketplace & Auth
-- [ ] Setup Clerk/Kinde Auth Integration
+- [x] Implement Custom Local Auth (Laravel Breeze style)
 - [x] Link Profiles & Roles to Postgres
-- [ ] Product Catalog with "Interactive Stickers"
-- [ ] Cart & Checkout (Midtrans Integration)
+- [x] Product Catalog with "Interactive Stickers"
+- [x] Cart & Checkout (Xendit Integration)
 
 ### Phase 4: Production Polish
 - [ ] Real-time Chat (Pusher/Ably alternative)
