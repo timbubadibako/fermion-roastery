@@ -1,9 +1,11 @@
 import express from 'express';
-import { createTransaction, handleNotification } from '../controllers/paymentController.js';
+import { createInvoice, handleNotification, createSubscription } from '../controllers/paymentController.js';
 
 const router = express.Router();
 
-router.post('/checkout', createTransaction);
+router.post('/invoice', createInvoice);
+router.post('/subscription', createSubscription);
 router.post('/webhook', handleNotification);
 
 export default router;
+

@@ -1,39 +1,85 @@
 import { query } from '../lib/db.js';
 
-export const b2bRegister = async (req, res) => {
-  const { email, password, cafeName, cafeAddress, volume } = req.body;
+export const register = async (req, res) => {
+  const { email, password, fullName, role = 'RETAIL' } = req.body;
   
   try {
-    // 1. Create Profile
     const profileResult = await query(
-      'INSERT INTO profiles (email, password_hash, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id',
-      [email, password, cafeName, 'B2B'] // password should be hashed in production
+      'INSERT INTO profiles (email, password_hash, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, full_name, role',
+      [email, password, fullName || email.split('@')[0], role] 
     );
     
-    const profileId = profileResult.rows[0].id;
-    
-    // 2. Create B2B Partner Application
-    await query(
-      'INSERT INTO b2b_partners (profile_id, company_name, address, estimated_volume_kg, status) VALUES ($1, $2, $3, $4, $5)',
-      [profileId, cafeName, cafeAddress, volume, 'pending']
-    );
-    
-    res.status(201).json({ 
-      message: "B2B Registration successful", 
-      profileId 
-    });
+    const profile = profileResult.rows[0];
+    res.status(201).json({ message: "Registration successful", profile });
   } catch (error) {
     console.error('Registration Error:', error);
-    if (error.code === '23505') { // Unique violation
+    if (error.code === '23505') { 
       return res.status(400).json({ message: "Email already registered" });
     }
-    res.status(500).json({ message: "Error during B2B registration", error: error.message });
+    res.status(500).json({ message: "Error during registration", error: error.message });
   }
 };
 
-export const syncUser = (req, res) => {
-  // Logic to sync Clerk/Kinde user with our local logic
-  res.status(200).json({ message: "User synced successfully (Mock)" });
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  
+  try {
+    const result = await query('SELECT id, email, full_name, role, password_hash FROM profiles WHERE email = $1', [email]);
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const profile = result.rows[0];
+    
+    // In production, use bcrypt.compare here
+    if (profile.password_hash !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Remove password hash from response
+    delete profile.password_hash;
+    
+    res.status(200).json({ message: "Login successful", profile });
+  } catch (error) {
+    console.error('Login Error:', error);
+    res.status(500).json({ message: "Error during login", error: error.message });
+  }
+};
+
+export const applyB2B = async (req, res) => {
+  const { profileId, cafeName, cafeAddress, volume } = req.body;
+  
+  try {
+    // Check if profile exists
+    const profileRes = await query('SELECT id FROM profiles WHERE id = $1', [profileId]);
+    if (profileRes.rows.length === 0) {
+        return res.status(404).json({ message: "Profile not found" });
+    }
+
+    // Update role to B2B if it isn't already
+    await query("UPDATE profiles SET role = 'B2B' WHERE id = $1 AND role != 'B2B'", [profileId]);
+
+    // Create or update B2B Partner Application
+    const existingApp = await query('SELECT id FROM b2b_partners WHERE profile_id = $1', [profileId]);
+    
+    if (existingApp.rows.length > 0) {
+       await query(
+        'UPDATE b2b_partners SET company_name = $1, address = $2, estimated_volume_kg = $3, status = $4 WHERE profile_id = $5',
+        [cafeName, cafeAddress, volume, 'pending', profileId]
+       );
+    } else {
+       await query(
+        'INSERT INTO b2b_partners (profile_id, company_name, address, estimated_volume_kg, status) VALUES ($1, $2, $3, $4, $5)',
+        [profileId, cafeName, cafeAddress, volume, 'pending']
+      );
+    }
+    
+    res.status(201).json({ message: "B2B Application submitted successfully" });
+  } catch (error) {
+    console.error('B2B Application Error:', error);
+    res.status(500).json({ message: "Error submitting application", error: error.message });
+  }
 };
 
 export const getProfile = (req, res) => {

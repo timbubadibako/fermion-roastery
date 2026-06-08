@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS b2b_partners (
     estimated_volume_kg TEXT, -- e.g. '5-10KG'
     status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
     tier_name TEXT DEFAULT NULL, -- 'Bronze', 'Silver', 'Gold'
+    current_evaluation_cycle INTEGER DEFAULT 1, -- Current month in the 3-month window
+    next_tier_progress INTEGER DEFAULT 0, -- Calculated percentage towards the next tier (0-100)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -76,6 +78,29 @@ CREATE TABLE IF NOT EXISTS batches (
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 5. Contracts Table (Price Locking)
+CREATE TABLE IF NOT EXISTS contracts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    fixed_price NUMERIC(12, 2) NOT NULL,
+    start_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    end_date DATE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(profile_id, product_id)
+);
+
+-- 6. Evaluation Logs Table (Volume Tracking)
+CREATE TABLE IF NOT EXISTS evaluation_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+    month_year TEXT NOT NULL, -- e.g., '06-2026'
+    total_volume_kg NUMERIC(10, 2) DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(profile_id, month_year)
+);
+
 
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
