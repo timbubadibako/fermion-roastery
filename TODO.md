@@ -9,25 +9,29 @@
 - [x] Finalize Artisan Navigation (Our Coffee, Wholesale, Subscription, Journal, Our Story)
 - [x] Implement Dynamic Floating Navbar (Pill transition + Glassmorphism)
 - [x] Setup Multi-page Routing & Under Construction placeholders
+- [x] Setup Local Postgres Database (`fermion`)
+- [x] Implement Core Schema (Products, Pricing Tiers, B2B Partners, Batches)
+- [x] Connect Express Backend to Local Postgres
+- [x] Build Product API with Dynamic Pricing data
+- [x] Create B2B Onboarding Flow (Multi-step form)
 
 ## ⏳ To Do
 
 ### Phase 1: Core Engine & Data Architecture (Postgres)
-- [x] Initialize Root Git Repository
-- [ ] Setup Production Postgres Database
-- [ ] Implement Core Schema (Products, Batches, Pricing)
-- [ ] Connect Express Backend to Postgres
-- [ ] Build Basic Product API (CRUD)
+- [x] Setup Production Postgres Database
+- [x] Implement Core Schema (Products, Batches, Pricing)
+- [x] Connect Express Backend to Postgres
+- [x] Build Basic Product API (CRUD)
 
 ### Phase 2: B2B Core Logic
-- [ ] Implement Google Places API in Backend
-- [ ] Create B2B Onboarding Flow (Non-Auth version)
-- [ ] Setup Tiered Pricing & Contract Logic
+- [ ] Implement Google Places API in Backend (Scraping/API Proxy)
+- [x] Create B2B Onboarding Flow (Full-stack integration)
+- [ ] Setup Tiered Pricing & Contract Logic (Pricing Engine)
 - [ ] Automated Invoicing System (Express)
 
 ### Phase 3: Marketplace & Auth
 - [ ] Setup Clerk/Kinde Auth Integration
-- [ ] Link Profiles & Roles to Postgres
+- [x] Link Profiles & Roles to Postgres
 - [ ] Product Catalog with "Interactive Stickers"
 - [ ] Cart & Checkout (Midtrans Integration)
 
