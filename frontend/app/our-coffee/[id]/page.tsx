@@ -15,8 +15,11 @@ interface CoffeeProduct {
   process: string;
   altitude: string;
   price: number;
-  roastProfile: string;
-  character: { fermentation: number; sweetness: number; acidity: number; body: number };
+  roast_profile: string;
+  fermentation: number; 
+  sweetness: number; 
+  acidity: number; 
+  body: number;
   description: string;
   farm: string;
   image: string;
@@ -65,7 +68,7 @@ export default function ProductPage() {
         if (allRes.ok) {
           const allData = await allRes.json();
           const filtered = allData
-            .filter((p: CoffeeProduct) => p.roastProfile === data.roastProfile && p.id !== data.id)
+            .filter((p: CoffeeProduct) => p.roast_profile === data.roast_profile && p.id !== data.id)
             .slice(0, 4);
           setRelatedProducts(filtered);
         }
@@ -179,10 +182,10 @@ export default function ProductPage() {
                   <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 text-left">
                     <p className="text-sm text-slate-500 font-medium leading-relaxed">{product.description}</p>
                     <div className="grid grid-cols-1 gap-3 bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                       <CharacterLevel label="Fermentation" level={product.character.fermentation} />
-                       <CharacterLevel label="Sweetness" level={product.character.sweetness} />
-                       <CharacterLevel label="Acidity" level={product.character.acidity} />
-                       <CharacterLevel label="Body" level={product.character.body} />
+                       <CharacterLevel label="Fermentation" level={product.fermentation} />
+                       <CharacterLevel label="Sweetness" level={product.sweetness} />
+                       <CharacterLevel label="Acidity" level={product.acidity} />
+                       <CharacterLevel label="Body" level={product.body} />
                     </div>
                   </div>
                 )}
@@ -247,7 +250,7 @@ export default function ProductPage() {
                 <div className="flex items-center gap-3 py-1">
                    <div className="w-2 h-2 rounded-full bg-fermion-blue animate-pulse" />
                    <span className="text-xs font-black text-slate-900 tracking-widest uppercase italic">
-                      {product.roastProfile}
+                      {product.roast_profile || "Medium Roast"}
                    </span>
                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
                       (Recommended for best flavor)
@@ -308,7 +311,7 @@ export default function ProductPage() {
                   <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
                     <Image src={p.image} alt={p.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute top-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[8px] font-black tracking-widest text-slate-900 shadow-sm border border-slate-100">
-                       {p.roastProfile.split(' ')[0].toUpperCase()}
+                       {(p.roast_profile || "Medium").split(' ')[0].toUpperCase()}
                     </div>
                   </div>
                   <div className="space-y-1">

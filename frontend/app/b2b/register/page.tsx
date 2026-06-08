@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -11,14 +11,13 @@ import {
   ArrowRight, 
   Loader2, 
   Coffee, 
-  Mail, 
-  Lock,
   Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthForm } from "@/components/auth-form";
 
 export default function B2BRegisterPage() {
   const router = useRouter();
@@ -27,27 +26,20 @@ export default function B2BRegisterPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [selectedShop, setSelectedShop] = useState<any>(null);
-  const [isManualInput, setIsManualInput] = useState(false);
   const [volume, setVolume] = useState("");
+  
+  // Store the authenticated user profile
+  const [profile, setProfile] = useState<any>(null);
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
     cafeName: "",
     cafeAddress: "",
-    volume: ""
   });
 
-  // Step 1: Account Logic
-  const handleAccountSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // Simulate account check / sync
-    setTimeout(() => {
-      setLoading(false);
-      setStep(2);
-      toast.success("Account synced successfully");
-    }, 1500);
+  // Step 1: Account Logic (Handled by AuthForm)
+  const handleAuthSuccess = (userData: any) => {
+    setProfile(userData);
+    setStep(2);
   };
 
   // Step 2: Cafe Search Logic
@@ -63,7 +55,7 @@ export default function B2BRegisterPage() {
 
   const handleSelectShop = (shop: any) => {
     setSelectedShop(shop);
-    setFormData({ ...formData, cafeName: shop.name, cafeAddress: shop.address });
+    setFormData({ cafeName: shop.name, cafeAddress: shop.address });
     setStep(3);
   };
 
@@ -73,16 +65,20 @@ export default function B2BRegisterPage() {
 
   // Step 3: Submission
   const handleSubmitApplication = async () => {
+    if (!profile) {
+      toast.error("User profile not found. Please log in again.");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/auth/b2b-register', {
+      const response = await fetch('http://localhost:3001/api/auth/apply-b2b', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
+          profileId: profile.id,
           cafeName: formData.cafeName,
           cafeAddress: formData.cafeAddress,
           volume: volume
@@ -91,7 +87,7 @@ export default function B2BRegisterPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok) { 
         setStep(4);
         toast.success("Application Submitted Successfully!");
       } else {
@@ -110,7 +106,7 @@ export default function B2BRegisterPage() {
       <div className="max-w-xl w-full">
         
         <AnimatePresence mode="wait">
-          {/* STEP 1: ACCOUNT CREATION / SYNC */}
+          {/* STEP 1: ACCOUNT CREATION / LOGIN */}
           {step === 1 && (
             <motion.div 
               key="step1"
@@ -124,45 +120,10 @@ export default function B2BRegisterPage() {
                   <Coffee size={32} />
                 </div>
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Start Partnership</h2>
-                <p className="text-sm text-slate-400 font-medium">Create your account or sync existing one.</p>
+                <p className="text-sm text-slate-400 font-medium">Log in or register your Fermion account to begin.</p>
               </div>
 
-              <form onSubmit={handleAccountSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                  <div className="relative">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <Input 
-                      required
-                      type="email"
-                      placeholder="email@cafe.com"
-                      className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
-                  <div className="relative">
-                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                    <Input 
-                      required
-                      type="password"
-                      placeholder="••••••••"
-                      className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <Button 
-                  disabled={loading}
-                  className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic mt-4"
-                >
-                  {loading ? <Loader2 className="animate-spin" /> : "Continue to Details"}
-                </Button>
-              </form>
+              <AuthForm onSuccess={handleAuthSuccess} defaultRole="B2B" />
             </motion.div>
           )}
 
@@ -178,6 +139,7 @@ export default function B2BRegisterPage() {
               <div className="text-left space-y-2">
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Locate Your Cafe</h2>
                 <p className="text-sm text-slate-400 font-medium">Search on maps or enter manually.</p>
+                {profile && <p className="text-xs text-fermion-blue mt-2">Logged in as {profile.email}</p>}
               </div>
 
               <div className="space-y-6">
@@ -236,6 +198,7 @@ export default function B2BRegisterPage() {
               className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl space-y-8"
             >
               <div className="text-left space-y-2">
+                <button onClick={() => setStep(2)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">← Back to search</button>
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Estimated Volume</h2>
                 <p className="text-sm text-slate-400 font-medium italic">"{formData.cafeName}"</p>
               </div>

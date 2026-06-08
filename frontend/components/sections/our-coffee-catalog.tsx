@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, SlidersHorizontal, ArrowUpDown, Grid2X2, Grid3X3, LayoutGrid, SeparatorHorizontal as Separator, Loader2 } from "lucide-react";
+import { Plus, SlidersHorizontal, ArrowUpDown, Grid2X2, Grid3X3, LayoutGrid, SeparatorHorizontal as Separator, Loader2, Sparkles, Flame, Percent } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface CoffeeProduct {
   id: number;
@@ -13,7 +14,9 @@ interface CoffeeProduct {
   process: string;
   altitude: string;
   price: number;
+  original_price?: number;
   image: string;
+  isLocked?: boolean;
 }
 
 export function RetailCatalog() {
@@ -46,6 +49,36 @@ export function RetailCatalog() {
       description: "You can view your items in the cart sidebar.",
       duration: 3000,
     });
+  };
+
+  // Helper to determine sticker type based on product data (mock logic for visual flair)
+  const getSticker = (product: CoffeeProduct, index: number) => {
+    if (product.original_price && product.price < product.original_price) {
+      const discount = Math.round((1 - (product.price / product.original_price)) * 100);
+      return (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-red-500 text-white px-3 py-1.5 rounded-full shadow-lg transform -rotate-2">
+          <Percent size={12} strokeWidth={3} />
+          <span className="text-[10px] font-black uppercase tracking-widest">{discount}% OFF</span>
+        </div>
+      );
+    }
+    if (index === 0) {
+      return (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-fermion-blue text-white px-3 py-1.5 rounded-full shadow-lg transform rotate-2">
+          <Flame size={12} strokeWidth={3} />
+          <span className="text-[10px] font-black uppercase tracking-widest">Best Seller</span>
+        </div>
+      );
+    }
+    if (index === 2) {
+      return (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-slate-900 text-white px-3 py-1.5 rounded-full shadow-lg">
+          <Sparkles size={12} strokeWidth={3} />
+          <span className="text-[10px] font-black uppercase tracking-widest">New Harvest</span>
+        </div>
+      );
+    }
+    return null;
   };
 
   if (loading) return (
@@ -173,10 +206,20 @@ export function RetailCatalog() {
 
         {/* Dynamic Product Grid - Resizes smoothly */}
         <div className={`grid ${gridClasses[cols]} flex-1 transition-all duration-500 ease-in-out`}>
-          {products.map((product) => (
+          {products.map((product, index) => (
             <Link key={product.id} href={`/our-coffee/${product.id}`} className="group cursor-pointer">
               {/* Image Wrapper */}
               <div className="relative aspect-square bg-[#F4F4F5] rounded-2xl overflow-hidden mb-6">
+                
+                {/* Interactive Stickers */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 + (index * 0.1) }}
+                >
+                  {getSticker(product, index)}
+                </motion.div>
+
                 <Image
                   src={product.image || "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+COFFEE"}
                   alt={product.name}
@@ -187,7 +230,7 @@ export function RetailCatalog() {
               </div>
 
               {/* Metadata Section */}
-              <div className="space-y-1 px-1 text-left">
+              <div className="space-y-1 px-1 text-left relative">
                 <p className="font-mono text-[9px] font-bold tracking-[0.1em] text-slate-400 uppercase">
                   {product.process} • {product.altitude}
                 </p>
@@ -201,9 +244,22 @@ export function RetailCatalog() {
 
               {/* Footer / Pricing */}
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
-                <span className="font-mono text-sm font-bold text-slate-800 text-left">
-                  Rp {product.price.toLocaleString('id-ID')}
-                </span>
+                <div className="flex flex-col">
+                  {product.original_price && product.price < product.original_price ? (
+                    <>
+                      <span className="font-mono text-[10px] font-bold text-slate-400 line-through">
+                        Rp {product.original_price.toLocaleString('id-ID')}
+                      </span>
+                      <span className="font-mono text-sm font-black text-red-500">
+                        Rp {product.price.toLocaleString('id-ID')}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-mono text-sm font-bold text-slate-800">
+                      Rp {product.price.toLocaleString('id-ID')}
+                    </span>
+                  )}
+                </div>
                 <button 
                   onClick={(e) => handleAddToCart(e, product)}
                   className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-full text-[10px] font-bold tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all active:scale-95 uppercase"
@@ -218,3 +274,4 @@ export function RetailCatalog() {
     </section>
   );
 }
+
