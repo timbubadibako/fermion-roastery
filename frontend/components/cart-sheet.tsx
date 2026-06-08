@@ -9,9 +9,10 @@ import {
   SheetTrigger,
   SheetFooter
 } from "@/components/ui/sheet";
-import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 interface CartItem {
   id: number;
@@ -22,6 +23,7 @@ interface CartItem {
 }
 
 export function CartSheet() {
+  const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([
     { 
       id: 1, 
@@ -50,6 +52,41 @@ export function CartSheet() {
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      // Build items array matching backend expectation
+      const checkoutItems = cartItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      // In a real app, you would fetch customer details from context
+      const customerDetails = { email: "customer@example.com" };
+
+      const res = await fetch("http://localhost:3001/api/payments/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: subtotal, items: checkoutItems, customerDetails }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.invoiceUrl) {
+        // Redirect to Xendit Payment Page
+        window.location.href = data.invoiceUrl;
+      } else {
+        toast.error(data.message || "Failed to generate checkout invoice");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Network error during checkout.");
+      setLoading(false);
+    }
+  };
 
   return (
     <Sheet>
@@ -134,8 +171,12 @@ export function CartSheet() {
               </div>
               <p className="text-[10px] text-slate-400">Shipping and taxes calculated at checkout.</p>
             </div>
-            <Button className="w-full bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98]">
-              Checkout Now
+            <Button 
+              onClick={handleCheckout}
+              disabled={loading}
+              className="w-full bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98]"
+            >
+              {loading ? <Loader2 className="animate-spin" /> : "Checkout via Xendit"}
             </Button>
           </SheetFooter>
         )}
@@ -143,3 +184,4 @@ export function CartSheet() {
     </Sheet>
   );
 }
+
