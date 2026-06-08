@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, SlidersHorizontal, ArrowUpDown, Grid2X2, Grid3X3, LayoutGrid, SeparatorHorizontal as Separator } from "lucide-react";
+import { Plus, SlidersHorizontal, ArrowUpDown, Grid2X2, Grid3X3, LayoutGrid, SeparatorHorizontal as Separator, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface CoffeeProduct {
@@ -16,82 +16,28 @@ interface CoffeeProduct {
   image: string;
 }
 
-const MOCK_COFFEE: CoffeeProduct[] = [
-  {
-    id: 1,
-    name: "NOT ONLY INTENSE",
-    origin: "Kendal x Sumedang",
-    process: "NATURAL YEAST",
-    altitude: "700 MDPL",
-    price: 145000,
-    image: "https://placehold.co/800x800/7a9cff/ffffff?text=Not+Only+Intense",
-  },
-  {
-    id: 2,
-    name: "SUMEDANG ANAEROB",
-    origin: "Sumedang, West Java",
-    process: "ANAEROB NATURAL",
-    altitude: "1200 MDPL",
-    price: 165000,
-    image: "https://placehold.co/800x800/ffd700/0f172a?text=Anaerob",
-  },
-  {
-    id: 3,
-    name: "GAYO WASHED",
-    origin: "Aceh Central Gayo",
-    process: "FULLY WASHED",
-    altitude: "1500 MDPL",
-    price: 115000,
-    image: "https://placehold.co/800x800/ff4b4b/ffffff?text=Gayo+Washed",
-  },
-  {
-    id: 4,
-    name: "KENDAL HONEY",
-    origin: "Kendal, Central Java",
-    process: "HONEY PROCESS",
-    altitude: "800 MDPL",
-    price: 135000,
-    image: "https://placehold.co/800x800/0f172a/ffffff?text=Honey+Process",
-  },
-  {
-    id: 5,
-    name: "FERMION ESPRESSO",
-    origin: "House Blend",
-    process: "WASHED x NATURAL",
-    altitude: "VARIOUS",
-    price: 125000,
-    image: "https://placehold.co/800x800/7a9cff/ffffff?text=Espresso+Blend",
-  },
-  {
-    id: 6,
-    name: "LIBERIKA GOLD",
-    origin: "Cirebon Highland",
-    process: "NATURAL",
-    altitude: "400 MDPL",
-    price: 95000,
-    image: "https://placehold.co/800x800/ffd700/0f172a?text=Liberika+Gold",
-  },
-];
-
 export function RetailCatalog() {
+  const [products, setProducts] = useState<CoffeeProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [cols, setCols] = useState<2 | 3 | 4>(3);
   const [showFilter, setShowFilter] = useState(false);
 
-  const filterCategories = [
-    { name: "COUNTRY OF ORIGIN", items: ["Indonesia", "Ethiopia", "Colombia", "Brazil"] },
-    { name: "COFFEE DRINK METHOD", items: ["Espresso", "Filter", "Capsule"] },
-    { name: "CUP SCORE", items: ["Grade 85-87", "Grade 88+", "90+ Points"] },
-    { name: "ROAST PROFILE", items: ["Light", "Light-Medium", "Medium", "Dark"] },
-    { name: "COFFEE VARIETY", items: ["Typica", "Sigararutang", "Caturra", "Geisha"] },
-    { name: "COFFEE PROCESS", items: ["Washed", "Natural", "Honey", "Anaerobic"] },
-  ];
-
-  // Dynamic Grid Classes
-  const gridClasses = {
-    2: "grid-cols-1 md:grid-cols-2 gap-16 md:gap-20",
-    3: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12",
-    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8",
-  };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('http://localhost:3001/api/products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const data = await res.json();
+        setProducts(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault();
@@ -101,6 +47,37 @@ export function RetailCatalog() {
       duration: 3000,
     });
   };
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#FDFBF7] pt-40 px-12">
+      <div className="max-w-6xl mx-auto flex flex-col items-center gap-4">
+        <Loader2 className="w-10 h-10 text-fermion-blue animate-spin" />
+        <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Brewing your catalog...</p>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+      <p className="text-red-500 font-bold uppercase tracking-widest text-xs">Error: {error}</p>
+    </div>
+  );
+
+  // Dynamic Grid Classes
+  const gridClasses = {
+    2: "grid-cols-1 md:grid-cols-2 gap-16 md:gap-20",
+    3: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8",
+  };
+
+  const filterCategories = [
+    { name: "COUNTRY OF ORIGIN", items: ["Indonesia", "Ethiopia", "Colombia", "Brazil"] },
+    { name: "COFFEE DRINK METHOD", items: ["Espresso", "Filter", "Capsule"] },
+    { name: "CUP SCORE", items: ["Grade 85-87", "Grade 88+", "90+ Points"] },
+    { name: "ROAST PROFILE", items: ["Light", "Light-Medium", "Medium", "Dark"] },
+    { name: "COFFEE VARIETY", items: ["Typica", "Sigararutang", "Caturra", "Geisha"] },
+    { name: "COFFEE PROCESS", items: ["Washed", "Natural", "Honey", "Anaerobic"] },
+  ];
 
   return (
     <section className="bg-[#FDFBF7] min-h-screen pt-40 pb-40 px-4">
@@ -196,12 +173,12 @@ export function RetailCatalog() {
 
         {/* Dynamic Product Grid - Resizes smoothly */}
         <div className={`grid ${gridClasses[cols]} flex-1 transition-all duration-500 ease-in-out`}>
-          {MOCK_COFFEE.map((product) => (
-            <Link key={product.id} href={`/retail/${product.id}`} className="group cursor-pointer">
+          {products.map((product) => (
+            <Link key={product.id} href={`/our-coffee/${product.id}`} className="group cursor-pointer">
               {/* Image Wrapper */}
               <div className="relative aspect-square bg-[#F4F4F5] rounded-2xl overflow-hidden mb-6">
                 <Image
-                  src={product.image}
+                  src={product.image || "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+COFFEE"}
                   alt={product.name}
                   fill
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"

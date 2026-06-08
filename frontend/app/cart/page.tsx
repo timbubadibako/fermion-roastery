@@ -61,7 +61,7 @@ export default function CartPage() {
          </div>
          <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic mb-4">Your cart is empty</h1>
          <p className="text-slate-500 mb-10 max-w-xs font-medium">Looks like you haven't added any coffee to your ritual yet.</p>
-         <Link href="/retail">
+         <Link href="/our-coffee">
            <Button className="bg-slate-900 text-white font-black tracking-widest px-10 h-14 rounded-2xl uppercase">Start Shopping</Button>
          </Link>
       </div>
@@ -76,7 +76,7 @@ export default function CartPage() {
             <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">Your Selection</p>
             <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase italic">Shopping Cart</h1>
           </div>
-          <Link href="/retail" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">
+          <Link href="/our-coffee" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">
             Continue Shopping
           </Link>
         </div>

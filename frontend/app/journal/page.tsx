@@ -74,7 +74,7 @@ export default function JournalPage() {
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
            {articles.map((article) => (
-             <Link key={article.id} href={`/blog/${article.id}`} className="group space-y-6">
+             <Link key={article.id} href={`/journal/${article.id}`} className="group space-y-6">
                 <div className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-white border border-slate-100 shadow-sm">
                    <Image src={article.img} alt={article.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                    <div className="absolute top-6 left-6 px-4 py-2 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-black tracking-widest text-slate-900 shadow-sm border border-white/20">

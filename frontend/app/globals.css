@@ -5,43 +5,45 @@
 
 :root {
   --background: #FAF9F6;
-  --foreground: #0F172A;
+  --foreground: #101828;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #101828;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --primary: #7A9CFF;
+  --popover-foreground: #101828;
+  --primary: #6486F4;
   --primary-foreground: #FFFFFF;
   --secondary: #F3F6FF;
-  --secondary-foreground: #0F172A;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  --accent: #7A9CFF;
+  --secondary-foreground: #101828;
+  --muted: #EFF2F8;
+  --muted-foreground: #667085;
+  --accent: #8F73FF;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E2E8F0;
-  --input: #F3F6FF;
-  --ring: #7A9CFF;
-  --radius: 2rem;
+  --border: rgba(16, 24, 40, 0.08);
+  --input: #FFFFFF;
+  --ring: #6486F4;
+  --radius: 1.5rem;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #0F172A;
-  --sidebar-primary: #7A9CFF;
+  --sidebar-foreground: #101828;
+  --sidebar-primary: #6486F4;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F3F6FF;
-  --sidebar-accent-foreground: #0F172A;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #7A9CFF;
+  --sidebar-accent-foreground: #101828;
+  --sidebar-border: rgba(16, 24, 40, 0.08);
+  --sidebar-ring: #6486F4;
 }
 
 @theme inline {
-  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-display: 'PP Editorial New', 'Times New Roman', serif;
+  --font-sans: 'Manrope', 'Manrope Fallback', system-ui, sans-serif;
+  --font-display: 'Fraunces', 'Times New Roman', serif;
   
-  --color-fermion-blue: #7A9CFF;
+  --color-fermion-blue: #6486F4;
   --color-fermion-soft: #F3F6FF;
-  --color-fermion-charcoal: #0F172A;
+  --color-fermion-charcoal: #101828;
+  --color-fermion-lilac: #8F73FF;
+  --color-fermion-yellow: #F3CA57;
+  --color-fermion-coral: #FF826F;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -75,20 +77,104 @@
   
   html, body {
     @apply bg-background text-foreground;
-    /* Hide scrollbar for IE, Edge and Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) rgba(16, 24, 40, 0.08);
   }
   
-  /* Hide scrollbar for Chrome, Safari and Opera */
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
   *::-webkit-scrollbar {
-    display: none;
+    width: 0;
+    height: 0;
   }
   
   html {
     scroll-behavior: smooth;
+  }
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(132, 168, 255, 0.16), transparent 25%),
+    radial-gradient(circle at top right, rgba(183, 160, 255, 0.14), transparent 20%),
+    linear-gradient(180deg, #ffffff 0%, #faf9f6 18%, #f7f5ef 100%);
+}
+
+.fermion-stack {
+  position: sticky;
+  top: 0;
+}
+
+.fermion-parallax {
+  will-change: transform;
+}
+
+.fermion-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.fermion-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fermion-placeholder {
+  border-radius: 24px;
+  padding: 20px;
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(16, 24, 40, 0.08);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+.fermion-placeholder__tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.fermion-placeholder--blue {
+  background: linear-gradient(135deg, rgba(132, 168, 255, 0.24), rgba(255, 255, 255, 0.92));
+}
+
+.fermion-placeholder--lilac {
+  background: linear-gradient(135deg, rgba(183, 160, 255, 0.24), rgba(255, 255, 255, 0.92));
+}
+
+.fermion-placeholder--yellow {
+  background: linear-gradient(135deg, rgba(243, 202, 87, 0.24), rgba(255, 255, 255, 0.92));
+}
+
+.fermion-placeholder--coral {
+  background: linear-gradient(135deg, rgba(255, 130, 111, 0.22), rgba(255, 255, 255, 0.92));
+}
+
+.fermion-placeholder--dark {
+  color: white;
+  background: linear-gradient(135deg, #1d2740, #101828);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

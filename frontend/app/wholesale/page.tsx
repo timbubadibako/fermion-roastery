@@ -1,230 +1,146 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
-  TrendingDown, 
-  Truck, 
   Zap, 
   ArrowRight,
-  Globe,
-  Beaker,
-  UserCheck,
-  Package
+  ShieldCheck, 
+  Truck, 
+  Settings, 
+  BarChart3, 
+  Globe, 
+  Award,
+  Package,
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FooterSection } from "@/components/sections/footer-section";
 
 const benefits = [
-  { icon: <TrendingDown className="w-6 h-6" />, title: "Price Lock Guarantee", description: "Protect your cafe’s bottom line. Lock in prices for up to 6 months." },
-  { icon: <Zap className="w-6 h-6" />, title: "Micro-Batch Roast", description: "Custom roast profiles crafted in precision micro-batches for consistency." },
-  { icon: <Beaker className="w-6 h-6" />, title: "Pre-Release Access", description: "Exclusive invitations to rare, seasonal lots before public launch.", comingSoon: true },
-  { icon: <UserCheck className="w-6 h-6" />, title: "Barista Training", description: "Access complimentary calibration sessions and specialized training." },
-  { icon: <Truck className="w-6 h-6" />, title: "Cargo Tracking", description: "Monitor your bulk supply with real-time freight cargo tracking." },
-  { icon: <Globe className="w-6 h-6" />, title: "Digital Tech Perks", description: "Access our network to digitize your POS or build custom websites." }
+  {
+    icon: <ShieldCheck className="w-6 h-6" />,
+    title: "Quality Guarantee",
+    desc: "Setiap batch dipanggang dengan standar kontrol kualitas yang ketat."
+  },
+  {
+    icon: <Settings className="w-6 h-6" />,
+    title: "Custom Roast",
+    desc: "Sesuaikan profil sangrai untuk mencocokkan karakter unik brand cafe Anda."
+  },
+  {
+    icon: <BarChart3 className="w-6 h-6" />,
+    title: "Tiered Pricing",
+    desc: "Dapatkan harga yang semakin kompetitif seiring bertambahnya volume Anda."
+  },
+  {
+    icon: <Truck className="w-6 h-6" />,
+    title: "Reliable Logistics",
+    desc: "Pengiriman terjadwal untuk memastikan stok Anda tidak pernah kosong."
+  },
+  {
+    icon: <Globe className="w-6 h-6" />,
+    title: "Direct Sourcing",
+    desc: "Akses langsung ke kebun kopi terbaik di seluruh nusantara."
+  },
+  {
+    icon: <Award className="w-6 h-6" />,
+    title: "Partner Support",
+    desc: "Konsultasi menu dan kalibrasi rutin dari tim roaster ahli kami."
+  }
 ];
 
-const firstGroup = benefits.slice(0, 3);
-const secondGroup = benefits.slice(3, 6);
-
-// --- 1. HERO COMPONENT ---
-function Hero() {
-  return (
-    <section className="sticky top-0 h-screen w-full flex items-center justify-center bg-slate-950 z-0">
-      <Image 
-        src="https://placehold.co/1920x1080/0f172a/ffffff?text=ELITE+ROASTERY+LAB" 
-        alt="Hero" 
-        fill 
-        className="object-cover brightness-[0.25]" 
-        priority 
-      />
-      <div className="relative z-10 text-center space-y-6 px-12">
-         <p className="text-[10px] font-black text-fermion-blue tracking-[0.6em] uppercase">Partnership Invitation</p>
-         <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white uppercase italic leading-[0.8]">
-           Scale Your <br/> Vision.
-         </h1>
-         <p className="text-white/30 text-xs font-bold tracking-[0.4em] uppercase mt-8">Engineering Industrial Excellence</p>
-      </div>
-    </section>
-  );
-}
-
-// --- 2. TECH NARRATIVE (STACKING COVER) ---
-function TechNarrative() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [progress, setProgress] = useState(0);
-  const techText = "Experience coffee roasting reimagined with cutting-edge technology. Fermion Roastery combines precision temperature control, intelligent air-flow management, and micro-batch engineering to elevate every cup. From origin selection to final roast, our science adapts to the beans.";
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const totalScrollable = viewportHeight * 1.5;
-      const scrolled = Math.max(0, -rect.top);
-      setProgress(Math.min(1, scrolled / totalScrollable));
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const words = techText.split(" ");
-
-  return (
-    <section ref={sectionRef} className="relative z-10 bg-[#FAF9F6] border-t border-slate-200 shadow-[0_-50px_100px_rgba(0,0,0,0.2)]">
-      <div className="sticky top-0 h-screen flex items-center justify-center px-12">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase italic leading-[0.9] text-left">
-            {words.map((word, index) => {
-              const wordProgress = index / words.length;
-              const isRevealed = progress > wordProgress;
-              return (
-                <span key={index} className="transition-colors duration-200" style={{ color: isRevealed ? "#0f172a" : "#e2e8f0" }}>
-                  {word}{index < words.length - 1 ? " " : ""}
-                </span>
-              );
-            })}
-          </p>
-        </div>
-      </div>
-      <div className="h-[150vh]" />
-    </section>
-  );
-}
-
-// --- 3. HORIZONTAL BENEFITS (GALLERY STYLE) ---
-function HorizontalBenefits() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [translateX1, setTranslateX1] = useState(0);
-  const [translateX2, setTranslateX2] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const totalScrollable = viewportHeight * 3;
-      const scrolled = Math.max(0, -rect.top);
-      const progress = Math.min(1, scrolled / totalScrollable);
-      
-      const maxShift = 1000; // Approximated shift
-      setTranslateX1(progress * -maxShift);
-      setTranslateX2(-maxShift + (progress * maxShift));
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <section ref={sectionRef} className="relative z-10 bg-[#FAF9F6]">
-      <div className="sticky top-0 h-screen flex flex-col justify-center space-y-16 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-12 w-full">
-           <h2 className="text-5xl font-black tracking-tighter text-slate-900 uppercase italic">The Advantage.</h2>
-        </div>
-
-        {/* Row 1: Right -> Left */}
-        <div className="w-full flex items-center overflow-hidden">
-           <div 
-             className="flex gap-10 px-12 transition-transform duration-150 ease-out"
-             style={{ transform: `translateX(${translateX1 + 500}px)` }}
-           >
-              {firstGroup.map((b, i) => <Card key={i} benefit={b} index={i+1} />)}
-           </div>
-        </div>
-
-        {/* Row 2: Left -> Right (REVERSE) */}
-        <div className="w-full flex items-center overflow-hidden">
-           <div 
-             className="flex gap-10 px-12 transition-transform duration-150 ease-out"
-             style={{ transform: `translateX(${translateX2 - 500}px)` }}
-           >
-              {secondGroup.map((b, i) => <Card key={i} benefit={b} index={i+4} />)}
-           </div>
-        </div>
-      </div>
-      <div className="h-[300vh]" />
-    </section>
-  );
-}
-
-// --- MAIN PAGE ---
 export default function WholesalePage() {
-  const moqRef = useRef(null);
-  const isMoqInView = useInView(moqRef, { amount: 0.5 });
-
   return (
-    <div className="bg-[#FAF9F6] min-h-screen overflow-x-hidden">
-      <Hero />
-      <TechNarrative />
-      <HorizontalBenefits />
+    <div className="bg-[#FAF9F6] min-h-screen pt-32 relative">
+      
+      {/* SECTION 1: HERO & VALUE PROPS */}
+      <section className="max-w-6xl mx-auto px-12 text-center space-y-8 mb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="space-y-4"
+        >
+          <p className="text-[10px] font-black text-fermion-blue tracking-[0.5em] uppercase">Partnership Program</p>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 uppercase italic leading-none">
+            Scale Your Coffee <br/> Experience with Us.
+          </h1>
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium">
+            Fermion Roastery menyediakan solusi kopi hulu-ke-hilir untuk bisnis yang mengutamakan kualitas, konsistensi, dan cerita di balik setiap biji.
+          </p>
+        </motion.div>
 
-      {/* 4. MOQ SECTION (UNCHANGED) */}
-      <section ref={moqRef} className="py-60 bg-slate-950 text-white overflow-hidden relative z-20 shadow-[0_-50px_100px_rgba(0,0,0,0.5)]">
-         <motion.div animate={{ backgroundPosition: ["0px 0px", "60px 60px"] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-         <div className="max-w-6xl mx-auto px-12 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center relative z-10">
-            <div className="space-y-10 text-left">
-               <div className="space-y-4">
-                 <p className="text-[10px] font-black text-fermion-blue tracking-[0.6em] uppercase">Supply Commitment</p>
-                 <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-[0.85]">The 50KG <br/> Standard.</h2>
-               </div>
-               <p className="text-white/40 text-lg leading-relaxed font-medium">Minimum monthly commitment for micro-batch priority roasting.</p>
-               <div className="flex gap-4">
-                  <div className="px-6 py-4 bg-white/5 rounded-2xl border border-white/10 text-[9px] font-black tracking-widest uppercase italic italic">Weekly Roast Schedule</div>
-                  <div className="px-6 py-4 bg-white/5 rounded-2xl border border-white/10 text-[9px] font-black tracking-widest uppercase italic italic">Direct Partnership</div>
-               </div>
-            </div>
-            <div className="relative flex items-center justify-center">
-               <div className="absolute w-[140%] h-[140%] bg-fermion-blue/20 rounded-full blur-[140px] animate-pulse" />
-               <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full border border-white/10 flex items-center justify-center bg-slate-900/60 backdrop-blur-3xl shadow-3xl">
-                  <svg className="absolute w-full h-full -rotate-90 p-4">
-                    <circle cx="50%" cy="50%" r="48%" stroke="white" strokeWidth="1" fill="transparent" strokeDasharray="100, 100" className="opacity-10" />
-                    <motion.circle
-                      cx="50%" cy="50%" r="48%" stroke="#7a9cff" strokeWidth="8" fill="transparent"
-                      initial={{ strokeDasharray: "0, 100" }}
-                      animate={isMoqInView ? { strokeDasharray: "65, 100" } : {}}
-                      transition={{ duration: 2, delay: 0.5, ease: [0.85, 0, 0.15, 1] }}
-                    />
-                  </svg>
-                  <div className="text-center">
-                    <motion.p initial={{ opacity: 0, scale: 0.8 }} animate={isMoqInView ? { opacity: 1, scale: 1 } : {}} transition={{ delay: 0.8, duration: 1 }} className="text-8xl md:text-9xl font-black italic tracking-tighter leading-none">
-                      50<span className="text-2xl not-italic text-fermion-blue ml-2">KG</span>
-                    </motion.p>
-                    <p className="text-[10px] font-black tracking-[0.4em] text-white/30 uppercase mt-4 italic">Baseline Supply</p>
-                  </div>
-               </div>
-            </div>
-         </div>
+        <div className="flex flex-wrap justify-center gap-6 pt-8">
+           <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-full border border-slate-100 shadow-sm">
+              <Zap size={18} className="text-fermion-yellow" />
+              <span className="text-xs font-black uppercase tracking-widest text-slate-900">Fast Roasting</span>
+           </div>
+           <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-full border border-slate-100 shadow-sm">
+              <Package size={18} className="text-fermion-blue" />
+              <span className="text-xs font-black uppercase tracking-widest text-slate-900">Bulk Options</span>
+           </div>
+           <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-full border border-slate-100 shadow-sm">
+              <Calendar size={18} className="text-fermion-lilac" />
+              <span className="text-xs font-black uppercase tracking-widest text-slate-900">Weekly Delivery</span>
+           </div>
+        </div>
       </section>
 
-      {/* 5. FINAL CTA */}
-      <section className="py-60 px-6 bg-white relative z-20">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-           <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-900 uppercase italic leading-[0.85]">Join the <br/> Supply Revolution.</h2>
-           <Link href="/b2b/register"><Button className="bg-slate-900 text-white font-black tracking-[0.2em] px-12 h-20 rounded-[1.5rem] hover:bg-fermion-blue transition-all duration-500 uppercase italic text-lg shadow-xl shadow-slate-900/10">Register Partner</Button></Link>
+      {/* SECTION 2: 6 CARD BENEFITS */}
+      <section className="bg-white py-24 border-y border-slate-100">
+        <div className="max-w-6xl mx-auto px-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {benefits.map((benefit, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-[#FAF9F6] p-10 rounded-[2.5rem] border border-slate-100 hover:border-fermion-blue transition-all duration-500 group"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-900 group-hover:bg-fermion-blue group-hover:text-white transition-colors duration-500 mb-6">
+                  {benefit.icon}
+                </div>
+                <h3 className="text-lg font-black uppercase italic tracking-tight text-slate-900 mb-3">{benefit.title}</h3>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed">{benefit.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: MOQ & CTA */}
+      <section className="py-32 bg-[#FDFBF7]">
+        <div className="max-w-4xl mx-auto px-12 text-center space-y-12">
+          <div className="space-y-4">
+            <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase italic">Minimum Order Quantity</h2>
+            <p className="text-slate-500 font-medium">
+              Kami mendukung bisnis dari berbagai skala. Mulai langkah besar Anda dengan komitmen yang fleksibel.
+            </p>
+          </div>
+
+          <div className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-left space-y-2">
+              <span className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">Starting From</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-black text-slate-900 italic">5</span>
+                <span className="text-xl font-black text-slate-400 uppercase italic">KG / Month</span>
+              </div>
+            </div>
+            
+            <Link href="/b2b/register" className="w-full md:w-auto">
+              <Button className="w-full md:w-auto h-20 px-12 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-700 uppercase italic text-lg shadow-2xl shadow-slate-900/20">
+                Join Wholesale <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       <FooterSection />
-    </div>
-  );
-}
-
-function Card({ benefit, index }: { benefit: any; index: number }) {
-  return (
-    <div className="flex-1 min-w-[340px] max-w-[400px] h-[450px] bg-white rounded-[3.5rem] p-12 border border-slate-100 shadow-2xl shadow-slate-200/40 space-y-8 flex flex-col justify-between group relative overflow-hidden text-left">
-       <span className="absolute -top-4 -right-2 text-9xl font-black text-slate-900/[0.02] italic pointer-events-none select-none">0{index}</span>
-       <div className="space-y-6">
-          <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-             {benefit.icon}
-          </div>
-          <h3 className="text-xl font-black tracking-tighter text-slate-900 uppercase italic leading-tight">{benefit.title}</h3>
-          <p className="text-xs text-slate-500 font-medium leading-relaxed">{benefit.description}</p>
-       </div>
-       <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 group-hover:text-fermion-blue transition-colors uppercase tracking-widest cursor-pointer">
-          Explore Detail <ArrowRight size={14} />
-       </div>
     </div>
   );
 }
