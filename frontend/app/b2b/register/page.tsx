@@ -1,187 +1,313 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin, Building2, User, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { 
+  Search, 
+  MapPin, 
+  Building2, 
+  CheckCircle2, 
+  ArrowRight, 
+  Loader2, 
+  Coffee, 
+  Mail, 
+  Lock,
+  Clock
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function B2BRegisterPage() {
-  const [step, setStep] = useState(1);
+  const router = useRouter();
+  const [step, setStep] = useState(1); // 1: Account, 2: Cafe Search, 3: Volume, 4: Success
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsScarching] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedShop, setSelectedShop] = useState<any>(null);
+  const [isManualInput, setIsManualInput] = useState(false);
+  const [volume, setVolume] = useState("");
 
-  const mockShopResults = [
-    { name: "Coffee Theory Cirebon", address: "Jl. Kartini No. 12, Cirebon", rating: 4.8 },
-    { name: "The Caffeine Lab", address: "Kuningan, West Java", rating: 4.5 },
-    { name: "Brew & Bites", address: "Majalengka City Center", rating: 4.2 },
-  ];
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    cafeName: "",
+    cafeAddress: "",
+    volume: ""
+  });
 
-  const handleSearch = () => {
-    if (!searchQuery) return;
-    setIsScarching(true);
+  // Step 1: Account Logic
+  const handleAccountSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    // Simulate account check / sync
     setTimeout(() => {
-      setIsScarching(false);
-    }, 800);
+      setLoading(false);
+      setStep(2);
+      toast.success("Account synced successfully");
+    }, 1500);
   };
 
-  const handleComplete = () => {
-    toast.success("Registration Submitted!", {
-      description: "Our B2B team will review your shop and contact you within 24 hours.",
-    });
+  // Step 2: Cafe Search Logic
+  const handleSearch = () => {
+    if (!searchQuery) return;
+    setIsSearching(true);
+    // Simulate API call to Google Places / Scraping
+    setTimeout(() => {
+      setIsSearching(false);
+      // If no results, user can input manually
+    }, 1000);
+  };
+
+  const handleSelectShop = (shop: any) => {
+    setSelectedShop(shop);
+    setFormData({ ...formData, cafeName: shop.name, cafeAddress: shop.address });
+    setStep(3);
+  };
+
+  const handleManualEntry = () => {
+    setStep(3);
+  };
+
+  // Step 3: Submission
+  const handleSubmitApplication = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/b2b-register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          cafeName: formData.cafeName,
+          cafeAddress: formData.cafeAddress,
+          volume: volume
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setStep(4);
+        toast.success("Application Submitted Successfully!");
+      } else {
+        toast.error(data.message || "Failed to submit application");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Network error. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="bg-[#FDFBF7] min-h-screen pt-40 pb-40 px-6">
-      <div className="max-w-6xl mx-auto px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
-          
-          {/* Left: Info Side */}
-          <div className="lg:col-span-5 space-y-12 lg:sticky lg:top-40 h-fit">
-            <div className="space-y-4">
-              <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase text-left">Partnership</p>
-              <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase italic leading-none text-left">
-                Apply for <br/> B2B Access.
-              </h1>
-            </div>
-            
-            <div className="space-y-8">
-               <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
-                     <Building2 size={18} className="text-fermion-blue" />
-                  </div>
-                  <div className="space-y-1 text-left">
-                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Tiered Pricing</h3>
-                     <p className="text-[11px] font-medium text-slate-500 leading-relaxed">Unlock exclusive volume-based rates for your coffee program.</p>
-                  </div>
-               </div>
-               <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center shrink-0">
-                     <MapPin size={18} className="text-fermion-blue" />
-                  </div>
-                  <div className="space-y-1 text-left">
-                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Direct Sourcing</h3>
-                     <p className="text-[11px] font-medium text-slate-500 leading-relaxed">Access seasonal micro-lots before they hit the retail market.</p>
-                  </div>
-               </div>
-            </div>
-          </div>
-
-          {/* Right: Registration Form */}
-          <div className="lg:col-span-7">
-            <div className="bg-white rounded-[3rem] p-10 md:p-14 border border-slate-100 shadow-xl shadow-slate-200/50 space-y-10">
-              
-              {/* Steps Indicator */}
-              <div className="flex gap-2">
-                 {[1, 2].map((s) => (
-                   <div key={s} className={`h-1 flex-1 rounded-full transition-all duration-500 ${step >= s ? "bg-slate-900" : "bg-slate-100"}`} />
-                 ))}
+    <div className="bg-[#FAF9F6] min-h-screen pt-32 pb-20 px-6 flex items-center justify-center">
+      <div className="max-w-xl w-full">
+        
+        <AnimatePresence mode="wait">
+          {/* STEP 1: ACCOUNT CREATION / SYNC */}
+          {step === 1 && (
+            <motion.div 
+              key="step1"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl space-y-8"
+            >
+              <div className="text-center space-y-2">
+                <div className="w-16 h-16 bg-fermion-blue/10 rounded-2xl flex items-center justify-center mx-auto text-fermion-blue mb-4">
+                  <Coffee size={32} />
+                </div>
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Start Partnership</h2>
+                <p className="text-sm text-slate-400 font-medium">Create your account or sync existing one.</p>
               </div>
 
-              {step === 1 ? (
-                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <div className="space-y-2 text-left">
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter">Locate Your Shop</h2>
-                    <p className="text-xs font-medium text-slate-400">Search your business on Google Maps to sync details.</p>
+              <form onSubmit={handleAccountSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                    <Input 
+                      required
+                      type="email"
+                      placeholder="email@cafe.com"
+                      className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    />
                   </div>
-                  
-                  <div className="space-y-6">
-                    <div className="relative">
-                      <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input 
-                        placeholder="Search Shop Name..." 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold uppercase tracking-widest focus-visible:ring-2 focus-visible:ring-fermion-blue"
-                      />
-                      <Button 
-                        onClick={handleSearch}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900 h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-fermion-blue transition-all"
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                    <Input 
+                      required
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold"
+                      value={formData.password}
+                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <Button 
+                  disabled={loading}
+                  className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic mt-4"
+                >
+                  {loading ? <Loader2 className="animate-spin" /> : "Continue to Details"}
+                </Button>
+              </form>
+            </motion.div>
+          )}
+
+          {/* STEP 2: CAFE SEARCH */}
+          {step === 2 && (
+            <motion.div 
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl space-y-8"
+            >
+              <div className="text-left space-y-2">
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Locate Your Cafe</h2>
+                <p className="text-sm text-slate-400 font-medium">Search on maps or enter manually.</p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="relative">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input 
+                    placeholder="Search Cafe Name..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold uppercase tracking-widest"
+                  />
+                  <Button 
+                    onClick={handleSearch}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900 h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-fermion-blue transition-all"
+                  >
+                    {isSearching ? <Loader2 className="animate-spin" /> : "SEARCH"}
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest text-center">Or input manually</p>
+                  <div className="space-y-4">
+                    <Input 
+                      placeholder="Cafe Name"
+                      className="h-14 bg-slate-50 border-none rounded-xl px-6 font-bold"
+                      value={formData.cafeName}
+                      onChange={(e) => setFormData({...formData, cafeName: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="Full Address"
+                      className="h-14 bg-slate-50 border-none rounded-xl px-6 font-bold"
+                      value={formData.cafeAddress}
+                      onChange={(e) => setFormData({...formData, cafeAddress: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  disabled={!formData.cafeName || !formData.cafeAddress}
+                  onClick={handleManualEntry}
+                  className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic"
+                >
+                  Next Step <ArrowRight className="ml-2" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 3: VOLUME ESTIMATION */}
+          {step === 3 && (
+            <motion.div 
+              key="step3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl space-y-8"
+            >
+              <div className="text-left space-y-2">
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Estimated Volume</h2>
+                <p className="text-sm text-slate-400 font-medium italic">"{formData.cafeName}"</p>
+              </div>
+
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Berapa KG kopi per bulan?</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {["5-10KG", "10-50KG", "50KG+"].map(v => (
+                      <button 
+                        key={v} 
+                        onClick={() => setVolume(v)}
+                        className={`h-16 rounded-2xl text-xs font-black uppercase tracking-widest transition-all border-2 ${volume === v ? "border-fermion-blue bg-fermion-blue/5 text-fermion-blue" : "border-transparent bg-slate-50 text-slate-400 hover:bg-slate-100"}`}
                       >
-                        {isSearching ? <Loader2 className="animate-spin" /> : "SEARCH"}
-                      </Button>
-                    </div>
-
-                    {searchQuery && !isSearching && (
-                      <div className="space-y-3 pt-2">
-                        {mockShopResults.map((result, i) => (
-                          <button 
-                            key={i}
-                            onClick={() => setSelectedShop(result)}
-                            className={`w-full p-6 rounded-2xl border transition-all text-left group ${selectedShop?.name === result.name ? "border-fermion-blue bg-fermion-blue/5 shadow-inner" : "border-slate-100 hover:border-slate-300 bg-white"}`}
-                          >
-                             <div className="flex justify-between items-center">
-                                <div>
-                                   <p className="text-sm font-black uppercase tracking-tight text-slate-900">{result.name}</p>
-                                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{result.address}</p>
-                                </div>
-                                {selectedShop?.name === result.name && <CheckCircle2 className="text-fermion-blue" size={20} />}
-                             </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                        {v}
+                      </button>
+                    ))}
                   </div>
-
-                  <Button 
-                    disabled={!selectedShop}
-                    onClick={() => setStep(2)}
-                    className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic"
-                  >
-                    Next Step <ArrowRight size={16} className="ml-2" />
-                  </Button>
                 </div>
-              ) : (
-                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500 text-left">
-                  <div className="space-y-2">
-                    <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">← Back to search</button>
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter">Business Details</h2>
-                    <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">Confirm your contact information.</p>
-                  </div>
 
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Owner Name</label>
-                          <div className="relative">
-                             <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                             <Input className="h-14 pl-12 bg-slate-50 border-none rounded-2xl text-sm font-bold uppercase" placeholder="Owner" />
-                          </div>
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                          <div className="relative">
-                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                             <Input className="h-14 pl-12 bg-slate-50 border-none rounded-2xl text-sm font-bold uppercase" placeholder="+62 ..." />
-                          </div>
-                       </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Monthly Coffee Volume</label>
-                       <div className="grid grid-cols-3 gap-3">
-                          {["< 10KG", "10-50KG", "50KG+"].map(v => (
-                            <button key={v} className="h-14 bg-slate-50 hover:bg-white hover:shadow-md border border-transparent hover:border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
-                               {v}
-                            </button>
-                          ))}
-                       </div>
-                    </div>
-                  </div>
-
-                  <Button 
-                    onClick={handleComplete}
-                    className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 shadow-xl shadow-slate-900/10 uppercase italic"
-                  >
-                    Submit Application
-                  </Button>
+                <div className="space-y-2 text-center p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase leading-relaxed">
+                    Dengan mendaftar, Anda menyetujui kebijakan kemitraan Fermion Roastery.
+                  </p>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+
+                <Button 
+                  disabled={!volume || loading}
+                  onClick={handleSubmitApplication}
+                  className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic"
+                >
+                  {loading ? <Loader2 className="animate-spin" /> : "Submit Application"}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: SUCCESS / PENDING STATE */}
+          {step === 4 && (
+            <motion.div 
+              key="step4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-2xl space-y-10 text-center"
+            >
+              <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto text-green-500">
+                <CheckCircle2 size={40} />
+              </div>
+              
+              <div className="space-y-4">
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Application <br/> Received!</h2>
+                <div className="flex items-center justify-center gap-2 text-fermion-blue bg-fermion-blue/5 py-2 px-4 rounded-full w-fit mx-auto">
+                  <Clock size={14} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Verification: ~1 Hour</span>
+                </div>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
+                  Terima kasih telah mendaftar, tim kami sedang memproses verifikasi cafe Anda.
+                </p>
+              </div>
+
+              <div className="pt-4 space-y-4">
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Sambil menunggu, Anda tetap bisa belanja</p>
+                <Link href="/our-coffee">
+                  <Button className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic">
+                    Go to Retail Shop <ArrowRight size={16} className="ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

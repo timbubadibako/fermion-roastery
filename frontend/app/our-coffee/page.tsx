@@ -1,4 +1,4 @@
-import { RetailCatalog } from "@/components/sections/retail-catalog";
+import { RetailCatalog } from "@/components/sections/our-coffee-catalog";
 
 export default function RetailPage() {
   return (

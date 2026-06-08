@@ -3,19 +3,26 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, User, Search, ShoppingCart, Loader2 } from "lucide-react";
+import { Menu, X, User, Search, ShoppingBag, Loader2 } from "lucide-react";
 import { CartSheet } from "./cart-sheet";
 
-const NAV_LINKS = [
-  { label: "OUR COFFEE", href: "/retail" },
-  { label: "WHOLESALE", href: "/wholesale" },
-  { label: "SUBSCRIPTION", href: "/subscription" },
-  { label: "JOURNAL", href: "/blog" },
-  { label: "OUR STORY", href: "/about" },
-];
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface BrandConfig {
+  name: string;
+  tagline: string;
+  subTagline: string;
+}
 
 export function Header() {
   const pathname = usePathname();
+  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  const [brand, setBrand] = useState<BrandConfig | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -23,7 +30,7 @@ export function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Mock Data
+  // Mock Search Data
   const promotedProducts = [
     { id: 1, name: "Fermion Espresso Blend", price: "Rp 125.000", img: "https://placehold.co/200x200/7a9cff/ffffff?text=Espresso+Blend" },
     { id: 2, name: "Kendal Honey Process", price: "Rp 145.000", img: "https://placehold.co/200x200/ffd700/0f172a?text=Honey+Process" },
@@ -33,18 +40,21 @@ export function Header() {
     { id: 3, name: "Sumedang Anaerob", category: "Single Origin" },
     { id: 4, name: "Gayo Washed", category: "Specialty" },
     { id: 5, name: "Fermion Brew Mug", category: "Merchandise" },
-    { id: 6, name: "Drip Bag Mix", category: "Coffee" },
   ];
 
   useEffect(() => {
+    // Reset scroll state on route change to prevent flickering
+    setIsScrolled(false);
+    setIsMenuOpen(false);
+    setIsSearchOpen(false);
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      // Use a more forgiving threshold
+      const offset = window.scrollY;
+      setIsScrolled(offset > 20);
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsSearchOpen(false);
-    };
-
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") setIsSearchOpen(false); };
     const handleClickOutside = (e: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
         setIsSearchOpen(false);
@@ -55,12 +65,15 @@ export function Header() {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("mousedown", handleClickOutside);
     
+    // Initial check
+    handleScroll();
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [pathname]); // Re-run effect on route change
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -68,157 +81,146 @@ export function Header() {
     }
   }, [isSearchOpen]);
 
-  const isHomePage = pathname === "/";
-  const isWholesalePage = pathname === "/wholesale";
-  const useFloatingHeader = isHomePage || isWholesalePage;
+  // VARIANT LOGIC: Splitting into two clear variants
+  const isRectangleVariant = pathname.startsWith("/our-coffee");
+  
+  const rectangleClasses = "mt-0 w-full h-16 bg-white border-b border-slate-100 shadow-sm";
+  const roundedClasses = isScrolled 
+    ? "mt-4 w-[96%] max-w-[1400px] bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full h-16" 
+    : "mt-0 w-full h-16 bg-transparent border-transparent";
+
+  const activeWrapperClasses = isRectangleVariant ? rectangleClasses : roundedClasses;
+
+  const displayLinks = navLinks.length > 0 ? navLinks : [
+    { label: "OUR COFFEE", href: "/our-coffee" },
+    { label: "WHOLESALE", href: "/wholesale" },
+    { label: "SUBSCRIPTION", href: "/subscription" },
+    { label: "JOURNAL", href: "/journal" },
+    { label: "OUR STORY", href: "/our-story" },
+  ];
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-        {/* Visual Header Wrapper (The part that actually animates and has background) */}
-        <div 
-          className={`mx-auto pointer-events-auto transition-all duration-500 ease-in-out ${
-            useFloatingHeader
-              ? isScrolled 
-                ? "mt-4 w-[98%] max-w-7xl bg-white/70 backdrop-blur-md border border-white/20 shadow-xl rounded-full h-16" 
-                : "mt-0 w-full max-w-7xl bg-transparent border-transparent h-16"
-              : "mt-0 w-full h-16 bg-white border-b border-slate-100 shadow-sm"
-          }`}
-        >
-          <div className="max-w-6xl mx-auto flex items-center justify-between h-full px-12">
+        {/* Outer Visual Wrapper */}
+        <div className={`mx-auto pointer-events-auto transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${activeWrapperClasses}`}>
+          {/* Inner Content Container - Unified Spacing & Expansive Width */}
+          <div className="max-w-[1400px] mx-auto flex items-center justify-between h-full px-6 md:px-12 relative w-full">
+            
             {/* Left: Logo */}
             <div className={`flex-shrink-0 transition-opacity duration-300 ${isSearchOpen ? "opacity-0 md:opacity-100" : "opacity-100"}`}>
-              <Link href="/" className="text-lg font-black tracking-tighter text-slate-900 uppercase">
-                FERMION
+              <Link href="/" className="text-2xl font-black tracking-[-0.04em] text-slate-900 uppercase italic">
+                {brand?.name || "FERMION"}
               </Link>
             </div>
 
             {/* Center: Navigation Links */}
-            <nav className={`hidden items-center justify-center gap-12 lg:flex flex-1 transition-all duration-300 ${isSearchOpen ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
-              {NAV_LINKS.map((link) => {
+            <nav className={`hidden items-center justify-center gap-10 lg:flex flex-1 transition-all duration-500 ${isSearchOpen ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
+              {displayLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 return (
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`group relative text-[9px] font-bold tracking-[0.25em] transition-all duration-300 ${isActive ? "text-slate-900" : "text-slate-500 hover:text-fermion-blue"}`}
+                    className={`group relative text-[10px] font-black tracking-[0.3em] transition-all duration-300 uppercase ${isActive ? "text-slate-900" : "text-slate-400 hover:text-fermion-blue"}`}
                   >
                     {link.label}
-                    {/* Short Dash Active Indicator */}
-                    <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] bg-fermion-blue transition-all duration-300 ${isActive ? "w-3 opacity-100" : "w-0 opacity-0"}`} />
+                    <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] bg-fermion-blue transition-all duration-500 ${isActive ? "w-4 opacity-100" : "w-0 opacity-0"}`} />
                   </Link>
                 );
               })}
             </nav>
 
-            {/* Right: Action Icons & Search */}
-            <div className="flex items-center gap-5 flex-shrink-0 relative" ref={searchContainerRef}>
+            {/* Right: Action Icons & Search Container */}
+            <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
               
-              {/* Expanding Search Bar Container */}
+              {/* Expanding Search Bar */}
               <div className="relative">
-                <div className={`flex items-center transition-all duration-500 ease-out h-8 ${isSearchOpen ? "w-64 md:w-[340px] bg-slate-100 border border-slate-200/40 rounded-full px-3" : "w-8"}`}>
+                <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-slate-50 border border-slate-200/50 rounded-full px-5" : "w-10"}`}>
                   <button 
                     onClick={() => setIsSearchOpen(!isSearchOpen)}
-                    className="text-slate-800 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none"
+                    className="text-slate-900 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none"
                   >
-                    <Search size={17} strokeWidth={1.5} />
+                    <Search size={18} strokeWidth={2.5} />
                   </button>
                   
                   <input
                     ref={searchInputRef}
                     type="text"
-                    placeholder="Search..."
-                    className={`bg-transparent border-none outline-none text-[11px] font-medium w-full transition-all duration-300 ml-2 ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible width-0"}`}
+                    placeholder="Find your beans..."
+                    className={`bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-3 ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible width-0"}`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   
                   {isSearchOpen && (
                     <button 
-                      onClick={() => {
-                        if (searchQuery) setSearchQuery("");
-                        else setIsSearchOpen(false);
-                      }}
-                      className="text-slate-400 hover:text-slate-600 transition-colors ml-2"
+                      onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
+                      className="text-slate-300 hover:text-slate-900 transition-colors ml-2"
                     >
-                      <X size={14} />
+                      <X size={14} strokeWidth={3} />
                     </button>
                   )}
                 </div>
 
-                {/* Search Dropdown Panel - Glassmorphism */}
+                {/* Search Dropdown */}
                 {isSearchOpen && (
-                  <div className="absolute top-10 right-0 w-64 md:w-[340px] bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[1.5rem] mt-2 p-4 animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
+                  <div className="absolute top-14 right-0 w-64 md:w-[320px] bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[2rem] mt-2 p-6 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
                     {!searchQuery ? (
-                      <div>
-                        <h4 className="text-[9px] font-bold tracking-widest text-slate-400 uppercase mb-3 px-1">Featured Products</h4>
-                        <div className="space-y-2">
+                      <div className="space-y-4">
+                        <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Curated</h4>
+                        <div className="space-y-3">
                           {promotedProducts.map((product) => (
-                            <Link 
-                              key={product.id} 
-                              href={`/retail/${product.id}`}
-                              className="flex items-center gap-3 p-2 bg-white/40 backdrop-blur-sm border border-white/20 hover:bg-white/60 rounded-xl transition-all duration-300 group"
-                            >
-                              <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden border border-slate-200/50">
-                                <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <Link key={product.id} href={`/our-coffee/${product.id}`} className="flex items-center gap-4 p-2 hover:bg-slate-50 rounded-2xl transition-all duration-300 group">
+                              <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200/50">
+                                <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-[11px] font-bold text-slate-800 leading-none mb-1">{product.name}</p>
-                                <p className="text-[10px] font-semibold text-fermion-blue">{product.price}</p>
+                                <p className="text-[10px] font-black text-slate-900 leading-tight mb-0.5 uppercase">{product.name}</p>
+                                <p className="text-[9px] font-bold text-fermion-blue font-mono">{product.price}</p>
                               </div>
-                              <div className="p-1.5 bg-fermion-blue/10 text-fermion-blue rounded-lg group-hover:bg-fermion-blue group-hover:text-white transition-colors duration-300">
-                                <ShoppingCart size={12} strokeWidth={2} />
+                              <div className="p-2 bg-slate-900 text-white rounded-xl group-hover:bg-fermion-blue transition-colors duration-500 shadow-md">
+                                <ShoppingBag size={12} strokeWidth={2.5} />
                               </div>
                             </Link>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <div>
-                        <h4 className="text-[9px] font-bold tracking-widest text-slate-400 uppercase mb-3 px-1">Suggestions</h4>
-                        <div className="space-y-0.5">
+                      <div className="space-y-4">
+                        <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Suggestions</h4>
+                        <div className="space-y-1">
                           {mockSearchResults.map((result) => (
-                            <button 
-                              key={result.id}
-                              className="w-full flex items-center justify-between p-2 bg-white/0 hover:bg-white/40 rounded-lg text-left transition-all duration-300 group"
-                            >
+                            <button key={result.id} className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl text-left transition-all duration-300 group">
                               <div>
-                                <p className="text-[11px] font-bold text-slate-800 group-hover:text-fermion-blue">{result.name}</p>
-                                <p className="text-[8px] font-medium text-slate-400">{result.category}</p>
+                                <p className="text-[11px] font-black text-slate-900 group-hover:text-fermion-blue uppercase tracking-tighter">{result.name}</p>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{result.category}</p>
                               </div>
-                              <Search size={10} className="text-slate-300 group-hover:text-fermion-blue" />
+                              <Search size={12} className="text-slate-200 group-hover:text-fermion-blue" />
                             </button>
                           ))}
                         </div>
                       </div>
                     )}
-                    <div className="mt-3 pt-3 border-t border-slate-200/30">
-                      <Link 
-                          href={`/retail?search=${encodeURIComponent(searchQuery)}`}
-                          onClick={() => setIsSearchOpen(false)}
-                          className="block w-full text-center text-[9px] font-bold text-slate-400 hover:text-fermion-blue transition-colors duration-300 uppercase tracking-widest"
-                      >
-                          View All Results
+                    <div className="mt-5 pt-5 border-t border-slate-100 text-center">
+                      <Link href={`/our-coffee?search=${encodeURIComponent(searchQuery)}`} onClick={() => setIsSearchOpen(false)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors duration-300 uppercase tracking-[0.3em] italic">
+                          Explore All Results →
                       </Link>
                     </div>
                   </div>
                 )}
               </div>
 
-              <Link href="/account" className={`text-slate-800 hover:text-fermion-blue transition-all duration-300`}>
-                <User size={18} strokeWidth={1.5} />
+              <Link href="/auth" className="text-slate-900 hover:text-fermion-blue transition-all duration-300">
+                <User size={20} strokeWidth={2.5} />
               </Link>
 
-              <CartSheet />
+              <div className="relative">
+                <CartSheet />
+              </div>
 
-              {/* Mobile Menu Button */}
-              <button
-                type="button"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`transition-colors lg:hidden text-slate-900 ${isSearchOpen ? "hidden" : "block"}`}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden text-slate-900 ${isSearchOpen ? "hidden" : "block"}`}>
+                {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
               </button>
             </div>
           </div>
@@ -226,27 +228,22 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white border-b border-slate-200 px-6 py-8 lg:hidden animate-in slide-in-from-top-4 duration-300 pointer-events-auto">
-            <nav className="flex flex-col gap-5">
-              {NAV_LINKS.map((link) => {
+          <div className="absolute top-full left-0 right-0 bg-white border-b border-slate-100 px-10 py-12 lg:hidden animate-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-b-[3rem]">
+            <nav className="flex flex-col gap-8 text-center">
+              {displayLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className={`text-xs font-bold tracking-widest transition-colors ${isActive ? "text-fermion-blue" : "text-slate-900"}`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link key={link.label} href={link.href} className={`text-sm font-black tracking-[0.4em] transition-colors uppercase italic ${isActive ? "text-fermion-blue" : "text-slate-900"}`} onClick={() => setIsMenuOpen(false)}>
                     {link.label}
                   </Link>
                 );
               })}
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center gap-6">
-                <Link href="/account" className="flex items-center gap-2 text-xs font-bold" onClick={() => setIsMenuOpen(false)}>
-                    <User size={18} /> ACCOUNT
+              <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6">
+                <Link href="/auth" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                    <User size={22} strokeWidth={2.5} /> My Account
                 </Link>
-                <Link href="/cart" className="flex items-center gap-2 text-xs font-bold" onClick={() => setIsMenuOpen(false)}>
-                    <ShoppingCart size={18} /> CART (0)
+                <Link href="/cart" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                    <ShoppingBag size={22} strokeWidth={2.5} /> My Cart (0)
                 </Link>
               </div>
             </nav>
@@ -255,8 +252,8 @@ export function Header() {
       </header>
 
       {/* Announcement Bar (Sticky Bottom) */}
-      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-slate-900/90 backdrop-blur-md text-white text-[9px] font-bold tracking-[0.3em] py-3 text-center uppercase border-t border-white/10">
-        Free shipping for orders above Rp 500.000! (Indonesia only)
+      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-900 via-fermion-blue to-slate-900 backdrop-blur-md text-white text-[9px] font-black tracking-[0.5em] py-3.5 text-center uppercase border-t border-white/10">
+        {announcement || "Free shipping for orders above Rp 500.000! (Indonesia only)"}
       </div>
     </>
   );

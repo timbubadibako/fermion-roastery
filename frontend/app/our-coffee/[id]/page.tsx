@@ -1,99 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp, Coffee, Beaker, MapPin, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp, Coffee, Beaker, MapPin, ShoppingBag, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-// Expanded Mock Data for Recommendations
-const MOCK_COFFEE = [
-  {
-    id: 1,
-    name: "NOT ONLY INTENSE",
-    notes: "black cherry, red apple, tamarind, brown sugar, toffee",
-    origin: "Kendal x Sumedang",
-    process: "NATURAL YEAST",
-    altitude: "700 MDPL",
-    price: 145000,
-    roastProfile: "Espresso Roast",
-    character: { fermentation: 4, sweetness: 5, acidity: 3, body: 4 },
-    description: "A bold exploration of flavor, this unique blend combines the best of Kendal and Sumedang harvests. Processed with natural yeast fermentation to bring out deep fruity undertones.",
-    farm: "Produced by various smallholder farmers in the highlands of Central and West Java.",
-    image: "https://placehold.co/800x1000/7a9cff/ffffff?text=NOT+ONLY+INTENSE",
-  },
-  {
-    id: 2,
-    name: "SUMEDANG ANAEROB",
-    notes: "pineapple, passion fruit, cacao nibs, caramel",
-    origin: "Sumedang, West Java",
-    process: "ANAEROB NATURAL",
-    altitude: "1200 MDPL",
-    price: 165000,
-    roastProfile: "Filter Roast",
-    character: { fermentation: 5, sweetness: 4, acidity: 4, body: 3 },
-    description: "Experience the vibrant profile of Sumedang Anaerob. The anaerobic natural process accentuates the tropical notes and creamy mouthfeel.",
-    farm: "Sourced from the lush slopes of Mt. Tampomas, curated by local processing pioneers.",
-    image: "https://placehold.co/800x1000/ffd700/0f172a?text=SUMEDANG+ANAEROB",
-  },
-  {
-    id: 3,
-    name: "GAYO WASHED",
-    notes: "citrus, jasmine, black tea, honey",
-    origin: "Aceh Gayo",
-    process: "FULLY WASHED",
-    altitude: "1500 MDPL",
-    price: 115000,
-    roastProfile: "Filter Roast",
-    character: { fermentation: 1, sweetness: 4, acidity: 5, body: 2 },
-    description: "A clean and bright cup from the highlands of Aceh.",
-    farm: "Gayo Organic Cooperative.",
-    image: "https://placehold.co/800x1000/ff4b4b/ffffff?text=GAYO+WASHED",
-  },
-  {
-    id: 4,
-    name: "KENDAL HONEY",
-    notes: "orange, red grape, maple syrup",
-    origin: "Kendal",
-    process: "HONEY PROCESS",
-    altitude: "800 MDPL",
-    price: 135000,
-    roastProfile: "Espresso Roast",
-    character: { fermentation: 3, sweetness: 5, acidity: 2, body: 4 },
-    description: "Sweet and balanced honey process from Kendal.",
-    farm: "Kendal Farmers Group.",
-    image: "https://placehold.co/800x1000/0f172a/ffffff?text=KENDAL+HONEY",
-  },
-  {
-    id: 5,
-    name: "FERMION ESPRESSO",
-    notes: "dark chocolate, roasted almond, palm sugar",
-    origin: "House Blend",
-    process: "WASHED x NATURAL",
-    altitude: "VARIOUS",
-    price: 125000,
-    roastProfile: "Espresso Roast",
-    character: { fermentation: 2, sweetness: 4, acidity: 1, body: 5 },
-    description: "Our signature house blend for the perfect daily espresso.",
-    farm: "Regional Selection.",
-    image: "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+ESPRESSO",
-  },
-  {
-    id: 6,
-    name: "BLUEBERRY PIE",
-    notes: "blueberry, vanilla, cookies, floral",
-    origin: "West Java",
-    process: "SPECIAL PROCESS",
-    altitude: "1400 MDPL",
-    price: 185000,
-    roastProfile: "Filter Roast",
-    character: { fermentation: 5, sweetness: 5, acidity: 4, body: 3 },
-    description: "A dessert-like coffee experience with intense fruit notes.",
-    farm: "Frinsa Estate.",
-    image: "https://placehold.co/800x1000/ff4b4b/ffffff?text=BLUEBERRY+PIE",
-  },
-];
+interface CoffeeProduct {
+  id: number;
+  name: string;
+  notes: string;
+  origin: string;
+  process: string;
+  altitude: string;
+  price: number;
+  roastProfile: string;
+  character: { fermentation: number; sweetness: number; acidity: number; body: number };
+  description: string;
+  farm: string;
+  image: string;
+}
 
 function CharacterLevel({ label, level }: { label: string; level: number }) {
   return (
@@ -113,29 +40,70 @@ function CharacterLevel({ label, level }: { label: string; level: number }) {
 
 export default function ProductPage() {
   const { id } = useParams();
-  const product = MOCK_COFFEE.find(p => p.id === Number(id)) || MOCK_COFFEE[0];
+  const [product, setProduct] = useState<CoffeeProduct | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<CoffeeProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [quantity, setQuantity] = useState(1);
   const [weight, setWeight] = useState("250g");
   const [grind, setGrind] = useState("Whole Beans");
   const [activeTab, setActiveTab] = useState<string | null>("description");
 
+  useEffect(() => {
+    const fetchProductAndRelated = async () => {
+      try {
+        setLoading(true);
+        // Fetch current product
+        const res = await fetch(`http://localhost:3001/api/products/${id}`);
+        if (!res.ok) throw new Error('Product not found');
+        const data = await res.json();
+        setProduct(data);
+
+        // Fetch all products to filter related
+        const allRes = await fetch(`http://localhost:3001/api/products`);
+        if (allRes.ok) {
+          const allData = await allRes.json();
+          const filtered = allData
+            .filter((p: CoffeeProduct) => p.roastProfile === data.roastProfile && p.id !== data.id)
+            .slice(0, 4);
+          setRelatedProducts(filtered);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchProductAndRelated();
+  }, [id]);
+
   const toggleTab = (tab: string) => setActiveTab(activeTab === tab ? null : tab);
 
-  // Filter Related Products (Same Roast Profile, excluding current)
-  const relatedProducts = MOCK_COFFEE
-    .filter(p => p.roastProfile === product.roastProfile && p.id !== product.id)
-    .slice(0, 4);
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="w-12 h-12 text-fermion-blue animate-spin" />
+        <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Grinding details...</p>
+      </div>
+    </div>
+  );
+
+  if (error || !product) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+      <p className="text-red-500 font-bold uppercase tracking-widest text-xs">Error: {error || 'Product not found'}</p>
+    </div>
+  );
 
   return (
-    <div className="bg-[#FDFBF7] min-h-screen pt-32 pb-24 px-6 md:px-12 lg:px-20">
+    <div className="bg-[#FDFBF7] min-h-screen pt-32 pb-40 px-6 md:px-12 lg:px-20">
       <div className="max-w-6xl mx-auto px-12">
         {/* Back Link */}
-        <Link href="/retail" className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 transition-colors mb-12 uppercase text-left">
+        <Link href="/our-coffee" className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 transition-colors mb-12 uppercase text-left">
           <ArrowLeft size={14} /> Back to selection
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start mb-16 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start mb-32 relative">
           
           {/* Left Column: Image & Brewing Guide (STICKY) */}
           <div className="lg:sticky lg:top-32 space-y-12 h-fit">
@@ -323,20 +291,20 @@ export default function ProductPage() {
 
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (
-          <div className="space-y-12 border-t border-slate-100">
+          <div className="space-y-12 border-t border-slate-100 pt-20">
             <div className="flex items-end justify-between text-left">
               <div className="space-y-2">
                 <p className="text-[10px] font-black text-fermion-blue tracking-[0.3em] uppercase">Recommendations</p>
                 <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">You may also like</h2>
               </div>
-              <Link href="/retail" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">
+              <Link href="/our-coffee" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">
                 View All
               </Link>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
               {relatedProducts.map((p) => (
-                <Link key={p.id} href={`/retail/${p.id}`} className="group space-y-4">
+                <Link key={p.id} href={`/our-coffee/${p.id}`} className="group space-y-4">
                   <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
                     <Image src={p.image} alt={p.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute top-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-[8px] font-black tracking-widest text-slate-900 shadow-sm border border-slate-100">

@@ -3,23 +3,23 @@
 import Link from "next/link";
 
 const footerLinks = {
-  explore: [
-    { label: "Products", href: "#products" },
-    { label: "Technology", href: "#technology" },
-    { label: "Gallery", href: "#gallery" },
-    { label: "Accessories", href: "#accessories" },
+  shop: [
+    { label: "Our Coffee", href: "/our-coffee" },
+    { label: "Subscription", href: "/subscription" },
+    { label: "Wholesale", href: "/wholesale" },
+    { label: "Account", href: "/auth" },
   ],
   about: [
-    { label: "Our Story", href: "#" },
-    { label: "Team", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "Our Story", href: "/our-story" },
+    { label: "Journal", href: "/journal" },
+    { label: "Contact", href: "/contact" },
+    { label: "B2B Register", href: "/b2b/register" },
   ],
   service: [
     { label: "FAQ", href: "#" },
     { label: "Shipping", href: "#" },
     { label: "Returns", href: "#" },
-    { label: "Warranty", href: "#" },
+    { label: "Privacy", href: "#" },
   ],
 };
 
@@ -32,18 +32,18 @@ export function FooterSection() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 lg:col-span-2">
             <Link href="/" className="text-lg font-medium text-foreground">
-              EVASION
+              FERMION
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Premium smart bottles engineered for adventure. GPS tracking, LED flashlight, and self-heating technology.
+              Precision roasted coffee engineered with scientific rigor and artisan passion. Direct sourced from Java's finest farms.
             </p>
           </div>
 
           {/* Explore */}
           <div>
-            <h4 className="mb-4 text-sm font-medium text-foreground">Explore</h4>
+            <h4 className="mb-4 text-sm font-medium text-foreground">Shop</h4>
             <ul className="space-y-3">
-              {footerLinks.explore.map((link) => (
+              {footerLinks.shop.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -96,7 +96,7 @@ export function FooterSection() {
       <div className="border-t border-border px-6 py-6 md:px-12 lg:px-20">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-xs text-muted-foreground">
-            2026 EVASION. All rights reserved.
+            2026 Fermion Roastery. All rights reserved.
           </p>
 
           
