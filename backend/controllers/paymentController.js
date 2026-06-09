@@ -1,6 +1,8 @@
 import { Xendit } from 'xendit-node';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import { query } from '../lib/db.js';
+import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 
 dotenv.config();
 
@@ -9,11 +11,54 @@ const xendit = new Xendit({
 });
 
 export const createInvoice = async (req, res) => {
-  const { amount, items, customerDetails } = req.body;
-  
+  const { amount, items, customerDetails, metadata } = req.body;
+  const shipping = metadata?.shipping || {};
+  const profileId = metadata?.profileId || null;
+  const shippingFee = metadata?.shippingFee || 0;
+
   try {
+    const referenceId = `invoice-${uuidv4()}`;
+
+    // 1. Save to Database (UNPAID)
+    await query('BEGIN');
+
+    // Insert into orders
+    const orderResult = await query(
+      `INSERT INTO orders (
+        profile_id, xendit_invoice_id, status, total_amount, shipping_fee, 
+        customer_name, customer_email, customer_phone, 
+        shipping_address, shipping_city, shipping_notes
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+      [
+        profileId, referenceId, 'UNPAID', amount, shippingFee,
+        customerDetails?.name || 'Guest', 
+        customerDetails?.email || 'guest@example.com', 
+        customerDetails?.phone || '-', 
+        shipping.address || 'Pickup', 
+        shipping.city || 'Cirebon', 
+        shipping.notes || ''
+      ]
+    );
+    const orderId = orderResult.rows[0].id;
+
+    // Insert into order_items
+    for (const item of items) {
+      const nameParts = item.name.match(/(.*)\s\((.*?)\)/);
+      const cleanName = nameParts ? nameParts[1].trim() : item.name;
+      const weight = nameParts ? nameParts[2] : '250g';
+
+      await query(
+        `INSERT INTO order_items (order_id, product_name, variant_weight, variant_grind, quantity, unit_price)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [orderId, cleanName, weight, 'Whole Bean', item.quantity, item.price]
+      );
+    }
+
+    await query('COMMIT');
+
+    // 2. Generate Xendit Invoice
     const data = {
-      externalId: `invoice-${uuidv4()}`,
+      externalId: referenceId,
       amount: amount,
       payerEmail: customerDetails?.email || 'guest@example.com',
       description: 'Fermion Roastery Coffee Order',
@@ -27,12 +72,14 @@ export const createInvoice = async (req, res) => {
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
-    
+
     res.status(200).json({ 
       invoiceUrl: response.invoiceUrl,
-      externalId: response.externalId
+      externalId: response.externalId,
+      orderId: orderId
     });
   } catch (error) {
+    await query('ROLLBACK');
     console.error('Xendit Error:', error);
     res.status(500).json({ message: "Failed to create payment invoice", error: error.message });
   }
@@ -40,7 +87,7 @@ export const createInvoice = async (req, res) => {
 
 export const createSubscription = async (req, res) => {
   const { amount, planName, customerDetails, interval, intervalCount } = req.body;
-  
+
   try {
     const referenceId = `sub-${uuidv4()}`;
     const data = {
@@ -53,7 +100,7 @@ export const createSubscription = async (req, res) => {
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
-    
+
     res.status(200).json({ 
       invoiceUrl: response.invoiceUrl,
       subscriptionId: referenceId,
@@ -65,7 +112,38 @@ export const createSubscription = async (req, res) => {
   }
 };
 
-export const handleNotification = (req, res) => {
+export const handleNotification = async (req, res) => {
   console.log("Xendit Payment Notification Received:", req.body);
-  res.status(200).send("OK");
+
+  const { external_id, status } = req.body;
+
+  try {
+    // If payment is completed/settled in Xendit, update our order status to PAID
+    if (status === 'PAID' || status === 'SETTLED') {
+      const result = await query(
+        "UPDATE orders SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1 RETURNING id",
+        [external_id]
+      );
+
+      if (result.rows.length > 0) {
+        console.log(`✅ Order ${result.rows[0].id} status updated to PAID via Webhook.`);
+        // Generate PDF Invoice automatically
+        await generateInvoicePDF(result.rows[0].id);
+      } else {
+        console.log(`⚠️ Webhook received for unknown invoice: ${external_id}`);
+      }
+    } else if (status === 'EXPIRED') {
+      await query(
+        "UPDATE orders SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1",
+        [external_id]
+      );
+      console.log(`❌ Order with invoice ${external_id} marked as CANCELLED via Webhook.`);
+    }
+
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error('Webhook Processing Error:', error);
+    res.status(500).send("Internal Server Error");
+  }
 };
+
