@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
     if (!profileId) {
       // Redirect to login if no profile ID cookie found
-      return NextResponse.redirect(new URL('/account/register', request.url));
+      return NextResponse.redirect(new URL('/auth', request.url));
     }
 
     try {

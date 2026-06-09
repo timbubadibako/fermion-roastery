@@ -29,6 +29,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
     }
 
     setLoading(true);
+    console.log(`🔑 Attempting ${mode}...`, { email: formData.email });
     
     try {
       const endpoint = mode === "register" ? '/api/auth/register' : '/api/auth/login';
@@ -43,6 +44,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
       });
 
       const data = await response.json();
+      console.log(`📡 Backend Response:`, data);
 
       if (response.ok) {
         // Set security cookie for middleware (expires in 24h)
@@ -52,9 +54,9 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
       } else {
         toast.error(data.message || `Failed to ${mode}`);
       }
-    } catch (error) {
-      console.error("Auth error:", error);
-      toast.error("Network error. Please try again later.");
+    } catch (error: any) {
+      console.error("❌ Auth error:", error);
+      toast.error(`Network error: ${error.message || 'Please try again later.'}`);
     } finally {
       setLoading(false);
     }
@@ -120,10 +122,16 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
           </div>
 
           <Button 
+            type="submit"
             disabled={loading}
             className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic mt-4"
           >
-            {loading ? <Loader2 className="animate-spin" /> : (mode === "login" ? "Log In" : "Register")}
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="animate-spin" size={16} />
+                <span>Processing...</span>
+              </div>
+            ) : (mode === "login" ? "Log In" : "Register")}
           </Button>
         </motion.form>
       </AnimatePresence>
@@ -131,8 +139,9 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
         {mode === "login" ? "Don't have an account? " : "Already have an account? "}
         <button 
+          type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          className="text-fermion-blue hover:text-slate-900 transition-colors ml-1"
+          className="text-fermion-blue hover:text-slate-900 transition-colors ml-1 underline underline-offset-4"
         >
           {mode === "login" ? "Register" : "Log In"}
         </button>

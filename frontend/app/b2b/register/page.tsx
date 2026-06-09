@@ -6,7 +6,6 @@ import Link from "next/link";
 import { 
   Search, 
   MapPin, 
-  Building2, 
   CheckCircle2, 
   ArrowRight, 
   Loader2, 
@@ -21,12 +20,8 @@ import { AuthForm } from "@/components/auth-form";
 
 export default function B2BRegisterPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1); // 1: Account, 2: Cafe Search, 3: Volume, 4: Success
+  const [step, setStep] = useState(1); // 1: Account, 2: Cafe Details, 3: Volume, 4: Success
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [selectedShop, setSelectedShop] = useState<any>(null);
-  const [volume, setVolume] = useState("");
   
   // Store the authenticated user profile
   const [profile, setProfile] = useState<any>(null);
@@ -36,30 +31,15 @@ export default function B2BRegisterPage() {
     cafeAddress: "",
   });
 
+  const [volume, setVolume] = useState("");
+
   // Step 1: Account Logic (Handled by AuthForm)
   const handleAuthSuccess = (userData: any) => {
     setProfile(userData);
     setStep(2);
   };
 
-  // Step 2: Cafe Search Logic
-  const handleSearch = () => {
-    if (!searchQuery) return;
-    setIsSearching(true);
-    // Simulate API call to Google Places / Scraping
-    setTimeout(() => {
-      setIsSearching(false);
-      // If no results, user can input manually
-    }, 1000);
-  };
-
-  const handleSelectShop = (shop: any) => {
-    setSelectedShop(shop);
-    setFormData({ cafeName: shop.name, cafeAddress: shop.address });
-    setStep(3);
-  };
-
-  const handleManualEntry = () => {
+  const handleNextStep = () => {
     setStep(3);
   };
 
@@ -127,7 +107,7 @@ export default function B2BRegisterPage() {
             </motion.div>
           )}
 
-          {/* STEP 2: CAFE SEARCH */}
+          {/* STEP 2: CAFE DETAILS */}
           {step === 2 && (
             <motion.div 
               key="step2"
@@ -137,49 +117,66 @@ export default function B2BRegisterPage() {
               className="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-xl space-y-8"
             >
               <div className="text-left space-y-2">
-                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Locate Your Cafe</h2>
-                <p className="text-sm text-slate-400 font-medium">Search on maps or enter manually.</p>
+                <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">← Back to account</button>
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Cafe Details</h2>
+                <p className="text-sm text-slate-400 font-medium">Please enter your business information below.</p>
                 {profile && <p className="text-xs text-fermion-blue mt-2">Logged in as {profile.email}</p>}
               </div>
 
               <div className="space-y-6">
-                <div className="relative">
+                {/* Search Section - DISABLED / COMING SOON */}
+                <div className="relative group opacity-50 cursor-not-allowed">
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px] rounded-2xl">
+                    <span className="bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-full shadow-lg">
+                      Discovery Coming Soon
+                    </span>
+                  </div>
                   <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <Input 
+                    disabled
                     placeholder="Search Cafe Name..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="h-16 pl-14 bg-slate-50 border-none rounded-2xl text-sm font-bold uppercase tracking-widest"
                   />
                   <Button 
-                    onClick={handleSearch}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-900 h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-fermion-blue transition-all"
+                    disabled
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-slate-400 h-12 px-6 rounded-xl text-[10px] font-black tracking-widest uppercase"
                   >
-                    {isSearching ? <Loader2 className="animate-spin" /> : "SEARCH"}
+                    SEARCH
                   </Button>
                 </div>
 
-                <div className="space-y-4">
-                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest text-center">Or input manually</p>
+                <div className="space-y-6 pt-4">
+                  <div className="h-px bg-slate-100 w-full relative">
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                      Manual Entry
+                    </span>
+                  </div>
+                  
                   <div className="space-y-4">
-                    <Input 
-                      placeholder="Cafe Name"
-                      className="h-14 bg-slate-50 border-none rounded-xl px-6 font-bold"
-                      value={formData.cafeName}
-                      onChange={(e) => setFormData({...formData, cafeName: e.target.value})}
-                    />
-                    <Input 
-                      placeholder="Full Address"
-                      className="h-14 bg-slate-50 border-none rounded-xl px-6 font-bold"
-                      value={formData.cafeAddress}
-                      onChange={(e) => setFormData({...formData, cafeAddress: e.target.value})}
-                    />
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cafe / Business Name</label>
+                      <Input 
+                        placeholder="Enter your cafe name"
+                        className="h-16 bg-slate-50 border-none rounded-2xl px-6 font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-blue"
+                        value={formData.cafeName}
+                        onChange={(e) => setFormData({...formData, cafeName: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
+                      <Input 
+                        placeholder="Street, City, Province"
+                        className="h-16 bg-slate-50 border-none rounded-2xl px-6 font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-blue"
+                        value={formData.cafeAddress}
+                        onChange={(e) => setFormData({...formData, cafeAddress: e.target.value})}
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <Button 
                   disabled={!formData.cafeName || !formData.cafeAddress}
-                  onClick={handleManualEntry}
+                  onClick={handleNextStep}
                   className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic"
                 >
                   Next Step <ArrowRight className="ml-2" />
