@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input";
 
 import { AuthForm } from "@/components/auth-form";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store";
 
 export default function AuthPage() {
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleAuthSuccess = (profile: any) => {
+    setUser(profile); // Persist user to store
+    
     // If user is admin, take them to dashboard
     if (profile.role === 'ADMIN') {
       router.push("/admin/dashboard");

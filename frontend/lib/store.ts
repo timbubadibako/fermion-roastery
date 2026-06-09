@@ -7,12 +7,16 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
-  weight: string; // e.g., '250g', '500g', '1kg'
-  grind: string;  // e.g., 'Whole Bean', 'Espresso', 'Filter'
+  weight: string;
+  grind: string;
 }
 
 interface CartStore {
   items: CartItem[];
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  openCart: () => void;
+  closeCart: () => void;
   addItem: (item: CartItem) => void;
   removeItem: (id: string | number) => void;
   updateQuantity: (id: string | number, quantity: number) => void;
@@ -24,7 +28,12 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      isOpen: false,
       
+      setIsOpen: (isOpen) => set({ isOpen }),
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
+
       addItem: (newItem) => {
         const currentItems = get().items;
         const existingItemIndex = currentItems.findIndex(
@@ -34,9 +43,9 @@ export const useCartStore = create<CartStore>()(
         if (existingItemIndex > -1) {
           const updatedItems = [...currentItems];
           updatedItems[existingItemIndex].quantity += newItem.quantity;
-          set({ items: updatedItems });
+          set({ items: updatedItems, isOpen: true }); // Auto-open cart
         } else {
-          set({ items: [...currentItems, newItem] });
+          set({ items: [...currentItems, newItem], isOpen: true }); // Auto-open cart
         }
       },
 
@@ -59,7 +68,33 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'fermion-cart-storage', // Key for LocalStorage
+      name: 'fermion-cart-storage',
+      // Don't persist isOpen state
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );
+
+// --- Auth Store for Persistent Sessions ---
+interface AuthStore {
+  user: any | null;
+  setUser: (user: any) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+      logout: () => {
+        document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        set({ user: null });
+      },
+    }),
+    {
+      name: 'fermion-auth-storage',
+    }
+  )
+);
+
