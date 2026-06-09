@@ -102,8 +102,43 @@ CREATE TABLE IF NOT EXISTS evaluation_logs (
 );
 
 
+-- 7. Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    profile_id UUID REFERENCES profiles(id) ON DELETE SET NULL, -- Nullable for guest checkout
+    xendit_invoice_id TEXT,
+    biteship_order_id TEXT,
+    status TEXT DEFAULT 'UNPAID', -- UNPAID, PAID, ROASTING, SHIPPED, DELIVERED, CANCELLED
+    total_amount NUMERIC(12, 2) NOT NULL,
+    shipping_fee NUMERIC(12, 2) DEFAULT 0,
+    shipping_courier TEXT,
+    shipping_awb TEXT, -- Resi number
+    customer_name TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
+    customer_phone TEXT NOT NULL,
+    shipping_address TEXT NOT NULL,
+    shipping_city TEXT NOT NULL,
+    shipping_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Order Items Table
+CREATE TABLE IF NOT EXISTS order_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+    product_name TEXT NOT NULL,
+    variant_weight TEXT NOT NULL,
+    variant_grind TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    unit_price NUMERIC(12, 2) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
+
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
@@ -123,5 +158,10 @@ CREATE TRIGGER update_products_updated_at
 
 CREATE TRIGGER update_b2b_partners_updated_at
     BEFORE UPDATE ON b2b_partners
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_orders_updated_at
+    BEFORE UPDATE ON orders
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();

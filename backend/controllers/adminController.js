@@ -60,37 +60,83 @@ export const updatePartnerStatus = async (req, res) => {
   }
 };
 
-// 3. Get Admin Analytics Stats
-export const getAdminStats = async (req, res) => {
+// 4. Get All Orders
+export const getOrders = async (req, res) => {
   try {
-    // In a real app, we would query the database for real-time aggregation
-    // SELECT SUM(total_price) FROM orders ... etc.
+    const result = await query(`
+      SELECT o.*, 
+             COALESCE(
+               json_agg(json_build_object(
+                 'id', oi.id, 
+                 'name', oi.product_name, 
+                 'quantity', oi.quantity, 
+                 'price', oi.unit_price,
+                 'weight', oi.variant_weight,
+                 'grind', oi.variant_grind
+               )) FILTER (WHERE oi.id IS NOT NULL), '[]'
+             ) as items
+      FROM orders o
+      LEFT JOIN order_items oi ON o.id = oi.order_id
+      GROUP BY o.id
+      ORDER BY o.created_at DESC
+    `);
     
-    // For now, we return comprehensive mock data matching the design spec
-    const stats = {
-      revenue: 45250000,
-      volume: 124,
-      pendingB2B: 3,
-      activeSubs: 18,
-      revenueTrends: [
-        { date: '01 Jun', amount: 1200000 },
-        { date: '02 Jun', amount: 2100000 },
-        { date: '03 Jun', amount: 1800000 },
-        { date: '04 Jun', amount: 3400000 },
-        { date: '05 Jun', amount: 2900000 },
-        { date: '06 Jun', amount: 4100000 },
-        { date: '07 Jun', amount: 3800000 },
-      ],
-      volumeTrends: [
-        { name: 'Espresso', kg: 45 },
-        { name: 'Filter', kg: 62 },
-        { name: 'Micro-lots', kg: 17 },
-      ]
-    };
-
-    res.status(200).json(stats);
+    res.status(200).json(result.rows);
   } catch (error) {
-    console.error('Error fetching admin stats:', error);
-    res.status(500).json({ message: "Failed to fetch stats", error: error.message });
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: "Failed to fetch orders", error: error.message });
   }
 };
+
+// 5. Update Order Status (Roasting/Shipping)
+export const updateOrder = async (req, res) => {
+  const { id } = req.params;
+  const { status, shipping_awb, shipping_courier } = req.body;
+
+  try {
+    const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    // Build dynamic update query based on provided fields
+    let updateFields = [];
+    let values = [];
+    let paramCount = 1;
+
+    if (status) {
+      updateFields.push(`status = $${paramCount++}`);
+      values.push(status);
+    }
+    if (shipping_awb !== undefined) {
+      updateFields.push(`shipping_awb = $${paramCount++}`);
+      values.push(shipping_awb);
+    }
+    if (shipping_courier !== undefined) {
+      updateFields.push(`shipping_courier = $${paramCount++}`);
+      values.push(shipping_courier);
+    }
+
+    if (updateFields.length === 0) return res.status(400).json({ message: "No fields to update" });
+
+    values.push(id); // for the WHERE clause
+    const updateQuery = `
+      UPDATE orders 
+      SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = $${paramCount} 
+      RETURNING *
+    `;
+    
+    const result = await query(updateQuery, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order updated successfully", order: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating order:', error);
+    res.status(500).json({ message: "Failed to update order", error: error.message });
+  }
+};
+
