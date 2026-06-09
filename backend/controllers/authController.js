@@ -82,6 +82,26 @@ export const applyB2B = async (req, res) => {
   }
 };
 
+export const verifyAdmin = async (req, res) => {
+  const { id } = req.query;
+  
+  if (!id) return res.status(400).json({ isAdmin: false, message: "Profile ID required" });
+
+  try {
+    const result = await query('SELECT role FROM profiles WHERE id = $1', [id]);
+    const profile = result.rows[0];
+
+    if (profile && profile.role === 'ADMIN') {
+      return res.status(200).json({ isAdmin: true });
+    }
+
+    res.status(200).json({ isAdmin: false });
+  } catch (error) {
+    console.error('Verify Admin Error:', error);
+    res.status(500).json({ isAdmin: false, error: error.message });
+  }
+};
+
 export const getProfile = (req, res) => {
   res.status(200).json({ 
     id: "usr_123", 
