@@ -87,6 +87,12 @@ export const verifyAdmin = async (req, res) => {
   
   if (!id) return res.status(400).json({ isAdmin: false, message: "Profile ID required" });
 
+  // Basic UUID format check to avoid Postgres errors
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    return res.status(200).json({ isAdmin: false, message: "Invalid ID format" });
+  }
+
   try {
     const result = await query('SELECT role FROM profiles WHERE id = $1', [id]);
     const profile = result.rows[0];
@@ -98,7 +104,7 @@ export const verifyAdmin = async (req, res) => {
     res.status(200).json({ isAdmin: false });
   } catch (error) {
     console.error('Verify Admin Error:', error);
-    res.status(500).json({ isAdmin: false, error: error.message });
+    res.status(200).json({ isAdmin: false, error: "Database error" }); // Return false instead of 500 for middleware
   }
 };
 
