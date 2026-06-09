@@ -1,11 +1,12 @@
 import express from 'express';
-import { getProfile, register, login, applyB2B } from '../controllers/authController.js';
+import { getProfile, register, login, applyB2B, verifyAdmin } from '../controllers/authController.js';
 
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/apply-b2b', applyB2B);
+router.get('/verify-admin', verifyAdmin);
 router.get('/profile', getProfile);
 
 export default router;
