@@ -27,35 +27,39 @@ export const getB2bPartners = async (req, res) => {
 };
 
 // 2. Update Partner Status & Assign Tier
-export const updatePartnerStatus = async (req, res) => {
-  const { id } = req.params;
-  const { status, tier_name } = req.body;
+... (existing code) ...
 
+// 3. Get Admin Analytics Stats
+export const getAdminStats = async (req, res) => {
   try {
-    // Validate status
-    if (!['pending', 'approved', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: "Invalid status value" });
-    }
-
-    const updateQuery = `
-      UPDATE b2b_partners 
-      SET status = $1, tier_name = $2 
-      WHERE id = $3 
-      RETURNING *
-    `;
+    // In a real app, we would query the database for real-time aggregation
+    // SELECT SUM(total_price) FROM orders ... etc.
     
-    const result = await query(updateQuery, [status, tier_name || null, id]);
+    // For now, we return comprehensive mock data matching the design spec
+    const stats = {
+      revenue: 45250000,
+      volume: 124,
+      pendingB2B: 3,
+      activeSubs: 18,
+      revenueTrends: [
+        { date: '01 Jun', amount: 1200000 },
+        { date: '02 Jun', amount: 2100000 },
+        { date: '03 Jun', amount: 1800000 },
+        { date: '04 Jun', amount: 3400000 },
+        { date: '05 Jun', amount: 2900000 },
+        { date: '06 Jun', amount: 4100000 },
+        { date: '07 Jun', amount: 3800000 },
+      ],
+      volumeTrends: [
+        { name: 'Espresso', kg: 45 },
+        { name: 'Filter', kg: 62 },
+        { name: 'Micro-lots', kg: 17 },
+      ]
+    };
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Partner application not found" });
-    }
-
-    res.status(200).json({ 
-      message: `Partner successfully ${status}`, 
-      partner: result.rows[0] 
-    });
+    res.status(200).json(stats);
   } catch (error) {
-    console.error('Error updating partner status:', error);
-    res.status(500).json({ message: "Failed to update partner", error: error.message });
+    console.error('Error fetching admin stats:', error);
+    res.status(500).json({ message: "Failed to fetch stats", error: error.message });
   }
 };
