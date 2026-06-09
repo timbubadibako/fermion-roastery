@@ -17,15 +17,14 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthForm } from "@/components/auth-form";
+import { useAuthStore } from "@/lib/store";
 
 export default function B2BRegisterPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1); // 1: Account, 2: Cafe Details, 3: Volume, 4: Success
+  const { user, setUser } = useAuthStore();
+  const [step, setStep] = useState(user ? 2 : 1); // 1: Account, 2: Cafe Details, 3: Volume, 4: Success
   const [loading, setLoading] = useState(false);
   
-  // Store the authenticated user profile
-  const [profile, setProfile] = useState<any>(null);
-
   const [formData, setFormData] = useState({
     cafeName: "",
     cafeAddress: "",
@@ -35,7 +34,7 @@ export default function B2BRegisterPage() {
 
   // Step 1: Account Logic (Handled by AuthForm)
   const handleAuthSuccess = (userData: any) => {
-    setProfile(userData);
+    setUser(userData);
     setStep(2);
   };
 
@@ -45,7 +44,7 @@ export default function B2BRegisterPage() {
 
   // Step 3: Submission
   const handleSubmitApplication = async () => {
-    if (!profile) {
+    if (!user) {
       toast.error("User profile not found. Please log in again.");
       return;
     }
@@ -58,7 +57,7 @@ export default function B2BRegisterPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          profileId: profile.id,
+          profileId: user.id,
           cafeName: formData.cafeName,
           cafeAddress: formData.cafeAddress,
           volume: volume
@@ -120,7 +119,7 @@ export default function B2BRegisterPage() {
                 <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">← Back to account</button>
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900">Cafe Details</h2>
                 <p className="text-sm text-slate-400 font-medium">Please enter your business information below.</p>
-                {profile && <p className="text-xs text-fermion-blue mt-2">Logged in as {profile.email}</p>}
+                {user && <p className="text-xs text-fermion-blue mt-2">Logged in as {user.email}</p>}
               </div>
 
               <div className="space-y-6">

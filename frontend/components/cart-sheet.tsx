@@ -19,46 +19,19 @@ import { useCartStore } from "@/lib/store";
 
 export function CartSheet() {
   const [loading, setLoading] = useState(false);
-  const { items, updateQuantity, removeItem, getTotal } = useCartStore();
+  const { items, isOpen, setIsOpen, updateQuantity, removeItem, getTotal } = useCartStore();
 
   const subtotal = getTotal();
 
-  const handleCheckout = async () => {
-    if (items.length === 0) return;
-    setLoading(true);
-    try {
-      const checkoutItems = items.map(item => ({
-        name: `${item.name} (${item.weight})`,
-        quantity: item.quantity,
-        price: item.price
-      }));
-
-      const customerDetails = { email: "customer@example.com" };
-
-      const res = await fetch("http://localhost:3001/api/payments/invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: subtotal, items: checkoutItems, customerDetails }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.invoiceUrl) {
-        window.location.href = data.invoiceUrl;
-      } else {
-        toast.error(data.message || "Failed to generate checkout invoice");
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Network error during checkout.");
-      setLoading(false);
-    }
+  const handleCheckout = () => {
+    setIsOpen(false);
+    window.location.href = "/cart";
   };
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
+
         <button className="text-slate-800 hover:text-fermion-blue transition-all duration-300 relative group">
           <ShoppingCart size={18} strokeWidth={1.5} />
           {items.length > 0 && (
@@ -150,13 +123,15 @@ export function CartSheet() {
                   <Button variant="outline" className="w-full h-14 rounded-3xl font-bold border-slate-200 uppercase text-[10px] tracking-widest">View Full Cart</Button>
                 </Link>
               </SheetClose>
-              <Button 
-                onClick={handleCheckout}
-                disabled={loading}
-                className="flex-[1.5] bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98] uppercase text-[10px] tracking-widest"
-              >
-                {loading ? <Loader2 className="animate-spin" size={16} /> : "Checkout"}
-              </Button>
+              <SheetClose asChild>
+                <Link href="/cart" className="flex-[1.5]">
+                  <Button 
+                    className="w-full bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98] uppercase text-[10px] tracking-widest"
+                  >
+                    Checkout
+                  </Button>
+                </Link>
+              </SheetClose>
             </div>
           </SheetFooter>
         )}

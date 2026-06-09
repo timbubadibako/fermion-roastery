@@ -14,31 +14,82 @@ import {
   Phone, 
   User, 
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  MapPinIcon,
+  Navigation
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useCartStore } from "@/lib/store";
+import { useCartStore, useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCartStore();
+  const { user } = useAuthStore();
   const [step, setStep] = useState(1); // 1: Cart, 2: Shipping, 3: Processing
   const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
   
   const [shippingData, setShippingData] = useState({
-    name: "",
+    name: user?.full_name || "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
+    postal_code: "",
     notes: ""
   });
 
+  const mockCouriers = [
+    { id: 'jne_reg', name: 'JNE Reguler', price: 25000, est: '2-3 Hari' },
+    { id: 'sicepat_best', name: 'SiCepat BEST', price: 35000, est: '1 Hari' },
+    { id: 'paxel_same', name: 'Paxel Same Day', price: 45000, est: 'Hari Ini' },
+  ];
+  
+  const [selectedCourier, setSelectedCourier] = useState(mockCouriers[0]);
+
   const subtotal = getTotal();
-  const shippingFee = subtotal > 500000 || subtotal === 0 ? 0 : 35000;
+  const shippingFee = subtotal > 500000 || subtotal === 0 ? 0 : selectedCourier.price;
   const total = subtotal + shippingFee;
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser.");
+      return;
+    }
+    
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          // Reverse geocoding using Nominatim (OpenStreetMap)
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+          const data = await res.json();
+          
+          if (data && data.address) {
+            setShippingData(prev => ({
+              ...prev,
+              address: data.display_name || prev.address,
+              city: data.address.city || data.address.town || data.address.county || prev.city,
+              postal_code: data.address.postcode || prev.postal_code
+            }));
+            toast.success("Location pinned successfully!");
+          }
+        } catch (error) {
+          toast.error("Failed to fetch address from location.");
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        toast.error("Unable to retrieve your location.");
+        setLocationLoading(false);
+      }
+    );
+  };
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -50,7 +101,7 @@ export default function CartPage() {
       }));
 
       const customerDetails = { 
-        email: "retail-customer@example.com",
+        email: shippingData.email,
         name: shippingData.name,
         phone: shippingData.phone
       };
@@ -62,7 +113,11 @@ export default function CartPage() {
           amount: total, 
           items: checkoutItems, 
           customerDetails,
-          metadata: { shipping: shippingData }
+          metadata: { 
+            shipping: shippingData,
+            profileId: user?.id || null,
+            shippingFee: shippingFee
+          }
         }),
       });
 
@@ -178,22 +233,63 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <Input type="email" placeholder="name@example.com" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.email} onChange={(e) => setShippingData({...shippingData, email: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp / Phone</label>
                       <div className="relative">
                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                         <Input placeholder="+62 ..." className="h-14 pl-12 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.phone} onChange={(e) => setShippingData({...shippingData, phone: e.target.value})} />
                       </div>
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Delivery Address</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City / Regency</label>
+                      <Input placeholder="e.g. Jakarta Selatan" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.city} onChange={(e) => setShippingData({...shippingData, city: e.target.value})} />
+                    </div>
+                    
+                    <div className="md:col-span-2 space-y-4">
+                      <div className="flex items-center justify-between">
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Delivery Address</label>
+                         <button 
+                          onClick={handleGetLocation} 
+                          disabled={locationLoading}
+                          className="flex items-center gap-1.5 text-[9px] font-bold text-fermion-blue hover:text-slate-900 transition-colors uppercase tracking-widest bg-fermion-blue/10 px-3 py-1.5 rounded-full"
+                         >
+                           {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <Navigation size={12} />}
+                           Use Current Location
+                         </button>
+                      </div>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                         <Input placeholder="Street, Building, House No." className="h-14 pl-12 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.address} onChange={(e) => setShippingData({...shippingData, address: e.target.value})} />
                       </div>
                     </div>
+
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City / Regency</label>
-                      <Input placeholder="e.g. Jakarta Selatan" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.city} onChange={(e) => setShippingData({...shippingData, city: e.target.value})} />
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Postal Code</label>
+                      <Input placeholder="12345" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold font-mono" value={shippingData.postal_code} onChange={(e) => setShippingData({...shippingData, postal_code: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Notes / Patokan</label>
+                      <Input placeholder="Pagar hitam, sebelah warung..." className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.notes} onChange={(e) => setShippingData({...shippingData, notes: e.target.value})} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 pt-6 border-t border-slate-50">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Courier</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {mockCouriers.map(courier => (
+                        <button 
+                          key={courier.id}
+                          onClick={() => setSelectedCourier(courier)}
+                          className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedCourier.id === courier.id ? 'border-fermion-blue bg-fermion-blue/5' : 'border-slate-100 hover:border-slate-300'}`}
+                        >
+                          <p className="text-xs font-black uppercase tracking-widest text-slate-900">{courier.name}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Est: {courier.est}</p>
+                          <p className="text-sm font-mono font-bold text-fermion-blue mt-2">Rp {courier.price.toLocaleString('id-ID')}</p>
+                        </button>
+                      ))}
                     </div>
                   </div>
                   
@@ -229,7 +325,7 @@ export default function CartPage() {
             ) : (
               <Button 
                 onClick={handleCheckout} 
-                disabled={loading || !shippingData.name || !shippingData.address || !shippingData.phone}
+                disabled={loading || !shippingData.name || !shippingData.email || !shippingData.address || !shippingData.phone}
                 className="w-full h-16 bg-fermion-blue text-white font-black tracking-[0.2em] rounded-2xl hover:bg-slate-900 transition-all duration-500 shadow-xl uppercase italic group"
               >
                 {loading ? <Loader2 className="animate-spin" /> : <>Pay via Xendit <CheckCircle2 size={16} className="ml-2" /></>}
