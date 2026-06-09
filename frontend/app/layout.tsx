@@ -1,6 +1,7 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { Fraunces, Manrope } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Analytics } from '@vercel/analytics/next'
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
@@ -9,6 +10,11 @@ import './globals.css'
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: '--font-display' });
 const manrope = Manrope({ subsets: ["latin"], variable: '--font-sans' });
+
+const cloude = localFont({
+  src: './fonts/cloude.otf',
+  variable: '--font-cloude',
+});
 
 export const metadata: Metadata = {
   title: 'Fermion Roastery',
@@ -40,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${manrope.variable} font-sans antialiased`}>
+      <body className={`${fraunces.variable} ${manrope.variable} ${cloude.variable} font-sans antialiased`}>
         <LoadingCover />
         <Header />
         {children}
