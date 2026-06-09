@@ -37,6 +37,7 @@
 @theme inline {
   --font-sans: 'Manrope', 'Manrope Fallback', system-ui, sans-serif;
   --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-cloude: var(--font-cloude), 'Fraunces', serif;
   
   --color-fermion-blue: #6486F4;
   --color-fermion-soft: #F3F6FF;
