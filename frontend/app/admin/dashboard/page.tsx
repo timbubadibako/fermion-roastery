@@ -1,196 +1,163 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-interface Partner {
-  id: string;
-  company_name: string;
-  address: string;
-  estimated_volume_kg: string;
-  status: string;
-  tier_name: string | null;
-  created_at: string;
-  email: string;
-  full_name: string;
-}
+import { TrendingUp, Package, Users, Zap, Loader2, ArrowUpRight, Coffee, Clock } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function AdminDashboardPage() {
-  const [partners, setPartners] = useState<Partner[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPartners();
+    fetch('http://localhost:3001/api/admin/stats')
+      .then(res => res.json())
+      .then(data => {
+        setStats(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load stats", err);
+        setLoading(false);
+      });
   }, []);
 
-  const fetchPartners = async () => {
-    try {
-      const res = await fetch("http://localhost:3001/api/admin/partners");
-      if (res.ok) {
-        const data = await res.json();
-        setPartners(data);
-      } else {
-        toast.error("Failed to load partners");
-      }
-    } catch (error) {
-      toast.error("Network error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading) return (
+    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
+      <Loader2 className="animate-spin text-fermion-blue" size={32} />
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Gathering data...</p>
+    </div>
+  );
 
-  const handleUpdateStatus = async (id: string, status: string, tier: string | null) => {
-    if (status === 'approved' && !tier) {
-      toast.error("Please select a tier before approving.");
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:3001/api/admin/partners/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, tier_name: tier }),
-      });
-
-      if (res.ok) {
-        toast.success(`Partner ${status} successfully!`);
-        fetchPartners(); // Refresh list
-      } else {
-        toast.error("Failed to update status");
-      }
-    } catch (error) {
-      toast.error("Network error");
-    }
-  };
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-fermion-blue" /></div>;
+  if (!stats) return <p className="text-red-500">Failed to load analytics.</p>;
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen pt-32 pb-20 px-6">
-      <div className="max-w-6xl mx-auto space-y-12">
-        
-        {/* Header */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 text-fermion-blue bg-fermion-blue/10 w-fit px-4 py-2 rounded-full">
-            <ShieldAlert size={16} />
-            <span className="text-[10px] font-black tracking-widest uppercase">Admin Secure Portal</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
-            Partner Applications
-          </h1>
-          <p className="text-sm text-slate-500 font-medium max-w-xl">
-            Review B2B applications, assign pricing tiers, and manage the wholesale network.
-          </p>
-        </div>
+    <div className="space-y-16">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-5xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">
+          Command <br/> Overview.
+        </h1>
+        <p className="text-slate-500 font-medium text-sm max-w-sm">
+          Tracking the growth and operational health of Fermion Roastery.
+        </p>
+      </div>
 
-        {/* Dashboard Table */}
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Business Details</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Est. Volume</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status / Tier</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {partners.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-12 text-center text-slate-400 text-sm font-medium">
-                      No applications found.
-                    </td>
-                  </tr>
-                ) : (
-                  partners.map((partner) => (
-                    <tr key={partner.id} className="hover:bg-slate-50/30 transition-colors">
-                      <td className="p-6">
-                        <div className="space-y-1">
-                          <p className="font-bold text-slate-900 uppercase tracking-tight">{partner.company_name}</p>
-                          <p className="text-xs text-slate-500">{partner.address}</p>
-                          <p className="text-[9px] text-slate-300 font-mono">Applied: {new Date(partner.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <div className="space-y-1">
-                          <p className="font-semibold text-slate-700 text-sm">{partner.full_name}</p>
-                          <p className="text-xs text-slate-500">{partner.email}</p>
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600">
-                          {partner.estimated_volume_kg}
-                        </span>
-                      </td>
-                      <td className="p-6">
-                        <div className="space-y-2">
-                          {partner.status === 'pending' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-700">
-                              <Clock size={12} /> Pending
-                            </span>
-                          )}
-                          {partner.status === 'approved' && (
-                            <div className="flex flex-col gap-1">
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 w-fit">
-                                <CheckCircle2 size={12} /> Approved
-                              </span>
-                              <span className="text-[10px] font-bold text-fermion-blue">Tier: {partner.tier_name}</span>
-                            </div>
-                          )}
-                          {partner.status === 'rejected' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-100 text-red-700">
-                              <XCircle size={12} /> Rejected
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-6 text-right">
-                        {partner.status === 'pending' ? (
-                          <div className="flex items-center justify-end gap-2">
-                            <Select onValueChange={(tier) => handleUpdateStatus(partner.id, 'approved', tier)}>
-                              <SelectTrigger className="w-[120px] h-9 text-[10px] font-bold uppercase tracking-widest bg-white border-slate-200">
-                                <SelectValue placeholder="Assign Tier" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Bronze">Bronze Tier</SelectItem>
-                                <SelectItem value="Silver">Silver Tier</SelectItem>
-                                <SelectItem value="Gold">Gold Tier</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            
-                            <Button 
-                              variant="ghost" 
-                              onClick={() => handleUpdateStatus(partner.id, 'rejected', null)}
-                              className="h-9 px-3 text-red-500 hover:text-red-600 hover:bg-red-50 text-[10px] font-bold uppercase tracking-widest"
-                            >
-                              Reject
-                            </Button>
-                          </div>
-                        ) : (
-                           <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                             Action Completed
-                           </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* STATS CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {[
+          { label: "Total Revenue", val: `Rp ${(stats.revenue / 1000000).toFixed(1)}M`, icon: TrendingUp, color: "text-green-500", trend: "+12%" },
+          { label: "Volume Sold", val: `${stats.volume} Kg`, icon: Coffee, color: "text-fermion-blue", trend: "+8%" },
+          { label: "Pending B2B", val: stats.pendingB2B, icon: Users, color: "text-amber-500", trend: "High Priority" },
+          { label: "Active Subs", val: stats.activeSubs, icon: Zap, color: "text-fermion-lilac", trend: "+5 new" },
+        ].map((s, i) => (
+          <motion.div 
+            key={s.label} 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-6 relative overflow-hidden group hover:shadow-xl transition-all duration-500"
+          >
+             <div className="flex justify-between items-start relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors duration-500">
+                  <s.icon size={20} strokeWidth={2.5} />
+                </div>
+                <div className="flex items-center gap-1 text-[9px] font-black text-green-500 uppercase tracking-widest bg-green-50 px-2.5 py-1 rounded-full">
+                  <ArrowUpRight size={10} /> {s.trend}
+                </div>
+             </div>
+             <div className="space-y-1 relative z-10">
+               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
+               <p className="text-3xl font-black tracking-tight text-slate-900 italic">{s.val}</p>
+             </div>
+             <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-700 pointer-events-none">
+                <s.icon size={120} />
+             </div>
+          </motion.div>
+        ))}
+      </div>
 
+      {/* CHARTS SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+         {/* Main Chart Area */}
+         <div className="lg:col-span-8 bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-sm space-y-10">
+            <div className="flex justify-between items-center">
+              <div className="space-y-1">
+                <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">Revenue Performance</h4>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">June 2026 • Daily Trends</p>
+              </div>
+              <div className="flex gap-2">
+                 <button className="px-4 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-full">Weekly</button>
+                 <button className="px-4 py-2 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-full hover:bg-slate-100 transition-colors">Monthly</button>
+              </div>
+            </div>
+            
+            <div className="h-80 w-full bg-slate-50/50 rounded-[2.5rem] flex items-center justify-center border border-dashed border-slate-200">
+               <div className="text-center space-y-3">
+                  <TrendingUp className="mx-auto text-slate-200" size={40} />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">[ Recharts Line Visualization ]</p>
+               </div>
+            </div>
+         </div>
+
+         {/* Distribution / Side Data */}
+         <div className="lg:col-span-4 space-y-8">
+            <div className="bg-slate-900 p-12 rounded-[3.5rem] text-white flex flex-col justify-between h-full group overflow-hidden relative">
+               <div className="relative z-10">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-8">Volume Mix</h4>
+                  <div className="space-y-6">
+                    {stats.volumeTrends.map((v: any) => (
+                      <div key={v.name} className="space-y-2">
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                          <span>{v.name}</span>
+                          <span>{v.kg} Kg</span>
+                        </div>
+                        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(v.kg / stats.volume) * 100}%` }}
+                            className="h-full bg-fermion-blue"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+               </div>
+               <div className="pt-12 relative z-10">
+                  <button className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-fermion-blue hover:text-white transition-colors">
+                    Detailed Report <ArrowUpRight size={14} />
+                  </button>
+               </div>
+               <Package size={200} className="absolute -right-20 -bottom-20 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
+            </div>
+         </div>
+      </div>
+
+      {/* RECENT ALERTS */}
+      <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-sm space-y-8">
+          <div className="flex items-center gap-3">
+             <Clock size={16} className="text-slate-400" />
+             <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">Recent Command Center Alerts</h4>
+          </div>
+          <div className="divide-y divide-slate-50">
+             {[
+               { type: "B2B", msg: "New Wholesale Application: 'Kopi Kenangan Senayan'", time: "2 mins ago", status: "Urgent" },
+               { type: "STOCK", msg: "Inventory Alert: 'NOT ONLY INTENSE' batch below 10kg", time: "1 hour ago", status: "Warning" },
+               { type: "ORDER", msg: "Large Retail Order: 15 items by anonymous guest", time: "3 hours ago", status: "Success" },
+             ].map((alert, i) => (
+               <div key={i} className="py-6 flex items-center justify-between group cursor-pointer hover:px-4 transition-all duration-300 rounded-2xl">
+                  <div className="flex items-center gap-6">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 w-12">{alert.type}</span>
+                    <p className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">{alert.msg}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[10px] font-medium text-slate-400 italic">{alert.time}</span>
+                    <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full ${
+                      alert.status === 'Urgent' ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-500'
+                    }`}>{alert.status}</span>
+                  </div>
+               </div>
+             ))}
+          </div>
       </div>
     </div>
   );
