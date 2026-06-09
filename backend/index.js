@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import placesRoutes from './routes/placesRoutes.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/places', placesRoutes);
 
 // Base route for health check
 app.get('/', (req, res) => {
