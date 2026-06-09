@@ -36,7 +36,14 @@
 - [x] Product Catalog with "Interactive Stickers"
 - [x] Cart & Checkout (Xendit Integration)
 
-### Phase 4: Production Polish
+### Phase 4: Full Order Fulfillment Pipeline
+- [x] Database Migration (Orders & Order Items Tables)
+- [ ] Biteship API Integration (Dynamic Shipping Rates)
+- [ ] Cart Checkout Upgrade (Courier Selection & Xendit Link)
+- [ ] Admin Order Dashboard (Manage Status & Input AWB)
+- [ ] Customer Tracking Timeline UI
+
+### Phase 5: Production Polish
 - [ ] Real-time Chat (Pusher/Ably alternative)
 - [ ] Final UI Refinement & Responsive Audit
 - [ ] Production Deployment (Vercel & Render)
