@@ -53,7 +53,7 @@ export function AdminSidebar() {
   const handleLogout = () => {
     // Clear the security cookie
     document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    router.push("/account/register");
+    router.push("/auth");
   };
 
   return (
