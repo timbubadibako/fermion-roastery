@@ -19,12 +19,16 @@ interface CoffeeProduct {
   isLocked?: boolean;
 }
 
+import { useCartStore } from "@/lib/store";
+
 export function RetailCatalog() {
   const [products, setProducts] = useState<CoffeeProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cols, setCols] = useState<2 | 3 | 4>(3);
   const [showFilter, setShowFilter] = useState(false);
+  
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,8 +49,19 @@ export function RetailCatalog() {
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+      weight: "250g", // Default weight for quick-add
+      grind: "Whole Bean" // Default grind
+    });
+
     toast.success(`${product.name} added to cart!`, {
-      description: "You can view your items in the cart sidebar.",
+      description: "250g • Whole Bean",
       duration: 3000,
     });
   };

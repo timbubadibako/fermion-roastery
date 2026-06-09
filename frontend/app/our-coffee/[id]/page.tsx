@@ -41,6 +41,9 @@ function CharacterLevel({ label, level }: { label: string; level: number }) {
   );
 }
 
+import { useCartStore } from "@/lib/store";
+import { toast } from "sonner";
+
 export default function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<CoffeeProduct | null>(null);
@@ -52,6 +55,26 @@ export default function ProductPage() {
   const [weight, setWeight] = useState("250g");
   const [grind, setGrind] = useState("Whole Beans");
   const [activeTab, setActiveTab] = useState<string | null>("description");
+  
+  const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity,
+      image: product.image,
+      weight: weight,
+      grind: grind
+    });
+
+    toast.success(`${product.name} added to cart!`, {
+      description: `${weight} • ${grind}`,
+    });
+  };
 
   useEffect(() => {
     const fetchProductAndRelated = async () => {
@@ -280,10 +303,12 @@ export default function ProductPage() {
 
             {/* CTA Buttons */}
             <div className="space-y-4 pt-6 border-t border-slate-50 mt-6">
-              <button className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.15em] hover:bg-slate-900 hover:text-white transition-all duration-500 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 uppercase text-center">
+              <button 
+               onClick={handleAddToCart}
+               className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.15em] hover:bg-slate-900 hover:text-white transition-all duration-500 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 uppercase text-center"
+              >
                 Add to Cart • Rp {(product.price * quantity).toLocaleString('id-ID')}
               </button>
-              
               <button className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center">
                 <ShoppingBag size={18} strokeWidth={2.5} />
                 Buy It Now
