@@ -45,6 +45,8 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
       const data = await response.json();
 
       if (response.ok) {
+        // Set security cookie for middleware (expires in 24h)
+        document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
         toast.success(data.message);
         onSuccess(data.profile); // Pass profile back to parent
       } else {
