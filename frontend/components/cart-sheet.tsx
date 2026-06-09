@@ -7,63 +7,32 @@ import {
   SheetHeader, 
   SheetTitle, 
   SheetTrigger,
-  SheetFooter
+  SheetFooter,
+  SheetClose
 } from "@/components/ui/sheet";
 import { ShoppingCart, Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  img: string;
-}
+import Link from "next/link";
+import { useCartStore } from "@/lib/store";
 
 export function CartSheet() {
   const [loading, setLoading] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    { 
-      id: 1, 
-      name: "Fermion House Blend", 
-      price: 125000, 
-      quantity: 1, 
-      img: "https://placehold.co/200x200/7a9cff/ffffff?text=House+Blend" 
-    },
-    { 
-      id: 2, 
-      name: "Sumedang Anaerob", 
-      price: 165000, 
-      quantity: 2, 
-      img: "https://placehold.co/200x200/ff4b4b/ffffff?text=Anaerob" 
-    },
-  ]);
+  const { items, updateQuantity, removeItem, getTotal } = useCartStore();
 
-  const updateQuantity = (id: number, delta: number) => {
-    setCartItems(items => items.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-    ));
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = getTotal();
 
   const handleCheckout = async () => {
+    if (items.length === 0) return;
     setLoading(true);
     try {
-      // Build items array matching backend expectation
-      const checkoutItems = cartItems.map(item => ({
-        name: item.name,
+      const checkoutItems = items.map(item => ({
+        name: `${item.name} (${item.weight})`,
         quantity: item.quantity,
         price: item.price
       }));
 
-      // In a real app, you would fetch customer details from context
       const customerDetails = { email: "customer@example.com" };
 
       const res = await fetch("http://localhost:3001/api/payments/invoice", {
@@ -75,7 +44,6 @@ export function CartSheet() {
       const data = await res.json();
 
       if (res.ok && data.invoiceUrl) {
-        // Redirect to Xendit Payment Page
         window.location.href = data.invoiceUrl;
       } else {
         toast.error(data.message || "Failed to generate checkout invoice");
@@ -93,9 +61,9 @@ export function CartSheet() {
       <SheetTrigger asChild>
         <button className="text-slate-800 hover:text-fermion-blue transition-all duration-300 relative group">
           <ShoppingCart size={18} strokeWidth={1.5} />
-          {cartItems.length > 0 && (
+          {items.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-fermion-blue text-white text-[6px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
-              {cartItems.length}
+              {items.reduce((acc, item) => acc + item.quantity, 0)}
             </span>
           )}
         </button>
@@ -106,21 +74,25 @@ export function CartSheet() {
         </SheetHeader>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
               <div className="bg-slate-50 p-8 rounded-[3rem]">
                 <ShoppingCart size={48} className="text-slate-200" />
               </div>
               <p className="text-slate-400 font-medium tracking-tight">Your cart is empty.</p>
-              <Button variant="outline" className="rounded-full px-8 border-slate-200">Start Shopping</Button>
+              <SheetClose asChild>
+                <Link href="/our-coffee">
+                  <Button variant="outline" className="rounded-full px-8 border-slate-200 uppercase text-[10px] font-bold tracking-widest">Start Shopping</Button>
+                </Link>
+              </SheetClose>
             </div>
           ) : (
             <div className="space-y-6">
-              {cartItems.map((item, index) => (
-                <React.Fragment key={item.id}>
+              {items.map((item, index) => (
+                <React.Fragment key={`${item.id}-${item.weight}`}>
                   <div className="flex gap-4 group">
                     <div className="w-20 h-20 rounded-3xl bg-slate-50 overflow-hidden border border-slate-100 flex-shrink-0">
-                      <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex justify-between">
@@ -132,6 +104,7 @@ export function CartSheet() {
                           <Trash2 size={14} />
                         </button>
                       </div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.weight} • {item.grind}</p>
                       <p className="text-xs font-semibold text-fermion-blue">
                         Rp {item.price.toLocaleString('id-ID')}
                       </p>
@@ -139,14 +112,14 @@ export function CartSheet() {
                       <div className="flex items-center gap-3 pt-2">
                         <div className="flex items-center bg-slate-50 rounded-full border border-slate-100 px-1 py-1">
                           <button 
-                            onClick={() => updateQuantity(item.id, -1)}
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             className="p-1 hover:bg-white rounded-full transition-colors"
                           >
                             <Minus size={12} className="text-slate-600" />
                           </button>
                           <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.id, 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             className="p-1 hover:bg-white rounded-full transition-colors"
                           >
                             <Plus size={12} className="text-slate-600" />
@@ -155,33 +128,39 @@ export function CartSheet() {
                       </div>
                     </div>
                   </div>
-                  {index < cartItems.length - 1 && <Separator className="bg-slate-50" />}
+                  {index < items.length - 1 && <Separator className="bg-slate-50" />}
                 </React.Fragment>
               ))}
             </div>
           )}
         </div>
 
-        {cartItems.length > 0 && (
+        {items.length > 0 && (
           <SheetFooter className="p-6 bg-slate-50/50 border-t border-slate-100 flex-col gap-4">
             <div className="space-y-1.5 w-full">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500 font-medium">Subtotal</span>
                 <span className="text-slate-800 font-bold">Rp {subtotal.toLocaleString('id-ID')}</span>
               </div>
-              <p className="text-[10px] text-slate-400">Shipping and taxes calculated at checkout.</p>
+              <p className="text-[10px] text-slate-400">Shipping calculated at checkout.</p>
             </div>
-            <Button 
-              onClick={handleCheckout}
-              disabled={loading}
-              className="w-full bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98]"
-            >
-              {loading ? <Loader2 className="animate-spin" /> : "Checkout via Xendit"}
-            </Button>
+            <div className="flex gap-2 w-full">
+              <SheetClose asChild>
+                <Link href="/cart" className="flex-1">
+                  <Button variant="outline" className="w-full h-14 rounded-3xl font-bold border-slate-200 uppercase text-[10px] tracking-widest">View Full Cart</Button>
+                </Link>
+              </SheetClose>
+              <Button 
+                onClick={handleCheckout}
+                disabled={loading}
+                className="flex-[1.5] bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98] uppercase text-[10px] tracking-widest"
+              >
+                {loading ? <Loader2 className="animate-spin" size={16} /> : "Checkout"}
+              </Button>
+            </div>
           </SheetFooter>
         )}
       </SheetContent>
     </Sheet>
   );
 }
-
