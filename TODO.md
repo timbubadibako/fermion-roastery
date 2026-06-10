@@ -37,6 +37,7 @@
 - [x] Cart & Checkout (Xendit Integration)
 ### Phase 4: Full Order Fulfillment Pipeline (Marketplace v2.0)
 - [x] Database Migration (Orders & Order Items Tables)
+- [ ] Add `category` or `brew_method` column to `products` table (For Espresso/Filter filtering)
 - [x] Refine Order State Machine (Add `READY_TO_SHIP` state)
 - [x] Implement Backend Price Locking (Checkout Snapshot)
 - [x] Implement Xendit Webhook Idempotency (Duplicate Prevention)
