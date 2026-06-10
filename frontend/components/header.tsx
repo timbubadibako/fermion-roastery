@@ -2,11 +2,20 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, User, Search, ShoppingBag, LayoutDashboard, LayoutGrid, PackageSearch, Loader2 } from "lucide-react";
+import {
+  Menu, X, User, Search, ShoppingBag,
+  LayoutDashboard, LayoutGrid, PackageSearch,
+  Loader2, Coffee, Sparkles, ArrowRight
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { CartSheet } from "./cart-sheet";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useCartStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
+import { siteContent } from "@/lib/content";
+import { Sticker } from "./ui/sticker";
+import { toast } from "sonner";
 
 interface NavLink {
   label: string;
@@ -22,30 +31,79 @@ interface BrandConfig {
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const { addItem } = useCartStore();
+
+  // --- States ---
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
-  
-  const [brand, setBrand] = useState<BrandConfig | null>(null);
-  const [announcement, setAnnouncement] = useState("");
-  
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [promotedProducts, setPromotedProducts] = useState<any[]>([]);
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [brand, setBrand] = useState<BrandConfig | null>(null);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Mock Search Data
-  const promotedProducts = [
-    { id: 1, name: "Fermion Espresso Blend", price: "Rp 125.000", img: "https://placehold.co/200x200/7a9cff/ffffff?text=Espresso+Blend" },
-    { id: 2, name: "Kendal Honey Process", price: "Rp 145.000", img: "https://placehold.co/200x200/ffd700/0f172a?text=Honey+Process" },
-  ];
+  // Content from Library
+  const announcementText = siteContent.announcement;
 
-  const mockSearchResults = [
-    { id: 3, name: "Sumedang Anaerob", category: "Single Origin" },
-    { id: 4, name: "Gayo Washed", category: "Specialty" },
-    { id: 5, name: "Fermion Brew Mug", category: "Merchandise" },
-  ];
+  // --- Handlers ---
+  const handleLogout = () => {
+    logout();
+    router.push("/auth");
+    setIsMenuOpen(false);
+  };
+
+  const handleQuickAdd = (e: React.MouseEvent, product: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price_retail),
+      quantity: 1,
+      image: product.image_url || "https://placehold.co/200x200/7a9cff/ffffff?text=FERMION",
+      weight: "250g",
+      grind: "Whole Bean"
+    });
+    toast.success(`${product.name} added to cart!`);
+    setIsSearchOpen(false);
+  };
+
+  // --- Effects ---
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const res = await fetch("/api/products");
+        if (res.ok) {
+          const data = await res.json();
+          setAllProducts(data);
+          setPromotedProducts(data.slice(0, 2));
+        }
+      } catch (e) {
+        console.error("Failed to fetch products for search:", e);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      const filtered = allProducts.filter(p =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (p.origin && p.origin.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.notes && p.notes.toLowerCase().includes(searchQuery.toLowerCase()))
+      ).slice(0, 5);
+      setFilteredResults(filtered);
+    } else {
+      setFilteredResults([]);
+    }
+  }, [searchQuery, allProducts]);
 
   useEffect(() => {
     setIsScrolled(false);
@@ -82,15 +140,7 @@ export function Header() {
     }
   }, [isSearchOpen]);
 
-  const isRectangleVariant = pathname.startsWith("/our-coffee");
-  
-  const rectangleClasses = "mt-0 w-full h-16 bg-white border-b border-slate-100 shadow-sm";
-  const roundedClasses = isScrolled 
-    ? "mt-4 w-[96%] max-w-[1400px] bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full h-16" 
-    : "mt-0 w-full h-16 bg-transparent border-transparent";
-
-  const activeWrapperClasses = isRectangleVariant ? rectangleClasses : roundedClasses;
-
+  // V2 UI CONSTANTS: Smoother Pill Transition
   const displayLinks = navLinks.length > 0 ? navLinks : [
     { label: "OUR COFFEE", href: "/our-coffee" },
     { label: "WHOLESALE", href: "/wholesale" },
@@ -101,24 +151,77 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-        <div className={`mx-auto pointer-events-auto transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${activeWrapperClasses}`}>
-          <div className="max-w-[1400px] mx-auto flex items-center justify-between h-full px-6 md:px-12 relative w-full">
-            
+      {/* Floating Announcement (Diagonal Corner Ribbon - Bottom Left) */}
+      <div className="fixed bottom-0 left-0 z-[110] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
+        <motion.div
+          initial={{ x: -100, y: 800, rotate: 20 }}
+          animate={{ x: -45, y: 25, rotate: 20 }}
+          className="absolute bottom-6 left-[-40px] w-[120%] bg-white shadow-2xl border-y-[1.5px] border-slate-100 py-3 pointer-events-auto flex flex-col items-center justify-center"
+          style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+        >
+          <div className="border-y border-dashed border-slate-200 w-full py-2 flex flex-col items-center justify-center gap-0.5">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 leading-none">Free Shipping</p>
+            <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mt-1">Above Rp 500.000</p>
+          </div>
+        </motion.div>
+      </div>
+
+      <header className="fixed top-0 left-0 right-0 z-[100] pointer-events-none flex flex-col items-center">
+        {/* The Pill Navbar - Smoothened with Framer Motion */}
+        <motion.div
+          initial={false}
+          animate={{
+            marginTop: isScrolled ? 24 : 0,
+            width: isScrolled ? "90%" : "100%",
+            backgroundColor: isScrolled ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0)",
+            backdropFilter: isScrolled ? "blur(40px) saturate(180%)" : "blur(0px) saturate(100%)",
+            borderColor: isScrolled ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0)",
+            borderRadius: isScrolled ? "100px" : "0px",
+            boxShadow: isScrolled ? "0 20px 50px rgba(0,0,0,0.1)" : "0 0px 0px rgba(0,0,0,0)",
+            height: isScrolled ? 64 : 80
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 30,
+            backgroundColor: { duration: 0.5 },
+            backdropFilter: { duration: 0.5 }
+          }}
+          className="mx-auto pointer-events-auto border flex items-center justify-center relative max-w-[1400px]"
+        >
+
+          {/* Decorative Navbar Sticker */}
+          {/* <div className="absolute -top-3 -left-4 hidden lg:block rotate-[-15deg]">
+            <div className="bg-white p-1 shadow-md border-2 border-white rounded-lg">
+              <div className="border border-dashed border-slate-100 p-1.5">
+                <Coffee size={14} className="text-slate-200" />
+              </div>
+            </div>
+          </div> */}
+
+          <div className="w-full flex items-center justify-between h-full px-6 md:px-10 relative">
+
             <div className={`flex-shrink-0 transition-opacity duration-300 ${isSearchOpen ? "opacity-0 md:opacity-100" : "opacity-100"}`}>
-              <Link href="/" className="text-2xl font-black tracking-[-0.04em] text-slate-900 uppercase italic">
-                {brand?.name || "FERMION"}
+              <Link href="/" className="block hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/fermion-logo.png"
+                  alt={brand?.name || "Fermion Roastery"}
+                  width={88}
+                  height={35}
+                  className="object-contain"
+                  priority
+                />
               </Link>
             </div>
 
-            <nav className={`hidden items-center justify-center gap-10 lg:flex flex-1 transition-all duration-500 ${isSearchOpen ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
+            <nav className={`hidden items-center justify-center gap-8 lg:flex flex-1 transition-all duration-500 ${isSearchOpen ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
               {displayLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 return (
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`group relative text-[10px] font-black tracking-[0.3em] transition-all duration-300 uppercase ${isActive ? "text-slate-900" : "text-slate-400 hover:text-fermion-blue"}`}
+                    className={`group relative text-[9px] font-black tracking-[0.3em] transition-all duration-300 uppercase ${isActive ? "text-slate-900" : "text-slate-400 hover:text-fermion-blue"}`}
                   >
                     {link.label}
                     <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] bg-fermion-blue transition-all duration-500 ${isActive ? "w-4 opacity-100" : "w-0 opacity-0"}`} />
@@ -129,150 +232,172 @@ export function Header() {
 
             <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
               <div className="relative">
-                <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-slate-50 border border-slate-200/50 rounded-full px-5" : "w-10"}`}>
+                <div className={`flex items-center transition-all duration-700 ease-out h-9 ${isSearchOpen ? "w-64 md:w-[280px] bg-white/60 backdrop-blur-xl rounded-full px-4 shadow-lg shadow-slate-900/5" : "w-9"}`}>
                   <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-slate-900 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none">
-                    <Search size={18} strokeWidth={2.5} />
+                    <Search size={16} strokeWidth={1.5} />
                   </button>
                   <input
                     ref={searchInputRef}
                     type="text"
                     placeholder="Find your beans..."
-                    className={`bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-3 ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible width-0"}`}
+                    className={`bg-transparent border-none outline-none text-[10px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-2 ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible width-0"}`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   {isSearchOpen && (
-                    <button onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }} className="text-slate-300 hover:text-slate-900 transition-colors ml-2">
-                      <X size={14} strokeWidth={3} />
+                    <button
+                      onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
+                      className="text-slate-300 hover:text-slate-900 transition-colors ml-2"
+                    >
+                      <X size={14} strokeWidth={2} />
                     </button>
                   )}
                 </div>
 
-                {isSearchOpen && (
-                  <div className="absolute top-14 right-0 w-64 md:w-[320px] bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[2rem] mt-2 p-6 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
-                    {!searchQuery ? (
-                      <div className="space-y-4">
-                        <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Curated</h4>
-                        <div className="space-y-3">
-                          {promotedProducts.map((product) => (
-                            <Link key={product.id} href={`/our-coffee/${product.id}`} className="flex items-center gap-4 p-2 hover:bg-slate-50 rounded-2xl transition-all duration-300 group">
-                              <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200/50">
-                                <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-[10px] font-black text-slate-900 leading-tight mb-0.5 uppercase">{product.name}</p>
-                                <p className="text-[9px] font-bold text-fermion-blue font-mono">{product.price}</p>
-                              </div>
-                              <div className="p-2 bg-slate-900 text-white rounded-xl group-hover:bg-fermion-blue transition-colors duration-500 shadow-md">
-                                <ShoppingBag size={12} strokeWidth={2.5} />
-                              </div>
-                            </Link>
-                          ))}
+                {/* Search Results Dropdown */}
+                <AnimatePresence>
+                  {isSearchOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-12 right-0 w-64 md:w-[320px] bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-[2rem] p-6 overflow-hidden z-[110]"
+                    >
+                      {!searchQuery ? (
+                        <div className="space-y-5">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Promoted</h4>
+                            <Sparkles size={12} className="text-fermion-blue" />
+                          </div>
+                          <div className="space-y-4">
+                            {promotedProducts.map((product) => (
+                              <Link
+                                key={product.id}
+                                href={`/our-coffee/${product.id}`}
+                                onClick={() => setIsSearchOpen(false)}
+                                className="flex items-center gap-4 p-2 hover:bg-slate-50 rounded-2xl transition-all duration-300 group"
+                              >
+                                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200/50">
+                                  <img src={product.image_url || "https://placehold.co/200x200/7a9cff/ffffff?text=FERMION"} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-[10px] font-black text-slate-900 leading-tight mb-0.5 uppercase truncate">{product.name}</p>
+                                  <p className="text-[9px] font-bold text-fermion-blue font-mono">Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
+                                </div>
+                                <button
+                                  onClick={(e) => handleQuickAdd(e, product)}
+                                  className="p-2 bg-slate-900 text-white rounded-xl hover:bg-fermion-blue transition-colors duration-500 shadow-md group-hover:scale-110 transition-transform"
+                                >
+                                  <ShoppingBag size={12} strokeWidth={1.5} />
+                                </button>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Suggestions</h4>
-                        <div className="space-y-1">
-                          {mockSearchResults.map((result) => (
-                            <button key={result.id} className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl text-left transition-all duration-300 group">
-                              <div>
-                                <p className="text-[11px] font-black text-slate-900 group-hover:text-fermion-blue uppercase tracking-tighter">{result.name}</p>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{result.category}</p>
+                      ) : (
+                        <div className="space-y-4">
+                          <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Matches Found</h4>
+                          <div className="space-y-1">
+                            {filteredResults.length > 0 ? (
+                              filteredResults.map((result) => (
+                                <Link
+                                  key={result.id}
+                                  href={`/our-coffee/${result.id}`}
+                                  onClick={() => setIsSearchOpen(false)}
+                                  className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl text-left transition-all duration-300 group"
+                                >
+                                  <div>
+                                    <p className="text-[11px] font-black text-slate-900 group-hover:text-fermion-blue uppercase tracking-tighter">{result.name}</p>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{result.origin}</p>
+                                  </div>
+                                  <ArrowRight size={12} className="text-slate-200 group-hover:text-fermion-blue group-hover:translate-x-1 transition-all" />
+                                </Link>
+                              ))
+                            ) : (
+                              <div className="py-10 text-center space-y-2">
+                                <Search size={24} className="mx-auto text-slate-100" />
+                                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No specimen matches</p>
                               </div>
-                              <Search size={12} className="text-slate-200 group-hover:text-fermion-blue" />
-                            </button>
-                          ))}
+                            )}
+                          </div>
                         </div>
+                      )}
+                      <div className="mt-5 pt-5 border-t border-slate-100 text-center">
+                        <Link
+                          href={`/our-coffee?search=${encodeURIComponent(searchQuery)}`}
+                          onClick={() => setIsSearchOpen(false)}
+                          className="text-[9px] font-black text-slate-400 hover:text-slate-900 transition-colors duration-300 uppercase tracking-[0.2em] italic"
+                        >
+                          View All Results →
+                        </Link>
                       </div>
-                    )}
-                  </div>
-                )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-4">
                 {user?.role === 'RETAIL' && (
                   <Link href="/account/orders" title="My Orders" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
-                    <PackageSearch size={20} strokeWidth={2.5} />
-                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Orders</span>
+                    <PackageSearch size={18} strokeWidth={1.5} />
                   </Link>
                 )}
                 {user?.role === 'B2B' && (
                   <Link href="/b2b/dashboard" title="Partner Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
-                    <LayoutGrid size={20} strokeWidth={2.5} />
-                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Partner</span>
+                    <LayoutGrid size={18} strokeWidth={1.5} />
                   </Link>
                 )}
                 {user?.role === 'ADMIN' && (
                   <Link href="/admin/dashboard" title="Admin Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
-                    <LayoutDashboard size={20} strokeWidth={2.5} />
-                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Admin</span>
+                    <LayoutDashboard size={18} strokeWidth={1.5} />
                   </Link>
                 )}
                 {!user && (
                   <Link href="/auth" title="Login" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
-                    <User size={20} strokeWidth={2.5} />
-                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Login</span>
+                    <User size={18} strokeWidth={1.5} />
                   </Link>
                 )}
               </div>
 
               {user?.role !== 'ADMIN' && (
-                <div className="relative border-l border-slate-100 pl-5 ml-1">
+                <div className="relative border-l border-slate-200/50 pl-4 ml-1">
                   <CartSheet />
                 </div>
               )}
 
               <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden text-slate-900 ${isSearchOpen ? "hidden" : "block"}`}>
-                {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
+                {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {isMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white border-b border-slate-100 px-10 py-12 lg:hidden animate-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-b-[3rem]">
+          <div className="absolute top-24 left-4 right-4 bg-white/90 backdrop-blur-2xl border border-white/60 p-10 lg:hidden animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-[3rem]">
             <nav className="flex flex-col gap-8 text-center">
               {displayLinks.map((link) => (
-                <Link key={link.label} href={link.href} className="text-sm font-black tracking-[0.4em] transition-colors uppercase italic text-slate-900" onClick={() => setIsMenuOpen(false)}>
+                <Link key={link.label} href={link.href} className="text-xs font-black tracking-[0.4em] transition-colors uppercase italic text-slate-900" onClick={() => setIsMenuOpen(false)}>
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6">
+              <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6 text-center">
                 {user?.role === 'RETAIL' && (
-                  <Link href="/account/orders" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                      <PackageSearch size={22} strokeWidth={2.5} /> My Orders
-                  </Link>
+                  <Link href="/account/orders" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
                 )}
                 {user?.role === 'B2B' && (
-                  <Link href="/b2b/dashboard" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                      <LayoutGrid size={22} strokeWidth={2.5} /> Partner Dashboard
-                  </Link>
-                )}
-                {user?.role === 'ADMIN' && (
-                  <Link href="/admin/dashboard" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                      <LayoutDashboard size={22} strokeWidth={2.5} /> Admin Dashboard
-                  </Link>
+                  <Link href="/b2b/dashboard" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Dashboard</Link>
                 )}
                 {!user && (
-                  <Link href="/auth" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                      <User size={22} strokeWidth={2.5} /> Login Account
-                  </Link>
+                  <Link href="/auth" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>
                 )}
                 {user?.role !== 'ADMIN' && (
-                  <Link href="/cart" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                      <ShoppingBag size={22} strokeWidth={2.5} /> My Cart
-                  </Link>
+                  <Link href="/cart" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Cart</Link>
                 )}
               </div>
             </nav>
           </div>
         )}
       </header>
-
-      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-900 via-fermion-blue to-slate-900 backdrop-blur-md text-white text-[9px] font-black tracking-[0.5em] py-3.5 text-center uppercase border-t border-white/10">
-        {announcement || "Free shipping for orders above Rp 500.000! (Indonesia only)"}
-      </div>
     </>
   );
 }

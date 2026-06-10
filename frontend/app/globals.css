@@ -78,16 +78,14 @@
   
   html, body {
     @apply bg-background text-foreground;
-    -ms-overflow-style: none;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) rgba(16, 24, 40, 0.08);
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
   
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
   *::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    display: none;
   }
   
   html {
@@ -316,4 +314,12 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.7s ease-out forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
