@@ -94,7 +94,7 @@ export const updateOrder = async (req, res) => {
   const { status, shipping_awb, shipping_courier } = req.body;
 
   try {
-    const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+    const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
     if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }

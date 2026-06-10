@@ -111,27 +111,39 @@ export const createSubscription = async (req, res) => {
     res.status(500).json({ message: "Failed to create subscription", error: error.message });
   }
 };
-
 export const handleNotification = async (req, res) => {
   console.log("Xendit Payment Notification Received:", req.body);
 
   const { external_id, status } = req.body;
 
   try {
-    // If payment is completed/settled in Xendit, update our order status to PAID
+    // 0. Idempotency Check: Get current status
+    const currentOrderRes = await query("SELECT status, id FROM orders WHERE xendit_invoice_id = $1", [external_id]);
+    const currentOrder = currentOrderRes.rows[0];
+
+    if (!currentOrder) {
+      console.log(`⚠️ Webhook received for unknown invoice: ${external_id}`);
+      return res.status(200).send("OK"); // Respond OK to Xendit to stop retries
+    }
+
+    // If already paid or beyond, skip
+    if (['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(currentOrder.status)) {
+      console.log(`ℹ️ Order ${currentOrder.id} already processed (Status: ${currentOrder.status}). Skipping.`);
+      return res.status(200).send("OK");
+    }
+
+    // 1. Update status to PAID if payment is completed/settled
     if (status === 'PAID' || status === 'SETTLED') {
-      const result = await query(
-        "UPDATE orders SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1 RETURNING id",
+      await query(
+        "UPDATE orders SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1",
         [external_id]
       );
 
-      if (result.rows.length > 0) {
-        console.log(`✅ Order ${result.rows[0].id} status updated to PAID via Webhook.`);
-        // Generate PDF Invoice automatically
-        await generateInvoicePDF(result.rows[0].id);
-      } else {
-        console.log(`⚠️ Webhook received for unknown invoice: ${external_id}`);
-      }
+      console.log(`✅ Order ${currentOrder.id} status updated to PAID via Webhook.`);
+
+      // 2. Generate PDF Invoice automatically
+      await generateInvoicePDF(currentOrder.id);
+
     } else if (status === 'EXPIRED') {
       await query(
         "UPDATE orders SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1",
