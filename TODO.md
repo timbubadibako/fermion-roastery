@@ -27,7 +27,7 @@
 - [ ] Implement Google Places API in Backend (Scraping/API Proxy) - *Skipped/Pending API Key*
 - [x] Create B2B Onboarding Flow (Full-stack integration)
 - [x] Setup Tiered Pricing & Contract Logic (Pricing Engine)
-- [ ] Automated Invoicing System (Express)
+- [x] Automated Invoicing System (PDF Generation)
 - [x] B2B Partner Admin Approval Dashboard
 
 ### Phase 3: Marketplace & Auth
@@ -35,15 +35,20 @@
 - [x] Link Profiles & Roles to Postgres
 - [x] Product Catalog with "Interactive Stickers"
 - [x] Cart & Checkout (Xendit Integration)
-
-### Phase 4: Full Order Fulfillment Pipeline
+### Phase 4: Full Order Fulfillment Pipeline (Marketplace v2.0)
 - [x] Database Migration (Orders & Order Items Tables)
-- [ ] Biteship API Integration (Dynamic Shipping Rates)
-- [ ] Cart Checkout Upgrade (Courier Selection & Xendit Link)
-- [ ] Admin Order Dashboard (Manage Status & Input AWB)
-- [ ] Customer Tracking Timeline UI
+- [x] Refine Order State Machine (Add `READY_TO_SHIP` state)
+- [x] Implement Backend Price Locking (Checkout Snapshot)
+- [x] Implement Xendit Webhook Idempotency (Duplicate Prevention)
+- [x] Refine Role-Dynamic Header (4 Role Faces)
+- [x] Server-side Cart Persistence (Synced per User)
+- [ ] Implement Admin "Magic Wand" (Quick Edit Buttons)
+- [x] Basic Customer Tracking Timeline UI
+- [/] Advanced B2B Dashboard (Tier Progress mockup done)
+- [x] Geolocation Helper ("Use Current Location" button)
 
 ### Phase 5: Production Polish
-- [ ] Real-time Chat (Pusher/Ably alternative)
+- [ ] Admin Real-time Chat Panel
+- [ ] Admin Batch Roasting Management UI
 - [ ] Final UI Refinement & Responsive Audit
 - [ ] Production Deployment (Vercel & Render)
