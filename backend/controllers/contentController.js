@@ -1,4 +1,6 @@
-// API for General Site Content
+import { query } from '../lib/db.js';
+
+// 1. Get Site Config
 export const getSiteConfig = (req, res) => {
   res.status(200).json({
     announcement: "Free shipping for orders above Rp 500.000! (Indonesia only)",
@@ -30,4 +32,21 @@ export const getSiteConfig = (req, res) => {
       ]
     }
   });
+};
+
+// 2. Get Latest Batches (for Lab Records)
+export const getLatestBatches = async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT b.*, p.name as product_name, p.origin, p.process
+      FROM batches b
+      JOIN products p ON b.product_id = p.id
+      ORDER BY b.roast_date DESC
+      LIMIT 3
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching latest batches:', error);
+    res.status(500).json({ message: "Failed to fetch batches" });
+  }
 };
