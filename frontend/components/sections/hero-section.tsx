@@ -12,7 +12,7 @@ const sideImages = [
     span: 1,
   },
   {
-    src: "https://placehold.co/600x800/ffd700/0f172a?text=Roast+Lab",
+    src: "/cartoon.jpeg",
     alt: "Fermion Roasting Lab",
     position: "left",
     span: 1,

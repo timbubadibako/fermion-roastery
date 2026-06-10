@@ -1,26 +1,35 @@
-import { Header } from "@/components/header";
-import { HeroSection } from "@/components/sections/hero-section";
-import { PhilosophySection } from "@/components/sections/philosophy-section";
-import { FeaturedProductsSection } from "@/components/sections/featured-products-section";
-import { TechnologySection } from "@/components/sections/technology-section";
-import { GallerySection } from "@/components/sections/gallery-section";
-import { CollectionSection } from "@/components/sections/collection-section";
-import { EditorialSection } from "@/components/sections/editorial-section";
-import { TestimonialsSection } from "@/components/sections/testimonials-section";
-import { FooterSection } from "@/components/sections/footer-section";
+"use client";
 
-export default function Home() {
+import React from "react";
+import { HeroV2 } from "@/components/sections/v2/HeroV2";
+import { PartnerRibbonV2 } from "@/components/sections/v2/PartnerRibbonV2";
+import { SeriesV2 } from "@/components/sections/v2/SeriesV2";
+import { TheWayV2 } from "@/components/sections/v2/TheWayV2";
+import { LabRecordsV2, NewReleasesV2 } from "@/components/sections/v2/RecordsAndShopV2";
+import { FooterV2 } from "@/components/sections/v2/FooterV2";
+
+export default function LandingPageV2() {
   return (
-    <main className="min-h-screen bg-background">
-      <HeroSection />
-      <PhilosophySection />
-      <FeaturedProductsSection />
-      <TechnologySection />
-      <GallerySection />
-      <CollectionSection />
-      <EditorialSection />
-      <TestimonialsSection />
-      <FooterSection />
+    <main className="relative min-h-screen">
+      
+      {/* Global Grainy Texture for V2 */}
+      <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.025]" 
+           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+      />
+
+      {/* Background Ambient Blobs */}
+      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-purple-200/40 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/30 rounded-full blur-[120px] z-[-1]" />
+
+      {/* Sections */}
+      <HeroV2 />
+      <PartnerRibbonV2 />
+      <SeriesV2 />
+      <TheWayV2 />
+      <LabRecordsV2 />
+      <NewReleasesV2 />
+      <FooterV2 />
+
     </main>
   );
 }
