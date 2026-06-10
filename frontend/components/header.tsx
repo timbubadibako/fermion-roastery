@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, User, Search, ShoppingBag, Loader2 } from "lucide-react";
+import { Menu, X, User, Search, ShoppingBag, LayoutDashboard, LayoutGrid, PackageSearch, Loader2 } from "lucide-react";
 import { CartSheet } from "./cart-sheet";
+import { useAuthStore } from "@/lib/store";
+import { useRouter } from "next/navigation";
 
 interface NavLink {
   label: string;
@@ -19,7 +21,10 @@ interface BrandConfig {
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+  
   const [brand, setBrand] = useState<BrandConfig | null>(null);
   const [announcement, setAnnouncement] = useState("");
   
@@ -43,13 +48,11 @@ export function Header() {
   ];
 
   useEffect(() => {
-    // Reset scroll state on route change to prevent flickering
     setIsScrolled(false);
     setIsMenuOpen(false);
     setIsSearchOpen(false);
 
     const handleScroll = () => {
-      // Use a more forgiving threshold
       const offset = window.scrollY;
       setIsScrolled(offset > 20);
     };
@@ -64,8 +67,6 @@ export function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("mousedown", handleClickOutside);
-    
-    // Initial check
     handleScroll();
 
     return () => {
@@ -73,7 +74,7 @@ export function Header() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [pathname]); // Re-run effect on route change
+  }, [pathname]);
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -81,7 +82,6 @@ export function Header() {
     }
   }, [isSearchOpen]);
 
-  // VARIANT LOGIC: Splitting into two clear variants
   const isRectangleVariant = pathname.startsWith("/our-coffee");
   
   const rectangleClasses = "mt-0 w-full h-16 bg-white border-b border-slate-100 shadow-sm";
@@ -94,7 +94,7 @@ export function Header() {
   const displayLinks = navLinks.length > 0 ? navLinks : [
     { label: "OUR COFFEE", href: "/our-coffee" },
     { label: "WHOLESALE", href: "/wholesale" },
-    { label: "SUBSCRIPTION", href: "/subscription" },
+    ...(user?.role !== 'B2B' ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
     { label: "JOURNAL", href: "/journal" },
     { label: "OUR STORY", href: "/our-story" },
   ];
@@ -102,19 +102,15 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-        {/* Outer Visual Wrapper */}
         <div className={`mx-auto pointer-events-auto transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${activeWrapperClasses}`}>
-          {/* Inner Content Container - Unified Spacing & Expansive Width */}
           <div className="max-w-[1400px] mx-auto flex items-center justify-between h-full px-6 md:px-12 relative w-full">
             
-            {/* Left: Logo */}
             <div className={`flex-shrink-0 transition-opacity duration-300 ${isSearchOpen ? "opacity-0 md:opacity-100" : "opacity-100"}`}>
               <Link href="/" className="text-2xl font-black tracking-[-0.04em] text-slate-900 uppercase italic">
                 {brand?.name || "FERMION"}
               </Link>
             </div>
 
-            {/* Center: Navigation Links */}
             <nav className={`hidden items-center justify-center gap-10 lg:flex flex-1 transition-all duration-500 ${isSearchOpen ? "opacity-0 pointer-events-none scale-95" : "opacity-100 scale-100"}`}>
               {displayLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
@@ -131,19 +127,12 @@ export function Header() {
               })}
             </nav>
 
-            {/* Right: Action Icons & Search Container */}
             <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
-              
-              {/* Expanding Search Bar */}
               <div className="relative">
                 <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-slate-50 border border-slate-200/50 rounded-full px-5" : "w-10"}`}>
-                  <button 
-                    onClick={() => setIsSearchOpen(!isSearchOpen)}
-                    className="text-slate-900 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none"
-                  >
+                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-slate-900 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none">
                     <Search size={18} strokeWidth={2.5} />
                   </button>
-                  
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -152,18 +141,13 @@ export function Header() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  
                   {isSearchOpen && (
-                    <button 
-                      onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
-                      className="text-slate-300 hover:text-slate-900 transition-colors ml-2"
-                    >
+                    <button onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }} className="text-slate-300 hover:text-slate-900 transition-colors ml-2">
                       <X size={14} strokeWidth={3} />
                     </button>
                   )}
                 </div>
 
-                {/* Search Dropdown */}
                 {isSearchOpen && (
                   <div className="absolute top-14 right-0 w-64 md:w-[320px] bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[2rem] mt-2 p-6 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
                     {!searchQuery ? (
@@ -202,22 +186,42 @@ export function Header() {
                         </div>
                       </div>
                     )}
-                    <div className="mt-5 pt-5 border-t border-slate-100 text-center">
-                      <Link href={`/our-coffee?search=${encodeURIComponent(searchQuery)}`} onClick={() => setIsSearchOpen(false)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors duration-300 uppercase tracking-[0.3em] italic">
-                          Explore All Results →
-                      </Link>
-                    </div>
                   </div>
                 )}
               </div>
 
-              <Link href="/auth" className="text-slate-900 hover:text-fermion-blue transition-all duration-300">
-                <User size={20} strokeWidth={2.5} />
-              </Link>
-
-              <div className="relative">
-                <CartSheet />
+              <div className="flex items-center gap-5">
+                {user?.role === 'RETAIL' && (
+                  <Link href="/account/orders" title="My Orders" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                    <PackageSearch size={20} strokeWidth={2.5} />
+                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Orders</span>
+                  </Link>
+                )}
+                {user?.role === 'B2B' && (
+                  <Link href="/b2b/dashboard" title="Partner Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                    <LayoutGrid size={20} strokeWidth={2.5} />
+                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Partner</span>
+                  </Link>
+                )}
+                {user?.role === 'ADMIN' && (
+                  <Link href="/admin/dashboard" title="Admin Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                    <LayoutDashboard size={20} strokeWidth={2.5} />
+                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Admin</span>
+                  </Link>
+                )}
+                {!user && (
+                  <Link href="/auth" title="Login" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                    <User size={20} strokeWidth={2.5} />
+                    <span className="hidden md:inline text-[9px] font-black tracking-widest uppercase">Login</span>
+                  </Link>
+                )}
               </div>
+
+              {user?.role !== 'ADMIN' && (
+                <div className="relative border-l border-slate-100 pl-5 ml-1">
+                  <CartSheet />
+                </div>
+              )}
 
               <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden text-slate-900 ${isSearchOpen ? "hidden" : "block"}`}>
                 {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
@@ -226,32 +230,46 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-white border-b border-slate-100 px-10 py-12 lg:hidden animate-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-b-[3rem]">
             <nav className="flex flex-col gap-8 text-center">
-              {displayLinks.map((link) => {
-                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-                return (
-                  <Link key={link.label} href={link.href} className={`text-sm font-black tracking-[0.4em] transition-colors uppercase italic ${isActive ? "text-fermion-blue" : "text-slate-900"}`} onClick={() => setIsMenuOpen(false)}>
-                    {link.label}
-                  </Link>
-                );
-              })}
+              {displayLinks.map((link) => (
+                <Link key={link.label} href={link.href} className="text-sm font-black tracking-[0.4em] transition-colors uppercase italic text-slate-900" onClick={() => setIsMenuOpen(false)}>
+                  {link.label}
+                </Link>
+              ))}
               <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6">
-                <Link href="/auth" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                    <User size={22} strokeWidth={2.5} /> My Account
-                </Link>
-                <Link href="/cart" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
-                    <ShoppingBag size={22} strokeWidth={2.5} /> My Cart (0)
-                </Link>
+                {user?.role === 'RETAIL' && (
+                  <Link href="/account/orders" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                      <PackageSearch size={22} strokeWidth={2.5} /> My Orders
+                  </Link>
+                )}
+                {user?.role === 'B2B' && (
+                  <Link href="/b2b/dashboard" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                      <LayoutGrid size={22} strokeWidth={2.5} /> Partner Dashboard
+                  </Link>
+                )}
+                {user?.role === 'ADMIN' && (
+                  <Link href="/admin/dashboard" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                      <LayoutDashboard size={22} strokeWidth={2.5} /> Admin Dashboard
+                  </Link>
+                )}
+                {!user && (
+                  <Link href="/auth" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                      <User size={22} strokeWidth={2.5} /> Login Account
+                  </Link>
+                )}
+                {user?.role !== 'ADMIN' && (
+                  <Link href="/cart" className="flex items-center justify-center gap-4 text-xs font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>
+                      <ShoppingBag size={22} strokeWidth={2.5} /> My Cart
+                  </Link>
+                )}
               </div>
             </nav>
           </div>
         )}
       </header>
 
-      {/* Announcement Bar (Sticky Bottom) */}
       <div className="fixed bottom-0 left-0 right-0 z-[60] bg-gradient-to-r from-slate-900 via-fermion-blue to-slate-900 backdrop-blur-md text-white text-[9px] font-black tracking-[0.5em] py-3.5 text-center uppercase border-t border-white/10">
         {announcement || "Free shipping for orders above Rp 500.000! (Indonesia only)"}
       </div>
