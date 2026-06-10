@@ -21,6 +21,7 @@ interface CartStore {
   removeItem: (id: string | number) => void;
   updateQuantity: (id: string | number, quantity: number) => void;
   clearCart: () => void;
+  setItems: (items: CartItem[]) => void;
   getTotal: () => number;
 }
 
@@ -40,42 +41,57 @@ export const useCartStore = create<CartStore>()(
           (item) => item.id === newItem.id && item.weight === newItem.weight && item.grind === newItem.grind
         );
 
+        let updatedItems;
         if (existingItemIndex > -1) {
-          const updatedItems = [...currentItems];
+          updatedItems = [...currentItems];
           updatedItems[existingItemIndex].quantity += newItem.quantity;
-          set({ items: updatedItems, isOpen: true }); // Auto-open cart
         } else {
-          set({ items: [...currentItems, newItem], isOpen: true }); // Auto-open cart
+          updatedItems = [...currentItems, newItem];
         }
+        
+        set({ items: updatedItems, isOpen: true });
+        get().syncWithServer();
       },
 
       removeItem: (id) => {
-        set({ items: get().items.filter((item) => item.id !== id) });
+        const updatedItems = get().items.filter((item) => item.id !== id);
+        set({ items: updatedItems });
+        get().syncWithServer();
       },
 
       updateQuantity: (id, quantity) => {
-        set({
-          items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-          ),
-        });
+        const updatedItems = get().items.map((item) =>
+          item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+        );
+        set({ items: updatedItems });
+        get().syncWithServer();
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => {
+        set({ items: [] });
+        get().syncWithServer();
+      },
+
+      setItems: (items) => set({ items }),
 
       getTotal: () => {
         return get().items.reduce((acc, item) => acc + item.price * item.quantity, 0);
       },
+
+      // Helper to sync with DB if logged in
+      syncWithServer: async () => {
+        // This will be called from the component/hook level or we could use useAuthStore.getState()
+        // But to keep it simple, we'll handle the actual fetch calls in a separate sync hook
+      }
     }),
     {
       name: 'fermion-cart-storage',
-      // Don't persist isOpen state
       partialize: (state) => ({ items: state.items }),
     }
   )
 );
 
-// --- Auth Store for Persistent Sessions ---
+// --- Auth Store ---
 interface AuthStore {
   user: any | null;
   setUser: (user: any) => void;
@@ -90,6 +106,8 @@ export const useAuthStore = create<AuthStore>()(
       logout: () => {
         document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         set({ user: null });
+        // Clear cart items on logout to prevent leakage
+        useCartStore.getState().setItems([]);
       },
     }),
     {
@@ -97,4 +115,3 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
-
