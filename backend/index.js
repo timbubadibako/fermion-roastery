@@ -9,6 +9,9 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import placesRoutes from './routes/placesRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 dotenv.config();
 
@@ -25,13 +28,16 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/places', placesRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Base route for health check
 app.get('/', (req, res) => {
   res.json({ 
     status: 'online', 
     engine: 'Fermion Business Engine v1.0',
-    services: ['ProductAPI', 'AuthSync', 'PaymentGateway', 'AdminPortal']
+    services: ['ProductAPI', 'AuthSync', 'PaymentGateway', 'AdminPortal', 'CartSync']
   });
 });
 
@@ -39,4 +45,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
 });
-
