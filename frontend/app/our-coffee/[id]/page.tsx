@@ -81,13 +81,13 @@ export default function ProductPage() {
       try {
         setLoading(true);
         // Fetch current product
-        const res = await fetch(`http://localhost:3001/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
         setProduct(data);
 
         // Fetch all products to filter related
-        const allRes = await fetch(`http://localhost:3001/api/products`);
+        const allRes = await fetch(`/api/products`);
         if (allRes.ok) {
           const allData = await allRes.json();
           const filtered = allData

@@ -37,7 +37,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
         ? { ...formData, role: defaultRole }
         : { email: formData.email, password: formData.password };
 
-      const response = await fetch(`http://localhost:3001${endpoint}`, {
+      const response = await fetch(`${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

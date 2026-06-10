@@ -2,82 +2,154 @@
 
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { Search, ArrowRight, Activity, Globe2, Coffee, Quote } from "lucide-react";
+import { Sticker } from "@/components/ui/sticker";
+import { FooterV2 } from "@/components/sections/v2/FooterV2";
 
-export default function StoryPage() {
+export default function StoryPageV2() {
   return (
-    <div className="bg-[#FDFBF7] min-h-screen pt-32">
-      <div className="max-w-6xl mx-auto px-12">
-        {/* Hero Narrative */}
-        <div className="flex flex-col lg:flex-row gap-20 py-24 items-center">
-           <div className="flex-1 space-y-10">
-              <div className="space-y-4">
-                 <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">The Roastery Story</p>
-                 <h1 className="text-6xl font-black tracking-tighter text-slate-900 uppercase italic leading-none">
-                    Artisan Spirit. <br/> Micro Roots.
-                 </h1>
-              </div>
-              <div className="space-y-6 text-slate-600 font-medium leading-relaxed">
+    <div className="bg-[#f8f9fb] min-h-screen relative overflow-hidden font-sans">
+      
+      {/* Global Aesthetics */}
+      <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]" 
+           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+      />
+      <div className="fixed top-[0px] right-[-200px] w-[800px] h-[800px] bg-purple-200/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+
+      {/* SECTION 1: THE SCRAPBOOK HERO */}
+      <section className="pt-40 pb-32 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
+           
+           <div className="flex-1 space-y-10 order-2 lg:order-1">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-blue uppercase"
+              >
+                 The Roastery Mission
+              </motion.div>
+              <motion.h1 
+                initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+                className="text-6xl md:text-8xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-[0.85]"
+              >
+                 The Flavor <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-blue to-purple-500 font-sans not-italic">Bridge.</span>
+              </motion.h1>
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                className="space-y-6 text-slate-500 font-medium text-lg md:text-xl leading-relaxed max-w-2xl"
+              >
                  <p>
-                    Fermion Roastery started in a small garage in Cirebon with a single mission: to prove that world-class coffee could be roasted with scientific precision in our local community.
+                    We exist to connect the hands that grow the coffee to the hands that brew it. Our role is simple but critical: to serve as the flavor bridge between the producer and the coffee drinker.
                  </p>
                  <p>
-                    We don't just roast coffee; we engineer happiness. Every batch is a result of hundreds of sensory tests, cupping sessions, and obsessive temperature profiling.
+                    There are good intentions, unique character, and intrinsic values within every single bean. It is our sworn duty to ensure those values remain unbroken from farm to cup.
                  </p>
-              </div>
+              </motion.div>
            </div>
-           <div className="w-full lg:w-[450px] relative aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white rotate-3">
+
+           <motion.div 
+             initial={{ opacity: 0, scale: 0.9, rotate: -5 }} animate={{ opacity: 1, scale: 1, rotate: 3 }} transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+             className="w-full lg:w-[500px] relative aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white/80 backdrop-blur-xl order-1 lg:order-2 group"
+           >
               <Image 
-                src="https://placehold.co/800x800/0f172a/ffffff?text=OUR+FOUNDER" 
+                src="https://placehold.co/800x1000/0f172a/ffffff?text=Garage+Days" 
                 alt="Fermion Founder" 
                 fill 
-                className="object-cover"
+                className="object-cover transition-transform duration-1000 group-hover:scale-110"
               />
+              <Sticker rotate={-12} className="top-8 left-8" variant="solid" color="var(--cartoon-yellow)">
+                 <span className="p-2 text-slate-900">EST. 2018</span>
+              </Sticker>
+              <Sticker rotate={8} className="bottom-8 right-8" color="var(--cartoon-pink)">
+                 Garage Era
+              </Sticker>
+           </motion.div>
+
+        </div>
+      </section>
+
+      {/* SECTION 2: THE PHILOSOPHY (Glass Cards) */}
+      <section className="py-24 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="artisan-glass p-12 md:p-16 rounded-[4rem] space-y-8 group"
+              >
+                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
+                    <Globe2 size={28} className="text-emerald-500" />
+                 </div>
+                 <div>
+                    <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase mb-4">01 / THE PRODUCER</h3>
+                    <h2 className="text-4xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none mb-6">Honoring the <br/> Origin.</h2>
+                    <p className="text-slate-500 leading-relaxed font-medium">
+                       We source directly from dedicated farmers. Every cherry carries their hard work and a unique terroir that we are sworn to protect and highlight through careful profiling.
+                    </p>
+                 </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+                className="artisan-glass p-12 md:p-16 rounded-[4rem] space-y-8 group"
+              >
+                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
+                    <Activity size={28} className="text-purple-500" />
+                 </div>
+                 <div>
+                    <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase mb-4">02 / THE DRINKER</h3>
+                    <h2 className="text-4xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none mb-6">Delivering the <br/> Value.</h2>
+                    <p className="text-slate-500 leading-relaxed font-medium">
+                       Through scientific precision and sensory calibration, we ensure that the original goodness and unique flavor profile reach your morning ritual intact and unbroken.
+                    </p>
+                 </div>
+              </motion.div>
+
            </div>
         </div>
+      </section>
 
-        {/* The Philosophy Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-slate-100 border border-slate-100 rounded-[3rem] overflow-hidden mb-32">
-           <div className="bg-white p-16 space-y-6">
-              <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">01 / THE SCIENCE</h3>
-              <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">Precision over <br/> Guesswork.</h2>
-              <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                 We use data-driven roasting software and laboratory-grade sensors to track the Maillard reaction and development time to the second.
-              </p>
+      {/* SECTION 3: ROASTERY GALLERY */}
+      <section className="py-32 px-6 relative z-10">
+         <div className="max-w-7xl mx-auto space-y-16">
+           <div className="text-center">
+              <h2 className="text-5xl md:text-6xl font-display font-black tracking-tighter text-slate-900 uppercase italic">Where the magic happens.</h2>
            </div>
-           <div className="bg-white p-16 space-y-6">
-              <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">02 / THE SOURCE</h3>
-              <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">Direct to <br/> The Farm.</h2>
-              <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                 Our beans are sourced directly from processing pioneers in West Java and Central Java, ensuring farmers get a premium above fair trade.
-              </p>
-           </div>
-        </div>
-
-        {/* The Roastery View */}
-        <div className="space-y-12 mb-40 text-center">
-           <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase italic">Where the magic happens.</h2>
+           
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-sm border border-slate-100">
-                 <Image src="https://placehold.co/600x800/7a9cff/ffffff?text=The+Probat" alt="Roastery equipment" fill className="object-cover" />
-              </div>
-              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-sm border border-slate-100 mt-12 md:mt-24">
-                 <Image src="https://placehold.co/600x800/ffd700/0f172a?text=Quality+Check" alt="Quality control" fill className="object-cover" />
-              </div>
-              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-sm border border-slate-100">
-                 <Image src="https://placehold.co/600x800/ff4b4b/ffffff?text=Hand+Packing" alt="Hand packaging" fill className="object-cover" />
-              </div>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/60 shadow-xl group">
+                 <Image src="https://placehold.co/600x800/1e293b/0f172a?text=The+Probat" alt="Roastery equipment" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                 <Sticker rotate={-5} className="bottom-6 left-6" variant="dashed">Machine</Sticker>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/60 shadow-xl mt-12 md:mt-24 group">
+                 <Image src="https://placehold.co/600x800/cbd5e1/f8fafc?text=Quality+Check" alt="Quality control" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                 <Sticker rotate={8} className="bottom-6 right-6" variant="solid" color="var(--cartoon-green)"><span className="px-2">QC Pass</span></Sticker>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/60 shadow-xl group">
+                 <Image src="https://placehold.co/600x800/f1f5f9/94a3b8?text=Hand+Packing" alt="Hand packaging" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                 <Sticker rotate={-12} className="top-6 left-6" color="var(--cartoon-pink)">Hand Packed</Sticker>
+              </motion.div>
            </div>
-        </div>
-      </div>
-
-      {/* Footer Quote */}
-      <div className="bg-slate-900 py-32 text-center text-white px-12">
-         <div className="max-w-3xl mx-auto space-y-8">
-            <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase leading-tight">
-               "Good coffee, good mood, good day."
-            </h2>
-            <p className="text-white/40 text-xs font-bold tracking-[0.4em] uppercase">— THE FERMION CREED</p>
          </div>
+      </section>
+
+      {/* SECTION 4: THE CREED (Footer Quote) */}
+      <section className="py-40 px-6 relative z-10 bg-slate-950 mt-20">
+         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-fermion-blue/20 via-transparent to-transparent opacity-50" />
+         <div className="max-w-5xl mx-auto text-center space-y-12 relative z-10">
+            <Quote size={48} className="text-white/20 mx-auto" />
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black italic tracking-tighter text-white leading-tight text-balance">
+               "Tugas kami adalah sebagai jembatan rasa antara producer dan coffee drinker. Ada hal baik, rasa yang unik dan value yang tidak boleh putus."
+            </h2>
+            <p className="text-fermion-blue text-[10px] font-black tracking-[0.5em] uppercase">
+               — The Fermion Manifesto
+            </p>
+         </div>
+      </section>
+
+      <div className="bg-slate-950">
+        <FooterV2 />
       </div>
     </div>
   );
