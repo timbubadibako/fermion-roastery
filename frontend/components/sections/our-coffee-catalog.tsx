@@ -19,7 +19,7 @@ interface CoffeeProduct {
   isLocked?: boolean;
 }
 
-import { useCartStore } from "@/lib/store";
+import { useCartStore, useAuthStore } from "@/lib/store";
 
 export function RetailCatalog() {
   const [products, setProducts] = useState<CoffeeProduct[]>([]);
@@ -29,11 +29,16 @@ export function RetailCatalog() {
   const [showFilter, setShowFilter] = useState(false);
   
   const addItem = useCartStore((state) => state.addItem);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/products');
+        const url = user 
+          ? `/api/products?profileId=${user.id}`
+          : '/api/products';
+          
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch products');
         const data = await res.json();
         setProducts(data);
@@ -44,7 +49,7 @@ export function RetailCatalog() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [user]);
 
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault();

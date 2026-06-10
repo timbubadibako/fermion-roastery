@@ -50,7 +50,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/admin/orders");
+      const res = await fetch("/api/admin/orders");
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -65,7 +65,7 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (id: string, newStatus: string, payload: any = {}) => {
     setUpdatingId(id);
     try {
-      const res = await fetch(`http://localhost:3001/api/admin/orders/${id}`, {
+      const res = await fetch(`/api/admin/orders/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus, ...payload }),
@@ -104,6 +104,7 @@ export default function AdminOrdersPage() {
       case 'UNPAID': return <span className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><Clock size={12}/> UNPAID</span>;
       case 'PAID': return <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><CheckCircle2 size={12}/> PAID</span>;
       case 'ROASTING': return <span className="bg-amber-100 text-amber-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><Flame size={12}/> ROASTING</span>;
+      case 'READY_TO_SHIP': return <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><Package size={12}/> READY TO SHIP</span>;
       case 'SHIPPED': return <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><Truck size={12}/> SHIPPED</span>;
       case 'DELIVERED': return <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><CheckCircle2 size={12}/> DELIVERED</span>;
       case 'CANCELLED': return <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-1.5"><XCircle size={12}/> CANCELLED</span>;
@@ -233,7 +234,17 @@ export default function AdminOrdersPage() {
                       </Button>
                     )}
 
-                    {order.status === 'ROASTING' && activeResiOrderId !== order.id && (
+                    {order.status === 'ROASTING' && (
+                      <Button 
+                        onClick={() => updateOrderStatus(order.id, 'READY_TO_SHIP')}
+                        disabled={updatingId === order.id}
+                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black tracking-widest uppercase text-[10px] h-12 rounded-xl"
+                      >
+                        {updatingId === order.id ? <Loader2 className="animate-spin" /> : "Finish Roast & Package (QC)"}
+                      </Button>
+                    )}
+
+                    {order.status === 'READY_TO_SHIP' && activeResiOrderId !== order.id && (
                       <Button 
                         onClick={() => {
                           setActiveResiOrderId(order.id);
@@ -241,7 +252,7 @@ export default function AdminOrdersPage() {
                         }}
                         className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black tracking-widest uppercase text-[10px] h-12 rounded-xl"
                       >
-                        Prepare Shipment (Input AWB)
+                        Handover to Courier (Input AWB)
                       </Button>
                     )}
 

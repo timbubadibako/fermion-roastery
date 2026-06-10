@@ -17,9 +17,11 @@ export default function AuthPage() {
   const handleAuthSuccess = (profile: any) => {
     setUser(profile); // Persist user to store
     
-    // If user is admin, take them to dashboard
+    // Redirect based on role
     if (profile.role === 'ADMIN') {
       router.push("/admin/dashboard");
+    } else if (profile.role === 'B2B') {
+      router.push("/b2b/dashboard");
     } else {
       router.push("/our-coffee");
     }
