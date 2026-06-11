@@ -1,6 +1,7 @@
 import { Xendit } from 'xendit-node';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 import { query } from '../lib/db.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 
@@ -10,27 +11,77 @@ const xendit = new Xendit({
   secretKey: process.env.XENDIT_SECRET_KEY,
 });
 
+const BITESHIP_API_KEY = process.env.BITESHIP_API_KEY;
+const BITESHIP_URL = 'https://api.biteship.com/v1';
+const biteshipHeaders = {
+  'Authorization': `Bearer ${BITESHIP_API_KEY}`,
+  'Content-Type': 'application/json'
+};
+
+// Default Origin (Fermion Roastery Cirebon - Kesambi)
+const ORIGIN_DETAILS = {
+  area_id: "IDNP9IDNC105IDND151IDZ45131",
+  postal_code: 45131
+};
+
 export const createInvoice = async (req, res) => {
   const { amount, items, customerDetails, metadata } = req.body;
   const shipping = metadata?.shipping || {};
   const profileId = metadata?.profileId || null;
   const shippingFee = metadata?.shippingFee || 0;
+  const courier = metadata?.courier || null;
 
   try {
     const referenceId = `invoice-${uuidv4()}`;
 
-    // 1. Save to Database (UNPAID)
+    // 1. Create Biteship Draft Order First
+    let biteshipDraftId = null;
+    if (courier && (shipping.area_id || shipping.postal_code)) {
+      try {
+        const draftPayload = {
+          origin_contact_name: "Fermion Roastery",
+          origin_contact_phone: "081234567890",
+          origin_address: "Jl. Kesambi No. 202, Cirebon",
+          origin_area_id: ORIGIN_DETAILS.area_id,
+          origin_postal_code: ORIGIN_DETAILS.postal_code,
+          destination_contact_name: customerDetails?.name || "Customer",
+          destination_contact_phone: customerDetails?.phone || "08123456789",
+          destination_address: shipping.address || "",
+          destination_area_id: shipping.area_id,
+          destination_postal_code: Number(shipping.postal_code),
+          courier_company: courier.courier_code,
+          courier_type: courier.courier_service_code,
+          delivery_type: "now",
+          items: items.map(item => ({
+            name: item.name,
+            value: Number(item.price),
+            quantity: Number(item.quantity),
+            weight: 250 // Default
+          }))
+        };
+
+        const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
+        biteshipDraftId = draftRes.data.id;
+        console.log(`📦 Biteship Draft Created: ${biteshipDraftId}`);
+      } catch (bsError) {
+        console.error('⚠️ Biteship Draft Error:', bsError.response?.data || bsError.message);
+        // We continue even if Biteship fails, we can fix it manually later
+      }
+    }
+
+    // 2. Save to Database (UNPAID)
     await query('BEGIN');
 
     // Insert into orders
     const orderResult = await query(
       `INSERT INTO orders (
-        profile_id, xendit_invoice_id, status, total_amount, shipping_fee, 
-        customer_name, customer_email, customer_phone, 
+        profile_id, xendit_invoice_id, biteship_order_id, status, total_amount, shipping_fee, 
+        shipping_courier, customer_name, customer_email, customer_phone, 
         shipping_address, shipping_city, shipping_notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
       [
-        profileId, referenceId, 'UNPAID', amount, shippingFee,
+        profileId, referenceId, biteshipDraftId, 'UNPAID', amount, shippingFee,
+        courier?.courier_name || null,
         customerDetails?.name || 'Guest', 
         customerDetails?.email || 'guest@example.com', 
         customerDetails?.phone || '-', 
@@ -112,23 +163,33 @@ export const createSubscription = async (req, res) => {
   }
 };
 export const handleNotification = async (req, res) => {
-  console.log("Xendit Payment Notification Received:", req.body);
+  console.log("Xendit Payment Notification Received:", JSON.stringify(req.body, null, 2));
 
   const { external_id, status } = req.body;
 
   try {
-    // 0. Idempotency Check: Get current status
-    const currentOrderRes = await query("SELECT status, id FROM orders WHERE xendit_invoice_id = $1", [external_id]);
+    // 0. Flexible Lookup: Try xendit_invoice_id first, then fallback to internal order id
+    let currentOrderRes = await query("SELECT status, id, biteship_order_id FROM orders WHERE xendit_invoice_id = $1", [external_id]);
+    
+    if (currentOrderRes.rows.length === 0) {
+      console.log(`🔍 Invoice ID not found, trying fallback to Order ID: ${external_id}`);
+      // Clean ID from # if present
+      const cleanId = external_id.replace('#', '').toLowerCase();
+      currentOrderRes = await query("SELECT status, id, biteship_order_id FROM orders WHERE id::text = $1", [cleanId]);
+    }
+
     const currentOrder = currentOrderRes.rows[0];
 
     if (!currentOrder) {
-      console.log(`⚠️ Webhook received for unknown invoice: ${external_id}`);
-      return res.status(200).send("OK"); // Respond OK to Xendit to stop retries
+      console.log(`❌ ERROR: Webhook received for completely unknown ID: ${external_id}`);
+      return res.status(200).send("OK");
     }
+
+    console.log(`📦 Found Order: ${currentOrder.id} (Current Status: ${currentOrder.status})`);
 
     // If already paid or beyond, skip
     if (['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(currentOrder.status)) {
-      console.log(`ℹ️ Order ${currentOrder.id} already processed (Status: ${currentOrder.status}). Skipping.`);
+      console.log(`ℹ️ Order ${currentOrder.id} already processed. Skipping.`);
       return res.status(200).send("OK");
     }
 
@@ -140,6 +201,26 @@ export const handleNotification = async (req, res) => {
       );
 
       console.log(`✅ Order ${currentOrder.id} status updated to PAID via Webhook.`);
+
+      // --- BITESHIP CONFIRMATION ---
+      if (currentOrder.biteship_order_id) {
+        try {
+          console.log(`🔔 Confirming Biteship Draft: ${currentOrder.biteship_order_id}`);
+          const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${currentOrder.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
+          
+          const finalOrderId = confirmRes.data.id;
+          const waybillId = confirmRes.data.courier.waybill_id;
+
+          await query(
+            "UPDATE orders SET biteship_order_id = $1, shipping_awb = $2, status = 'READY_TO_SHIP' WHERE xendit_invoice_id = $3",
+            [finalOrderId, waybillId, external_id]
+          );
+          console.log(`✅ Biteship Order Confirmed. Resi: ${waybillId}`);
+        } catch (bsError) {
+          console.error('❌ Biteship Confirm Error:', bsError.response?.data || bsError.message);
+        }
+      }
+      // ----------------------------
 
       // 2. Generate PDF Invoice automatically
       await generateInvoicePDF(currentOrder.id);
