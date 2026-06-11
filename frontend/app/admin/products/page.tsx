@@ -74,7 +74,7 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/products");
+      const res = await fetch("/api/products");
       if (res.ok) {
         const data = await res.json();
         setProducts(data);
@@ -139,8 +139,8 @@ export default function AdminProductsPage() {
       };
 
       const url = editingProduct 
-        ? `http://localhost:3001/api/products/${editingProduct.id}`
-        : "http://localhost:3001/api/products";
+        ? `/api/products/${editingProduct.id}`
+        : "/api/products";
       
       const method = editingProduct ? "PUT" : "POST";
 
@@ -169,7 +169,7 @@ export default function AdminProductsPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/api/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
       if (res.ok) {
         toast.success("Product deleted");
         fetchProducts();

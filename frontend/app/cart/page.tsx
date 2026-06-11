@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -31,6 +31,8 @@ export default function CartPage() {
   const [step, setStep] = useState(1); // 1: Cart, 2: Shipping, 3: Processing
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [ratesLoading, setRatesLoading] = useState(false);
+  const [areaSearchLoading, setAreaSearchLoading] = useState(false);
   
   const [shippingData, setShippingData] = useState({
     name: user?.full_name || "",
@@ -39,19 +41,73 @@ export default function CartPage() {
     address: "",
     city: "",
     postal_code: "",
-    notes: ""
+    notes: "",
+    area_id: ""
   });
 
-  const mockCouriers = [
-    { id: 'jne_reg', name: 'JNE Reguler', price: 25000, est: '2-3 Hari' },
-    { id: 'sicepat_best', name: 'SiCepat BEST', price: 35000, est: '1 Hari' },
-    { id: 'paxel_same', name: 'Paxel Same Day', price: 45000, est: 'Hari Ini' },
-  ];
-  
-  const [selectedCourier, setSelectedCourier] = useState(mockCouriers[0]);
+  const [areas, setAreas] = useState<any[]>([]);
+  const [showAreas, setShowAreas] = useState(false);
+  const [couriers, setCouriers] = useState<any[]>([]);
+  const [selectedCourier, setSelectedCourier] = useState<any>(null);
+
+  // Auto-fetch rates when area or postal code is complete
+  useEffect(() => {
+    if (shippingData.area_id || (shippingData.postal_code && shippingData.postal_code.length === 5)) {
+      fetchRates(shippingData.area_id, shippingData.postal_code);
+    }
+  }, [shippingData.area_id, shippingData.postal_code]);
+
+  const fetchAreas = async (input: string) => {
+    if (input.length < 3) return;
+    setAreaSearchLoading(true);
+    try {
+      const res = await fetch(`/api/shipping/areas?input=${encodeURIComponent(input)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAreas(data);
+      }
+    } catch (error) {
+      console.error("Area search error:", error);
+    } finally {
+      setAreaSearchLoading(false);
+    }
+  };
+
+  const fetchRates = async (areaId: string, postalCode: string) => {
+    if (!areaId && !postalCode) return;
+    setRatesLoading(true);
+    try {
+      const res = await fetch("/api/shipping/rates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destination_area_id: areaId,
+          destination_postal_code: postalCode,
+          items: items.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            weight: 250 // Default weight
+          }))
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCouriers(data);
+        if (data.length > 0) {
+          setSelectedCourier(data[0]);
+        }
+      }
+    } catch (error) {
+      toast.error("Gagal mengambil tarif pengiriman");
+    } finally {
+      setRatesLoading(false);
+    }
+  };
 
   const subtotal = getTotal();
-  const shippingFee = subtotal > 500000 || subtotal === 0 ? 0 : selectedCourier.price;
+  const shippingFee = selectedCourier?.price || 0;
   const total = subtotal + shippingFee;
 
   const handleGetLocation = () => {
@@ -70,12 +126,16 @@ export default function CartPage() {
           const data = await res.json();
           
           if (data && data.address) {
+            const newCity = data.address.city || data.address.town || data.address.county || prev.city;
+            const newPostal = data.address.postcode || prev.postal_code;
+            
             setShippingData(prev => ({
               ...prev,
               address: data.display_name || prev.address,
-              city: data.address.city || data.address.town || data.address.county || prev.city,
-              postal_code: data.address.postcode || prev.postal_code
+              city: newCity,
+              postal_code: newPostal
             }));
+            
             toast.success("Location pinned successfully!");
           }
         } catch (error) {
@@ -106,7 +166,7 @@ export default function CartPage() {
         phone: shippingData.phone
       };
 
-      const res = await fetch("http://localhost:3001/api/payments/invoice", {
+      const res = await fetch("/api/payments/invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -116,7 +176,8 @@ export default function CartPage() {
           metadata: { 
             shipping: shippingData,
             profileId: user?.id || null,
-            shippingFee: shippingFee
+            shippingFee: shippingFee,
+            courier: selectedCourier
           }
         }),
       });
@@ -243,9 +304,46 @@ export default function CartPage() {
                         <Input placeholder="+62 ..." className="h-14 pl-12 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.phone} onChange={(e) => setShippingData({...shippingData, phone: e.target.value})} />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City / Regency</label>
-                      <Input placeholder="e.g. Jakarta Selatan" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" value={shippingData.city} onChange={(e) => setShippingData({...shippingData, city: e.target.value})} />
+                    <div className="space-y-2 relative">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">City / Regency (Biteship Area)</label>
+                      <div className="relative">
+                        <Input 
+                          placeholder="Search City or District..." 
+                          className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold" 
+                          value={shippingData.city} 
+                          onFocus={() => setShowAreas(true)}
+                          onBlur={() => setTimeout(() => setShowAreas(false), 200)}
+                          onChange={(e) => {
+                            setShippingData({...shippingData, city: e.target.value});
+                            setShowAreas(true);
+                            fetchAreas(e.target.value);
+                          }} 
+                        />
+                        {areaSearchLoading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-slate-300" />}
+                      </div>
+                      
+                      {(areas.length > 0 && showAreas) && (
+                        <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-60 overflow-y-auto">
+                          {areas.map((area) => (
+                            <button
+                              key={area.id}
+                              onClick={() => {
+                                setShippingData({
+                                  ...shippingData, 
+                                  city: area.name,
+                                  area_id: area.id,
+                                  postal_code: area.postal_code.toString()
+                                });
+                                setAreas([]);
+                                setShowAreas(false);
+                              }}
+                              className="w-full px-6 py-4 text-left hover:bg-slate-50 text-xs font-bold text-slate-700 border-b border-slate-50 last:border-none"
+                            >
+                              {area.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="md:col-span-2 space-y-4">
@@ -267,8 +365,13 @@ export default function CartPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Postal Code</label>
-                      <Input placeholder="12345" className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold font-mono" value={shippingData.postal_code} onChange={(e) => setShippingData({...shippingData, postal_code: e.target.value})} />
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Postal Code (Fallback)</label>
+                      <Input 
+                        placeholder="12345" 
+                        className="h-14 px-6 bg-slate-50 border-none rounded-2xl text-sm font-bold font-mono" 
+                        value={shippingData.postal_code} 
+                        onChange={(e) => setShippingData({...shippingData, postal_code: e.target.value})} 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Notes / Patokan</label>
@@ -277,20 +380,33 @@ export default function CartPage() {
                   </div>
 
                   <div className="space-y-4 pt-6 border-t border-slate-50">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Courier</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {mockCouriers.map(courier => (
-                        <button 
-                          key={courier.id}
-                          onClick={() => setSelectedCourier(courier)}
-                          className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedCourier.id === courier.id ? 'border-fermion-blue bg-fermion-blue/5' : 'border-slate-100 hover:border-slate-300'}`}
-                        >
-                          <p className="text-xs font-black uppercase tracking-widest text-slate-900">{courier.name}</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Est: {courier.est}</p>
-                          <p className="text-sm font-mono font-bold text-fermion-blue mt-2">Rp {courier.price.toLocaleString('id-ID')}</p>
-                        </button>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Courier</label>
+                      {ratesLoading && <Loader2 className="w-4 h-4 animate-spin text-fermion-blue" />}
                     </div>
+                    
+                    {couriers.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {couriers.map(courier => (
+                          <button 
+                            key={`${courier.courier_code}-${courier.courier_service_code}`}
+                            onClick={() => setSelectedCourier(courier)}
+                            className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedCourier?.courier_code === courier.courier_code && selectedCourier?.courier_service_code === courier.courier_service_code ? 'border-fermion-blue bg-fermion-blue/5' : 'border-slate-100 hover:border-slate-300'}`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-xs font-black uppercase tracking-widest text-slate-900">{courier.courier_name}</p>
+                              <span className="text-[9px] bg-slate-100 px-2 py-0.5 rounded-full font-bold uppercase">{courier.courier_service_code}</span>
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est: {courier.duration}</p>
+                            <p className="text-sm font-mono font-bold text-fermion-blue mt-2">Rp {courier.price.toLocaleString('id-ID')}</p>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 rounded-2xl p-8 text-center border border-dashed border-slate-200">
+                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Pilih area atau isi kode pos untuk melihat ongkir</p>
+                      </div>
+                    )}
                   </div>
                   
                   <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em] flex items-center gap-2">← Back to review</button>
@@ -309,7 +425,9 @@ export default function CartPage() {
                </div>
                <div className="flex justify-between text-sm font-bold text-slate-500">
                   <span className="uppercase tracking-widest text-[10px]">Shipping</span>
-                  <span className="font-mono">{shippingFee === 0 ? "FREE" : `Rp ${shippingFee.toLocaleString('id-ID')}`}</span>
+                  <span className="font-mono">
+                    {!selectedCourier ? "Select Courier" : shippingFee === 0 ? "FREE" : `Rp ${shippingFee.toLocaleString('id-ID')}`}
+                  </span>
                </div>
                <Separator className="bg-slate-50" />
                <div className="flex justify-between text-lg font-black text-slate-900 pt-2">

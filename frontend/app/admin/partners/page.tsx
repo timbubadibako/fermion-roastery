@@ -34,7 +34,7 @@ export default function AdminPartnersPage() {
 
   const fetchPartners = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/admin/partners");
+      const res = await fetch("/api/admin/partners");
       if (res.ok) {
         const data = await res.json();
         setPartners(data);
@@ -55,7 +55,7 @@ export default function AdminPartnersPage() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3001/api/admin/partners/${id}`, {
+      const res = await fetch(`/api/admin/partners/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status, tier_name: tier }),

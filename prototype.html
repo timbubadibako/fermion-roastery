@@ -1,145 +1,1170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fermion Roastery - Modern Playful Prototype</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        fermion: {
-                            blue: '#7A9CFF',
-                            soft: '#F3F6FF',
-                            charcoal: '#0F172A',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #F8FAFC;
-            color: #0F172A;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fermion Roastery - UI Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --off-white: #faf9f6;
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-strong: #ffffff;
+      --charcoal: #101828;
+      --muted: #667085;
+      --border: rgba(16, 24, 40, 0.08);
+      --blue: #84a8ff;
+      --blue-deep: #6486f4;
+      --lilac: #b7a0ff;
+      --lilac-deep: #8f73ff;
+      --yellow: #f3ca57;
+      --coral: #ff826f;
+      --mint: #8cd7c5;
+      --shadow: 0 22px 60px rgba(16, 24, 40, 0.10);
+      --shadow-soft: 0 10px 30px rgba(16, 24, 40, 0.06);
+    }
 
-        .btn-bounce:active {
-            transform: scale(0.95);
-        }
-    </style>
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      overflow-y: scroll;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--charcoal);
+      background:
+        radial-gradient(circle at top left, rgba(132, 168, 255, 0.22), transparent 24%),
+        radial-gradient(circle at top right, rgba(183, 160, 255, 0.20), transparent 18%),
+        linear-gradient(180deg, #ffffff 0%, var(--off-white) 18%, #f7f5ef 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -ms-overflow-style: none;
+    }
+
+    body::-webkit-scrollbar,
+    html::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .noise::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      mix-blend-mode: multiply;
+      z-index: 1;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 2;
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 18px 0 10px;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, rgba(250, 249, 246, 0.84), rgba(250, 249, 246, 0.34));
+      border-bottom: 1px solid rgba(16, 24, 40, 0.04);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background:
+        linear-gradient(140deg, rgba(132, 168, 255, 1), rgba(183, 160, 255, 0.95));
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .topnav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--charcoal);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.94);
+      border-color: rgba(132, 168, 255, 0.30);
+    }
+
+    .hero {
+      padding: 28px 0 30px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: stretch;
+      min-height: calc(100vh - 110px);
+    }
+
+    .hero-copy {
+      position: relative;
+      border-radius: 36px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.58)),
+        radial-gradient(circle at top right, rgba(132, 168, 255, 0.16), transparent 36%),
+        radial-gradient(circle at bottom left, rgba(183, 160, 255, 0.14), transparent 30%);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 48px);
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(16, 24, 40, 0.06);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .h1 {
+      margin: 22px 0 18px;
+      font-family: "Fraunces", serif;
+      font-size: clamp(3.3rem, 8vw, 7rem);
+      line-height: 0.93;
+      letter-spacing: -0.05em;
+      max-width: 10ch;
+    }
+
+    .h2 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .body {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+      max-width: 68ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 50px;
+      padding: 0 18px;
+      border-radius: 16px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 11px;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .button-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue-deep), var(--lilac-deep));
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--charcoal);
+      border: 1px solid var(--border);
+    }
+
+    .button-ghost {
+      background: transparent;
+      border: 1px solid rgba(16, 24, 40, 0.12);
+      color: var(--charcoal);
+      box-shadow: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .stat {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(16, 24, 40, 0.06);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 16px;
+      letter-spacing: -0.04em;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .hero-visual {
+      position: relative;
+      border-radius: 36px;
+      overflow: hidden;
+      border: 1px solid rgba(16, 24, 40, 0.08);
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(180deg, rgba(132, 168, 255, 0.36), rgba(183, 160, 255, 0.22)),
+        linear-gradient(145deg, #ffffff 0%, #f6f6f1 100%);
+      min-height: 680px;
+    }
+
+    .hero-photo {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(16, 24, 40, 0.08), rgba(16, 24, 40, 0.30)),
+        url("./pack-depan.png") center center / cover no-repeat;
+      filter: saturate(1.05) contrast(0.98);
+      transform: scale(1.02);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.44), transparent 18%),
+        radial-gradient(circle at bottom right, rgba(16, 24, 40, 0.20), transparent 24%);
+    }
+
+    .floating-note {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      display: grid;
+      gap: 10px;
+    }
+
+    .floating-note small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .section {
+      padding: 26px 0 0;
+    }
+
+    .section-shell {
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(16, 24, 40, 0.06);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 26px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .section-head p {
+      max-width: 56ch;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .card {
+      position: relative;
+      border-radius: 24px;
+      padding: 18px;
+      border: 1px solid rgba(16, 24, 40, 0.07);
+      background: rgba(255, 255, 255, 0.84);
+      overflow: hidden;
+      min-height: 160px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .card--dark {
+      color: white;
+      background: linear-gradient(135deg, #1d2740, #111827);
+    }
+
+    .card--blue {
+      background: linear-gradient(135deg, rgba(132, 168, 255, 0.30), rgba(255, 255, 255, 0.88));
+    }
+
+    .card--lilac {
+      background: linear-gradient(135deg, rgba(183, 160, 255, 0.30), rgba(255, 255, 255, 0.88));
+    }
+
+    .card--yellow {
+      background: linear-gradient(135deg, rgba(243, 202, 87, 0.30), rgba(255, 255, 255, 0.88));
+    }
+
+    .card--coral {
+      background: linear-gradient(135deg, rgba(255, 130, 111, 0.26), rgba(255, 255, 255, 0.88));
+    }
+
+    .placeholder {
+      min-height: 176px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .placeholder .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(16, 24, 40, 0.06);
+    }
+
+    .placeholder .label {
+      font-family: "Fraunces", serif;
+      font-size: 28px;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .placeholder .hint {
+      color: rgba(16, 24, 40, 0.70);
+      font-size: 12px;
+      line-height: 1.6;
+      max-width: 28ch;
+    }
+
+    .dark .placeholder .hint { color: rgba(255,255,255,0.72); }
+
+    .ui-matrix {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .input {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(16, 24, 40, 0.09);
+      background: rgba(255, 255, 255, 0.80);
+      min-height: 50px;
+      padding: 0 16px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    }
+
+    .input:focus {
+      border-color: rgba(132, 168, 255, 0.65);
+      box-shadow: 0 0 0 4px rgba(132, 168, 255, 0.14);
+    }
+
+    .primary-stack {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .product-card {
+      min-height: 100%;
+      display: grid;
+      gap: 14px;
+    }
+
+    .product-media {
+      position: relative;
+      border-radius: 22px;
+      min-height: 220px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(132, 168, 255, 0.60), rgba(183, 160, 255, 0.40)),
+        url("./pack-depan.png") center center / cover no-repeat;
+    }
+
+    .product-media .floating-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255,255,255,0.42);
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .swatch {
+      border-radius: 18px;
+      min-height: 92px;
+      padding: 12px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(255,255,255,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    .swatch span {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .swatch small {
+      font-size: 11px;
+      opacity: 0.86;
+    }
+
+    .scroll-section {
+      padding: 26px 0 100px;
+    }
+
+    .scroll-rules {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 98px;
+    }
+
+    .rule-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rule {
+      min-height: 150px;
+      background: rgba(255,255,255,0.84);
+      border: 1px solid rgba(16,24,40,0.08);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      gap: 10px;
+    }
+
+    .rule .index {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .rule .title {
+      font-family: "Fraunces", serif;
+      font-size: 24px;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+    }
+
+    .rule .desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .rule--accent {
+      background: linear-gradient(135deg, rgba(132, 168, 255, 0.24), rgba(255,255,255,0.92));
+    }
+
+    .scroll-rail {
+      position: fixed;
+      top: 90px;
+      right: 16px;
+      bottom: 24px;
+      width: 14px;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    .scroll-track {
+      position: relative;
+      width: 6px;
+      border-radius: 999px;
+      background: rgba(16, 24, 40, 0.06);
+      overflow: hidden;
+    }
+
+    .scroll-thumb {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--blue-deep), var(--lilac-deep));
+      transform-origin: top;
+      height: 22%;
+      box-shadow: 0 0 0 4px rgba(132, 168, 255, 0.10);
+    }
+
+    .scroll-label {
+      position: fixed;
+      top: 50%;
+      right: 34px;
+      transform: translateY(-50%) rotate(90deg);
+      transform-origin: right center;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--muted);
+      z-index: 61;
+      pointer-events: none;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .fade-up.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .pack-card {
+      border-radius: 24px;
+      overflow: hidden;
+      min-height: 360px;
+      border: 1px solid rgba(16,24,40,0.08);
+      background: white;
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .pack-photo {
+      min-height: 280px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .pack-photo.front {
+      background-image: url("./pack-depan.png");
+    }
+
+    .pack-photo.back {
+      background-image: url("./pack-belakang.png");
+    }
+
+    .pack-copy {
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .pack-copy strong {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .pack-copy span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      padding: 22px 0 120px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .kbd {
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(16,24,40,0.06);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--charcoal);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .ui-matrix,
+      .scroll-rules {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .pack-grid,
+      .swatches {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-visual {
+        min-height: 520px;
+      }
+
+      .scroll-label {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        width: min(100% - 22px, 100%);
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .h1 {
+        max-width: 8ch;
+      }
+
+      .stats,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .pack-grid,
+      .swatches {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head,
+      .section-shell,
+      .hero-copy,
+      .hero-visual {
+        border-radius: 24px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
 </head>
-<body class="font-sans min-h-screen flex items-center justify-center p-6 bg-slate-50">
+<body class="noise">
+  <div class="scroll-rail" aria-hidden="true">
+    <div class="scroll-track"><div class="scroll-thumb" id="scrollThumb"></div></div>
+  </div>
+  <div class="scroll-label">Scroll system</div>
 
-    <!-- Modern Product Card -->
-    <div class="max-w-sm w-full bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 product-card transition-all duration-300">
-        
-        <!-- Header Image Area -->
-        <div class="w-full h-56 bg-fermion-soft rounded-[1.5rem] mb-6 relative overflow-hidden flex items-center justify-center">
-            <!-- Subtle Abstract Pattern -->
-            <div class="absolute inset-0 opacity-10">
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                            <circle cx="2" cy="2" r="2" fill="#7A9CFF" />
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#dots)" />
-                </svg>
-            </div>
-            
-            <div class="z-10 text-center">
-                <span class="text-[0.65rem] font-bold tracking-widest uppercase text-fermion-blue mb-2 block">Special Batch</span>
-                <h2 class="text-2xl font-bold text-fermion-charcoal leading-tight">
-                    Not Only Intense
-                </h2>
-            </div>
-            
-            <!-- Minimalist Floating Badge -->
-            <div class="absolute top-4 right-4 bg-white/80 backdrop-blur-sm border border-white/20 shadow-sm rounded-full px-3 py-1 font-bold text-[0.7rem] text-fermion-blue">
-                New
-            </div>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-6">
-            <p class="text-[0.8rem] text-slate-500 font-medium mb-3">
-                Orange followed by bright raspberry and Red Apple. A fruity and pronounce cup with balanced tones.
-            </p>
-        </div>
-
-        <!-- Modern Specs Grid -->
-        <div class="grid grid-cols-2 gap-3 mb-8">
-            <!-- Spec Item -->
-            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
-                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
-                    <i data-lucide="map-pin" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Origin</p>
-                    <p class="text-[0.75rem] font-semibold text-slate-700">Kendal</p>
-                </div>
-            </div>
-
-            <!-- Spec Item -->
-            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
-                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
-                    <i data-lucide="mountain" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Altitude</p>
-                    <p class="text-[0.75rem] font-semibold text-slate-700">700 MDPL</p>
-                </div>
-            </div>
-
-            <!-- Spec Item -->
-            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
-                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
-                    <i data-lucide="beaker" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Process</p>
-                    <p class="text-[0.75rem] font-semibold text-slate-700">Natural</p>
-                </div>
-            </div>
-
-            <!-- Spec Item -->
-            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl p-3 border border-slate-100/50">
-                <div class="bg-white text-fermion-blue p-1.5 rounded-lg shadow-sm">
-                    <i data-lucide="layers" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-tighter">Roast</p>
-                    <p class="text-[0.75rem] font-semibold text-slate-700">Medium</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modern Action Button -->
-        <button class="w-full bg-fermion-blue hover:bg-[#6688FF] text-white font-semibold py-4 rounded-2xl shadow-lg shadow-fermion-blue/20 transition-all duration-300 btn-bounce flex items-center justify-center gap-2">
-            <span class="text-sm">Add to Cart</span>
-            <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-        </button>
-
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <span>Fermion Roastery</span>
+      </div>
+      <nav class="topnav">
+        <a class="chip" href="#hero">Hero</a>
+        <a class="chip" href="#type">Type</a>
+        <a class="chip" href="#ui">Cards</a>
+        <a class="chip" href="#palette">Palette</a>
+        <a class="chip" href="#scroll">Scroll rules</a>
+      </nav>
     </div>
+  </header>
 
-    <script>
-        lucide.createIcons();
-    </script>
+  <main class="wrap">
+    <section class="hero" id="hero">
+      <div class="hero-grid">
+        <article class="hero-copy fade-up">
+          <div class="eyebrow">
+            <i data-lucide="sparkles" width="14" height="14"></i>
+            Fermion UI preview
+          </div>
+          <h1 class="h1">Modern, joyful coffee commerce with playful premium energy.</h1>
+          <p class="body">
+            HTML preview ini menunjukkan arah visual Fermion: off-white base, blue-lilac gradient, playful accent, dan ruang kosong yang bisa diisi placeholder informatif.
+          </p>
+
+          <div class="hero-actions">
+            <button class="button button-primary">
+              <i data-lucide="arrow-up-right" width="14" height="14"></i>
+              Primary CTA
+            </button>
+            <button class="button button-secondary">
+              <i data-lucide="mouse-pointer-click" width="14" height="14"></i>
+              Secondary CTA
+            </button>
+            <button class="button button-ghost">
+              <i data-lucide="layers-3" width="14" height="14"></i>
+              Scroll cue
+            </button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>B2B first</strong>
+              <span>wholesale priority</span>
+            </div>
+            <div class="stat">
+              <strong>Retail second</strong>
+              <span>our coffee path</span>
+            </div>
+            <div class="stat">
+              <strong>Playful premium</strong>
+              <span>brand tone</span>
+            </div>
+          </div>
+        </article>
+
+        <aside class="hero-visual fade-up">
+          <div class="hero-photo"></div>
+          <div class="hero-overlay"></div>
+          <div class="floating-note">
+            <div class="eyebrow" style="width: fit-content;">
+              <i data-lucide="package" width="14" height="14"></i>
+              Packaging reference
+            </div>
+            <h3 class="h3">Front pack color direction</h3>
+            <small>
+              Off-white text, soft blue and lilac body, with restrained contrast. The goal is premium, clean, and warm without leaning cream.
+            </small>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="type">
+      <div class="section-shell">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><i data-lucide="type" width="14" height="14"></i> Typography</div>
+            <h2 class="h2" style="margin-top: 14px;">Headline scale for the Fermion story.</h2>
+          </div>
+          <p class="body">Use Fraunces for expressive display type, and Manrope for clean body copy. The contrast keeps the brand premium but still friendly.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card card--blue">
+            <strong>H1</strong>
+            <h1 class="h1" style="margin: 0; font-size: clamp(2.8rem, 6vw, 5.5rem); max-width: 9ch;">Fermion makes coffee feel alive.</h1>
+          </div>
+          <div class="card card--lilac">
+            <strong>H2 / H3 / body</strong>
+            <h2 class="h2">Built for premium wholesale and retail flow.</h2>
+            <p style="margin-top: 12px;">H2 should feel editorial and persuasive. H3 is for sections, cards, and CTA blocks. Body text stays calm, readable, and specific.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="ui">
+      <div class="section-shell">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><i data-lucide="layout-grid" width="14" height="14"></i> Components</div>
+            <h2 class="h2" style="margin-top: 14px;">Cards, inputs, buttons, and placeholder states.</h2>
+          </div>
+          <p class="body">Area kosong tidak dibiarkan kosong. Setiap blok kosong punya placeholder dengan konteks penempatan gambar, dan warna berbeda sesuai jenis kontennya.</p>
+        </div>
+
+        <div class="ui-matrix">
+          <div class="primary-stack">
+            <article class="card product-card">
+              <div class="product-media">
+                <div class="floating-badge">Hero product</div>
+              </div>
+              <div>
+                <strong>Product card</strong>
+                <p>Dipakai untuk showcase bean, retail item, subscription tier, atau featured journal article.</p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="button button-primary" style="height:44px;">Add to cart</button>
+                <button class="button button-secondary" style="height:44px;">View details</button>
+              </div>
+            </article>
+
+            <article class="card placeholder card--blue">
+              <span class="tag">Placeholder / Hero image</span>
+              <div class="label">Insert coffee bean pack hero, workshop photo, or lifestyle image</div>
+              <div class="hint">Use this when a section needs a visual anchor before the final assets are ready.</div>
+            </article>
+          </div>
+
+          <div class="card" style="display:grid; gap:16px;">
+            <strong>Form preview</strong>
+            <p>Input styling for login, register, wholesale inquiry, and newsletter capture.</p>
+            <div class="form">
+              <div class="field">
+                <label>Name</label>
+                <input class="input" placeholder="Enter name" />
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input class="input" placeholder="name@company.com" />
+              </div>
+              <div class="field">
+                <label>Message</label>
+                <input class="input" placeholder="Wholesale / retail / subscription question" />
+              </div>
+              <button class="button button-primary" style="width:100%;">Submit form</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-4" style="padding-top: 0;">
+          <article class="card card--yellow placeholder">
+            <span class="tag">Subscription image</span>
+            <div class="label">Coffee bag, ritual, or delivery box</div>
+            <div class="hint">Warm, friendly, and slightly brighter for retention-oriented sections.</div>
+          </article>
+          <article class="card card--coral placeholder">
+            <span class="tag">Journal image</span>
+            <div class="label">Event, roasting note, or story photo</div>
+            <div class="hint">Use for storytelling articles, travel logs, cupping notes, or owner updates.</div>
+          </article>
+          <article class="card card--lilac placeholder">
+            <span class="tag">Wholesale image</span>
+            <div class="label">Partner cafe, beans, or supply flow</div>
+            <div class="hint">Should feel more business oriented, but still premium and approachable.</div>
+          </article>
+          <article class="card card--dark placeholder">
+            <span class="tag">Our story image</span>
+            <div class="label">Founder portrait or team moment</div>
+            <div class="hint">Use when the brand needs more trust, origin, and identity.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="palette">
+      <div class="section-shell">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><i data-lucide="palette" width="14" height="14"></i> Palette</div>
+            <h2 class="h2" style="margin-top: 14px;">Packaging-inspired color system.</h2>
+          </div>
+          <p class="body">Front pack = off-white + blue + lilac. Back pack = playful multicolor accents. Keep the UI refined; let the accents do the talking.</p>
+        </div>
+
+        <div class="swatches">
+          <div class="swatch" style="background: linear-gradient(135deg, #faf9f6, #ffffff); color: var(--charcoal);">
+            <span>Off-white</span><small>base surface</small>
+          </div>
+          <div class="swatch" style="background: linear-gradient(135deg, #84a8ff, #6486f4);">
+            <span>Blue</span><small>primary</small>
+          </div>
+          <div class="swatch" style="background: linear-gradient(135deg, #b7a0ff, #8f73ff);">
+            <span>Lilac</span><small>secondary</small>
+          </div>
+          <div class="swatch" style="background: linear-gradient(135deg, #f3ca57, #e6b83e); color: #101828;">
+            <span>Yellow</span><small>accent</small>
+          </div>
+          <div class="swatch" style="background: linear-gradient(135deg, #ff826f, #f15f6f);">
+            <span>Coral</span><small>accent</small>
+          </div>
+          <div class="swatch" style="background: linear-gradient(135deg, #101828, #1c2540);">
+            <span>Charcoal</span><small>text</small>
+          </div>
+        </div>
+
+        <div class="pack-grid">
+          <article class="pack-card">
+            <div class="pack-photo front"></div>
+            <div class="pack-copy">
+              <strong>Front packaging reference</strong>
+              <span>Use this for hero lighting, off-white treatment, and the blue-lilac brand mood.</span>
+            </div>
+          </article>
+          <article class="pack-card">
+            <div class="pack-photo back"></div>
+            <div class="pack-copy">
+              <strong>Back packaging reference</strong>
+              <span>Use this for playful detail language, emoji stickers, and colorful micro-accent moments.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="scroll-section" id="scroll">
+      <div class="section-shell">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow"><i data-lucide="mouse-pointer-2" width="14" height="14"></i> Scroll animation rules</div>
+            <h2 class="h2" style="margin-top: 14px;">What the page should do while scrolling.</h2>
+          </div>
+          <p class="body">These rules are the baseline for stacking, parallax, and reveal behavior on the marketing homepage. Keep them cinematic but readable.</p>
+        </div>
+
+        <div class="scroll-rules">
+          <div class="sticky-panel">
+            <article class="card card--dark" style="min-height: 320px;">
+              <strong>Motion summary</strong>
+              <h3 class="h3" style="font-family: Fraunces, serif; font-size: 40px; line-height: 0.95; margin-top: 8px;">Stack, glide, reveal, then convert.</h3>
+              <p style="margin-top: 14px; color: rgba(255,255,255,0.74);">The homepage should feel like one continuous story, with sales CTAs surfacing at the right moments instead of competing all at once.</p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top: 14px;">
+                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Stacking</span>
+                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Parallax</span>
+                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Reveal</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="rule-stack">
+            <article class="rule fade-up in-view">
+              <div class="index">01</div>
+              <div class="title">Hero enters first, then the supporting copy follows.</div>
+              <div class="desc">Use staged reveal timing so the headline, subcopy, CTA, and visual all arrive in sequence. The first impression should feel intentional, not busy.</div>
+            </article>
+            <article class="rule rule--accent fade-up in-view">
+              <div class="index">02</div>
+              <div class="title">Parallax belongs to product images and packaging panels.</div>
+              <div class="desc">Move the image layers subtly against the scroll direction. Keep text stable so the page still feels readable and premium.</div>
+            </article>
+            <article class="rule fade-up in-view">
+              <div class="index">03</div>
+              <div class="title">Stacking should happen in major section transitions.</div>
+              <div class="desc">The next section can overlap the previous one slightly with depth, shadow, and vertical offset. This makes the landing feel cinematic without needing excessive motion.</div>
+            </article>
+            <article class="rule rule--accent fade-up in-view">
+              <div class="index">04</div>
+              <div class="title">Every major block needs a real CTA.</div>
+              <div class="desc">Wholesale and retail must be visually dominant, while journal and story stay accessible but secondary.</div>
+            </article>
+            <article class="rule fade-up in-view">
+              <div class="index">05</div>
+              <div class="title">Reduced motion must keep the structure intact.</div>
+              <div class="desc">If motion is reduced, the page should still read like a complete brand story. Animation is an enhancer, not a dependency.</div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Tip: this preview file is meant to be opened directly from the repo root. It is a visual reference for color, typography, button style, cards, placeholder treatment, and the scroll animation system.
+      <br />
+      Keyboard note: use <span class="kbd">Tab</span> to inspect focus states and <span class="kbd">Shift</span> + <span class="kbd">Tab</span> to move backward.
+    </div>
+  </main>
+
+  <script>
+    const thumb = document.getElementById("scrollThumb");
+    const fadeEls = Array.from(document.querySelectorAll(".fade-up"));
+
+    function updateThumb() {
+      const doc = document.documentElement;
+      const maxScroll = doc.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const thumbHeight = Math.max(18, (window.innerHeight / doc.scrollHeight) * 100);
+      const maxTop = 100 - thumbHeight;
+      thumb.style.height = thumbHeight + "%";
+      thumb.style.transform = `translateY(${progress * maxTop}%)`;
+    }
+
+    function observeCards() {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add("in-view");
+        });
+      }, { threshold: 0.18 });
+
+      fadeEls.forEach((el) => io.observe(el));
+    }
+
+    updateThumb();
+    observeCards();
+    window.addEventListener("scroll", updateThumb, { passive: true });
+    window.addEventListener("resize", updateThumb);
+    lucide.createIcons();
+  </script>
 </body>
 </html>

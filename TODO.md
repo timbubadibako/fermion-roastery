@@ -53,3 +53,25 @@
 - [ ] Admin Batch Roasting Management UI
 - [ ] Final UI Refinement & Responsive Audit
 - [ ] Production Deployment (Vercel & Render)
+
+          initial={{ x: -100, y: 800, rotate: 20 }}
+          animate={{ x: -45, y: 25, rotate: 20 }}
+
+          FERMION
+Precision roasted coffee engineered with scientific rigor and artisan passion. Direct sourced from Java's finest farms.
+
+Shop
+Our Coffee
+Subscription
+Wholesale
+Account
+About
+Our Story
+Journal
+Contact
+B2B Register
+Service
+FAQ
+Shipping
+Returns
+Privacy
