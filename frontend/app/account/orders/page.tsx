@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 
 interface Order {
   id: string;
+  xendit_invoice_id: string;
   status: 'UNPAID' | 'PAID' | 'ROASTING' | 'READY_TO_SHIP' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   total_amount: number;
   created_at: string;
@@ -208,11 +209,24 @@ export default function ProfileAndOrdersPage() {
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
                          <h2 className="text-2xl font-black uppercase italic tracking-tighter">Live Tracking</h2>
-                         <p className="font-mono text-xs font-bold text-slate-400">Invoice #{selectedOrder.id.toUpperCase()}</p>
+                         <div className="flex flex-col gap-1 mt-1">
+                            <p className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">Order ID: #{selectedOrder.id.split('-')[0].toUpperCase()}</p>
+                            <div 
+                               onClick={() => {
+                                 navigator.clipboard.writeText(selectedOrder.xendit_invoice_id);
+                                 toast.success("Invoice ID copied to clipboard!");
+                               }}
+                               className="bg-slate-50 p-2 rounded-lg border border-slate-100 group relative cursor-copy hover:bg-slate-100 transition-colors"
+                            >
+                               <p className="font-mono text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Xendit Invoice ID:</p>
+                               <p className="font-mono text-[10px] font-black text-fermion-blue break-all">{selectedOrder.xendit_invoice_id}</p>
+                               <span className="absolute -top-2 -right-2 bg-slate-900 text-white text-[8px] px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">Click to Copy</span>
+                            </div>
+                         </div>
                       </div>
                       <div className="text-right">
                          <p className="text-lg font-black text-slate-900 leading-none">Rp {Number(selectedOrder.total_amount).toLocaleString('id-ID')}</p>
-                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Paid Amount</p>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Amount</p>
                       </div>
                     </div>
 
@@ -248,7 +262,29 @@ export default function ProfileAndOrdersPage() {
                         current={selectedOrder.status === 'SHIPPED'}
                         icon={<Truck size={12}/>}
                         label="Handed to Courier"
-                        description={selectedOrder.shipping_awb ? `Courier: ${selectedOrder.shipping_courier} | AWB: ${selectedOrder.shipping_awb}` : "In transit."}
+                        description={
+                          selectedOrder.shipping_awb ? (
+                            <div className="space-y-3 mt-2">
+                              <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100">
+                                <div className="bg-white p-1.5 rounded-lg border border-slate-100">
+                                  <Package size={14} className="text-fermion-blue" />
+                                </div>
+                                <div>
+                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{selectedOrder.shipping_courier || 'Courier'}</p>
+                                  <p className="text-xs font-mono font-bold text-slate-900">{selectedOrder.shipping_awb}</p>
+                                </div>
+                              </div>
+                              <a 
+                                href={`https://track.biteship.com?waybill_id=${selectedOrder.shipping_awb}`} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-fermion-blue hover:text-blue-700 transition-colors"
+                              >
+                                Lacak via Biteship <ChevronRight size={12} />
+                              </a>
+                            </div>
+                          ) : "In transit. Awaiting tracking details."
+                        }
                       />
 
                       <TimelineStep 
@@ -293,7 +329,7 @@ export default function ProfileAndOrdersPage() {
   );
 }
 
-function TimelineStep({ active, current, icon, label, description }: { active: boolean, current: boolean, icon: React.ReactNode, label: string, description: string }) {
+function TimelineStep({ active, current, icon, label, description }: { active: boolean, current: boolean, icon: React.ReactNode, label: string, description: React.ReactNode }) {
   return (
     <div className={`relative transition-all duration-700 ${active ? 'opacity-100' : 'opacity-20 translate-x-2'}`}>
       <div className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full flex items-center justify-center z-10 border-2 transition-all duration-500 ${current ? 'bg-fermion-blue border-fermion-blue text-white scale-125 shadow-lg shadow-fermion-blue/30' : active ? 'bg-white border-slate-900 text-slate-900' : 'bg-white border-slate-200 text-slate-300'}`}>
@@ -301,7 +337,7 @@ function TimelineStep({ active, current, icon, label, description }: { active: b
       </div>
       <div className="space-y-1">
         <h4 className={`text-xs font-black uppercase tracking-widest transition-colors ${current ? 'text-fermion-blue' : 'text-slate-900'}`}>{label}</h4>
-        <p className="text-[11px] font-medium text-slate-500 leading-relaxed max-w-sm">{description}</p>
+        <div className="text-[11px] font-medium text-slate-500 leading-relaxed max-w-sm">{description}</div>
       </div>
     </div>
   );
