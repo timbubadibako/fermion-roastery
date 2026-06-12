@@ -27,6 +27,7 @@ interface Order {
   shipping_fee: number;
   status: 'UNPAID' | 'PAID' | 'ROASTING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   xendit_invoice_id: string;
+  biteship_order_id: string | null;
   shipping_courier: string | null;
   shipping_awb: string | null;
   created_at: string;
@@ -91,6 +92,27 @@ export default function AdminOrdersPage() {
       return;
     }
     updateOrderStatus(id, 'SHIPPED', { shipping_awb: awbInput, shipping_courier: courierInput });
+  };
+
+  const simulatePayment = async (invoiceId: string) => {
+    try {
+      const res = await fetch('/api/payments/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          external_id: invoiceId,
+          status: 'PAID'
+        })
+      });
+      if (res.ok) {
+        toast.success("Payment simulated successfully!");
+        fetchOrders();
+      } else {
+        toast.error("Simulation failed");
+      }
+    } catch (err) {
+      toast.error("Network error during simulation");
+    }
   };
 
   const filteredOrders = orders.filter(o => 
@@ -164,7 +186,18 @@ export default function AdminOrdersPage() {
                      </p>
                    </div>
                 </div>
-                <div>{getStatusBadge(order.status)}</div>
+                <div className="flex items-center gap-4">
+                  {order.status === 'UNPAID' && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => simulatePayment(order.xendit_invoice_id)}
+                      className="h-8 text-[8px] font-black uppercase tracking-widest border-blue-100 text-blue-500 hover:bg-blue-50"
+                    >
+                      Simulate Payment
+                    </Button>
+                  )}
+                  {getStatusBadge(order.status)}
+                </div>
               </div>
 
               {/* Main Content */}
@@ -176,6 +209,19 @@ export default function AdminOrdersPage() {
                   <div className="space-y-1">
                     <p className="text-sm font-bold text-slate-900">{order.customer_name}</p>
                     <p className="text-xs text-slate-500">{order.customer_email} • {order.customer_phone}</p>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
+                    <div className="space-y-0.5">
+                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Xendit Invoice</p>
+                       <p className="text-[10px] font-mono font-bold text-slate-600 break-all">{order.xendit_invoice_id}</p>
+                    </div>
+                    {order.biteship_order_id && (
+                      <div className="space-y-0.5 pt-2 border-t border-slate-200">
+                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Biteship Order</p>
+                         <p className="text-[10px] font-mono font-bold text-fermion-french-blue break-all">{order.biteship_order_id}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <p className="text-xs font-medium text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
