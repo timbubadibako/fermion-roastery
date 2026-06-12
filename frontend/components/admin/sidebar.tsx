@@ -20,6 +20,7 @@ const menuItems = [
     group: "Overview", 
     items: [
       { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "View Website", href: "/", icon: ChevronRight },
     ]
   },
   { 
@@ -40,6 +41,7 @@ const menuItems = [
   { 
     group: "Content", 
     items: [
+      { name: "FAQs", href: "/admin/faqs", icon: BookOpen },
       { name: "Journal", href: "/admin/journal", icon: BookOpen },
       { name: "Settings", href: "/admin/settings", icon: Settings },
     ]
