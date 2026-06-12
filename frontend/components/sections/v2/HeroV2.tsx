@@ -20,8 +20,7 @@ export function HeroV2() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       >
-        {/* Using a reliable placeholder video to avoid CORS/hotlink blocking. Replace with local /videos/hero.mp4 later */}
-        <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4" type="video/mp4" />
+        <source src="/watermarked_preview.mp4" type="video/mp4" />
       </video>
 
       {/* Scrim Overlay: Linear gradient from black to transparent */}
