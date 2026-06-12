@@ -165,3 +165,24 @@ CREATE TRIGGER update_orders_updated_at
     BEFORE UPDATE ON orders
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- 9. FAQs Table
+CREATE TABLE IF NOT EXISTS faqs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    question_id TEXT NOT NULL,
+    answer_id TEXT NOT NULL,
+    question_en TEXT NOT NULL,
+    answer_en TEXT NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. Inquiries Table (Contact Form)
+CREATE TABLE IF NOT EXISTS inquiries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new', -- 'new', 'read', 'replied'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
