@@ -6,6 +6,8 @@ import { PartnerRibbonV2 } from "@/components/sections/v2/PartnerRibbonV2";
 import { SeriesV2 } from "@/components/sections/v2/SeriesV2";
 import { TheWayV2 } from "@/components/sections/v2/TheWayV2";
 import { LabRecordsV2, NewReleasesV2 } from "@/components/sections/v2/RecordsAndShopV2";
+import { FAQSection } from "@/components/sections/v2/FAQSection";
+import { ContactSection } from "@/components/sections/v2/ContactSection";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
 
 export default function LandingPageV2() {
@@ -28,6 +30,8 @@ export default function LandingPageV2() {
       <TheWayV2 />
       <LabRecordsV2 />
       <NewReleasesV2 />
+      <FAQSection />
+      <ContactSection />
       <FooterV2 />
 
     </main>
