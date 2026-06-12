@@ -18,8 +18,8 @@ export default function LandingPageV2() {
       />
 
       {/* Background Ambient Blobs */}
-      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-purple-200/40 rounded-full blur-[120px] z-[-1]" />
-      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/30 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-fermion-wisteria/40 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/30 rounded-full blur-[120px] z-[-1]" />
 
       {/* Sections */}
       <HeroV2 />

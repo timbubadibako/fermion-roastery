@@ -35,7 +35,7 @@ export function BeanShowcaseSection() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-20 space-y-4 text-center">
-            <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+            <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
               Our Coffee
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground uppercase italic">
@@ -75,7 +75,7 @@ export function BeanShowcaseSection() {
                       {bean.profile}
                     </p>
 
-                    <p className="text-lg font-black text-fermion-blue">
+                    <p className="text-lg font-black text-fermion-french-blue">
                       {bean.price}
                     </p>
                   </div>
@@ -88,7 +88,7 @@ export function BeanShowcaseSection() {
           <div className="mt-16 text-center">
             <Link
               href="/our-coffee"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-blue/40 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all"
             >
               Browse All Coffee
               <span>→</span>

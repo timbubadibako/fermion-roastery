@@ -124,7 +124,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
           <Button 
             type="submit"
             disabled={loading}
-            className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic mt-4"
+            className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic mt-4"
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
         <button 
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          className="text-fermion-blue hover:text-slate-900 transition-colors ml-1 underline underline-offset-4"
+          className="text-fermion-french-blue hover:text-slate-900 transition-colors ml-1 underline underline-offset-4"
         >
           {mode === "login" ? "Register" : "Log In"}
         </button>

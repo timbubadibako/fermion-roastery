@@ -29,7 +29,7 @@ export function TheWayV2() {
       <div className="text-center space-y-6 mb-32">
         <h2 className="text-7xl md:text-8xl font-display font-black tracking-tighter uppercase italic leading-[0.8]">
           {content.titleMain} <br /> 
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 not-italic font-sans">{content.titleSub}</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-lavender to-fermion-horizon not-italic font-sans">{content.titleSub}</span>
         </h2>
         <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-[10px]">{content.description}</p>
       </div>

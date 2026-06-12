@@ -29,7 +29,7 @@ export function SeriesV2() {
            </h3>
            <p className="text-slate-500 text-xs font-black tracking-widest uppercase">{content.espresso.subtitle}</p>
            <Link href="/our-coffee?type=espresso">
-              <button className="mt-8 px-10 py-3 bg-white text-slate-900 rounded-full text-[9px] font-black tracking-widest uppercase italic hover:bg-fermion-blue hover:text-white transition-all shadow-xl">
+              <button className="mt-8 px-10 py-3 bg-white text-slate-900 rounded-full text-[9px] font-black tracking-widest uppercase italic hover:bg-fermion-french-blue hover:text-white transition-all shadow-xl">
                  {content.espresso.cta}
               </button>
            </Link>
@@ -53,7 +53,7 @@ export function SeriesV2() {
            </h3>
            <p className="text-slate-400 text-xs font-black tracking-widest uppercase">{content.filter.subtitle}</p>
            <Link href="/our-coffee?type=filter">
-              <button className="mt-8 px-10 py-3 bg-slate-900 text-white rounded-full text-[9px] font-black tracking-widest uppercase italic hover:bg-fermion-blue transition-all shadow-xl">
+              <button className="mt-8 px-10 py-3 bg-slate-900 text-white rounded-full text-[9px] font-black tracking-widest uppercase italic hover:bg-fermion-french-blue transition-all shadow-xl">
                  {content.filter.cta}
               </button>
            </Link>

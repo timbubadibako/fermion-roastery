@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
 
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
-      <Loader2 className="animate-spin text-fermion-blue" size={32} />
+      <Loader2 className="animate-spin text-fermion-french-blue" size={32} />
       <p className="text-[10px] font-black uppercase tracking-[0.3em]">Gathering data...</p>
     </div>
   );
@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
           { label: "Total Revenue", val: `Rp ${(stats.revenue / 1000000).toFixed(1)}M`, icon: TrendingUp, color: "text-green-500", trend: "+12%" },
-          { label: "Volume Sold", val: `${stats.volume} Kg`, icon: Coffee, color: "text-fermion-blue", trend: "+8%" },
+          { label: "Volume Sold", val: `${stats.volume} Kg`, icon: Coffee, color: "text-fermion-french-blue", trend: "+8%" },
           { label: "Pending B2B", val: stats.pendingB2B, icon: Users, color: "text-amber-500", trend: "High Priority" },
           { label: "Active Subs", val: stats.activeSubs, icon: Zap, color: "text-fermion-lilac", trend: "+5 new" },
         ].map((s, i) => (
@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
                           <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${(v.kg / stats.volume) * 100}%` }}
-                            className="h-full bg-fermion-blue"
+                            className="h-full bg-fermion-french-blue"
                           />
                         </div>
                       </div>
@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
                   </div>
                </div>
                <div className="pt-12 relative z-10">
-                  <button className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-fermion-blue hover:text-white transition-colors">
+                  <button className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-fermion-french-blue hover:text-white transition-colors">
                     Detailed Report <ArrowUpRight size={14} />
                   </button>
                </div>

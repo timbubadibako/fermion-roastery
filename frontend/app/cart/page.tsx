@@ -352,7 +352,7 @@ export default function CartPage() {
                          <button 
                           onClick={handleGetLocation} 
                           disabled={locationLoading}
-                          className="flex items-center gap-1.5 text-[9px] font-bold text-fermion-blue hover:text-slate-900 transition-colors uppercase tracking-widest bg-fermion-blue/10 px-3 py-1.5 rounded-full"
+                          className="flex items-center gap-1.5 text-[9px] font-bold text-fermion-french-blue hover:text-slate-900 transition-colors uppercase tracking-widest bg-fermion-french-blue/10 px-3 py-1.5 rounded-full"
                          >
                            {locationLoading ? <Loader2 size={12} className="animate-spin" /> : <Navigation size={12} />}
                            Use Current Location
@@ -382,7 +382,7 @@ export default function CartPage() {
                   <div className="space-y-4 pt-6 border-t border-slate-50">
                     <div className="flex items-center justify-between">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Courier</label>
-                      {ratesLoading && <Loader2 className="w-4 h-4 animate-spin text-fermion-blue" />}
+                      {ratesLoading && <Loader2 className="w-4 h-4 animate-spin text-fermion-french-blue" />}
                     </div>
                     
                     {couriers.length > 0 ? (
@@ -391,14 +391,14 @@ export default function CartPage() {
                           <button 
                             key={`${courier.courier_code}-${courier.courier_service_code}`}
                             onClick={() => setSelectedCourier(courier)}
-                            className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedCourier?.courier_code === courier.courier_code && selectedCourier?.courier_service_code === courier.courier_service_code ? 'border-fermion-blue bg-fermion-blue/5' : 'border-slate-100 hover:border-slate-300'}`}
+                            className={`p-4 rounded-2xl border-2 text-left transition-all ${selectedCourier?.courier_code === courier.courier_code && selectedCourier?.courier_service_code === courier.courier_service_code ? 'border-fermion-french-blue bg-fermion-french-blue/5' : 'border-slate-100 hover:border-slate-300'}`}
                           >
                             <div className="flex items-center justify-between mb-1">
                               <p className="text-xs font-black uppercase tracking-widest text-slate-900">{courier.courier_name}</p>
                               <span className="text-[9px] bg-slate-100 px-2 py-0.5 rounded-full font-bold uppercase">{courier.courier_service_code}</span>
                             </div>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est: {courier.duration}</p>
-                            <p className="text-sm font-mono font-bold text-fermion-blue mt-2">Rp {courier.price.toLocaleString('id-ID')}</p>
+                            <p className="text-sm font-mono font-bold text-fermion-french-blue mt-2">Rp {courier.price.toLocaleString('id-ID')}</p>
                           </button>
                         ))}
                       </div>
@@ -431,20 +431,20 @@ export default function CartPage() {
                </div>
                <Separator className="bg-slate-50" />
                <div className="flex justify-between text-lg font-black text-slate-900 pt-2">
-                  <span className="uppercase tracking-tighter italic text-fermion-blue">Grand Total</span>
+                  <span className="uppercase tracking-tighter italic text-fermion-french-blue">Grand Total</span>
                   <span className="font-mono">Rp {total.toLocaleString('id-ID')}</span>
                </div>
             </div>
 
             {step === 1 ? (
-              <Button onClick={() => setStep(2)} className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 shadow-xl uppercase italic group">
+              <Button onClick={() => setStep(2)} className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 shadow-xl uppercase italic group">
                 Shipping Details <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             ) : (
               <Button 
                 onClick={handleCheckout} 
                 disabled={loading || !shippingData.name || !shippingData.email || !shippingData.address || !shippingData.phone}
-                className="w-full h-16 bg-fermion-blue text-white font-black tracking-[0.2em] rounded-2xl hover:bg-slate-900 transition-all duration-500 shadow-xl uppercase italic group"
+                className="w-full h-16 bg-fermion-french-blue text-white font-black tracking-[0.2em] rounded-2xl hover:bg-slate-900 transition-all duration-500 shadow-xl uppercase italic group"
               >
                 {loading ? <Loader2 className="animate-spin" /> : <>Pay via Xendit <CheckCircle2 size={16} className="ml-2" /></>}
               </Button>

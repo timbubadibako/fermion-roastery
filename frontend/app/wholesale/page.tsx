@@ -56,8 +56,8 @@ export default function WholesalePageV2() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.025]" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
-      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-purple-200/30 rounded-full blur-[120px] z-[-1]" />
-      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-fermion-wisteria/30 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/20 rounded-full blur-[120px] z-[-1]" />
 
       {/* SECTION 1: BENTO HERO */}
       <section className="pt-40 pb-20 px-6 relative z-10">
@@ -66,7 +66,7 @@ export default function WholesalePageV2() {
           <div className="lg:col-span-5 space-y-8">
             <motion.div 
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-purple-600 uppercase"
+              className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-lavender uppercase"
             >
               Fermion Wholesale
             </motion.div>
@@ -74,7 +74,7 @@ export default function WholesalePageV2() {
               initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
               className="text-6xl md:text-8xl font-display font-black tracking-tighter italic leading-[0.8] text-slate-900"
             >
-              Scale Your <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 font-sans not-italic">Business.</span>
+              Scale Your <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-lavender to-fermion-horizon font-sans not-italic">Business.</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -84,7 +84,7 @@ export default function WholesalePageV2() {
             </motion.p>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
               <Link href="#calculator">
-                <Button className="bg-slate-900 text-white px-10 py-8 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] italic shadow-2xl hover:bg-fermion-blue transition-all">
+                <Button className="bg-slate-900 text-white px-10 py-8 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] italic shadow-2xl hover:bg-fermion-french-blue transition-all">
                   Calculate Savings
                 </Button>
               </Link>
@@ -114,7 +114,7 @@ export default function WholesalePageV2() {
               className="col-span-1 row-span-1 bg-slate-900 rounded-[2.5rem] p-8 flex flex-col justify-end relative overflow-hidden text-white group"
             >
                <Handshake className="absolute top-8 right-8 text-white/10 w-24 h-24 group-hover:scale-110 transition-transform duration-700" />
-               <h3 className="text-3xl font-display font-black italic leading-none text-transparent bg-clip-text bg-gradient-to-r from-fermion-blue to-emerald-400">Trusted<br/>Partner</h3>
+               <h3 className="text-3xl font-display font-black italic leading-none text-transparent bg-clip-text bg-gradient-to-r from-fermion-french-blue to-emerald-400">Trusted<br/>Partner</h3>
             </motion.div>
           </div>
 
@@ -146,7 +146,7 @@ export default function WholesalePageV2() {
                     min="5" max="200" step="5"
                     value={volume}
                     onChange={(e) => setVolume(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-fermion-blue"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-fermion-french-blue"
                  />
                  <div className="flex justify-between mt-2 text-[9px] font-black text-slate-400">
                     <span>5 KG</span>
@@ -160,7 +160,7 @@ export default function WholesalePageV2() {
                <div className="space-y-8 relative z-10">
                   <div className="space-y-1">
                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Unlocked Status</p>
-                     <h3 className="text-3xl font-display font-black italic text-transparent bg-clip-text bg-gradient-to-r from-fermion-blue to-emerald-400">{tier}</h3>
+                     <h3 className="text-3xl font-display font-black italic text-transparent bg-clip-text bg-gradient-to-r from-fermion-french-blue to-emerald-400">{tier}</h3>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-8 py-6 border-y border-white/10">
@@ -198,13 +198,13 @@ export default function WholesalePageV2() {
                   whileInView={{ opacity: 1, y: 0, rotate: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ type: "spring", stiffness: 100, damping: 20, delay: i * 0.1 }}
-                  className="bg-white/60 backdrop-blur-xl p-10 rounded-[3rem] border border-white shadow-xl hover:border-fermion-blue hover:-translate-y-2 transition-all duration-500 group relative"
+                  className="bg-white/60 backdrop-blur-xl p-10 rounded-[3rem] border border-white shadow-xl hover:border-fermion-french-blue hover:-translate-y-2 transition-all duration-500 group relative"
                 >
                   {/* Small decorative sticker randomly placed */}
                   {i === 2 && <Sticker rotate={12} className="top-4 right-4" variant="solid" color="var(--cartoon-pink)"><span className="px-2">PROFIT</span></Sticker>}
                   {i === 3 && <Sticker rotate={-8} className="bottom-4 right-4" variant="solid" color="var(--cartoon-green)"><span className="px-2">FAST</span></Sticker>}
 
-                  <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center text-white group-hover:bg-fermion-blue group-hover:scale-110 transition-all duration-500 mb-8 shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center text-white group-hover:bg-fermion-french-blue group-hover:scale-110 transition-all duration-500 mb-8 shadow-lg">
                     {benefit.icon}
                   </div>
                   <h3 className="text-2xl font-black uppercase italic tracking-tight text-slate-900 mb-4">{benefit.title}</h3>
@@ -219,7 +219,7 @@ export default function WholesalePageV2() {
       <section className="py-32 px-6 relative z-10">
         <div className="max-w-5xl mx-auto">
           <div className="bg-slate-950 p-12 md:p-20 rounded-[4rem] border border-slate-800 shadow-2xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-fermion-blue/20 via-slate-900 to-slate-950 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-fermion-french-blue/20 via-slate-900 to-slate-950 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
             
             <Sticker rotate={-10} className="top-10 left-10" color="var(--cartoon-yellow)" variant="solid">
               <span className="p-3 text-slate-900">CONFIDENTIAL</span>
@@ -234,7 +234,7 @@ export default function WholesalePageV2() {
               </div>
               
               <Link href="/b2b/register" className="w-full md:w-auto shrink-0">
-                <Button className="w-full h-20 px-10 bg-white text-slate-900 font-black tracking-[0.3em] rounded-[2rem] hover:bg-fermion-blue hover:text-white transition-all duration-500 uppercase italic text-sm shadow-xl hover:scale-105 active:scale-95">
+                <Button className="w-full h-20 px-10 bg-white text-slate-900 font-black tracking-[0.3em] rounded-[2rem] hover:bg-fermion-french-blue hover:text-white transition-all duration-500 uppercase italic text-sm shadow-xl hover:scale-105 active:scale-95">
                   Apply For Access <ArrowRight className="ml-3" size={18} />
                 </Button>
               </Link>

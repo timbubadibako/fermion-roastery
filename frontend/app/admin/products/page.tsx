@@ -207,7 +207,7 @@ export default function AdminProductsPage() {
           </div>
           <Button 
             onClick={() => handleOpenForm()}
-            className="bg-slate-900 text-white font-black tracking-[0.2em] px-8 h-14 rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic shadow-xl shadow-slate-900/10"
+            className="bg-slate-900 text-white font-black tracking-[0.2em] px-8 h-14 rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic shadow-xl shadow-slate-900/10"
           >
             <Plus size={18} className="mr-2" /> Add Product
           </Button>
@@ -218,7 +218,7 @@ export default function AdminProductsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {loading ? (
           <div className="col-span-full h-40 flex items-center justify-center">
-            <Loader2 className="animate-spin text-fermion-blue" />
+            <Loader2 className="animate-spin text-fermion-french-blue" />
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="col-span-full h-40 flex items-center justify-center bg-white rounded-[3rem] border border-dashed border-slate-200">
@@ -353,7 +353,7 @@ export default function AdminProductsPage() {
                               key={v} 
                               type="button"
                               onClick={() => setFormData({...formData, [feat]: v})}
-                              className={`w-6 h-6 rounded-full transition-all ${formData[feat as keyof CoffeeProduct] as number >= v ? "bg-fermion-blue" : "bg-slate-200 hover:bg-slate-300"}`}
+                              className={`w-6 h-6 rounded-full transition-all ${formData[feat as keyof CoffeeProduct] as number >= v ? "bg-fermion-french-blue" : "bg-slate-200 hover:bg-slate-300"}`}
                              />
                            ))}
                         </div>
@@ -368,7 +368,7 @@ export default function AdminProductsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                    {formData.pricing_tiers?.map((tier, idx) => (
                      <div key={tier.tier_name} className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-fermion-blue">{tier.tier_name} Price</label>
+                        <label className="text-[9px] font-black uppercase tracking-widest text-fermion-french-blue">{tier.tier_name} Price</label>
                         <Input 
                           type="number" 
                           value={tier.unit_price} 
@@ -391,7 +391,7 @@ export default function AdminProductsPage() {
 
              <DialogFooter className="pt-10 border-t border-slate-50 flex gap-4">
                 <Button type="button" variant="ghost" onClick={() => setIsFormOpen(false)} className="px-8 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px]">Cancel</Button>
-                <Button disabled={isSaving} className="bg-slate-900 text-white font-black tracking-[0.2em] px-12 h-14 rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic shadow-2xl shadow-slate-900/20">
+                <Button disabled={isSaving} className="bg-slate-900 text-white font-black tracking-[0.2em] px-12 h-14 rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic shadow-2xl shadow-slate-900/20">
                    {isSaving ? <Loader2 className="animate-spin" /> : <><Save size={18} className="mr-2" /> {editingProduct ? "Update Product" : "Save Product"}</>}
                 </Button>
              </DialogFooter>

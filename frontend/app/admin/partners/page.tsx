@@ -72,7 +72,7 @@ export default function AdminPartnersPage() {
     }
   };
 
-  if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-fermion-blue" /></div>;
+  if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-fermion-french-blue" /></div>;
 
   return (
     <div className="space-y-12">
@@ -138,7 +138,7 @@ export default function AdminPartnersPage() {
                               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 w-fit">
                                 <CheckCircle2 size={12} /> Approved
                               </span>
-                              <span className="text-[10px] font-bold text-fermion-blue">Tier: {partner.tier_name}</span>
+                              <span className="text-[10px] font-bold text-fermion-french-blue">Tier: {partner.tier_name}</span>
                             </div>
                           )}
                           {partner.status === 'rejected' && (

@@ -32,10 +32,10 @@ export function CartSheet() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
 
-        <button className="text-slate-800 hover:text-fermion-blue transition-all duration-300 relative group">
+        <button className="text-slate-800 hover:text-fermion-french-blue transition-all duration-300 relative group">
           <ShoppingCart size={18} strokeWidth={1.5} />
           {items.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-fermion-blue text-white text-[6px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
+            <span className="absolute -top-1 -right-1 bg-fermion-french-blue text-white text-[6px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
               {items.reduce((acc, item) => acc + item.quantity, 0)}
             </span>
           )}
@@ -78,7 +78,7 @@ export function CartSheet() {
                         </button>
                       </div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.weight} • {item.grind}</p>
-                      <p className="text-xs font-semibold text-fermion-blue">
+                      <p className="text-xs font-semibold text-fermion-french-blue">
                         Rp {item.price.toLocaleString('id-ID')}
                       </p>
                       
@@ -126,7 +126,7 @@ export function CartSheet() {
               <SheetClose asChild>
                 <Link href="/cart" className="flex-[1.5]">
                   <Button 
-                    className="w-full bg-fermion-blue hover:bg-fermion-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-blue/20 transition-all active:scale-[0.98] uppercase text-[10px] tracking-widest"
+                    className="w-full bg-fermion-french-blue hover:bg-fermion-french-blue/90 text-white font-bold h-14 rounded-3xl shadow-xl shadow-fermion-french-blue/20 transition-all active:scale-[0.98] uppercase text-[10px] tracking-widest"
                   >
                     Checkout
                   </Button>

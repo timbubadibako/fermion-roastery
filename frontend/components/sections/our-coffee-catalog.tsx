@@ -121,7 +121,7 @@ export function RetailCatalog() {
   if (loading) return (
     <div className="min-h-screen bg-[#FAF9F6] pt-40 px-12 relative overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
-        <Loader2 className="w-10 h-10 text-fermion-blue animate-spin" />
+        <Loader2 className="w-10 h-10 text-fermion-french-blue animate-spin" />
         <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase italic">Analyzing Specimen Data...</p>
       </div>
     </div>
@@ -134,15 +134,15 @@ export function RetailCatalog() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.025]" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
-      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-purple-200/30 rounded-full blur-[120px] z-[-1]" />
-      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed top-[-200px] right-[-100px] w-[900px] h-[900px] bg-fermion-wisteria/30 rounded-full blur-[120px] z-[-1]" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/20 rounded-full blur-[120px] z-[-1]" />
 
       <div className="max-w-7xl mx-auto mb-24 space-y-10 relative z-10 px-4 md:px-10 text-left">
-        <div className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-purple-600 uppercase">
+        <div className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-lavender uppercase">
            Lab Specimen Catalogue
         </div>
         <h1 className="text-6xl md:text-8xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none">
-          Our Coffee <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 not-italic font-sans">Selection.</span>
+          Our Coffee <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-lavender to-fermion-horizon not-italic font-sans">Selection.</span>
         </h1>
         <p className="max-w-2xl text-slate-500 font-medium text-lg leading-relaxed">
           From high-altitude micro-lots to mathematically balanced espresso blends. Explore the science of flavor.
@@ -155,7 +155,7 @@ export function RetailCatalog() {
           <div className="flex items-center gap-10">
             <button 
               onClick={() => setShowFilter(!showFilter)}
-              className="flex items-center gap-3 text-[9px] font-black tracking-[0.3em] text-slate-900 hover:text-fermion-blue transition-all uppercase italic"
+              className="flex items-center gap-3 text-[9px] font-black tracking-[0.3em] text-slate-900 hover:text-fermion-french-blue transition-all uppercase italic"
             >
               {showFilter ? 'Close Filters' : 'Lab Filters'} <SlidersHorizontal size={14} strokeWidth={showFilter ? 2 : 1.5} />
             </button>
@@ -213,7 +213,7 @@ export function RetailCatalog() {
                                 setSortBy(opt.val);
                                 setShowSort(false);
                               }}
-                              className={`text-[10px] font-black cursor-pointer uppercase tracking-[0.2em] transition-colors ${sortBy === opt.val ? 'text-fermion-blue' : 'text-slate-400 hover:text-slate-900'}`}
+                              className={`text-[10px] font-black cursor-pointer uppercase tracking-[0.2em] transition-colors ${sortBy === opt.val ? 'text-fermion-french-blue' : 'text-slate-400 hover:text-slate-900'}`}
                             >
                               {opt.label}
                             </motion.p>
@@ -255,7 +255,7 @@ export function RetailCatalog() {
         }`}>
           {displayProducts.map((product, index) => (
             <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative">
-              <div className="artisan-glass rounded-[3rem] p-6 pb-10 flex flex-col gap-8 transition-all duration-500 hover:bg-white/40 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2">
+              <div className="artisan-glass rounded-[3rem] p-6 pb-10 flex flex-col gap-8 transition-all duration-500 hover:bg-white/40 hover:shadow-2xl hover:shadow-fermion-lavender/10 hover:-translate-y-2">
                 <div className="relative aspect-[4/5] bg-slate-50/50 rounded-[2.5rem] overflow-hidden border border-white/60">
                   {index === 0 && <Sticker rotate={6} className="top-6 right-6">Best Seller</Sticker>}
                   {index === 2 && <Sticker rotate={-4} color="var(--cartoon-pink)" className="top-6 right-6">New Crop</Sticker>}
@@ -270,14 +270,14 @@ export function RetailCatalog() {
                   <div className="absolute bottom-6 left-6 right-6">
                      <div className="bg-white/80 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white shadow-xl flex items-center justify-between transition-transform duration-500 group-hover:-translate-y-1">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 italic">✨ {product.notes || 'Curated'}</p>
-                        <Beaker size={14} className="text-fermion-blue" />
+                        <Beaker size={14} className="text-fermion-french-blue" />
                      </div>
                   </div>
                 </div>
 
                 <div className="space-y-4 px-2">
                   <div className="space-y-1">
-                    <p className="text-[9px] font-black tracking-[0.2em] text-fermion-blue uppercase">
+                    <p className="text-[9px] font-black tracking-[0.2em] text-fermion-french-blue uppercase">
                       {product.origin} • {product.process}
                     </p>
                     <h3 className="text-3xl font-black italic tracking-tighter text-slate-900 uppercase leading-none">
@@ -306,7 +306,7 @@ export function RetailCatalog() {
                     ) : (
                        <button 
                         onClick={(e) => handleAddToCart(e, product)}
-                        className="bg-slate-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-fermion-blue transition-all active:scale-95 shadow-xl shadow-slate-900/10"
+                        className="bg-slate-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-fermion-french-blue transition-all active:scale-95 shadow-xl shadow-slate-900/10"
                        >
                          Add to Cart
                        </button>

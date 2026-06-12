@@ -15,8 +15,8 @@ export default function StoryPageV2() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
-      <div className="fixed top-[0px] right-[-200px] w-[800px] h-[800px] bg-purple-200/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
-      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed top-[0px] right-[-200px] w-[800px] h-[800px] bg-fermion-wisteria/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
 
       {/* SECTION 1: THE SCRAPBOOK HERO */}
       <section className="pt-40 pb-32 px-6 relative z-10">
@@ -25,7 +25,7 @@ export default function StoryPageV2() {
            <div className="flex-1 space-y-10 order-2 lg:order-1">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-blue uppercase"
+                className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-french-blue uppercase"
               >
                  The Roastery Mission
               </motion.div>
@@ -33,7 +33,7 @@ export default function StoryPageV2() {
                 initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
                 className="text-6xl md:text-8xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-[0.85]"
               >
-                 The Flavor <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-blue to-purple-500 font-sans not-italic">Bridge.</span>
+                 The Flavor <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-french-blue to-fermion-lavender font-sans not-italic">Bridge.</span>
               </motion.h1>
               <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -82,7 +82,7 @@ export default function StoryPageV2() {
                     <Globe2 size={28} className="text-emerald-500" />
                  </div>
                  <div>
-                    <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase mb-4">01 / THE PRODUCER</h3>
+                    <h3 className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase mb-4">01 / THE PRODUCER</h3>
                     <h2 className="text-4xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none mb-6">Honoring the <br/> Origin.</h2>
                     <p className="text-slate-500 leading-relaxed font-medium">
                        We source directly from dedicated farmers. Every cherry carries their hard work and a unique terroir that we are sworn to protect and highlight through careful profiling.
@@ -95,10 +95,10 @@ export default function StoryPageV2() {
                 className="artisan-glass p-12 md:p-16 rounded-[4rem] space-y-8 group"
               >
                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
-                    <Activity size={28} className="text-purple-500" />
+                    <Activity size={28} className="text-fermion-lavender" />
                  </div>
                  <div>
-                    <h3 className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase mb-4">02 / THE DRINKER</h3>
+                    <h3 className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase mb-4">02 / THE DRINKER</h3>
                     <h2 className="text-4xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none mb-6">Delivering the <br/> Value.</h2>
                     <p className="text-slate-500 leading-relaxed font-medium">
                        Through scientific precision and sensory calibration, we ensure that the original goodness and unique flavor profile reach your morning ritual intact and unbroken.
@@ -136,13 +136,13 @@ export default function StoryPageV2() {
 
       {/* SECTION 4: THE CREED (Footer Quote) */}
       <section className="py-40 px-6 relative z-10 bg-slate-950 mt-20">
-         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-fermion-blue/20 via-transparent to-transparent opacity-50" />
+         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-fermion-french-blue/20 via-transparent to-transparent opacity-50" />
          <div className="max-w-5xl mx-auto text-center space-y-12 relative z-10">
             <Quote size={48} className="text-white/20 mx-auto" />
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-black italic tracking-tighter text-white leading-tight text-balance">
                "Tugas kami adalah sebagai jembatan rasa antara producer dan coffee drinker. Ada hal baik, rasa yang unik dan value yang tidak boleh putus."
             </h2>
-            <p className="text-fermion-blue text-[10px] font-black tracking-[0.5em] uppercase">
+            <p className="text-fermion-french-blue text-[10px] font-black tracking-[0.5em] uppercase">
                — The Fermion Manifesto
             </p>
          </div>
