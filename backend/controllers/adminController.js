@@ -1,5 +1,59 @@
 import { query } from '../lib/db.js';
 
+// 0. Get Admin Stats for Dashboard Overview
+export const getAdminStats = async (req, res) => {
+  try {
+    // Total Revenue
+    const revenueRes = await query("SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status != 'CANCELLED'");
+    
+    // Volume Sold (assuming 250g per unit if not specified, but let's just sum items quantity for now or use a multiplier)
+    const volumeRes = await query(`
+      SELECT COALESCE(SUM(oi.quantity * 0.25), 0) as total_kg 
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE o.status != 'CANCELLED'
+    `);
+
+    // Pending B2B Partners
+    const pendingB2BRes = await query("SELECT COUNT(*) as count FROM b2b_partners WHERE status = 'pending'");
+
+    // Active Subscriptions (mocked for now as we don't have a subs table yet, but let's count PAID orders as a proxy or just 0)
+    const activeSubsRes = await query("SELECT COUNT(*) as count FROM profiles WHERE role = 'B2B'");
+
+    // Volume Mix (Top Products)
+    const volumeMixRes = await query(`
+      SELECT product_name as name, SUM(quantity * 0.25) as kg
+      FROM order_items
+      GROUP BY product_name
+      ORDER BY kg DESC
+      LIMIT 5
+    `);
+
+    // Revenue Trends (Last 7 days)
+    const revenueTrendsRes = await query(`
+      SELECT TO_CHAR(created_at, 'DD Mon') as name, SUM(total_amount) as value
+      FROM orders
+      WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+      AND status != 'CANCELLED'
+      GROUP BY TO_CHAR(created_at, 'DD Mon'), DATE_TRUNC('day', created_at)
+      ORDER BY DATE_TRUNC('day', created_at) ASC
+    `);
+
+    res.status(200).json({
+      revenue: parseFloat(revenueRes.rows[0].total),
+      volume: parseFloat(volumeRes.rows[0].total_kg),
+      pendingB2B: parseInt(pendingB2BRes.rows[0].count),
+      activeSubs: parseInt(activeSubsRes.rows[0].count),
+      volumeTrends: volumeMixRes.rows.map(r => ({ name: r.name, kg: parseFloat(r.kg) })),
+      revenueTrends: revenueTrendsRes.rows.map(r => ({ name: r.name, value: parseFloat(r.value) })),
+      recentOrders: (await query("SELECT id, customer_name, customer_email, total_amount, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5")).rows
+    });
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    res.status(500).json({ message: "Failed to fetch dashboard stats", error: error.message });
+  }
+};
+
 // 1. Get all B2B Partners (Pending, Approved, Rejected)
 export const getB2bPartners = async (req, res) => {
   try {
@@ -100,6 +154,24 @@ export const getMaintenanceSchedule = async (req, res) => {
   }
 };
 
+// 3.6 Get Churn Alerts
+export const getChurnAlerts = async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT p.company_name, p.profile_id, MAX(o.created_at) as last_order_date
+      FROM b2b_partners p
+      LEFT JOIN orders o ON p.profile_id = o.profile_id
+      WHERE p.status = 'approved'
+      GROUP BY p.company_name, p.profile_id
+      HAVING CURRENT_DATE - MAX(o.created_at)::date > 45 OR MAX(o.created_at) IS NULL
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching churn alerts:', error);
+    res.status(500).json({ message: "Failed to fetch churn alerts", error: error.message });
+  }
+};
+
 // 4. Get All Orders
 export const getOrders = async (req, res) => {
   try {
@@ -177,6 +249,39 @@ export const updateOrder = async (req, res) => {
   } catch (error) {
     console.error('Error updating order:', error);
     res.status(500).json({ message: "Failed to update order", error: error.message });
+  }
+};
+
+// 6. Get Site Settings
+export const getSettings = async (req, res) => {
+  try {
+    const result = await query("SELECT * FROM site_settings");
+    const settings = result.rows.reduce((acc, row) => {
+      acc[row.key] = row.value;
+      return acc;
+    }, {});
+    res.status(200).json(settings);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching settings", error: error.message });
+  }
+};
+
+// 7. Update Site Settings
+export const updateSettings = async (req, res) => {
+  const settings = req.body; // Object with key-value pairs
+  try {
+    await query('BEGIN');
+    for (const [key, value] of Object.entries(settings)) {
+      await query(
+        "INSERT INTO site_settings (key, value, updated_at) VALUES ($1, $2, CURRENT_TIMESTAMP) ON CONFLICT (key) DO UPDATE SET value = $2, updated_at = CURRENT_TIMESTAMP",
+        [key, value]
+      );
+    }
+    await query('COMMIT');
+    res.status(200).json({ message: "Settings updated successfully" });
+  } catch (error) {
+    await query('ROLLBACK');
+    res.status(500).json({ message: "Error updating settings", error: error.message });
   }
 };
 
