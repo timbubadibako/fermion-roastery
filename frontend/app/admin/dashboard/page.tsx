@@ -5,18 +5,30 @@ import { TrendingUp, Package, Users, Zap, Loader2, ArrowUpRight, Coffee, Clock }
 import { motion } from "framer-motion";
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<any>({
+    revenue: 55000000,
+    volume: 320,
+    pendingB2B: 4,
+    activeSubs: 12,
+    volumeTrends: [
+      { name: "Espresso Blend", kg: 150 },
+      { name: "Filter Single Origin", kg: 100 },
+      { name: "Decaf", kg: 70 },
+    ]
+  }); // Mocking stats for now since getAdminStats is commented out
+  const [churnAlerts, setChurnAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/admin/stats')
+    // Fetch Churn Alerts
+    fetch('http://localhost:3001/api/admin/churn')
       .then(res => res.json())
       .then(data => {
-        setStats(data);
+        setChurnAlerts(data);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Failed to load stats", err);
+        console.error("Failed to load churn alerts", err);
         setLoading(false);
       });
   }, []);
@@ -133,31 +145,60 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* RECENT ALERTS */}
-      <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-sm space-y-8">
-          <div className="flex items-center gap-3">
-             <Clock size={16} className="text-slate-400" />
-             <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">Recent Command Center Alerts</h4>
-          </div>
-          <div className="divide-y divide-slate-50">
-             {[
-               { type: "B2B", msg: "New Wholesale Application: 'Kopi Kenangan Senayan'", time: "2 mins ago", status: "Urgent" },
-               { type: "STOCK", msg: "Inventory Alert: 'NOT ONLY INTENSE' batch below 10kg", time: "1 hour ago", status: "Warning" },
-               { type: "ORDER", msg: "Large Retail Order: 15 items by anonymous guest", time: "3 hours ago", status: "Success" },
-             ].map((alert, i) => (
-               <div key={i} className="py-6 flex items-center justify-between group cursor-pointer hover:px-4 transition-all duration-300 rounded-2xl">
-                  <div className="flex items-center gap-6">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 w-12">{alert.type}</span>
-                    <p className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">{alert.msg}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-medium text-slate-400 italic">{alert.time}</span>
-                    <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full ${
-                      alert.status === 'Urgent' ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-500'
-                    }`}>{alert.status}</span>
-                  </div>
-               </div>
-             ))}
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-sm space-y-8">
+            <div className="flex items-center gap-3">
+               <Clock size={16} className="text-slate-400" />
+               <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">Recent Command Center Alerts</h4>
+            </div>
+            <div className="divide-y divide-slate-50">
+               {[
+                 { type: "B2B", msg: "New Wholesale Application: 'Kopi Kenangan Senayan'", time: "2 mins ago", status: "Urgent" },
+                 { type: "STOCK", msg: "Inventory Alert: 'NOT ONLY INTENSE' batch below 10kg", time: "1 hour ago", status: "Warning" },
+                 { type: "ORDER", msg: "Large Retail Order: 15 items by anonymous guest", time: "3 hours ago", status: "Success" },
+               ].map((alert, i) => (
+                 <div key={i} className="py-6 flex items-center justify-between group cursor-pointer hover:px-4 transition-all duration-300 rounded-2xl">
+                    <div className="flex items-center gap-6">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 w-12">{alert.type}</span>
+                      <p className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">{alert.msg}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-[10px] font-medium text-slate-400 italic">{alert.time}</span>
+                      <span className={`text-[8px] font-black uppercase px-2.5 py-1 rounded-full ${
+                        alert.status === 'Urgent' ? 'bg-red-50 text-red-500' : 'bg-slate-50 text-slate-500'
+                      }`}>{alert.status}</span>
+                    </div>
+                 </div>
+               ))}
+            </div>
+        </div>
+
+        {/* CHURN ALERTS */}
+        <div className="bg-white p-12 rounded-[3.5rem] border border-red-100 shadow-sm space-y-8 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
+            <div className="flex items-center gap-3">
+               <Users size={16} className="text-red-500" />
+               <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">B2B Churn Alerts (> 45 Days)</h4>
+            </div>
+            <div className="divide-y divide-slate-50">
+               {churnAlerts.length === 0 ? (
+                 <p className="text-sm text-slate-500 py-4">No churn alerts currently.</p>
+               ) : (
+                 churnAlerts.map((partner, i) => (
+                   <div key={i} className="py-6 flex items-center justify-between group cursor-pointer hover:px-4 transition-all duration-300 rounded-2xl">
+                      <div className="flex items-center gap-6">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-red-300 w-12">CHURN</span>
+                        <p className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">{partner.company_name}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-[10px] font-medium text-slate-400 italic">Last order: {partner.last_order_date ? new Date(partner.last_order_date).toLocaleDateString() : 'Never'}</span>
+                        <span className="text-[8px] font-black uppercase px-2.5 py-1 rounded-full bg-red-50 text-red-500">Action Req</span>
+                      </div>
+                   </div>
+                 ))
+               )}
+            </div>
+        </div>
       </div>
     </div>
   );
