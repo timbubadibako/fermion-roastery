@@ -112,7 +112,7 @@ export default function AdminOrdersPage() {
     }
   };
 
-  if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-fermion-blue" /></div>;
+  if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-fermion-french-blue" /></div>;
 
   return (
     <div className="space-y-12 pb-20">
@@ -183,7 +183,7 @@ export default function AdminOrdersPage() {
                     </p>
                   </div>
                   {order.shipping_awb && (
-                    <div className="flex items-center gap-2 text-xs font-bold text-fermion-blue bg-fermion-blue/5 p-3 rounded-xl w-fit">
+                    <div className="flex items-center gap-2 text-xs font-bold text-fermion-french-blue bg-fermion-french-blue/5 p-3 rounded-xl w-fit">
                       <Truck size={14} /> {order.shipping_courier} - {order.shipping_awb}
                     </div>
                   )}

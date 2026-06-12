@@ -100,7 +100,7 @@ export default function ProfileAndOrdersPage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="text-center space-y-4 font-sans">
-          <ShieldCheck className="mx-auto text-fermion-blue" size={48} />
+          <ShieldCheck className="mx-auto text-fermion-french-blue" size={48} />
           <h2 className="text-2xl font-black uppercase italic tracking-tighter">Login Required</h2>
           <p className="text-slate-500">Please log in to view your account settings.</p>
           <Link href="/auth">
@@ -119,7 +119,7 @@ export default function ProfileAndOrdersPage() {
         <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
            <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-20 -mt-20" />
            
-           <div className="relative z-10 w-24 h-24 bg-fermion-blue rounded-3xl flex items-center justify-center text-white text-3xl font-black italic shadow-xl shadow-fermion-blue/20">
+           <div className="relative z-10 w-24 h-24 bg-fermion-french-blue rounded-3xl flex items-center justify-center text-white text-3xl font-black italic shadow-xl shadow-fermion-french-blue/20">
               {user.full_name?.charAt(0) || 'U'}
            </div>
 
@@ -175,7 +175,7 @@ export default function ProfileAndOrdersPage() {
                     <Package size={48} className="mx-auto text-slate-100" />
                     <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No orders yet</p>
                     <Link href="/our-coffee">
-                       <Button variant="link" className="text-fermion-blue font-bold">Start Shopping →</Button>
+                       <Button variant="link" className="text-fermion-french-blue font-bold">Start Shopping →</Button>
                     </Link>
                   </div>
                 ) : (
@@ -183,7 +183,7 @@ export default function ProfileAndOrdersPage() {
                     <button 
                       key={order.id}
                       onClick={() => setSelectedOrder(order)}
-                      className={`w-full bg-white p-6 rounded-[2rem] border transition-all text-left group flex items-center justify-between ${selectedOrder?.id === order.id ? 'border-fermion-blue shadow-lg shadow-fermion-blue/5' : 'border-slate-100 hover:border-slate-300 shadow-sm'}`}
+                      className={`w-full bg-white p-6 rounded-[2rem] border transition-all text-left group flex items-center justify-between ${selectedOrder?.id === order.id ? 'border-fermion-french-blue shadow-lg shadow-fermion-french-blue/5' : 'border-slate-100 hover:border-slate-300 shadow-sm'}`}
                     >
                       <div className="space-y-1">
                         <p className="font-mono text-[10px] font-bold text-slate-400">#{order.id.split('-')[0].toUpperCase()}</p>
@@ -196,7 +196,7 @@ export default function ProfileAndOrdersPage() {
                            </span>
                         </div>
                       </div>
-                      <ChevronRight size={16} className={`text-slate-300 transition-transform group-hover:translate-x-1 ${selectedOrder?.id === order.id ? 'text-fermion-blue' : ''}`} />
+                      <ChevronRight size={16} className={`text-slate-300 transition-transform group-hover:translate-x-1 ${selectedOrder?.id === order.id ? 'text-fermion-french-blue' : ''}`} />
                     </button>
                   ))
                 )}
@@ -219,7 +219,7 @@ export default function ProfileAndOrdersPage() {
                                className="bg-slate-50 p-2 rounded-lg border border-slate-100 group relative cursor-copy hover:bg-slate-100 transition-colors"
                             >
                                <p className="font-mono text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Xendit Invoice ID:</p>
-                               <p className="font-mono text-[10px] font-black text-fermion-blue break-all">{selectedOrder.xendit_invoice_id}</p>
+                               <p className="font-mono text-[10px] font-black text-fermion-french-blue break-all">{selectedOrder.xendit_invoice_id}</p>
                                <span className="absolute -top-2 -right-2 bg-slate-900 text-white text-[8px] px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">Click to Copy</span>
                             </div>
                          </div>
@@ -267,7 +267,7 @@ export default function ProfileAndOrdersPage() {
                             <div className="space-y-3 mt-2">
                               <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100">
                                 <div className="bg-white p-1.5 rounded-lg border border-slate-100">
-                                  <Package size={14} className="text-fermion-blue" />
+                                  <Package size={14} className="text-fermion-french-blue" />
                                 </div>
                                 <div>
                                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{selectedOrder.shipping_courier || 'Courier'}</p>
@@ -278,7 +278,7 @@ export default function ProfileAndOrdersPage() {
                                 href={`https://track.biteship.com?waybill_id=${selectedOrder.shipping_awb}`} 
                                 target="_blank" 
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-fermion-blue hover:text-blue-700 transition-colors"
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-fermion-french-blue hover:text-blue-700 transition-colors"
                               >
                                 Lacak via Biteship <ChevronRight size={12} />
                               </a>
@@ -316,10 +316,10 @@ export default function ProfileAndOrdersPage() {
                <SettingsCard icon={<PaymentIcon size={18}/>} title="Payment Methods" desc="Saved cards and digital wallets." />
                <SettingsCard icon={<Settings size={18}/>} title="Account Security" desc="Change password and two-factor auth." />
                <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white space-y-4">
-                  <Sparkles className="text-fermion-blue" size={24} />
+                  <Sparkles className="text-fermion-french-blue" size={24} />
                   <h4 className="text-lg font-black uppercase italic tracking-tighter">Fermion Rewards</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">You have <span className="text-white font-bold">450 Points</span>. Earn 50 more to unlock free shipping on all orders.</p>
-                  <Button className="w-full bg-white text-slate-900 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest italic hover:bg-fermion-blue hover:text-white transition-all">Redeem Points</Button>
+                  <Button className="w-full bg-white text-slate-900 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest italic hover:bg-fermion-french-blue hover:text-white transition-all">Redeem Points</Button>
                </div>
             </motion.div>
           )}
@@ -332,11 +332,11 @@ export default function ProfileAndOrdersPage() {
 function TimelineStep({ active, current, icon, label, description }: { active: boolean, current: boolean, icon: React.ReactNode, label: string, description: React.ReactNode }) {
   return (
     <div className={`relative transition-all duration-700 ${active ? 'opacity-100' : 'opacity-20 translate-x-2'}`}>
-      <div className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full flex items-center justify-center z-10 border-2 transition-all duration-500 ${current ? 'bg-fermion-blue border-fermion-blue text-white scale-125 shadow-lg shadow-fermion-blue/30' : active ? 'bg-white border-slate-900 text-slate-900' : 'bg-white border-slate-200 text-slate-300'}`}>
+      <div className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full flex items-center justify-center z-10 border-2 transition-all duration-500 ${current ? 'bg-fermion-french-blue border-fermion-french-blue text-white scale-125 shadow-lg shadow-fermion-french-blue/30' : active ? 'bg-white border-slate-900 text-slate-900' : 'bg-white border-slate-200 text-slate-300'}`}>
         {icon}
       </div>
       <div className="space-y-1">
-        <h4 className={`text-xs font-black uppercase tracking-widest transition-colors ${current ? 'text-fermion-blue' : 'text-slate-900'}`}>{label}</h4>
+        <h4 className={`text-xs font-black uppercase tracking-widest transition-colors ${current ? 'text-fermion-french-blue' : 'text-slate-900'}`}>{label}</h4>
         <div className="text-[11px] font-medium text-slate-500 leading-relaxed max-w-sm">{description}</div>
       </div>
     </div>
@@ -346,7 +346,7 @@ function TimelineStep({ active, current, icon, label, description }: { active: b
 function SettingsCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
     <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-4 hover:border-slate-300 transition-all group">
-       <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-fermion-blue group-hover:text-white transition-all">
+       <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-fermion-french-blue group-hover:text-white transition-all">
           {icon}
        </div>
        <div className="space-y-1">

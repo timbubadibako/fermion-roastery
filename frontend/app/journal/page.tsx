@@ -47,8 +47,8 @@ export default function JournalPageV2() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
-      <div className="fixed top-[0px] right-[-200px] w-[800px] h-[800px] bg-purple-200/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
-      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed top-[0px] right-[-200px] w-[800px] h-[800px] bg-fermion-wisteria/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
 
       {/* SECTION 1: HEADER & SEARCH */}
       <section className="pt-40 pb-12 px-6 relative z-10">
@@ -56,7 +56,7 @@ export default function JournalPageV2() {
            <div className="space-y-6">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-blue uppercase flex items-center gap-2 w-fit"
+                className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-french-blue uppercase flex items-center gap-2 w-fit"
               >
                 <BookOpen size={12} /> The Lab Journal
               </motion.div>
@@ -64,7 +64,7 @@ export default function JournalPageV2() {
                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                 className="text-6xl md:text-8xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-[0.85]"
               >
-                Stories <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-blue to-purple-500 font-sans not-italic">Behind the Beans.</span>
+                Stories <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-french-blue to-fermion-lavender font-sans not-italic">Behind the Beans.</span>
               </motion.h1>
            </div>
            
@@ -110,7 +110,7 @@ export default function JournalPageV2() {
                   <p className="text-slate-300 text-sm md:text-base font-medium leading-relaxed max-w-xl">
                     Discover why the forgotten varietal is making a massive comeback in our latest sourcing trip to the West Java highlands. Read the full field report.
                   </p>
-                  <div className="pt-4 flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-fermion-blue group-hover:text-white transition-colors">
+                  <div className="pt-4 flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-fermion-french-blue group-hover:text-white transition-colors">
                     Read Story <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
                   </div>
                </div>
@@ -141,7 +141,7 @@ export default function JournalPageV2() {
                        </div>
                        <div className="space-y-4 p-6">
                           <p className="text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase">{article.date}</p>
-                          <h3 className="text-3xl font-display font-black text-slate-900 italic tracking-tighter leading-tight group-hover:text-fermion-blue transition-colors">
+                          <h3 className="text-3xl font-display font-black text-slate-900 italic tracking-tighter leading-tight group-hover:text-fermion-french-blue transition-colors">
                              {article.title}
                           </h3>
                        </div>

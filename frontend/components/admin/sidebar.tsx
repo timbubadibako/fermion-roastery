@@ -84,7 +84,7 @@ export function AdminSidebar() {
                     <item.icon size={18} strokeWidth={pathname === item.href ? 2.5 : 2} />
                     <span>{item.name}</span>
                   </div>
-                  {pathname === item.href && <ChevronRight size={14} className="text-fermion-blue" />}
+                  {pathname === item.href && <ChevronRight size={14} className="text-fermion-french-blue" />}
                 </Link>
               ))}
             </div>

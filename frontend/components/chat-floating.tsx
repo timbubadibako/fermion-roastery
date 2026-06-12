@@ -63,7 +63,7 @@ export function ChatFloating() {
             {/* Header: Glass Style */}
             <div className="bg-slate-900/90 p-8 flex items-center justify-between">
                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-fermion-blue rounded-2xl flex items-center justify-center text-white italic font-black shadow-lg shadow-fermion-blue/30 text-lg">F</div>
+                  <div className="w-10 h-10 bg-fermion-french-blue rounded-2xl flex items-center justify-center text-white italic font-black shadow-lg shadow-fermion-french-blue/30 text-lg">F</div>
                   <div>
                     <h4 className="text-white text-xs font-black uppercase tracking-widest leading-none">Fermion Lab</h4>
                     <p className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-1.5 flex items-center gap-1">
@@ -92,11 +92,11 @@ export function ChatFloating() {
             <form onSubmit={handleSendMessage} className="p-6 bg-white/60 border-t border-white/60 flex gap-3">
                <Input 
                  placeholder="Type your question..." 
-                 className="flex-1 h-12 bg-white/50 border-none rounded-2xl text-[11px] font-bold px-5 focus:ring-2 focus:ring-fermion-blue/20 transition-all"
+                 className="flex-1 h-12 bg-white/50 border-none rounded-2xl text-[11px] font-bold px-5 focus:ring-2 focus:ring-fermion-french-blue/20 transition-all"
                  value={inputText}
                  onChange={(e) => setInputText(e.target.value)}
                />
-               <Button type="submit" className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-fermion-blue transition-all shadow-xl">
+               <Button type="submit" className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-fermion-french-blue transition-all shadow-xl">
                  <Send size={16} />
                </Button>
             </form>
@@ -115,7 +115,7 @@ export function ChatFloating() {
         className={`
           w-16 h-16 bg-slate-900 text-white rounded-[1.5rem] shadow-2xl flex items-center justify-center 
           hover:scale-110 transition-transform active:scale-95 group relative border-4 border-white
-          ${isOpen ? 'bg-fermion-blue rotate-0' : ''}
+          ${isOpen ? 'bg-fermion-french-blue rotate-0' : ''}
         `}
       >
         <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 border-2 border-white rounded-full flex items-center justify-center">

@@ -29,7 +29,7 @@ export function SubscriptionTeaserSection() {
             {/* Right: Content */}
             <div className="space-y-8 order-1 lg:order-2">
               <div className="space-y-4">
-                <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+                <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
                   Freshness Delivered
                 </p>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic">
@@ -44,14 +44,14 @@ export function SubscriptionTeaserSection() {
               <div className="space-y-3">
                 {perks.map((perk) => (
                   <div key={perk} className="flex items-center gap-3">
-                    <CheckCircle2 size={18} className="text-fermion-blue shrink-0" />
+                    <CheckCircle2 size={18} className="text-fermion-french-blue shrink-0" />
                     <p className="font-semibold text-foreground">{perk}</p>
                   </div>
                 ))}
               </div>
 
               <Link href="/subscription">
-                <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-blue/40 transition-all">
+                <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all">
                   Explore Plans
                   <ArrowRight size={16} />
                 </button>

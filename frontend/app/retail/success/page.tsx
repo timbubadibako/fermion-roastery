@@ -35,7 +35,7 @@ export default function OrderSuccessPage() {
           {/* Next Steps / Info */}
           <div className="bg-slate-50 rounded-3xl p-8 flex flex-col sm:flex-row gap-6 justify-center items-center text-left border border-slate-100">
              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white rounded-xl shadow-sm"><Package size={20} className="text-fermion-blue" /></div>
+                <div className="p-3 bg-white rounded-xl shadow-sm"><Package size={20} className="text-fermion-french-blue" /></div>
                 <div>
                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Step 1</p>
                    <p className="text-sm font-bold text-slate-900">Roasting Schedule</p>
@@ -43,7 +43,7 @@ export default function OrderSuccessPage() {
              </div>
              <div className="h-10 w-[1px] bg-slate-200 hidden sm:block" />
              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white rounded-xl shadow-sm"><Truck size={20} className="text-fermion-blue" /></div>
+                <div className="p-3 bg-white rounded-xl shadow-sm"><Truck size={20} className="text-fermion-french-blue" /></div>
                 <div>
                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Step 2</p>
                    <p className="text-sm font-bold text-slate-900">Delivery Tracking</p>
@@ -58,7 +58,7 @@ export default function OrderSuccessPage() {
           {/* Actions */}
           <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/our-coffee">
-              <Button className="w-full sm:w-auto h-14 px-8 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic">
+              <Button className="w-full sm:w-auto h-14 px-8 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic">
                 Continue Shopping <ArrowRight size={16} className="ml-2" />
               </Button>
             </Link>

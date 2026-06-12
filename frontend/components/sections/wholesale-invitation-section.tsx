@@ -13,7 +13,7 @@ export function WholesaleInvitationSection() {
             {/* Left: Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+                <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
                   B2B Partnership
                 </p>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic leading-[0.85]">
@@ -27,8 +27,8 @@ export function WholesaleInvitationSection() {
 
               <div className="space-y-4">
                 <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-fermion-blue/20 flex items-center justify-center shrink-0">
-                    <Zap size={18} className="text-fermion-blue" />
+                  <div className="w-10 h-10 rounded-full bg-fermion-french-blue/20 flex items-center justify-center shrink-0">
+                    <Zap size={18} className="text-fermion-french-blue" />
                   </div>
                   <div>
                     <p className="font-black text-sm uppercase tracking-widest">Minimum 50KG Monthly</p>
@@ -39,8 +39,8 @@ export function WholesaleInvitationSection() {
                 </div>
 
                 <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-fermion-blue/20 flex items-center justify-center shrink-0">
-                    <Zap size={18} className="text-fermion-blue" />
+                  <div className="w-10 h-10 rounded-full bg-fermion-french-blue/20 flex items-center justify-center shrink-0">
+                    <Zap size={18} className="text-fermion-french-blue" />
                   </div>
                   <div>
                     <p className="font-black text-sm uppercase tracking-widest">Direct Pricing</p>
@@ -51,8 +51,8 @@ export function WholesaleInvitationSection() {
                 </div>
 
                 <div className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-fermion-blue/20 flex items-center justify-center shrink-0">
-                    <Zap size={18} className="text-fermion-blue" />
+                  <div className="w-10 h-10 rounded-full bg-fermion-french-blue/20 flex items-center justify-center shrink-0">
+                    <Zap size={18} className="text-fermion-french-blue" />
                   </div>
                   <div>
                     <p className="font-black text-sm uppercase tracking-widest">Dedicated Support</p>
@@ -64,7 +64,7 @@ export function WholesaleInvitationSection() {
               </div>
 
               <Link href="/b2b/register">
-                <button className="inline-flex items-center gap-3 px-8 py-4 bg-fermion-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-blue/40 transition-all">
+                <button className="inline-flex items-center gap-3 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all">
                   Apply for B2B
                   <ArrowRight size={16} />
                 </button>

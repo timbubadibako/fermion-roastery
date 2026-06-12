@@ -95,8 +95,8 @@ export default function B2BRegisterPageV2() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
-      <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-purple-200/40 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-200/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-fermion-wisteria/40 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-fermion-horizon/30 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Main Container */}
       <div 
@@ -190,14 +190,14 @@ export default function B2BRegisterPageV2() {
                   </div>
 
                   <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 space-y-8">
-                    {user && <p className="text-[10px] font-black uppercase tracking-widest text-fermion-blue">Logged in as {user.email}</p>}
+                    {user && <p className="text-[10px] font-black uppercase tracking-widest text-fermion-french-blue">Logged in as {user.email}</p>}
                     
                     <div className="space-y-6">
                       <div className="space-y-2">
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Name</label>
                         <Input 
                           placeholder="e.g. The Daily Grind"
-                          className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-blue"
+                          className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-french-blue"
                           value={formData.cafeName}
                           onChange={(e) => setFormData({...formData, cafeName: e.target.value})}
                         />
@@ -206,7 +206,7 @@ export default function B2BRegisterPageV2() {
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
                         <Input 
                           placeholder="Street, City, Province"
-                          className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-blue"
+                          className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900 focus-visible:ring-2 focus-visible:ring-fermion-french-blue"
                           value={formData.cafeAddress}
                           onChange={(e) => setFormData({...formData, cafeAddress: e.target.value})}
                         />
@@ -216,7 +216,7 @@ export default function B2BRegisterPageV2() {
                     <Button 
                       disabled={!formData.cafeName || !formData.cafeAddress}
                       onClick={handleNextStep}
-                      className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg"
+                      className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg"
                     >
                       Continue <ArrowRight className="ml-2" size={14} />
                     </Button>
@@ -253,7 +253,7 @@ export default function B2BRegisterPageV2() {
                           <button 
                             key={v} 
                             onClick={() => setVolume(v)}
-                            className={`h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all border-2 ${volume === v ? "border-fermion-blue bg-fermion-blue/5 text-fermion-blue scale-105 shadow-md" : "border-transparent bg-slate-50 text-slate-400 hover:bg-slate-100"}`}
+                            className={`h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all border-2 ${volume === v ? "border-fermion-french-blue bg-fermion-french-blue/5 text-fermion-french-blue scale-105 shadow-md" : "border-transparent bg-slate-50 text-slate-400 hover:bg-slate-100"}`}
                           >
                             {v}
                           </button>
@@ -270,7 +270,7 @@ export default function B2BRegisterPageV2() {
                     <Button 
                       disabled={!volume || loading}
                       onClick={handleSubmitApplication}
-                      className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg"
+                      className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg"
                     >
                       {loading ? <Loader2 className="animate-spin" size={14} /> : "Submit Application"}
                     </Button>
@@ -295,7 +295,7 @@ export default function B2BRegisterPageV2() {
                     
                     <div className="space-y-4 relative z-10">
                       <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Application <br/> Received!</h2>
-                      <div className="flex items-center justify-center gap-2 text-fermion-blue bg-fermion-blue/5 py-2 px-4 rounded-full w-fit mx-auto border border-fermion-blue/10">
+                      <div className="flex items-center justify-center gap-2 text-fermion-french-blue bg-fermion-french-blue/5 py-2 px-4 rounded-full w-fit mx-auto border border-fermion-french-blue/10">
                         <Clock size={12} />
                         <span className="text-[9px] font-black uppercase tracking-widest">Verification: ~24 Hours</span>
                       </div>
@@ -307,7 +307,7 @@ export default function B2BRegisterPageV2() {
                     <div className="pt-10 mt-8 border-t border-slate-100 space-y-4 relative z-10">
                       <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">While you wait...</p>
                       <Link href="/our-coffee" className="block">
-                        <Button className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg">
+                        <Button className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic text-[10px] shadow-lg">
                           Explore Retail Shop <ArrowRight size={14} className="ml-2" />
                         </Button>
                       </Link>

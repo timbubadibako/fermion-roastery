@@ -8,7 +8,7 @@ interface FermionPlaceholderPanelProps {
 }
 
 const colorClasses = {
-  blue: "bg-fermion-blue/10 border-fermion-blue/20 text-fermion-blue",
+  blue: "bg-fermion-french-blue/10 border-fermion-french-blue/20 text-fermion-french-blue",
   lilac: "bg-fermion-lilac/10 border-fermion-lilac/20 text-fermion-lilac",
   yellow: "bg-fermion-yellow/10 border-fermion-yellow/20 text-fermion-yellow",
   coral: "bg-fermion-coral/10 border-fermion-coral/20 text-fermion-coral",

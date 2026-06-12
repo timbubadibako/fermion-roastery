@@ -12,11 +12,17 @@ export function HeroV2() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      {/* Cinematic Background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/hero-beans.jpg')" }} // Needs a real image or placeholder
-      />
+      {/* Cinematic Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+      >
+        {/* Placeholder video URL, update src to your actual watermark preview .mp4 */}
+        <source src="https://cdn.pixabay.com/video/2021/08/20/85669-591321852_large.mp4" type="video/mp4" />
+      </video>
 
       {/* Scrim Overlay: Linear gradient from black to transparent */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent mix-blend-multiply pointer-events-none" />

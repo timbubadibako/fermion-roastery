@@ -25,11 +25,11 @@ export default function B2BDashboardPage() {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
         <div className="text-center space-y-4">
-          <ShieldCheck className="mx-auto text-fermion-blue" size={48} />
+          <ShieldCheck className="mx-auto text-fermion-french-blue" size={48} />
           <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">Access Denied</h2>
           <p className="text-slate-400">This area is reserved for Fermion Business Partners.</p>
           <Link href="/auth">
-            <Button className="bg-fermion-blue text-white rounded-xl px-8">Login as Partner</Button>
+            <Button className="bg-fermion-french-blue text-white rounded-xl px-8">Login as Partner</Button>
           </Link>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function B2BDashboardPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <span className="bg-fermion-blue/20 text-fermion-blue text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-fermion-blue/30">Business Partner</span>
+              <span className="bg-fermion-french-blue/20 text-fermion-french-blue text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-fermion-french-blue/30">Business Partner</span>
               <span className="text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest bg-emerald-400/10 border border-emerald-400/20">Silver Tier</span>
               <button 
                 onClick={() => {
@@ -62,7 +62,7 @@ export default function B2BDashboardPage() {
           </div>
           
           <Link href="/our-coffee">
-            <Button className="bg-fermion-blue hover:bg-white hover:text-slate-900 text-white font-black tracking-widest uppercase italic px-8 h-14 rounded-2xl transition-all shadow-xl shadow-fermion-blue/20">
+            <Button className="bg-fermion-french-blue hover:bg-white hover:text-slate-900 text-white font-black tracking-widest uppercase italic px-8 h-14 rounded-2xl transition-all shadow-xl shadow-fermion-french-blue/20">
               Bulk Order Catalog <ArrowUpRight className="ml-2" size={16} />
             </Button>
           </Link>
@@ -82,7 +82,7 @@ export default function B2BDashboardPage() {
           {/* Contracts / Tiers */}
           <div className="lg:col-span-8 space-y-6">
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-[3rem] p-10 overflow-hidden relative group">
-               <div className="absolute top-0 right-0 w-96 h-96 bg-fermion-blue/10 blur-3xl -mr-40 -mt-40 transition-transform group-hover:scale-110" />
+               <div className="absolute top-0 right-0 w-96 h-96 bg-fermion-french-blue/10 blur-3xl -mr-40 -mt-40 transition-transform group-hover:scale-110" />
                <div className="relative z-10 space-y-8">
                   <div className="flex items-center justify-between">
                      <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Tier Benefits</h3>
@@ -99,7 +99,7 @@ export default function B2BDashboardPage() {
                            initial={{ width: 0 }}
                            animate={{ width: "75%" }}
                            transition={{ duration: 1, ease: "easeOut" }}
-                           className="h-full bg-gradient-to-r from-fermion-blue to-emerald-400"
+                           className="h-full bg-gradient-to-r from-fermion-french-blue to-emerald-400"
                         />
                      </div>
                      <p className="text-[10px] text-slate-500 font-medium italic text-right">Order 26kg more to unlock 15% flat discount.</p>
@@ -115,12 +115,12 @@ export default function B2BDashboardPage() {
 
             {/* Quick Actions Placeholder */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-blue/50 transition-colors group">
+               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-french-blue/50 transition-colors group">
                   <h4 className="text-white font-black uppercase italic tracking-tighter">Purchase Schedule</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">Automate your inventory. Set weekly or monthly roasting cycles.</p>
                   <Button variant="outline" className="w-full border-slate-700 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest group-hover:bg-white group-hover:text-slate-900">Manage Schedule</Button>
                </div>
-               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-blue/50 transition-colors group">
+               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-french-blue/50 transition-colors group">
                   <h4 className="text-white font-black uppercase italic tracking-tighter">Contract Prices</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">View your locked-in prices for specific micro-lots and blends.</p>
                   <Button variant="outline" className="w-full border-slate-700 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest group-hover:bg-white group-hover:text-slate-900">View Contracts</Button>
@@ -139,10 +139,10 @@ export default function B2BDashboardPage() {
                 <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest">View All History</Button>
              </div>
 
-             <div className="bg-fermion-blue/10 border border-fermion-blue/20 rounded-[2.5rem] p-8 space-y-4">
-                <h4 className="text-fermion-blue font-black uppercase italic tracking-tighter">Partner Support</h4>
+             <div className="bg-fermion-french-blue/10 border border-fermion-french-blue/20 rounded-[2.5rem] p-8 space-y-4">
+                <h4 className="text-fermion-french-blue font-black uppercase italic tracking-tighter">Partner Support</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">Direct line to our Master Roaster for custom profile adjustments.</p>
-                <Button className="w-full bg-fermion-blue text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest">WhatsApp Roaster</Button>
+                <Button className="w-full bg-fermion-french-blue text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest">WhatsApp Roaster</Button>
              </div>
           </div>
 
@@ -154,7 +154,7 @@ export default function B2BDashboardPage() {
 
 function StatCard({ icon, label, value, sub, color }: { icon: any, label: string, value: string, sub: string, color: string }) {
   const colorMap: any = {
-    blue: "text-fermion-blue bg-fermion-blue/10 border-fermion-blue/20",
+    blue: "text-fermion-french-blue bg-fermion-french-blue/10 border-fermion-french-blue/20",
     emerald: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
     amber: "text-amber-400 bg-amber-400/10 border-amber-400/20",
     slate: "text-slate-400 bg-slate-400/10 border-slate-700/50"
