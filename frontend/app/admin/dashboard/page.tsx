@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
             <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
             <div className="flex items-center gap-3">
                <Users size={16} className="text-red-500" />
-               <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">B2B Churn Alerts (> 45 Days)</h4>
+               <h4 className="text-xs font-black uppercase tracking-widest text-slate-900">B2B Churn Alerts (&gt; 45 Days)</h4>
             </div>
             <div className="divide-y divide-slate-50">
                {churnAlerts.length === 0 ? (
