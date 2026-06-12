@@ -29,6 +29,43 @@ export const createInquiry = async (req, res) => {
   }
 };
 
+export const createFaq = async (req, res) => {
+  const { question_id, answer_id, question_en, answer_en, sort_order = 0 } = req.body;
+  try {
+    const result = await query(
+      'INSERT INTO faqs (question_id, answer_id, question_en, answer_en, sort_order) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [question_id, answer_id, question_en, answer_en, sort_order]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating FAQ", error: error.message });
+  }
+};
+
+export const updateFaq = async (req, res) => {
+  const { id } = req.params;
+  const { question_id, answer_id, question_en, answer_en, sort_order } = req.body;
+  try {
+    const result = await query(
+      'UPDATE faqs SET question_id = $1, answer_id = $2, question_en = $3, answer_en = $4, sort_order = $5 WHERE id = $6 RETURNING *',
+      [question_id, answer_id, question_en, answer_en, sort_order, id]
+    );
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating FAQ", error: error.message });
+  }
+};
+
+export const deleteFaq = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await query('DELETE FROM faqs WHERE id = $1', [id]);
+    res.status(200).json({ message: "FAQ deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting FAQ", error: error.message });
+  }
+};
+
 export const getInquiries = async (req, res) => {
   try {
     const result = await query('SELECT * FROM inquiries ORDER BY created_at DESC');
