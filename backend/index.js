@@ -13,7 +13,6 @@ import orderRoutes from './routes/orderRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import shippingRoutes from './routes/shippingRoutes.js';
-import contentRoutes from './routes/contentRoutes.js';
 import { startMonthlyEvaluation } from './lib/cron.js';
 
 dotenv.config();
