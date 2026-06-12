@@ -1,5 +1,5 @@
 import express from 'express';
-import { getB2bPartners, updatePartnerStatus, getOrders, updateOrder } from '../controllers/adminController.js';
+import { getB2bPartners, updatePartnerStatus, getOrders, updateOrder, createContract, getMaintenanceSchedule } from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -7,6 +7,8 @@ const router = express.Router();
 // router.get('/stats', getAdminStats); // Temporarily removed from controller in previous step
 router.get('/partners', getB2bPartners);
 router.put('/partners/:id', updatePartnerStatus);
+router.post('/contracts', createContract);
+router.get('/maintenance', getMaintenanceSchedule);
 
 // Order Management
 router.get('/orders', getOrders);

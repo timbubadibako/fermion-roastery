@@ -61,9 +61,11 @@ CREATE TABLE IF NOT EXISTS b2b_partners (
     google_place_id TEXT,
     estimated_volume_kg TEXT, -- e.g. '5-10KG'
     status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
-    tier_name TEXT DEFAULT NULL, -- 'Bronze', 'Silver', 'Gold'
-    current_evaluation_cycle INTEGER DEFAULT 1, -- Current month in the 3-month window
-    next_tier_progress INTEGER DEFAULT 0, -- Calculated percentage towards the next tier (0-100)
+    tier_name TEXT DEFAULT 'Bronze', -- 'Bronze', 'Silver', 'Gold'
+    is_silver_eligible BOOLEAN DEFAULT false,
+    cafe_logo_url TEXT,
+    current_evaluation_cycle INTEGER DEFAULT 1, 
+    next_tier_progress INTEGER DEFAULT 0, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -79,16 +81,16 @@ CREATE TABLE IF NOT EXISTS batches (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Contracts Table (Price Locking)
-CREATE TABLE IF NOT EXISTS contracts (
+-- 5. B2B Contracts Table
+CREATE TABLE IF NOT EXISTS b2b_contracts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    fixed_price NUMERIC(12, 2) NOT NULL,
     start_date DATE NOT NULL DEFAULT CURRENT_DATE,
     end_date DATE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(profile_id, product_id)
+    status TEXT DEFAULT 'active', -- 'active', 'expired', 'terminated'
+    contract_sequence INTEGER DEFAULT 1,
+    contract_type TEXT DEFAULT 'Bronze', -- 'Bronze', 'Silver', 'Gold'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 6. Evaluation Logs Table (Volume Tracking)
