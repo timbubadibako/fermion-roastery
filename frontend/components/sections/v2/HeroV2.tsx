@@ -1,14 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { strings } from "@/lib/strings";
 
 export function HeroV2() {
+  const [settings, setSettings] = useState<any>(null);
+  
   // Hardcoding language to 'id' for now, can be wired to a context later
   const lang = 'id';
-  const content = strings[lang].hero;
+  const fallbackContent = strings[lang].hero;
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(res => res.json())
+      .then(data => setSettings(data))
+      .catch(err => console.error("Failed to load hero settings", err));
+  }, []);
+
+  const title = settings?.hero_title || fallbackContent.title;
+  const subtitle = settings?.hero_description || fallbackContent.subtitle;
+  const badge = settings?.hero_subtitle || "Exclusive Coffee Roastery";
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-slate-900">
@@ -30,12 +43,20 @@ export function HeroV2() {
       <div className="relative z-10 px-6 max-w-7xl w-full mx-auto">
         <div className="max-w-2xl space-y-8">
           <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-block px-4 py-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-gold uppercase"
+          >
+            {badge}
+          </motion.div>
+
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight leading-tight text-white drop-shadow-md">
-               {content.title}
+               {title}
             </h1>
           </motion.div>
 
@@ -45,7 +66,7 @@ export function HeroV2() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
             <p className="text-xl md:text-2xl font-sans font-medium text-[var(--color-fermion-horizon)] leading-relaxed drop-shadow-sm max-w-xl">
-               {content.subtitle}
+               {subtitle}
             </p>
           </motion.div>
 
@@ -57,7 +78,7 @@ export function HeroV2() {
           >
              <Link href="/our-coffee">
                 <button className="bg-[var(--color-fermion-gold)] text-[var(--color-fermion-black)] px-10 py-5 rounded-2xl text-sm font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform active:scale-95 border-2 border-transparent hover:border-white/20">
-                  {content.cta_primary}
+                  {fallbackContent.cta_primary}
                 </button>
              </Link>
           </motion.div>

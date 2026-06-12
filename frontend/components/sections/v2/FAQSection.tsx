@@ -21,7 +21,7 @@ export function FAQSection() {
 
   useEffect(() => {
     // Optimization: Fetch only once, consider SWR or React Query for larger apps
-    axios.get("http://localhost:3001/api/content/faqs")
+    axios.get("/api/content/faqs")
       .then(res => setFaqs(res.data))
       .catch(err => console.error("Failed to load FAQs", err));
   }, []);

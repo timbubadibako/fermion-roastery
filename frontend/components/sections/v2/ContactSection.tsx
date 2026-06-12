@@ -17,7 +17,7 @@ export function ContactSection() {
     e.preventDefault();
     setStatus("loading");
     try {
-      await axios.post("http://localhost:3001/api/content/contact", formData);
+      await axios.post("/api/content/contact", formData);
       setStatus("success");
       setFormData({ full_name: "", email: "", message: "" });
       setTimeout(() => setStatus("idle"), 5000);
