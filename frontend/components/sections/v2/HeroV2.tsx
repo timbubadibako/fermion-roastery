@@ -11,7 +11,7 @@ export function HeroV2() {
   const content = strings[lang].hero;
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-slate-900">
       {/* Cinematic Video Background */}
       <video
         autoPlay
@@ -20,8 +20,8 @@ export function HeroV2() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       >
-        {/* Placeholder video URL, update src to your actual watermark preview .mp4 */}
-        <source src="https://cdn.pixabay.com/video/2021/08/20/85669-591321852_large.mp4" type="video/mp4" />
+        {/* Using a reliable placeholder video to avoid CORS/hotlink blocking. Replace with local /videos/hero.mp4 later */}
+        <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4" type="video/mp4" />
       </video>
 
       {/* Scrim Overlay: Linear gradient from black to transparent */}
