@@ -60,6 +60,46 @@ export const updatePartnerStatus = async (req, res) => {
   }
 };
 
+// 3. Create B2B Contract
+export const createContract = async (req, res) => {
+  const { profile_id, end_date, contract_type = 'Bronze' } = req.body;
+  try {
+    // Determine sequence
+    const seqRes = await query('SELECT MAX(contract_sequence) as max_seq FROM b2b_contracts WHERE profile_id = $1', [profile_id]);
+    const nextSeq = (seqRes.rows[0].max_seq || 0) + 1;
+
+    // Insert contract
+    const result = await query(
+      `INSERT INTO b2b_contracts (profile_id, end_date, contract_sequence, contract_type) 
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [profile_id, end_date, nextSeq, contract_type]
+    );
+
+    // Update partner status and logo logic can be added later
+    res.status(201).json({ message: "Contract created successfully", contract: result.rows[0] });
+  } catch (error) {
+    console.error('Error creating contract:', error);
+    res.status(500).json({ message: "Failed to create contract", error: error.message });
+  }
+};
+
+// 3.5 Get Maintenance Schedule
+export const getMaintenanceSchedule = async (req, res) => {
+  try {
+    const result = await query(`
+      SELECT c.*, p.company_name, p.address 
+      FROM b2b_contracts c
+      JOIN b2b_partners p ON c.profile_id = p.profile_id
+      WHERE c.contract_sequence >= 2 AND c.status = 'active'
+      ORDER BY c.end_date ASC
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching maintenance schedule:', error);
+    res.status(500).json({ message: "Failed to fetch maintenance schedule", error: error.message });
+  }
+};
+
 // 4. Get All Orders
 export const getOrders = async (req, res) => {
   try {

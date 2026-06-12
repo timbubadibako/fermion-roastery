@@ -115,3 +115,22 @@ export const getProfile = (req, res) => {
     role: "B2B_PARTNER" 
   });
 };
+
+export const claimSilverTier = async (req, res) => {
+  const { profileId } = req.body;
+  try {
+    const result = await query(
+      "UPDATE b2b_partners SET tier_name = 'Silver' WHERE profile_id = $1 AND is_silver_eligible = true RETURNING *",
+      [profileId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: "Not eligible for Silver Tier or profile not found" });
+    }
+
+    res.status(200).json({ message: "Silver Tier claimed successfully", partner: result.rows[0] });
+  } catch (error) {
+    console.error('Claim Tier Error:', error);
+    res.status(500).json({ message: "Failed to claim tier", error: error.message });
+  }
+};
