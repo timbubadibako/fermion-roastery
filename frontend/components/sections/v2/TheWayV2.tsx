@@ -24,7 +24,7 @@ export function TheWayV2() {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto py-60 px-6 relative">
+    <section className="max-w-7xl mx-auto pt-60 pb-0 px-6 relative">
       
       <div className="text-center space-y-6 mb-32">
         <h2 className="text-7xl md:text-8xl font-display font-black tracking-tighter uppercase italic leading-[0.8]">
@@ -34,7 +34,7 @@ export function TheWayV2() {
         <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-[10px]">{content.description}</p>
       </div>
 
-      <div className="relative min-h-[850px] w-full hidden lg:block">
+      <div className="relative min-h-[650px] w-full hidden lg:block">
         {content.pillars.map((p, idx) => (
           <motion.div
             key={p.id}

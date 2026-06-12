@@ -34,7 +34,7 @@ export function LabRecordsV2() {
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto py-40 px-6 space-y-16">
+    <section className="max-w-7xl mx-auto pt-12 pb-40 px-6 space-y-16">
       <div className="flex items-end justify-between border-b-2 border-slate-900 pb-8 relative">
         <div className="space-y-2">
           <h2 className="text-5xl font-black uppercase italic tracking-tighter text-slate-900">{content.title}</h2>
