@@ -9,9 +9,11 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/' && profileId) {
     try {
       const res = await fetch(`http://localhost:3001/api/auth/verify-admin?id=${profileId}`);
-      const data = await res.json();
-      if (data.isAdmin) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      if (res.ok) {
+        const data = await res.json();
+        if (data.isAdmin) {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        }
       }
     } catch (e) {
       console.error('Proxy Root Check Error:', e);
@@ -26,10 +28,14 @@ export async function proxy(request: NextRequest) {
 
     try {
       const res = await fetch(`http://localhost:3001/api/auth/verify-admin?id=${profileId}`);
-      const data = await res.json();
+      if (res.ok) {
+        const data = await res.json();
 
-      if (!data.isAdmin) {
-        // Redirect to retail if not an admin
+        if (!data.isAdmin) {
+          // Redirect to retail if not an admin
+          return NextResponse.redirect(new URL('/our-coffee', request.url));
+        }
+      } else {
         return NextResponse.redirect(new URL('/our-coffee', request.url));
       }
     } catch (error) {
