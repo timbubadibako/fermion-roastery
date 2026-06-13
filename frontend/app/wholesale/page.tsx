@@ -180,7 +180,9 @@ export default function WholesalePageV2() {
                   <div className="grid grid-cols-2 gap-8 py-6 border-y border-white/10">
                      <div className="space-y-1">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Locked Discount</p>
-                        <p className="text-3xl font-black">Rp {discountPerKg.toLocaleString()}<span className="text-[10px] text-slate-500 font-bold ml-1">/KG</span></p>
+                        <p className="text-2xl lg:text-3xl font-black whitespace-nowrap">
+                           Rp {(discountPerKg / 1000).toFixed(0)}K<span className="text-[10px] text-slate-500 font-bold ml-1">/KG</span>
+                        </p>
                      </div>
                      <div className="space-y-1">
                         <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Monthly Savings</p>

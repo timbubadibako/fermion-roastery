@@ -14,7 +14,9 @@ import {
   Clock,
   ArrowLeft,
   Mountain,
-  AlertCircle
+  Coffee,
+  Zap,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +29,7 @@ import { Sticker } from "@/components/ui/sticker";
 export default function B2BRegisterPageV2() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
-  const [step, setStep] = useState(1); // 1: Auth, 2: Registration Form, 3: Contract Onboarding
+  const [step, setStep] = useState(1); 
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -41,9 +43,13 @@ export default function B2BRegisterPageV2() {
 
   const [onboardingStatus, setOnboardingStatus] = useState<string | null>(null);
 
+  // Logic 1: Skip Auth if logged in
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user) {
+      setStep(2);
+    }
+  }, [user]);
 
   const handleAuthSuccess = (userData: any) => {
     setUser(userData);
@@ -53,6 +59,10 @@ export default function B2BRegisterPageV2() {
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!formData.volumeEstimate) {
+      toast.error("Please select your monthly volume goal.");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -95,7 +105,6 @@ export default function B2BRegisterPageV2() {
     }
 
     setUploading(true);
-    // Simulation for prototype
     setTimeout(async () => {
       try {
         const res = await fetch('/api/b2b/upload-contract', {
@@ -152,10 +161,12 @@ export default function B2BRegisterPageV2() {
                  <span className="p-2 text-white text-[10px]">ECOSYSTEM</span>
               </Sticker>
               <h2 className="text-white text-4xl font-black italic leading-none tracking-tighter">
-                {step < 3 ? "Professional \n Wholesale." : "Self-Service \n Onboarding."}
+                {step === 1 ? "Partner \n Access." : step === 2 ? "The Coffee \n Story." : "Secure \n Contract."}
               </h2>
               <p className="text-slate-400 text-xs font-medium max-w-xs leading-relaxed">
-                Scale your coffee business with scientific precision and artisan support.
+                {step === 1 ? "Secure your business credentials to enter our professional hub." : 
+                 step === 2 ? "Tell us about your business goals and specific laboratory needs." :
+                 "Finalize your official partnership agreement with Fermion Roastery."}
               </p>
             </div>
           </div>
@@ -163,14 +174,14 @@ export default function B2BRegisterPageV2() {
 
         {/* Right Panel */}
         <div className="lg:w-[60%] p-6 md:p-12 flex flex-col justify-center bg-white/60 relative">
-          <div className="max-w-md mx-auto w-full relative z-10">
+          <div className="max-w-2xl mx-auto w-full relative z-10">
             <AnimatePresence mode="wait">
               
-              {/* STEP 1: AUTH */}
+              {/* STEP 1: AUTH (Only if not logged in) */}
               {step === 1 && (
-                <motion.div key="auth" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+                <motion.div key="auth" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 max-w-md mx-auto">
                   <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Partner Access.</h2>
+                    <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Authentication.</h2>
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Secure your business credentials</p>
                   </div>
                   <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
@@ -179,39 +190,69 @@ export default function B2BRegisterPageV2() {
                 </motion.div>
               )}
 
-              {/* STEP 2: FORM */}
+              {/* STEP 2: BUSINESS FORM + STORYTELLING VOLUME */}
               {step === 2 && (
-                <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+                <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-12">
                   <div className="space-y-2">
-                    <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Cafe Details.</h2>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Enter business entity information</p>
+                    <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Business Profile.</h2>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Crafting your partnership identity</p>
                   </div>
-                  <form onSubmit={handleRegisterSubmit} className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100 space-y-6">
-                    <div className="grid grid-cols-1 gap-6">
+
+                  <form onSubmit={handleRegisterSubmit} className="space-y-12">
+                    {/* Basic Info Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                        <div className="space-y-2">
                           <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Cafe / Company Name</label>
-                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder="e.g. Lab Kopi Senayan" className="h-14 rounded-2xl bg-slate-50 border-none font-bold" />
+                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder="e.g. Lab Kopi Senayan" className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
                        </div>
                        <div className="space-y-2">
                           <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Number</label>
-                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="0812..." className="h-14 rounded-2xl bg-slate-50 border-none font-bold" />
+                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="0812..." className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
                        </div>
-                       <div className="space-y-2">
+                       <div className="md:col-span-2 space-y-2">
                           <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
-                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder="Street, City, Province" className="h-14 rounded-2xl bg-slate-50 border-none font-bold" />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Monthly Volume Est.</label>
-                          <select required value={formData.volumeEstimate} onChange={e => setFormData({...formData, volumeEstimate: e.target.value})} className="w-full h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900">
-                             <option value="">Select Estimate</option>
-                             <option value="10-20KG">10-20 KG</option>
-                             <option value="20-50KG">20-50 KG</option>
-                             <option value="50KG+">50 KG+</option>
-                          </select>
+                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder="Street, City, Province" className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
                        </div>
                     </div>
-                    <Button disabled={loading} type="submit" className="w-full h-14 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-widest italic shadow-xl shadow-slate-900/10">
-                       {loading ? <Loader2 className="animate-spin" /> : "Save & Continue"}
+
+                    {/* Story-driven Volume Selection */}
+                    <div className="space-y-6">
+                       <div className="text-left space-y-1">
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Monthly Beans Goal</label>
+                          <p className="text-xs text-slate-500 font-medium italic">What level of throughput are you aiming for?</p>
+                       </div>
+
+                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                          {[
+                            { val: "10-20KG", icon: Coffee, title: "Artisan Startup", desc: "For new cafes or niche micro-lots." },
+                            { val: "20-50KG", icon: Zap, title: "Growth Hub", desc: "For high-traffic, established shops." },
+                            { val: "50KG+", icon: Star, title: "Scale Master", desc: "Wholesale distribution and big networks." }
+                          ].map((option) => (
+                            <div 
+                              key={option.val}
+                              onClick={() => setFormData({...formData, volumeEstimate: option.val})}
+                              className={`p-6 rounded-[2.5rem] border-2 transition-all cursor-pointer group flex flex-col items-center text-center space-y-4 ${
+                                formData.volumeEstimate === option.val 
+                                  ? "bg-slate-900 border-slate-900 text-white shadow-2xl scale-105" 
+                                  : "bg-white border-slate-100 hover:border-slate-200 text-slate-600"
+                              }`}
+                            >
+                               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
+                                 formData.volumeEstimate === option.val ? "bg-white/10 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
+                               }`}>
+                                  <option.icon size={20} />
+                               </div>
+                               <div className="space-y-1">
+                                  <h4 className="text-xs font-black uppercase tracking-widest">{option.title}</h4>
+                                  <p className={`text-[10px] font-bold ${formData.volumeEstimate === option.val ? "text-slate-400" : "text-slate-300"}`}>{option.val}</p>
+                               </div>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+
+                    <Button disabled={loading} type="submit" className="w-full h-16 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest italic shadow-2xl hover:bg-fermion-french-blue transition-all">
+                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Prepare Partnership <ArrowRight size={18} /></span>}
                     </Button>
                   </form>
                 </motion.div>
@@ -219,7 +260,7 @@ export default function B2BRegisterPageV2() {
 
               {/* STEP 3: CONTRACT ONBOARDING */}
               {step === 3 && (
-                <motion.div key="onboarding" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
+                <motion.div key="onboarding" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8 max-w-md mx-auto">
                   <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-2xl text-center space-y-10 relative overflow-hidden">
                     
                     {onboardingStatus === 'onboarding' ? (
@@ -250,7 +291,6 @@ export default function B2BRegisterPageV2() {
                       </>
                     ) : (
                       <>
-                        {/* AWAITING REVIEW STATE */}
                         <div className="py-8 relative">
                            <motion.div 
                              animate={{ y: [0, -10, 0] }} 
