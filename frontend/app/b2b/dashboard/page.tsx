@@ -37,116 +37,104 @@ export default function B2BDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-32 pb-20 px-6">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="space-y-12 pb-20">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <span className="bg-fermion-french-blue/10 text-fermion-french-blue text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-fermion-french-blue/20">Business Partner</span>
+            <span className="text-slate-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest bg-slate-100 border border-slate-200">Tier: Bronze</span>
+          </div>
+          <h1 className="text-5xl font-black tracking-tighter uppercase italic text-slate-900 leading-none">Partner <br/> Hub.</h1>
+          <p className="text-sm font-medium text-slate-500">Welcome back, {user.full_name}. Overview of your wholesale activity.</p>
+        </div>
         
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <span className="bg-fermion-french-blue/20 text-fermion-french-blue text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-fermion-french-blue/30">Business Partner</span>
-              <span className="text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest bg-emerald-400/10 border border-emerald-400/20">Silver Tier</span>
-              <button 
-                onClick={() => {
-                  logout();
-                  window.location.href = "/auth";
-                }}
-                className="ml-2 p-1.5 bg-white/5 rounded-lg border border-white/10 text-slate-500 hover:text-red-400 transition-colors"
-                title="Logout"
-              >
-                <LogOut size={14} />
-              </button>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic text-white leading-tight">Partner <br/> Dashboard.</h1>
-            <p className="text-sm font-medium text-slate-400">Welcome back, {user.full_name}. Manage your bulk orders and contracts.</p>
-          </div>
-          
-          <Link href="/our-coffee">
-            <Button className="bg-fermion-french-blue hover:bg-white hover:text-slate-900 text-white font-black tracking-widest uppercase italic px-8 h-14 rounded-2xl transition-all shadow-xl shadow-fermion-french-blue/20">
-              Bulk Order Catalog <ArrowUpRight className="ml-2" size={16} />
-            </Button>
-          </Link>
-        </div>
+        <Link href="/our-coffee">
+          <Button className="bg-slate-900 hover:bg-fermion-french-blue text-white font-black tracking-widest uppercase italic px-8 h-14 rounded-2xl transition-all shadow-xl shadow-slate-900/10">
+            Order Bulk Coffee <ArrowUpRight className="ml-2" size={16} />
+          </Button>
+        </Link>
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard icon={<Package size={20}/>} label="Total Volume" value="124 kg" sub="LTM Volume" color="blue" />
-          <StatCard icon={<TrendingUp size={20}/>} label="Savings" value="Rp 4.2M" sub="vs Retail Price" color="emerald" />
-          <StatCard icon={<Calendar size={20}/>} label="Next Roast" value="June 12" sub="In 2 Days" color="amber" />
-          <StatCard icon={<CreditCard size={20}/>} label="Outstanding" value="Rp 0" sub="All Paid" color="slate" />
-        </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <StatCard icon={<Package size={20}/>} label="Total Volume" value="0 kg" sub="LTM Volume" color="blue" />
+        <StatCard icon={<TrendingUp size={20}/>} label="Savings" value="Rp 0" sub="vs Retail Price" color="emerald" />
+        <StatCard icon={<Calendar size={20}/>} label="Next Roast" value="TBD" sub="Check Schedule" color="amber" />
+        <StatCard icon={<CreditCard size={20}/>} label="Outstanding" value="Rp 0" sub="All Paid" color="slate" />
+      </div>
 
-        {/* Main Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
-          {/* Contracts / Tiers */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-[3rem] p-10 overflow-hidden relative group">
-               <div className="absolute top-0 right-0 w-96 h-96 bg-fermion-french-blue/10 blur-3xl -mr-40 -mt-40 transition-transform group-hover:scale-110" />
-               <div className="relative z-10 space-y-8">
-                  <div className="flex items-center justify-between">
-                     <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Tier Benefits</h3>
-                     <Info size={16} className="text-slate-500" />
-                  </div>
-                  
-                  <div className="space-y-4">
-                     <div className="flex justify-between items-end">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Progress to GOLD TIER</p>
-                        <p className="text-sm font-black text-white">75%</p>
-                     </div>
-                     <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
-                        <motion.div 
-                           initial={{ width: 0 }}
-                           animate={{ width: "75%" }}
-                           transition={{ duration: 1, ease: "easeOut" }}
-                           className="h-full bg-gradient-to-r from-fermion-french-blue to-emerald-400"
-                        />
-                     </div>
-                     <p className="text-[10px] text-slate-500 font-medium italic text-right">Order 26kg more to unlock 15% flat discount.</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-                     <BenefitItem label="Pricing" value="12% Discount" />
-                     <BenefitItem label="Terms" value="Net 14 Days" />
-                     <BenefitItem label="Support" value="Priority Line" />
-                  </div>
-               </div>
-            </div>
-
-            {/* Quick Actions Placeholder */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-french-blue/50 transition-colors group">
-                  <h4 className="text-white font-black uppercase italic tracking-tighter">Purchase Schedule</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">Automate your inventory. Set weekly or monthly roasting cycles.</p>
-                  <Button variant="outline" className="w-full border-slate-700 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest group-hover:bg-white group-hover:text-slate-900">Manage Schedule</Button>
-               </div>
-               <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8 space-y-4 hover:border-fermion-french-blue/50 transition-colors group">
-                  <h4 className="text-white font-black uppercase italic tracking-tighter">Contract Prices</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">View your locked-in prices for specific micro-lots and blends.</p>
-                  <Button variant="outline" className="w-full border-slate-700 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest group-hover:bg-white group-hover:text-slate-900">View Contracts</Button>
-               </div>
-            </div>
-          </div>
-
-          {/* Sidebar Area */}
-          <div className="lg:col-span-4 space-y-6">
-             <div className="bg-slate-800/50 border border-slate-700/50 rounded-[2.5rem] p-8">
-                <h4 className="text-white font-black uppercase italic tracking-tighter mb-6">Recent Bulk Orders</h4>
-                <div className="space-y-6 text-center py-10 opacity-30 italic">
-                   <Package className="mx-auto mb-4" size={32} />
-                   <p className="text-xs">No recent bulk orders found.</p>
+      {/* Main Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        {/* Contracts / Tiers */}
+        <div className="lg:col-span-8 space-y-8">
+          <div className="bg-white border border-slate-100 rounded-[3.5rem] p-12 overflow-hidden relative group shadow-sm">
+             <div className="absolute top-0 right-0 w-96 h-96 bg-fermion-french-blue/5 blur-3xl -mr-40 -mt-40 transition-transform group-hover:scale-110" />
+             <div className="relative z-10 space-y-10">
+                <div className="flex items-center justify-between">
+                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Tier Benefits & Progress</h3>
+                   <Info size={16} className="text-slate-300" />
                 </div>
-                <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest">View All History</Button>
-             </div>
+                
+                <div className="space-y-4">
+                   <div className="flex justify-between items-end">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress to SILVER TIER</p>
+                      <p className="text-sm font-black text-slate-900">0%</p>
+                   </div>
+                   <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
+                      <motion.div 
+                         initial={{ width: 0 }}
+                         animate={{ width: "0%" }}
+                         className="h-full bg-fermion-french-blue"
+                      />
+                   </div>
+                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic text-right">Reach 15kg this month to unlock Silver Tier.</p>
+                </div>
 
-             <div className="bg-fermion-french-blue/10 border border-fermion-french-blue/20 rounded-[2.5rem] p-8 space-y-4">
-                <h4 className="text-fermion-french-blue font-black uppercase italic tracking-tighter">Partner Support</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Direct line to our Master Roaster for custom profile adjustments.</p>
-                <Button className="w-full bg-fermion-french-blue text-white rounded-xl h-12 uppercase text-[10px] font-black tracking-widest">WhatsApp Roaster</Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+                   <BenefitItem label="Current Discount" value="0% (Bronze)" />
+                   <BenefitItem label="Payment Terms" value="Pay on Order" />
+                   <BenefitItem label="Support" value="Standard" />
+                </div>
              </div>
           </div>
 
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-6 hover:shadow-xl transition-all group shadow-sm">
+                <h4 className="text-slate-900 font-black uppercase italic tracking-tighter text-xl">Purchase Schedule</h4>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">Automate your inventory. Set weekly or monthly roasting cycles for your cafe.</p>
+                <Button variant="outline" className="w-full border-slate-200 text-slate-900 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest hover:bg-slate-900 hover:text-white transition-all">Setup Schedule</Button>
+             </div>
+             <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-6 hover:shadow-xl transition-all group shadow-sm">
+                <h4 className="text-slate-900 font-black uppercase italic tracking-tighter text-xl">Contract Prices</h4>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">View your exclusive wholesale prices for all current micro-lots and blends.</p>
+                <Button variant="outline" className="w-full border-slate-200 text-slate-900 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest hover:bg-slate-900 hover:text-white transition-all">View Price List</Button>
+             </div>
+          </div>
         </div>
+
+        {/* Sidebar Area */}
+        <div className="lg:col-span-4 space-y-8">
+           <div className="bg-white border border-slate-100 rounded-[3rem] p-10 shadow-sm">
+              <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-8">Recent Bulk Orders</h4>
+              <div className="space-y-6 text-center py-16">
+                 <Package className="mx-auto mb-4 text-slate-100" size={48} />
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">No activity detected.</p>
+              </div>
+              <Button className="w-full bg-slate-50 hover:bg-slate-100 text-slate-400 rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest">Order History</Button>
+           </div>
+
+           <div className="bg-slate-900 p-10 rounded-[3rem] space-y-6 shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-fermion-french-blue/10 blur-3xl -mr-32 -mt-32" />
+              <h4 className="text-white font-black uppercase italic tracking-tighter text-xl relative z-10">Partner Support</h4>
+              <p className="text-xs text-slate-400 leading-relaxed font-medium relative z-10">Direct line to our Master Roaster for custom profile adjustments and machine troubleshooting.</p>
+              <Button className="w-full bg-fermion-french-blue text-white rounded-2xl h-14 uppercase text-[10px] font-black tracking-widest relative z-10 hover:bg-white hover:text-slate-900 transition-all">WhatsApp Roaster</Button>
+           </div>
+        </div>
+
       </div>
     </div>
   );
@@ -154,21 +142,21 @@ export default function B2BDashboardPage() {
 
 function StatCard({ icon, label, value, sub, color }: { icon: any, label: string, value: string, sub: string, color: string }) {
   const colorMap: any = {
-    blue: "text-fermion-french-blue bg-fermion-french-blue/10 border-fermion-french-blue/20",
-    emerald: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-    amber: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-    slate: "text-slate-400 bg-slate-400/10 border-slate-700/50"
+    blue: "text-fermion-french-blue bg-fermion-french-blue/5 border-fermion-french-blue/10",
+    emerald: "text-emerald-500 bg-emerald-500/5 border-emerald-500/10",
+    amber: "text-amber-500 bg-amber-500/5 border-amber-500/10",
+    slate: "text-slate-400 bg-slate-50 border-slate-100"
   };
   
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 p-6 rounded-[2rem] space-y-4 group hover:border-slate-600 transition-all">
-       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorMap[color]}`}>
+    <div className="bg-white border border-slate-100 p-10 rounded-[3rem] space-y-6 group hover:shadow-xl transition-all shadow-sm">
+       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorMap[color]}`}>
           {icon}
        </div>
        <div>
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">{label}</p>
-          <p className="text-2xl font-black text-white italic">{value}</p>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{sub}</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">{label}</p>
+          <p className="text-3xl font-black text-slate-900 italic tracking-tight">{value}</p>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{sub}</p>
        </div>
     </div>
   );
@@ -176,9 +164,9 @@ function StatCard({ icon, label, value, sub, color }: { icon: any, label: string
 
 function BenefitItem({ label, value }: { label: string, value: string }) {
   return (
-    <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/30">
-       <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">{label}</p>
-       <p className="text-xs font-black text-white uppercase italic">{value}</p>
+    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+       <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">{label}</p>
+       <p className="text-xs font-black text-slate-900 uppercase italic">{value}</p>
     </div>
   );
 }
