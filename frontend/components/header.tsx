@@ -33,6 +33,11 @@ export function Header() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { addItem } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // --- States ---
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
@@ -55,7 +60,7 @@ export function Header() {
   // --- Handlers ---
   const handleLogout = () => {
     logout();
-    router.push("/auth");
+    window.location.href = "/auth";
     setIsMenuOpen(false);
   };
 
@@ -141,10 +146,10 @@ export function Header() {
   }, [isSearchOpen]);
 
   // V2 UI CONSTANTS: Smoother Pill Transition
-  const displayLinks = navLinks.length > 0 ? navLinks : [
+  const displayLinks = [
     { label: "OUR COFFEE", href: "/our-coffee" },
     { label: "WHOLESALE", href: "/wholesale" },
-    ...(user?.role !== 'B2B' ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
+    ...(mounted && user?.role === 'B2B' ? [] : [{ label: "SUBSCRIPTION", href: "/subscription" }]),
     { label: "JOURNAL", href: "/journal" },
     { label: "OUR STORY", href: "/our-story" },
   ];
@@ -337,29 +342,32 @@ export function Header() {
               </div>
 
               <div className="flex items-center gap-4">
-                {user?.role === 'RETAIL' && (
+                {mounted && user?.role === 'RETAIL' && (
                   <Link href="/account/orders" title="My Orders" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <PackageSearch size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {user?.role === 'B2B' && (
+                {mounted && user?.role === 'B2B' && (
                   <Link href="/b2b/dashboard" title="Partner Dashboard" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutGrid size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {user?.role === 'ADMIN' && (
+                {mounted && user?.role === 'ADMIN' && (
                   <Link href="/admin/dashboard" title="Admin Dashboard" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutDashboard size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {!user && (
+                {mounted && !user && (
                   <Link href="/auth" title="Login" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <User size={18} strokeWidth={1.5} />
                   </Link>
                 )}
+                {!mounted && (
+                  <div className="w-18 h-4 animate-pulse bg-slate-50 rounded-full" />
+                )}
               </div>
 
-              {user?.role !== 'ADMIN' && (
+              {mounted && user?.role !== 'ADMIN' && (
                 <div className="relative border-l border-slate-200/50 pl-4 ml-1">
                   <CartSheet />
                 </div>
@@ -381,16 +389,16 @@ export function Header() {
                 </Link>
               ))}
               <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6 text-center">
-                {user?.role === 'RETAIL' && (
+                {mounted && user?.role === 'RETAIL' && (
                   <Link href="/account/orders" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
                 )}
-                {user?.role === 'B2B' && (
+                {mounted && user?.role === 'B2B' && (
                   <Link href="/b2b/dashboard" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Dashboard</Link>
                 )}
-                {!user && (
+                {mounted && !user && (
                   <Link href="/auth" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>
                 )}
-                {user?.role !== 'ADMIN' && (
+                {mounted && user?.role !== 'ADMIN' && (
                   <Link href="/cart" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Cart</Link>
                 )}
               </div>

@@ -14,6 +14,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store";
 
 const menuItems = [
   { 
@@ -51,10 +52,10 @@ const menuItems = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
 
   const handleLogout = () => {
-    // Clear the security cookie
-    document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    logout();
     router.push("/auth");
   };
 
