@@ -14,6 +14,7 @@ import chatRoutes from './routes/chatRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import shippingRoutes from './routes/shippingRoutes.js';
 import journalRoutes from './routes/journalRoutes.js';
+import b2bRoutes from './routes/b2bRoutes.js';
 import { startMonthlyEvaluation } from './lib/cron.js';
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/shipping', shippingRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/b2b', b2bRoutes);
 
 // Base route for health check
 app.get('/', (req, res) => {

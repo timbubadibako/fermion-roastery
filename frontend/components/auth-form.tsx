@@ -10,10 +10,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AuthFormProps {
   onSuccess: (profile: any) => void;
   defaultRole?: "RETAIL" | "B2B";
+  initialMode?: "login" | "register";
 }
 
-export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
-  const [mode, setMode] = useState<"login" | "register">("register");
+export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "login" }: AuthFormProps) {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -45,8 +46,15 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`📡 Backend Error (${response.status}):`, errorText);
-        throw new Error(errorText || `Failed to ${mode}`);
+        let errorMessage = `Failed to ${mode}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorMessage;
+        } catch (e) {
+          errorMessage = errorText || errorMessage;
+        }
+        console.error(`📡 Backend Error (${response.status}):`, errorMessage);
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

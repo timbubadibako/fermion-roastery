@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
       if (res.ok) {
         const data = await res.json();
         if (data.isAdmin) {
-          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+          return NextResponse.redirect(new URL('/admin', request.url));
         }
       }
     } catch (e) {

@@ -12,7 +12,7 @@
 - [x] Build Product API with Dynamic Pricing data
 - [x] Create B2B Onboarding Flow (Initial multi-step form)
 - [x] Refine Role-Dynamic Header (Admin, B2B, Retail, Guest)
-- [x] Dedicated Dashboards for Admin and B2B (with Sidebars)
+- [x] Dedicated Operational Portals for Admin and B2B
 
 ## ⏳ To Do
 
@@ -24,7 +24,7 @@
 
 ### Phase 2: B2B & Admin Operational Flows
 - [x] Setup Tiered Pricing Logic (Bronze: Base, Silver: 15kg/10k discount, Gold: TBD)
-- [x] B2B Partner Admin Approval Dashboard
+- [x] B2B Partner Admin Approval Portal (formerly Dashboard)
 - [x] **Dedicated Admin Ordering** (Internal Procurement UI)
 - [x] **Dedicated B2B Ordering** (Wholesale Catalog UI with 10k IDR/kg Silver discount)
 - [ ] **Dynamic B2B Onboarding** (Cafe Name, Address, HP validation)

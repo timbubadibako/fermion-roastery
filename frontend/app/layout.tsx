@@ -5,8 +5,6 @@ import { Fraunces, Manrope } from 'next/font/google';
 import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/next';
 import { Header } from "@/components/header";
-import { AdminSidebar } from "@/components/admin/sidebar";
-import { B2BSidebar } from "@/components/b2b/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { LoadingCover } from "@/components/loading-cover";
 import { ChatFloating } from "@/components/chat-floating";
@@ -29,25 +27,25 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   
-  // List of pages that should NOT show the main Header/Chat
+  // Portal detection (Admin or B2B Partner Hub)
   const isAdmin = pathname.startsWith('/admin');
-  const isB2B = pathname.startsWith('/b2b/dashboard');
-  const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || isAdmin || isB2B;
+  const isB2BPortal = pathname.startsWith('/b2b') && !pathname.startsWith('/b2b/register');
+  const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || isAdmin || isB2BPortal;
 
   return (
     <html lang="en">
       <body className={`${fraunces.variable} ${manrope.variable} ${cloude.variable} font-sans antialiased`}>
         <LoadingCover />
         <CartSync />
-        {isAdmin && <AdminSidebar />}
-        {isB2B && <B2BSidebar />}
+
         {!hideMainLayout && <Header />}
-        <main className={`${isAdmin || isB2B ? "ml-64 min-h-screen bg-slate-50" : ""}`}>
-          <div className={isAdmin || isB2B ? "w-full px-6 lg:px-12 py-12" : ""}>
-            {children}
-          </div>
+
+        <main className={`${hideMainLayout ? "" : "min-h-screen"}`}>
+          {children}
         </main>
+
         {!hideMainLayout && <ChatFloating />}
+
         <Toaster position="bottom-right" expand={false} richColors />
         <Analytics />
       </body>

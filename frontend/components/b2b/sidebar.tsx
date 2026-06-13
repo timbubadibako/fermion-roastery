@@ -18,7 +18,6 @@ const menuItems = [
   { 
     group: "Partner Hub", 
     items: [
-      { name: "Dashboard", href: "/b2b/dashboard", icon: LayoutDashboard },
       { name: "Order Coffee", href: "/our-coffee", icon: Coffee },
     ]
   },
