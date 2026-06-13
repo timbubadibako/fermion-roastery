@@ -21,11 +21,9 @@ export default function AuthPageV2() {
   const handleAuthSuccess = (profile: any) => {
     setUser(profile);
     if (profile.role === 'ADMIN') {
-      router.push("/admin/dashboard");
-    } else if (profile.role === 'B2B') {
-      router.push("/b2b/dashboard");
+      router.push("/admin");
     } else {
-      router.push("/our-coffee");
+      router.push("/");
     }
   };
 

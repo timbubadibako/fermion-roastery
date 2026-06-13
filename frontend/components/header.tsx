@@ -146,10 +146,11 @@ export function Header() {
   }, [isSearchOpen]);
 
   // V2 UI CONSTANTS: Smoother Pill Transition
+  const isB2B = mounted && user?.role === 'B2B';
   const displayLinks = [
     { label: "OUR COFFEE", href: "/our-coffee" },
-    { label: "WHOLESALE", href: "/wholesale" },
-    ...(mounted && user?.role === 'B2B' ? [] : [{ label: "SUBSCRIPTION", href: "/subscription" }]),
+    ...(!isB2B ? [{ label: "WHOLESALE", href: "/wholesale" }] : []),
+    ...(!isB2B ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
     { label: "JOURNAL", href: "/journal" },
     { label: "OUR STORY", href: "/our-story" },
   ];
@@ -343,17 +344,17 @@ export function Header() {
 
               <div className="flex items-center gap-4">
                 {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account/orders" title="My Orders" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
+                  <Link href="/account" title="My Account" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <PackageSearch size={18} strokeWidth={1.5} />
                   </Link>
                 )}
                 {mounted && user?.role === 'B2B' && (
-                  <Link href="/b2b/dashboard" title="Partner Dashboard" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
+                  <Link href="/b2b" title="Partner Hub" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutGrid size={18} strokeWidth={1.5} />
                   </Link>
                 )}
                 {mounted && user?.role === 'ADMIN' && (
-                  <Link href="/admin/dashboard" title="Admin Dashboard" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
+                  <Link href="/admin" title="Admin Portal" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutDashboard size={18} strokeWidth={1.5} />
                   </Link>
                 )}
@@ -390,10 +391,13 @@ export function Header() {
               ))}
               <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6 text-center">
                 {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account/orders" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
+                  <Link href="/account" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Account</Link>
                 )}
                 {mounted && user?.role === 'B2B' && (
-                  <Link href="/b2b/dashboard" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Dashboard</Link>
+                  <Link href="/b2b" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Hub</Link>
+                )}
+                {mounted && user?.role === 'ADMIN' && (
+                  <Link href="/admin" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Admin Portal</Link>
                 )}
                 {mounted && !user && (
                   <Link href="/auth" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>

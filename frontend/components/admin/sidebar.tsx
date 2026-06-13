@@ -20,7 +20,6 @@ const menuItems = [
   { 
     group: "Overview", 
     items: [
-      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
       { name: "View Website", href: "/", icon: ChevronRight },
     ]
   },
@@ -60,7 +59,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-[#101828] h-screen fixed left-0 top-0 text-white flex flex-col z-50">
+    <aside className="w-64 bg-[#101828] h-screen fixed left-0 top-0 text-white flex flex-col z-50 border-r border-white/5">
       {/* Brand Header */}
       <div className="p-8 pb-12">
         <h2 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Fermion.</h2>

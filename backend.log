@@ -1,0 +1,7 @@
+
+> fermion-backend@1.0.0 start
+> node index.js
+
+You are using Xendit's TEST secret key. Please use your LIVE secret key when you are ready to go live.
+21:53:32.713 Ably: Auth(): Warning: library initialized with a token literal without any way to renew the token when it expires (no authUrl, authCallback, or key). See https://help.ably.io/error/40171 for help
+🚀 Fermion Business Engine running on port 3001

@@ -31,6 +31,7 @@ export function RetailCatalog() {
   const [products, setProducts] = useState<CoffeeProduct[]>([]);
   const [displayProducts, setDisplayProducts] = useState<CoffeeProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cols, setCols] = useState<2 | 3 | 4>(3);
   const [showFilter, setShowFilter] = useState(false);
@@ -41,6 +42,10 @@ export function RetailCatalog() {
   const sortContainerRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((state) => state.addItem);
   const { user } = useAuthStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close sort dropdown when clicking outside
   useEffect(() => {
@@ -54,6 +59,8 @@ export function RetailCatalog() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const fetchProducts = async () => {
       try {
         const url = user 
@@ -72,7 +79,7 @@ export function RetailCatalog() {
       }
     };
     fetchProducts();
-  }, [user]);
+  }, [user, mounted]);
 
   // Handle Filtering and Sorting
   useEffect(() => {
@@ -118,10 +125,10 @@ export function RetailCatalog() {
   // Kept empty as per user request
   const filterTags = ["ALL"];
 
-  if (loading) return (
+  if (!mounted || loading) return (
     <div className="min-h-screen bg-[#FAF9F6] pt-40 px-12 relative overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
-        <Loader2 className="w-10 h-10 text-fermion-french-blue animate-spin" />
+        <div className="w-10 h-10 border-4 border-fermion-french-blue border-t-transparent rounded-full animate-spin" />
         <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase italic">Analyzing Specimen Data...</p>
       </div>
     </div>

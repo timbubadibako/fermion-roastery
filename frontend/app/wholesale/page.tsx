@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { 
   Zap, ArrowRight, ShieldCheck, Truck, 
   Settings, BarChart3, Globe, Award, 
-  Package, Calendar, CheckCircle2, Factory, Handshake
+  Package, Calendar, CheckCircle2, Factory, Handshake, TrendingDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sticker } from "@/components/ui/sticker";
@@ -22,31 +22,45 @@ const benefits = [
 ];
 
 export default function WholesalePageV2() {
-  const [volume, setVolume] = useState<number>(25);
-  const [tier, setTier] = useState("Standard");
-  const [discount, setDiscount] = useState(0);
+  const [volume, setVolume] = useState<number>(15);
+  const [tier, setTier] = useState("Bronze");
+  const [discountPerKg, setDiscountPerKg] = useState(10000);
   const [savings, setSavings] = useState(0);
 
-  const basePricePerKg = 250000; // Mock base price
+  // Helper to format currency into "Jt" or "Rb"
+  const formatCompactCurrency = (val: number) => {
+    if (val >= 1000000) {
+      return { 
+        value: (val / 1000000).toFixed(val % 1000000 === 0 ? 0 : 1), 
+        unit: "JUTA" 
+      };
+    }
+    return { 
+      value: (val / 1000).toFixed(0), 
+      unit: "RIBU" 
+    };
+  };
+
+  const formattedSavings = formatCompactCurrency(savings);
 
   useEffect(() => {
-    let currentDiscount = 0;
-    let currentTier = "Introductory";
+    let currentDiscount = 10000;
+    let currentTier = "Bronze Partner";
 
-    if (volume >= 100) {
+    if (volume >= 50) {
       currentTier = "Gold Partner";
-      currentDiscount = 0.15;
-    } else if (volume >= 50) {
+      currentDiscount = 20000;
+    } else if (volume >= 15) {
       currentTier = "Silver Partner";
-      currentDiscount = 0.12;
-    } else if (volume >= 20) {
+      currentDiscount = 15000;
+    } else {
       currentTier = "Bronze Partner";
-      currentDiscount = 0.10;
+      currentDiscount = 10000;
     }
 
     setTier(currentTier);
-    setDiscount(currentDiscount * 100);
-    setSavings(volume * basePricePerKg * currentDiscount);
+    setDiscountPerKg(currentDiscount);
+    setSavings(volume * currentDiscount);
   }, [volume]);
 
   return (
@@ -83,9 +97,9 @@ export default function WholesalePageV2() {
               Solusi kopi hulu-ke-hilir untuk bisnis yang mengutamakan kualitas, konsistensi, dan cerita di balik setiap biji.
             </motion.p>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              <Link href="#calculator">
+              <Link href="/b2b/register">
                 <Button className="bg-slate-900 text-white px-10 py-8 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] italic shadow-2xl hover:bg-fermion-french-blue transition-all">
-                  Calculate Savings
+                  Join the Partner Hub <ArrowRight className="ml-3" size={16} />
                 </Button>
               </Link>
             </motion.div>
@@ -143,13 +157,13 @@ export default function WholesalePageV2() {
                  
                  <input 
                     type="range" 
-                    min="5" max="200" step="5"
+                    min="10" max="200" step="5"
                     value={volume}
                     onChange={(e) => setVolume(Number(e.target.value))}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-fermion-french-blue"
                  />
                  <div className="flex justify-between mt-2 text-[9px] font-black text-slate-400">
-                    <span>5 KG</span>
+                    <span>10 KG</span>
                     <span>200+ KG</span>
                  </div>
                </div>
@@ -159,23 +173,28 @@ export default function WholesalePageV2() {
                <div className="absolute top-0 right-0 bg-white/5 w-40 h-40 rounded-full blur-2xl" />
                <div className="space-y-8 relative z-10">
                   <div className="space-y-1">
-                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Unlocked Status</p>
+                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Target Monthly Tier</p>
                      <h3 className="text-3xl font-display font-black italic text-transparent bg-clip-text bg-gradient-to-r from-fermion-french-blue to-emerald-400">{tier}</h3>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-8 py-6 border-y border-white/10">
                      <div className="space-y-1">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Discount Rate</p>
-                        <p className="text-4xl font-black">{discount}%</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Locked Discount</p>
+                        <p className="text-3xl font-black">Rp {discountPerKg.toLocaleString()}<span className="text-[10px] text-slate-500 font-bold ml-1">/KG</span></p>
                      </div>
                      <div className="space-y-1">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Est. Savings</p>
-                        <p className="text-3xl font-black italic text-emerald-400">Rp {(savings / 1000000).toFixed(1)}M</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Monthly Savings</p>
+                        <div className="flex flex-col leading-none">
+                           <span className="text-4xl font-black italic text-emerald-400">{formattedSavings.value}</span>
+                           <span className="text-[10px] font-black text-emerald-500/50 tracking-[0.3em] mt-1">{formattedSavings.unit}</span>
+                        </div>
                      </div>
                   </div>
 
                   <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                    *Savings are calculated monthly based on our standard retail base price. Actual savings may vary by specific bean selection.
+                    {tier === 'Gold Partner' 
+                      ? "*Gold tier pricing is bespoke and requires direct coordination with our Lab Admin."
+                      : `*Calculated based on a minimum commitment of ${volume < 15 ? '10kg' : '15kg'}/month. Savings are fixed per kilogram.`}
                   </p>
                </div>
             </div>
@@ -227,15 +246,15 @@ export default function WholesalePageV2() {
 
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left mt-16 md:mt-0">
               <div className="space-y-4 flex-1">
-                <h2 className="text-4xl md:text-6xl font-display font-black text-white italic tracking-tighter">Ready to Scale?</h2>
+                <h2 className="text-4xl md:text-6xl font-display font-black text-white italic tracking-tighter">Initialize <br/> Onboarding.</h2>
                 <p className="text-slate-400 font-medium text-lg">
-                  Submit your application today. Our team will review your profile and activate your B2B dashboard within 24 hours.
+                  Automate your partnership. Fill the form, download your lab contract, and activate your wholesale access instantly.
                 </p>
               </div>
               
               <Link href="/b2b/register" className="w-full md:w-auto shrink-0">
                 <Button className="w-full h-20 px-10 bg-white text-slate-900 font-black tracking-[0.3em] rounded-[2rem] hover:bg-fermion-french-blue hover:text-white transition-all duration-500 uppercase italic text-sm shadow-xl hover:scale-105 active:scale-95">
-                  Apply For Access <ArrowRight className="ml-3" size={18} />
+                  Begin Registration <ArrowRight className="ml-3" size={18} />
                 </Button>
               </Link>
             </div>
