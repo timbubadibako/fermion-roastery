@@ -43,17 +43,19 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
         body: JSON.stringify(body),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`📡 Backend Error (${response.status}):`, errorText);
+        throw new Error(errorText || `Failed to ${mode}`);
+      }
+
       const data = await response.json();
       console.log(`📡 Backend Response:`, data);
 
-      if (response.ok) {
-        // Set security cookie for middleware (expires in 24h)
-        document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
-        toast.success(data.message);
-        onSuccess(data.profile); // Pass profile back to parent
-      } else {
-        toast.error(data.message || `Failed to ${mode}`);
-      }
+      // Set security cookie for middleware (expires in 24h)
+      document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
+      toast.success(data.message);
+      onSuccess(data.profile); // Pass profile back to parent
     } catch (error: any) {
       console.error("❌ Auth error:", error);
       toast.error(`Network error: ${error.message || 'Please try again later.'}`);

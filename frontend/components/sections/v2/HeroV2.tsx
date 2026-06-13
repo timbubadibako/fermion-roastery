@@ -14,7 +14,10 @@ export function HeroV2() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch settings');
+        return res.json();
+      })
       .then(data => setSettings(data))
       .catch(err => console.error("Failed to load hero settings", err));
   }, []);
