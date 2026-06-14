@@ -108,12 +108,38 @@ export const verifyAdmin = async (req, res) => {
   }
 };
 
-export const getProfile = (req, res) => {
-  res.status(200).json({ 
-    id: "usr_123", 
-    name: "Fermion Partner", 
-    role: "B2B_PARTNER" 
-  });
+export const getProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await query(
+      'SELECT id, email, full_name, role, phone, address, city, postal_code FROM profiles WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching profile", error: error.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const { id } = req.params;
+  const { fullName, phone, address, city, postalCode } = req.body;
+
+  try {
+    const result = await query(
+      `UPDATE profiles 
+       SET full_name = $1, phone = $2, address = $3, city = $4, postal_code = $5, updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $6 RETURNING id, email, full_name, role, phone, address, city, postal_code`,
+      [fullName, phone, address, city, postalCode, id]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
+    res.status(200).json({ message: "Profile updated successfully", profile: result.rows[0] });
+  } catch (error) {
+    console.error('Update Profile Error:', error);
+    res.status(500).json({ message: "Error updating profile", error: error.message });
+  }
 };
 
 export const claimSilverTier = async (req, res) => {

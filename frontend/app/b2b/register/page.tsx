@@ -258,63 +258,36 @@ export default function B2BRegisterPageV2() {
                 </motion.div>
               )}
 
-              {/* STEP 3: CONTRACT ONBOARDING */}
+              {/* STEP 3: CONTRACT ONBOARDING (Optional) */}
               {step === 3 && (
                 <motion.div key="onboarding" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8 max-w-md mx-auto">
                   <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-2xl text-center space-y-10 relative overflow-hidden">
                     
-                    {onboardingStatus === 'onboarding' ? (
-                      <>
-                        <div className="space-y-4">
-                           <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Action <br/> Required.</h2>
-                           <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">Please download, sign, and upload your partnership contract to activate wholesale pricing.</p>
-                        </div>
+                    <div className="space-y-4">
+                       <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300 mb-6">
+                          <FileText size={32} />
+                       </div>
+                       <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Partnership <br/> Agreement.</h2>
+                       <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">You can finalize your contract now or complete it later from your account dashboard.</p>
+                    </div>
 
-                        <div className="grid grid-cols-1 gap-4">
-                           <Button onClick={handleDownloadContract} className="h-16 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-sm">
-                              <Download className="mr-2" size={16} /> 1. Download Contract
-                           </Button>
-                           
-                           <div className="relative">
-                              <input 
-                                type="file" 
-                                accept=".pdf" 
-                                onChange={handleUploadContract} 
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                                disabled={uploading}
-                              />
-                              <Button disabled={uploading} className="w-full h-16 bg-slate-900 hover:bg-fermion-french-blue text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl">
-                                 {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Upload className="mr-2" size={16} /> 2. Upload Signed PDF</>}
-                              </Button>
-                           </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="py-8 relative">
-                           <motion.div 
-                             animate={{ y: [0, -10, 0] }} 
-                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                             className="w-24 h-24 bg-fermion-french-blue/5 rounded-full flex items-center justify-center mx-auto text-fermion-french-blue mb-6 border border-fermion-french-blue/10"
-                           >
-                              <Mountain size={48} strokeWidth={1.5} />
-                           </motion.div>
-                           <Sticker rotate={-8} color="var(--cartoon-yellow)" className="top-0 right-1/4">REVIEWING</Sticker>
-                        </div>
-                        
-                        <div className="space-y-4">
-                           <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Verifying <br/> Contract.</h2>
-                           <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">
-                              "Si Gunung" is currently reviewing your documents. You'll receive a WhatsApp notification once approved.
-                           </p>
-                        </div>
+                    <div className="grid grid-cols-1 gap-4 opacity-60 grayscale pointer-events-none">
+                       <div className="h-16 bg-slate-50 border border-slate-200 text-slate-400 rounded-2xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]">
+                          <Download className="mr-2" size={16} /> 1. Download Contract (Placeholder)
+                       </div>
+                       <div className="h-16 bg-slate-50 border border-slate-200 text-slate-400 rounded-2xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]">
+                          <Upload className="mr-2" size={16} /> 2. Upload Signed PDF (Placeholder)
+                       </div>
+                    </div>
 
-                        <div className="pt-10 border-t border-slate-50 flex items-center justify-center gap-2 text-slate-400">
-                           <Clock size={14} />
-                           <span className="text-[9px] font-black uppercase tracking-widest">Est. Time: 2-4 Hours</span>
-                        </div>
-                      </>
-                    )}
+                    <div className="pt-6 border-t border-slate-50 flex flex-col gap-4">
+                       <Link href="/account">
+                          <Button className="w-full h-14 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-widest italic shadow-xl">
+                             Finish Later in Dashboard <ArrowRight className="ml-2" size={16} />
+                          </Button>
+                       </Link>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Pricing will remain Retail until activated.</p>
+                    </div>
 
                     <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-slate-50 rounded-full blur-3xl opacity-50" />
                   </div>
