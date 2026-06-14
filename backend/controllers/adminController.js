@@ -114,6 +114,21 @@ export const updatePartnerStatus = async (req, res) => {
   }
 };
 
+// Delete Partner
+export const deletePartner = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await query("DELETE FROM b2b_partners WHERE id = $1 RETURNING id", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Partner application not found" });
+    }
+    res.status(200).json({ message: "Application successfully cancelled", id: result.rows[0].id });
+  } catch (error) {
+    console.error('Error deleting partner:', error);
+    res.status(500).json({ message: "Failed to cancel application", error: error.message });
+  }
+};
+
 // 3. Create B2B Contract
 export const createContract = async (req, res) => {
   const { profile_id, end_date, contract_type = 'Bronze' } = req.body;
@@ -282,6 +297,43 @@ export const updateSettings = async (req, res) => {
   } catch (error) {
     await query('ROLLBACK');
     res.status(500).json({ message: "Error updating settings", error: error.message });
+  }
+};
+
+// 9. Manual Offline Transaction Ledger
+export const createManualTransaction = async (req, res) => {
+  const { partnerId, productId, weightKg, totalPaid, transactionDate } = req.body;
+
+  try {
+    await query('BEGIN');
+
+    // 1. Create the order
+    const orderRes = await query(
+      `INSERT INTO orders (profile_id, total_amount, status, order_type) 
+       VALUES ($1, $2, 'PAID', 'manual_offline') RETURNING id`,
+      [partnerId, totalPaid]
+    );
+    const orderId = orderRes.rows[0].id;
+
+    // 2. Create the order item
+    await query(
+      `INSERT INTO order_items (order_id, product_id, quantity, unit_price) 
+       VALUES ($1, $2, $3, $4)`,
+      [orderId, productId, parseFloat(weightKg) * 4, (parseFloat(totalPaid) / (parseFloat(weightKg) * 4))] // Storing in 250g units
+    );
+
+    // 3. Deduct Stock
+    await query(
+      `UPDATE products SET stock_quantity = stock_quantity - $1 WHERE id = $2`,
+      [parseFloat(weightKg) * 4, productId]
+    );
+
+    await query('COMMIT');
+    res.status(201).json({ message: "Manual transaction recorded successfully", orderId });
+  } catch (error) {
+    await query('ROLLBACK');
+    console.error('Manual Transaction Error:', error);
+    res.status(500).json({ message: "Failed to record manual transaction", error: error.message });
   }
 };
 
