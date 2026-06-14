@@ -1,46 +1,26 @@
-# ☕ Fermion Roastery - Project Progress
+# Fermion Roastery - TODO
 
-## ✅ Completed
-- [x] Initial Brainstorming & Design Spec
-- [x] Architecture selection (Engine-Heavy Hybrid)
-- [x] Backend Setup (Express v5, Supabase, Axios)
-- [x] Frontend Setup (Next.js 15, Tailwind v4)
-- [x] Fix Frontend Build & Runtime Errors
-- [x] Implement Dynamic Floating Navbar (Pill transition + Glassmorphism)
-- [x] Setup Local Postgres Database (`fermion`)
-- [x] Implement Core Schema (Products, Pricing Tiers, B2B Partners, Batches)
-- [x] Build Product API with Dynamic Pricing data
-- [x] Create B2B Onboarding Flow (Initial multi-step form)
-- [x] Refine Role-Dynamic Header (Admin, B2B, Retail, Guest)
-- [x] Dedicated Operational Portals for Admin and B2B
+## 🚀 Priority MVP (Current Focus)
+- [x] **B2B Onboarding:** Registration, Contract Upload, and Tiering.
+- [x] **Command Center:** 5-column Kanban Board (Unpaid, Paid, Confirmed, Roasting, Shipped).
+- [x] **Payment Integration:** Xendit Invoice generation and status syncing.
+- [x] **Logistics Integration:** Biteship Area Search and automated Draft confirmation.
+- [x] **User Profiles:** Persistent address and contact info for one-click checkout.
+- [ ] **Automated Webhooks:** Finalize tunnel stability for Xendit/Biteship live callbacks.
+- [ ] **Notification Protocol:** Real-time Ably alerts for Admins on new paid orders.
 
-## ⏳ To Do
+## 📦 Commercial Loop Refinements
+- [x] **Selective Checkout:** Logic for partial cart purchasing.
+- [x] **B2B Tiering:** Bronze/Silver dynamic discount calculation.
+- [ ] **Inventory Sync:** Live stock deduction on successful Xendit payment (not just manual).
 
-### Phase 1: Core Engine & Data Architecture (Postgres)
-- [x] Setup Production Postgres Database
-- [x] Implement Core Schema (Products, Batches, Pricing)
-- [x] Connect Express Backend to Postgres
-- [x] Build Basic Product API (CRUD)
+## 🧪 Phase 4 (Future Roadmap)
+- [ ] **Magic Wand AI:** Administrative automation for order batching.
+- [ ] **Green Bean Traceability:** Lot-to-Batch FIFO management.
+- [ ] **Sensory Analytics:** QC Profile visualization for B2B partners.
+- [ ] **Subscription Engine:** Recurring coffee rituals.
 
-### Phase 2: B2B & Admin Operational Flows
-- [x] Setup Tiered Pricing Logic (Bronze: Base, Silver: 15kg/10k discount, Gold: TBD)
-- [x] B2B Partner Admin Approval Portal (formerly Dashboard)
-- [x] **Dedicated Admin Ordering** (Internal Procurement UI)
-- [x] **Dedicated B2B Ordering** (Wholesale Catalog UI with 10k IDR/kg Silver discount)
-- [ ] **Dynamic B2B Onboarding** (Cafe Name, Address, HP validation)
-
-### Phase 3: CMS & Fulfillment Pipeline (ACTIVE)
-- [x] **Functional CMS: Journal Editor** (Create/Edit stories for Landing Page)
-- [x] **Functional CMS: Shipping Console** (Manual AWB/Courier management)
-- [ ] Automated Invoicing System (PDFKit Generation with Logo Support)
-- [ ] Biteship Webhook Integration for auto-tracking auto-awb
-
-### Phase 4: Transparency Engine
-- [ ] **Green Bean Lot Management** (Tracking arrival weight)
-- [ ] **Roast Batch Integration** (FIFO cutting from Green Bean stock)
-- [ ] Admin "Magic Wand" (Quick Edit Buttons for Batch/Status)
-
-### Phase 5: Production Polish
-- [ ] Admin Real-time Chat Panel
-- [ ] Final UI Refinement & Responsive Audit
-- [ ] Production Deployment (Vercel & Render)
+## 🛠️ Infrastructure & Security
+- [ ] **Live Credentials:** Switch from TEST to LIVE Xendit/Biteship keys.
+- [ ] **Environment Audit:** Final check on `.env` and sensitive variable leakage.
+- [ ] **Production Build:** `npm run build` optimization and asset compression.
