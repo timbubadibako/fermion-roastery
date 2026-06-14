@@ -17,8 +17,9 @@ Semua akun menggunakan password: `password123`
 
 ### 1. Autentikasi & Role-Based UI
 - **Login sebagai Admin:**
-    - Pastikan Navbar menampilkan ikon **LayoutDashboard** (Admin Panel).
-    - Akses ke rute admin harus langsung masuk ke **Manage Orders**.
+    - Pastikan Navbar menampilkan ikon **LayoutDashboard** (Admin Portal).
+    - Akses ke rute admin harus berhasil tanpa redirect.
+    - **[NEW] Public Browsing:** Coba buka halaman `/our-coffee` atau keranjang belanja `/cart`. Admin harus bisa mengakses halaman publik ini secara normal, namun akan melihat banner peringatan kuning di keranjang belanja.
 - **Login sebagai B2B:**
     - Pastikan Navbar menampilkan ikon **LayoutGrid** (Bulk Orders).
     - Dashboard utama (overview) ditiadakan, langsung masuk ke fungsionalitas utama.

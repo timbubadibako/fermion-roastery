@@ -109,14 +109,18 @@ export function RetailCatalog() {
     e.preventDefault();
     e.stopPropagation();
     
+    const finalPrice = (product as any).price || Number(product.price_retail);
+
     addItem({
       id: product.id,
       name: product.name,
-      price: Number(product.price_retail),
+      price: finalPrice,
       quantity: 1,
       image: product.image_url,
       weight: "250g",
-      grind: "Whole Bean"
+      grind: "Whole Bean",
+      priceType: product.priceType,
+      original_price: Number(product.price_retail)
     });
 
     toast.success(`${product.name} added to cart!`);
