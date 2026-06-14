@@ -21,6 +21,7 @@ interface Order {
   created_at: string;
   shipping_awb?: string;
   shipping_courier?: string;
+  rejection_reason?: string;
   items: any[];
 }
 
@@ -78,7 +79,6 @@ export default function RetailAccountPage() {
 
     setIsTrackingLoading(true);
     try {
-      // Biteship needs waybill_id or order_id
       const res = await fetch(`/api/shipping/trackings/${id}`);
       if (res.ok) {
         const data = await res.json();
@@ -99,7 +99,7 @@ export default function RetailAccountPage() {
         setOrders(data);
       }
     } catch (e) {
-      toast.error("Failed to load your coffee rituals.");
+      toast.error("Gagal memuat daftar pesanan Anda.");
     } finally {
       setLoading(false);
     }
@@ -122,21 +122,21 @@ export default function RetailAccountPage() {
       const data = await res.json();
       
       if (res.ok) {
-        toast.success("Profile and address saved successfully");
+        toast.success("Profil dan alamat berhasil disimpan");
         setUser(data.profile);
       } else {
-        toast.error(data.message || "Failed to save changes");
+        toast.error(data.message || "Gagal menyimpan perubahan");
       }
     } catch (e: any) {
       console.error("Update Profile Error:", e);
-      toast.error("Protocol communication failure. Please check your connection.");
+      toast.error("Gagal terhubung ke server.");
     }
   };
 
   if (loading) return (
     <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center gap-4 text-slate-400">
       <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Preparing your space...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Memuat Akun...</p>
     </div>
   );
 
@@ -144,40 +144,37 @@ export default function RetailAccountPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-20 px-6 font-sans relative overflow-hidden">
-      {/* Background Decor */}
       <div className="fixed top-[-200px] left-[-100px] w-[600px] h-[600px] bg-fermion-french-blue/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-12 relative z-10">
         
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
           <div className="space-y-2">
             <span className="inline-block px-3 py-1 bg-white border border-slate-200 text-slate-500 rounded-full text-[9px] font-black uppercase tracking-widest mb-2 shadow-sm">
-              Personal Account
+              Akun Pribadi
             </span>
             <h1 className="display-font text-5xl md:text-6xl font-black italic tracking-tighter text-slate-900 leading-none">
-              Your Rituals.
+              Pesanan Saya.
             </h1>
-            <p className="text-slate-500 font-medium text-sm">Welcome back, {user?.full_name}. Track and manage your coffee journey.</p>
+            <p className="text-slate-500 font-medium text-sm">Selamat datang kembali, {user?.full_name}. Pantau pesanan kopi Anda di sini.</p>
           </div>
           <Button 
             onClick={handleLogout}
             variant="outline"
             className="rounded-2xl h-12 px-6 border-slate-200 text-slate-500 hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all font-black uppercase tracking-widest text-[10px] gap-2 shadow-sm"
           >
-            <LogOut size={16} /> Sign Out
+            <LogOut size={16} /> Keluar
           </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
-          {/* SIDEBAR NAVIGATION */}
           <div className="lg:col-span-3 space-y-4 sticky top-32">
             <nav className="flex flex-col gap-2">
               {[
-                { id: "overview", label: "Overview", icon: LayoutDashboard },
-                { id: "orders", label: "Order History", icon: Package },
-                { id: "settings", label: "Profile & Address", icon: Settings }
+                { id: "overview", label: "Ringkasan", icon: LayoutDashboard },
+                { id: "orders", label: "Riwayat Pesanan", icon: Package },
+                { id: "settings", label: "Profil & Alamat", icon: Settings }
               ].map(tab => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -198,19 +195,17 @@ export default function RetailAccountPage() {
             </nav>
 
             <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm mt-8 space-y-4">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Need Help?</h4>
-              <p className="text-xs text-slate-500 font-medium">Have questions about your order or our beans?</p>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Butuh Bantuan?</h4>
+              <p className="text-xs text-slate-500 font-medium">Punya pertanyaan seputar pesanan Anda?</p>
               <Button variant="outline" className="w-full rounded-xl border-slate-200 text-[9px] font-black uppercase tracking-widest">
-                Contact Laboratory
+                Hubungi Kami
               </Button>
             </div>
           </div>
 
-          {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-9">
             <AnimatePresence mode="wait">
               
-              {/* ================= OVERVIEW TAB ================= */}
               {activeTab === "overview" && (
                 <motion.div 
                   key="overview"
@@ -219,13 +214,12 @@ export default function RetailAccountPage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-8"
                 >
-                  {/* ACTIVE ORDER TRACKER */}
                   <div className="bg-white rounded-[3rem] p-10 md:p-12 border border-slate-100 shadow-xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
                       <Truck size={120} />
                     </div>
                     
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-8">Latest Order Status</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 mb-8">Status Pesanan Terbaru</h3>
                     
                     {recentOrder ? (
                       <div className="space-y-10 relative z-10">
@@ -256,7 +250,6 @@ export default function RetailAccountPage() {
                           <div className="relative pt-4 px-2">
                              <div className="absolute top-8 left-0 w-full h-1 bg-slate-100 rounded-full" />
                              
-                             {/* Progress Fill */}
                              <div className={`absolute top-8 left-0 h-1 rounded-full transition-all duration-1000 ${
                                recentOrder.status === 'UNPAID' ? 'w-[10%] bg-amber-400' :
                                recentOrder.status === 'PAID' ? 'w-[30%] bg-fermion-french-blue' : 
@@ -266,7 +259,6 @@ export default function RetailAccountPage() {
                              }`} />
 
                              <div className="flex justify-between relative z-10">
-                                {/* Step 1: Payment */}
                                 <div className="flex flex-col items-center gap-3">
                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
                                      ['UNPAID', 'PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
@@ -274,11 +266,10 @@ export default function RetailAccountPage() {
                                       {recentOrder.status === 'UNPAID' ? <Clock size={16} className="text-amber-500 animate-pulse" /> : <CheckCircle2 size={16} className="text-fermion-french-blue" />}
                                    </div>
                                    <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['UNPAID', 'PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>
-                                     {recentOrder.status === 'UNPAID' ? 'Menunggu Bayar' : 'Sudah Dibayar'}
+                                     {recentOrder.status === 'UNPAID' ? 'Menunggu Bayar' : 'Lunas'}
                                    </p>
                                 </div>
 
-                                {/* Step 2: Processing */}
                                 <div className="flex flex-col items-center gap-3">
                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
                                      ['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
@@ -288,7 +279,6 @@ export default function RetailAccountPage() {
                                    <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Diproses</p>
                                 </div>
 
-                                {/* Step 3: Roasting */}
                                 <div className="flex flex-col items-center gap-3">
                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
                                      ['ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
@@ -298,7 +288,6 @@ export default function RetailAccountPage() {
                                    <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Dipanggang</p>
                                 </div>
 
-                                {/* Step 4: Shipped */}
                                 <div className="flex flex-col items-center gap-3">
                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
                                      ['SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
@@ -318,7 +307,7 @@ export default function RetailAccountPage() {
                                 onClick={() => fetchTracking(recentOrder.shipping_awb || recentOrder.biteship_order_id || "")}
                                 className="flex-1 bg-slate-900 text-white hover:bg-fermion-french-blue rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] italic transition-all"
                               >
-                                 {isTrackingExpanded ? "Tutup Detail Paket" : "Pantau Detail Paket"} <Navigation size={14} className="ml-2" />
+                                 {isTrackingExpanded ? "Tutup Detail Paket" : "Pantau Perjalanan Paket"} <Navigation size={14} className="ml-2" />
                               </Button>
                               <Button 
                                 variant="outline"
@@ -349,7 +338,7 @@ export default function RetailAccountPage() {
                                            </div>
                                         ) : trackingHistory.length === 0 ? (
                                            <div className="py-10 text-center">
-                                              <p className="text-[10px] font-bold text-slate-400 uppercase italic">Data belum tersedia di sistem kurir.</p>
+                                              <p className="text-[10px] font-bold text-slate-400 uppercase italic">Belum ada riwayat tercatat.</p>
                                            </div>
                                         ) : (
                                            <div className="space-y-8 relative">
@@ -375,22 +364,21 @@ export default function RetailAccountPage() {
                     ) : (
                       <div className="py-10 text-center space-y-4">
                         <Package size={48} className="mx-auto text-slate-200" />
-                        <p className="text-slate-500 font-medium">You don't have any active orders.</p>
+                        <p className="text-slate-500 font-medium">Anda belum memiliki pesanan aktif.</p>
                         <Link href="/our-coffee">
-                          <Button className="bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">Start Shopping</Button>
+                          <Button className="bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">Mulai Belanja</Button>
                         </Link>
                       </div>
                     )}
                   </div>
 
-                  {/* QUICK STATS */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-6">
                         <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
                            <Coffee size={24} />
                         </div>
                         <div>
-                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Orders</p>
+                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Pesanan</p>
                            <p className="text-3xl font-black italic tracking-tighter text-slate-900">{orders.length}</p>
                         </div>
                      </div>
@@ -399,7 +387,7 @@ export default function RetailAccountPage() {
                            <Receipt size={24} />
                         </div>
                         <div>
-                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Spent</p>
+                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total Belanja</p>
                            <p className="text-2xl font-black italic tracking-tighter text-slate-900">
                              Rp {orders.reduce((acc, o) => acc + parseInt(o.total_amount), 0).toLocaleString('id-ID')}
                            </p>
@@ -409,7 +397,6 @@ export default function RetailAccountPage() {
                 </motion.div>
               )}
 
-              {/* ================= ORDERS HISTORY TAB ================= */}
               {activeTab === "orders" && (
                 <motion.div 
                   key="orders"
@@ -419,23 +406,23 @@ export default function RetailAccountPage() {
                   className="bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden"
                 >
                   <div className="p-10 border-b border-slate-50">
-                    <h3 className="display-font text-3xl font-black italic tracking-tighter text-slate-900">Order Ledger.</h3>
-                    <p className="text-xs text-slate-500 font-medium mt-1">Review your past purchases and download invoices.</p>
+                    <h3 className="display-font text-3xl font-black italic tracking-tighter text-slate-900">Riwayat Belanja.</h3>
+                    <p className="text-xs text-slate-500 font-medium mt-1">Review pesanan Anda sebelumnya dan unduh invoice.</p>
                   </div>
                   
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead className="bg-slate-50/50 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                         <tr>
-                          <th className="p-8">Order ID & Date</th>
+                          <th className="p-8">ID Pesanan & Tanggal</th>
                           <th className="p-8">Status</th>
-                          <th className="p-8">Total Amount</th>
-                          <th className="p-8 text-right">Action</th>
+                          <th className="p-8">Total Harga</th>
+                          <th className="p-8 text-right">Aksi</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {orders.length === 0 ? (
-                          <tr><td colSpan={4} className="p-20 text-center text-slate-300 font-bold uppercase tracking-widest text-xs">No order history found.</td></tr>
+                          <tr><td colSpan={4} className="p-20 text-center text-slate-300 font-bold uppercase tracking-widest text-xs">Belum ada riwayat pesanan.</td></tr>
                         ) : (
                           orders.map(order => (
                             <tr key={order.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -457,7 +444,7 @@ export default function RetailAccountPage() {
                               </td>
                               <td className="p-8 text-right">
                                 <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 rounded-xl">
-                                  View Details <ChevronRight size={14} className="ml-1" />
+                                  Lihat Detail <ChevronRight size={14} className="ml-1" />
                                 </Button>
                               </td>
                             </tr>
@@ -469,57 +456,46 @@ export default function RetailAccountPage() {
                 </motion.div>
               )}
 
-              {/* ================= SETTINGS TAB ================= */}
               {activeTab === "settings" && (
                 <motion.div 
                   key="settings"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
+                  className="bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden p-10 md:p-12"
                 >
-                  <div className="bg-white rounded-[3rem] p-10 md:p-12 border border-slate-100 shadow-xl">
-                    <h3 className="display-font text-3xl font-black italic tracking-tighter text-slate-900 mb-2">Profile Details.</h3>
-                    <p className="text-xs text-slate-500 font-medium mb-10">Manage your personal information and contact details.</p>
-                    
+                  <div className="space-y-10">
+                    <div>
+                      <h3 className="display-font text-3xl font-black italic tracking-tighter text-slate-900 leading-none">Profil & Alamat.</h3>
+                      <p className="text-xs text-slate-500 font-medium mt-1">Kelola informasi pengiriman Anda di sini.</p>
+                    </div>
+
                     <form onSubmit={handleUpdateProfile} className="space-y-8">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                          <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Nama Lengkap</label>
                           <Input value={profileData.fullName} onChange={e => setProfileData({...profileData, fullName: e.target.value})} className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                          <Input value={user?.email || ""} disabled className="h-14 bg-slate-50 border-none rounded-2xl font-bold text-slate-400 cursor-not-allowed" />
+                          <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Nomor WhatsApp</label>
+                          <Input value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} placeholder="08..." className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
                         </div>
-                        <div className="space-y-2 md:col-span-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp / Phone Number</label>
-                          <Input value={profileData.phone} onChange={e => setProfileData({...profileData, phone: e.target.value})} placeholder="+62..." className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Alamat Lengkap</label>
+                          <Input value={profileData.address} onChange={e => setProfileData({...profileData, address: e.target.value})} placeholder="Nama Jalan, No. Rumah..." className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
                         </div>
-                      </div>
-
-                      <div className="pt-8 border-t border-slate-50">
-                        <h3 className="display-font text-2xl font-black italic tracking-tighter text-slate-900 mb-6">Default Shipping Address</h3>
-                        <div className="grid grid-cols-1 gap-6">
-                           <div className="space-y-2">
-                              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Street Address</label>
-                              <Input value={profileData.address} onChange={e => setProfileData({...profileData, address: e.target.value})} placeholder="Jl. Sudirman No..." className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
-                           </div>
-                           <div className="grid grid-cols-2 gap-6">
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">City</label>
-                                <Input value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} placeholder="Jakarta" className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
-                              </div>
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Postal Code</label>
-                                <Input value={profileData.postalCode} onChange={e => setProfileData({...profileData, postalCode: e.target.value})} placeholder="12345" className="h-14 bg-slate-50 border-none rounded-2xl font-bold font-mono" />
-                              </div>
-                           </div>
+                        <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Kota / Kabupaten</label>
+                          <Input value={profileData.city} onChange={e => setProfileData({...profileData, city: e.target.value})} className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-1">Kode Pos</label>
+                          <Input value={profileData.postalCode} onChange={e => setProfileData({...profileData, postalCode: e.target.value})} className="h-14 bg-slate-50 border-none rounded-2xl font-bold" />
                         </div>
                       </div>
-
-                      <Button type="submit" className="w-full md:w-auto h-14 px-10 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-[0.2em] italic shadow-xl hover:bg-fermion-french-blue transition-all">
-                        Save Preferences
+                      
+                      <Button type="submit" className="h-14 px-10 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest italic hover:bg-fermion-french-blue transition-all shadow-xl shadow-slate-900/10">
+                        Simpan Perubahan
                       </Button>
                     </form>
                   </div>

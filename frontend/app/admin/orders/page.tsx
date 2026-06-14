@@ -125,7 +125,7 @@ export default function KanbanBoard() {
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Calibrating Pipeline...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Memuat Antrean...</p>
     </div>
   );
 
@@ -141,12 +141,12 @@ export default function KanbanBoard() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2 text-left">
-          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Order <br/> Kanban.</h1>
-          <p className="text-sm font-medium text-slate-500">Laboratory workflow for specimen preparation and logistics.</p>
+          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Papan <br/> Pesanan.</h1>
+          <p className="text-sm font-medium text-slate-500">Pusat kendali operasional dan pengiriman kopi.</p>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="rounded-xl h-12 px-6 gap-2 border-slate-200 text-[10px] font-black uppercase tracking-widest"><Filter size={14} /> Filter Queue</Button>
-           <Button className="bg-slate-950 text-white rounded-xl h-12 px-6 gap-2 text-[10px] font-black uppercase tracking-widest"><Plus size={14} /> Internal Order</Button>
+           <Button variant="outline" className="rounded-xl h-12 px-6 gap-2 border-slate-200 text-[10px] font-black uppercase tracking-widest"><Filter size={14} /> Filter Antrean</Button>
+           <Button className="bg-slate-950 text-white rounded-xl h-12 px-6 gap-2 text-[10px] font-black uppercase tracking-widest"><Plus size={14} /> Pesanan Manual</Button>
         </div>
       </div>
 
@@ -204,7 +204,7 @@ export default function KanbanBoard() {
                               onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')}
                               className="w-full py-5 bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
                              >
-                               Generate Resi <ChevronRight size={14} className="ml-1" />
+                               Terbitkan Resi <ChevronRight size={14} className="ml-1" />
                              </Button>
                           )}
                           {order.status === 'READY_TO_SHIP' && (
@@ -240,7 +240,7 @@ export default function KanbanBoard() {
                               onClick={() => openQC(order)}
                               className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all"
                              >
-                                Profiling Rasa <Beaker size={14} className="ml-1" />
+                                Input Detail Rasa <Beaker size={14} className="ml-1" />
                              </Button>
                           )}
                           {order.status === 'SHIPPED' && (
@@ -315,8 +315,8 @@ export default function KanbanBoard() {
              >
                 <div className="flex justify-between items-start">
                    <div className="space-y-1">
-                      <span className="status-badge bg-blue-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Sensory_Input</span>
-                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-950 leading-none mt-2">QC Profiling.</h2>
+                      <span className="status-badge bg-blue-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Detail_Rasa</span>
+                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-950 leading-none mt-2">Detail Produk.</h2>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedOrder?.customer_name}</p>
                    </div>
                    <button onClick={() => setIsQCModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={24} /></button>
@@ -347,11 +347,11 @@ export default function KanbanBoard() {
                   onClick={() => {
                     handleUpdateStatus(selectedOrder!.id, 'ROASTING', { qcData }); // Keep in ROASTING but save QC
                     setIsQCModalOpen(false);
-                    toast.success("Profile saved. Order ready to ship.");
+                    toast.success("Data disimpan. Pesanan siap dikirim.");
                   }}
                   className="w-full h-16 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-periwinkle transition-all"
                 >
-                   Save Profile & Close <CheckCircle2 size={18} className="ml-2" />
+                   Simpan & Tutup <CheckCircle2 size={18} className="ml-2" />
                 </Button>
              </motion.div>
           </div>
@@ -370,9 +370,9 @@ export default function KanbanBoard() {
              >
                 <div className="flex justify-between items-start">
                    <div className="space-y-1">
-                      <span className="status-badge bg-emerald-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Dispatch_Protocol</span>
-                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-950 leading-none mt-2">Logistics.</h2>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Assign Waybill for #{selectedOrder?.id.slice(0,8)}</p>
+                      <span className="status-badge bg-emerald-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Manajemen_Kirim</span>
+                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-900 leading-none mt-2">Pengiriman.</h2>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Input Resi Manual untuk #{selectedOrder?.id.slice(0,8)}</p>
                    </div>
                    <button onClick={() => setIsAWBModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={24} /></button>
                 </div>
@@ -407,7 +407,7 @@ export default function KanbanBoard() {
                   disabled={!awbData.courier || !awbData.resi}
                   className="w-full h-16 bg-emerald-500 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-emerald-600 transition-all"
                 >
-                   Confirm Shipment <Truck size={18} className="ml-2" />
+                   Konfirmasi Pengiriman <Truck size={18} className="ml-2" />
                 </Button>
              </motion.div>
           </div>

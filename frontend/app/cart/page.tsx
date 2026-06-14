@@ -139,7 +139,7 @@ export default function CartPage() {
         if (data.length > 0) setSelectedCourier(data[0]);
       }
     } catch (e) {
-      toast.error("Failed to fetch shipping rates from Biteship.");
+      toast.error("Gagal mengambil tarif pengiriman.");
     } finally {
       setRatesLoading(false);
     }
@@ -147,7 +147,7 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (!selectedCourier) {
-      toast.error("Please select a shipping method.");
+      toast.error("Pilih metode pengiriman terlebih dahulu.");
       return;
     }
 
@@ -187,7 +187,7 @@ export default function CartPage() {
 
       if (res.ok) {
         const data = await res.json();
-        toast.success("Order protocol initiated! Redirecting to payment...");
+        toast.success("Pesanan dibuat! Mengalihkan ke pembayaran...");
         
         // Remove only checked out items
         items.forEach(i => removeItem(i.id, i.weight, i.grind));
@@ -196,10 +196,10 @@ export default function CartPage() {
         window.location.href = data.invoiceUrl;
       } else {
         const error = await res.json();
-        toast.error(error.message || "Failed to generate payment invoice.");
+        toast.error(error.message || "Gagal membuat invoice pembayaran.");
       }
     } catch (e) {
-      toast.error("Communication failure with Payment Gateway.");
+      toast.error("Gagal terhubung ke Payment Gateway.");
     } finally {
       setLoading(false);
     }
@@ -215,10 +215,10 @@ export default function CartPage() {
          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-8 shadow-sm">
             <ShoppingBag size={32} className="text-slate-200" />
          </div>
-         <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic mb-4">No Items Selected</h1>
-         <p className="text-slate-500 mb-10 max-w-xs font-medium">Please select items from your ritual cart to proceed with the checkout protocol.</p>
+         <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic mb-4">Keranjang Kosong</h1>
+         <p className="text-slate-500 mb-10 max-w-xs font-medium">Silakan pilih produk kopi favorit Anda untuk melanjutkan pesanan.</p>
          <Link href="/our-coffee">
-           <Button className="bg-slate-900 text-white font-black tracking-widest px-10 h-16 rounded-2xl uppercase italic">Explore Coffee</Button>
+           <Button className="bg-slate-900 text-white font-black tracking-widest px-10 h-16 rounded-2xl uppercase italic">Lihat Produk</Button>
          </Link>
       </div>
     );
@@ -230,7 +230,7 @@ export default function CartPage() {
     <div className="bg-[#FAF9F6] min-h-screen pt-40 pb-40 px-6 relative z-10">
       {user?.role === 'ADMIN' && (
         <div className="max-w-6xl mx-auto mb-10 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-center text-amber-700 text-[10px] font-black uppercase tracking-widest text-center shadow-sm">
-          Warning: You are logged in as Admin. This checkout will be simulated and will not deduct live inventory unless recorded in the Manual Ledger.
+          Perhatian: Anda masuk sebagai Admin. Checkout ini hanya simulasi dan tidak akan memotong stok asli.
         </div>
       )}
       
@@ -238,12 +238,12 @@ export default function CartPage() {
         <div className="flex items-center justify-center gap-4 mb-20">
           <div className={`flex items-center gap-2 ${step >= 1 ? "text-slate-900" : "text-slate-300"}`}>
              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs ${step >= 1 ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200"}`}>1</div>
-             <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Review Ritual</span>
+             <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Review Pesanan</span>
           </div>
           <div className="w-12 h-px bg-slate-100" />
           <div className={`flex items-center gap-2 ${step >= 2 ? "text-slate-900" : "text-slate-300"}`}>
              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs ${step >= 2 ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200"}`}>2</div>
-             <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Dispatch Info</span>
+             <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Info Pengiriman</span>
           </div>
         </div>
 
@@ -251,7 +251,7 @@ export default function CartPage() {
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 lg:grid-cols-12 gap-16">
               <div className="lg:col-span-8 space-y-10">
-                <h2 className="display-font text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Selected Specimens.</h2>
+                <h2 className="display-font text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Daftar Produk.</h2>
                 <div className="space-y-8">
                   {items.map((item) => (
                     <div key={`${item.id}-${item.weight}-${item.grind}`} className="flex gap-6 pb-8 border-b border-slate-100 group">
@@ -267,7 +267,7 @@ export default function CartPage() {
                             <button onClick={() => removeItem(item.id, item.weight, item.grind)} className="text-slate-200 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                          </div>
                          <div className="flex justify-between items-end">
-                            <div className="flex items-center bg-white border border-slate-100 rounded-full px-1.5 py-1">
+                            <div className="items-center bg-white border border-slate-100 rounded-full px-1.5 py-1 hidden sm:flex">
                                <button onClick={() => updateQuantity(item.id, item.weight, item.grind, item.quantity - 1)} className="p-1 hover:bg-slate-50 rounded-full"><Minus size={14}/></button>
                                <span className="w-10 text-center text-sm font-black italic">{item.quantity}</span>
                                <button onClick={() => updateQuantity(item.id, item.weight, item.grind, item.quantity + 1)} className="p-1 hover:bg-slate-50 rounded-full"><Plus size={14}/></button>
@@ -280,25 +280,25 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between items-center pt-10">
                   <Link href="/our-coffee" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center gap-2">
-                    <ArrowLeft size={14}/> Back to Selection
+                    <ArrowLeft size={14}/> Kembali Belanja
                   </Link>
                   <Button onClick={() => setStep(2)} className="h-16 px-12 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest italic shadow-2xl hover:bg-fermion-french-blue transition-all">
-                    Continue to Dispatch <ArrowRight className="ml-2" size={16}/>
+                    Lanjut ke Pengiriman <ArrowRight className="ml-2" size={16}/>
                   </Button>
                 </div>
               </div>
 
               <div className="lg:col-span-4">
                 <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl space-y-8 sticky top-32">
-                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Ledger Summary</h3>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Ringkasan Pesanan</h3>
                    <div className="space-y-4">
                       <div className="flex justify-between text-sm">
-                         <span className="text-slate-500 font-medium">Specimen Subtotal</span>
+                         <span className="text-slate-500 font-medium">Subtotal Produk</span>
                          <span className="text-slate-900 font-black italic tracking-tight">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                         <span className="text-slate-500 font-medium">Logistics Protocol</span>
-                         <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">TBD</span>
+                         <span className="text-slate-500 font-medium">Ongkos Kirim</span>
+                         <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Pilih Wilayah</span>
                       </div>
                       <Separator className="bg-slate-50" />
                       <div className="flex justify-between text-xl pt-2">
@@ -314,22 +314,22 @@ export default function CartPage() {
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 lg:grid-cols-12 gap-16">
               <div className="lg:col-span-8 space-y-12">
-                 <h2 className="display-font text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Dispatch Info.</h2>
+                 <h2 className="display-font text-4xl font-black italic tracking-tighter text-slate-900 uppercase">Info Pengiriman.</h2>
                  
                  <div className="space-y-10">
                     {/* Identification */}
                     <div className="space-y-6">
                        <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
                           <User size={18} className="text-slate-400" />
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Identification</h3>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Identitas Penerima</h3>
                        </div>
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           <div className="space-y-2">
-                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
+                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nama Lengkap</label>
                              <Input required value={shippingData.name} onChange={e => setShippingData({...shippingData, name: e.target.value})} className="h-14 bg-white border-slate-100 font-bold rounded-2xl" />
                           </div>
                           <div className="space-y-2">
-                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">WhatsApp Number</label>
+                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nomor WhatsApp</label>
                              <Input required value={shippingData.phone} onChange={e => setShippingData({...shippingData, phone: e.target.value})} placeholder="0812..." className="h-14 bg-white border-slate-100 font-bold rounded-2xl" />
                           </div>
                        </div>
@@ -339,16 +339,16 @@ export default function CartPage() {
                     <div className="space-y-6">
                        <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
                           <MapPin size={18} className="text-slate-400" />
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Logistics Destination</h3>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Alamat Tujuan</h3>
                        </div>
                        <div className="space-y-6">
                           <div className="space-y-2">
-                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Full street address</label>
-                             <textarea required value={shippingData.address} onChange={e => setShippingData({...shippingData, address: e.target.value})} className="w-full h-24 bg-white border border-slate-100 rounded-2xl p-4 text-sm font-bold resize-none" placeholder="Jl. Sudirman No..." />
+                             <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Alamat Lengkap</label>
+                             <textarea required value={shippingData.address} onChange={e => setShippingData({...shippingData, address: e.target.value})} className="w-full h-24 bg-white border border-slate-100 rounded-2xl p-4 text-sm font-bold resize-none" placeholder="Nama Jalan, Blok, No Rumah..." />
                           </div>
 
                           <div className="relative">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Search City or Area (Biteship)</label>
+                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Cari Kota atau Kecamatan (Biteship)</label>
                             <div className="relative">
                               <Input 
                                 placeholder="Ketik minimal 3 huruf..." 
@@ -386,11 +386,11 @@ export default function CartPage() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                              <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Selected City</label>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Kota Terpilih</label>
                                 <Input disabled value={shippingData.city} className="h-14 bg-slate-50 border-none font-bold rounded-2xl text-slate-400" />
                              </div>
                              <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Postal Code</label>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Kode Pos</label>
                                 <Input required value={shippingData.postal_code} onChange={e => setShippingData({...shippingData, postal_code: e.target.value})} placeholder="12345" className="h-14 bg-white border-slate-100 font-bold rounded-2xl font-mono" />
                              </div>
                           </div>
@@ -401,14 +401,14 @@ export default function CartPage() {
                     <div className="space-y-6">
                        <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
                           <Truck size={18} className="text-slate-400" />
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Cargo Selection</h3>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Pilihan Kurir</h3>
                           {ratesLoading && <Loader2 className="animate-spin text-periwinkle" size={14} />}
                        </div>
                        
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {couriers.length === 0 && !ratesLoading ? (
                              <p className="col-span-2 text-[10px] font-black uppercase text-slate-300 italic p-10 bg-white border border-dashed border-slate-100 rounded-3xl text-center">
-                               Select a city to calculate laboratory logistics
+                               Pilih kota untuk menghitung ongkos kirim
                              </p>
                           ) : (
                             couriers.map(courier => {
@@ -436,25 +436,25 @@ export default function CartPage() {
 
                  <div className="flex justify-between items-center pt-10">
                     <button onClick={() => setStep(1)} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center gap-2">
-                       <ArrowLeft size={14}/> Back to Ritual
+                       <ArrowLeft size={14}/> Kembali ke Produk
                     </button>
                     <Button onClick={handleCheckout} disabled={loading || !selectedCourier} className="h-16 px-12 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest italic shadow-2xl hover:bg-fermion-french-blue transition-all">
-                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2">Finalize Protocol <ArrowRight size={16}/></span>}
+                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2">Bayar Sekarang <ArrowRight size={16}/></span>}
                     </Button>
                  </div>
               </div>
 
               <div className="lg:col-span-4">
                 <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl space-y-8 sticky top-32">
-                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Order Settlement</h3>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Total Pembayaran</h3>
                    <div className="space-y-4">
                       <div className="flex justify-between text-sm">
-                         <span className="text-slate-500 font-medium">Specimens</span>
+                         <span className="text-slate-500 font-medium">Subtotal Produk</span>
                          <span className="text-slate-900 font-black italic">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                         <span className="text-slate-500 font-medium">Logistics</span>
-                         <span className="text-slate-900 font-black italic">{selectedCourier ? `Rp ${shippingFee.toLocaleString('id-ID')}` : 'PENDING'}</span>
+                         <span className="text-slate-500 font-medium">Ongkos Kirim</span>
+                         <span className="text-slate-900 font-black italic">{selectedCourier ? `Rp ${shippingFee.toLocaleString('id-ID')}` : 'MENUNGGU'}</span>
                       </div>
                       <Separator className="bg-slate-50" />
                       <div className="flex justify-between text-xl pt-2">
@@ -473,11 +473,11 @@ export default function CartPage() {
                   <CheckCircle2 size={40} />
                </div>
                <div className="space-y-4">
-                  <h2 className="display-font text-5xl font-black italic tracking-tighter text-slate-900">Success.</h2>
-                  <p className="text-slate-500 font-medium max-w-md">Your coffee specimens have been registered for roasting. You will receive a notification once the ritual begins.</p>
+                  <h2 className="display-font text-5xl font-black italic tracking-tighter text-slate-900">Pembayaran Berhasil.</h2>
+                  <p className="text-slate-500 font-medium max-w-md">Pesanan Anda telah diterima dan akan segera diproses oleh tim roastery kami.</p>
                </div>
                <Link href="/account">
-                  <Button className="bg-slate-900 text-white font-black uppercase tracking-widest px-10 h-16 rounded-2xl italic">View My Rituals</Button>
+                  <Button className="bg-slate-900 text-white font-black uppercase tracking-widest px-10 h-16 rounded-2xl italic">Lihat Pesanan Saya</Button>
                </Link>
             </motion.div>
           )}
