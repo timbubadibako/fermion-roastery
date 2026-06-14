@@ -28,11 +28,7 @@ export default function SiteSettingsPage() {
       const res = await fetch("/api/admin/settings");
       if (res.ok) {
         const data = await res.json();
-        const settingsMap = data.reduce((acc: any, curr: any) => {
-          acc[curr.key] = curr.value;
-          return acc;
-        }, {});
-        setContent((prev: any) => ({ ...prev, ...settingsMap }));
+        setContent((prev: any) => ({ ...prev, ...data }));
       }
     } finally {
       setLoading(false);
