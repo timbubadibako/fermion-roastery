@@ -158,19 +158,21 @@ export function Header() {
   return (
     <>
       {/* Floating Announcement (Diagonal Corner Ribbon - Bottom Left) */}
-      <div className="fixed bottom-0 left-0 z-[110] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
-        <motion.div
-          initial={{ x: -100, y: 800, rotate: 20 }}
-          animate={{ x: -45, y: 25, rotate: 20 }}
-          className="absolute bottom-6 left-[-40px] w-[120%] bg-white shadow-2xl border-y-[1.5px] border-slate-100 py-3 pointer-events-auto flex flex-col items-center justify-center"
-          style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
-        >
-          <div className="border-y border-dashed border-slate-200 w-full py-2 flex flex-col items-center justify-center gap-0.5">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 leading-none">Free Shipping</p>
-            <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mt-1">Above Rp 500.000</p>
-          </div>
-        </motion.div>
-      </div>
+      {mounted && (
+        <div className="fixed bottom-0 left-0 z-[50] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
+          <motion.div
+            initial={{ x: -100, y: 800, rotate: 20 }}
+            animate={{ x: -45, y: 25, rotate: 20 }}
+            className="absolute bottom-6 left-[-40px] w-[120%] bg-white shadow-2xl border-y-[1.5px] border-slate-100 py-3 pointer-events-auto flex flex-col items-center justify-center"
+            style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+          >
+            <div className="border-y border-dashed border-slate-200 w-full py-2 flex flex-col items-center justify-center gap-0.5">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 leading-none">Free Shipping</p>
+              <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mt-1">Above Rp 500.000</p>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <header className="fixed top-0 left-0 right-0 z-[100] pointer-events-none flex flex-col items-center">
         {/* The Pill Navbar - Smoothened with Framer Motion */}
@@ -368,7 +370,7 @@ export function Header() {
                 )}
               </div>
 
-              {mounted && user?.role !== 'ADMIN' && (
+              {mounted && (
                 <div className="relative border-l border-slate-200/50 pl-4 ml-1">
                   <CartSheet />
                 </div>
@@ -402,7 +404,7 @@ export function Header() {
                 {mounted && !user && (
                   <Link href="/auth" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>
                 )}
-                {mounted && user?.role !== 'ADMIN' && (
+                {mounted && (
                   <Link href="/cart" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Cart</Link>
                 )}
               </div>
