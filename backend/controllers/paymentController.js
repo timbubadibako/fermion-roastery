@@ -52,13 +52,27 @@ export const createInvoice = async (req, res) => {
           courier_company: courier.courier_code,
           courier_type: courier.courier_service_code,
           delivery_type: "now",
-          items: items.map(item => ({
-            name: item.name,
-            value: Number(item.price),
-            quantity: Number(item.quantity),
-            weight: 250 // Default
-          }))
+          items: items.map(item => {
+            // Parse weight from "(250g)" or "(500g)"
+            const weightMatch = item.name.match(/\((\d+)(g|kg)\)/i);
+            let itemWeight = 250;
+            if (weightMatch) {
+              const val = parseInt(weightMatch[1]);
+              const unit = weightMatch[2].toLowerCase();
+              itemWeight = unit === 'kg' ? val * 1000 : val;
+            }
+
+            return {
+              name: item.name,
+              description: item.name, // Required by some Biteship endpoints
+              value: Math.round(Number(item.price)),
+              quantity: Math.round(Number(item.quantity)),
+              weight: itemWeight
+            };
+          })
         };
+
+        console.log('🚀 Sending Draft Payload to Biteship:', JSON.stringify(draftPayload, null, 2));
 
         const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
         biteshipDraftId = draftRes.data.id;
@@ -94,14 +108,15 @@ export const createInvoice = async (req, res) => {
 
     // Insert into order_items
     for (const item of items) {
+      // Try to parse weight from "Name (Weight)"
       const nameParts = item.name.match(/(.*)\s\((.*?)\)/);
       const cleanName = nameParts ? nameParts[1].trim() : item.name;
       const weight = nameParts ? nameParts[2] : '250g';
 
       await query(
-        `INSERT INTO order_items (order_id, product_name, variant_weight, variant_grind, quantity, unit_price)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [orderId, cleanName, weight, 'Whole Bean', item.quantity, item.price]
+        `INSERT INTO order_items (order_id, product_id, product_name, variant_weight, variant_grind, quantity, unit_price)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [orderId, item.id || null, cleanName, weight, item.grind || 'Whole Bean', item.quantity, item.price]
       );
     }
 
