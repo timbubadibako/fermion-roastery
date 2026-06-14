@@ -14,7 +14,10 @@ import {
   Save,
   X,
   Plus,
-  Clock
+  Clock,
+  Printer,
+  Ban,
+  Navigation
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +32,7 @@ interface Order {
   items: any[];
   shipping_awb?: string;
   shipping_courier?: string;
+  shipping_label_url?: string;
 }
 
 export default function KanbanBoard() {
@@ -36,6 +40,8 @@ export default function KanbanBoard() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isQCModalOpen, setIsQCModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
   const [isAWBModalOpen, setIsAWBModalOpen] = useState(false);
   const [awbData, setAwbData] = useState({ courier: '', resi: '' });
   
@@ -44,6 +50,13 @@ export default function KanbanBoard() {
 
   useEffect(() => {
     fetchOrders();
+
+    // Auto-refresh using Polling (Every 15 seconds)
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchOrders = async () => {
@@ -64,7 +77,7 @@ export default function KanbanBoard() {
         body: JSON.stringify(payload)
       });
       if (res.ok) {
-        toast.success(`Order moved to ${newStatus}`);
+        toast.success(`Order status updated to ${newStatus}`);
         fetchOrders();
       }
     } catch (e) {
@@ -75,6 +88,12 @@ export default function KanbanBoard() {
   const openQC = (order: Order) => {
     setSelectedOrder(order);
     setIsQCModalOpen(true);
+  };
+
+  const openReject = (order: Order) => {
+    setSelectedOrder(order);
+    setRejectionReason("");
+    setIsRejectModalOpen(true);
   };
 
   const handleDragStart = (e: React.DragEvent, order: Order) => {
@@ -111,18 +130,18 @@ export default function KanbanBoard() {
   );
 
   const columns = [
-    { id: 'UNPAID', label: 'Awaiting Payment', icon: Clock, color: 'bg-amber-50 text-amber-600' },
-    { id: 'PAID', label: 'Incoming Protocol', icon: Package, color: 'bg-slate-100 text-slate-600' },
-    { id: 'READY_TO_SHIP', label: 'Confirmed (Label Ready)', icon: CheckCircle2, color: 'bg-emerald-50 text-emerald-600' },
-    { id: 'ROASTING', label: 'QC & Sensory Profile', icon: Beaker, color: 'bg-blue-500 text-white' },
-    { id: 'SHIPPED', label: 'Dispatched Specimens', icon: Truck, color: 'bg-emerald-500 text-white' },
+    { id: 'UNPAID', label: 'Belum Bayar', icon: Clock, color: 'bg-amber-50 text-amber-600' },
+    { id: 'PAID', label: 'Pesanan Baru', icon: Package, color: 'bg-slate-100 text-slate-600' },
+    { id: 'READY_TO_SHIP', label: 'Siap Kirim (Resi OK)', icon: CheckCircle2, color: 'bg-emerald-50 text-emerald-600' },
+    { id: 'ROASTING', label: 'Proses Roasting', icon: Beaker, color: 'bg-blue-500 text-white' },
+    { id: 'SHIPPED', label: 'Sudah Diambil Kurir', icon: Truck, color: 'bg-emerald-500 text-white' },
   ];
 
   return (
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2 text-left">
-          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Fulfillment <br/> Kanban.</h1>
+          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Order <br/> Kanban.</h1>
           <p className="text-sm font-medium text-slate-500">Laboratory workflow for specimen preparation and logistics.</p>
         </div>
         <div className="flex gap-4">
@@ -131,7 +150,7 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-8">
         {columns.map(col => (
           <div 
             key={col.id} 
@@ -149,7 +168,7 @@ export default function KanbanBoard() {
                 </span>
              </div>
 
-             <div className="flex-1 space-y-6 min-h-[500px] border-2 border-transparent border-dashed rounded-[3rem] transition-colors p-2 hover:border-slate-200">
+             <div className="flex-1 space-y-6 min-h-[600px] border-2 border-transparent border-dashed rounded-[3rem] transition-colors p-2 hover:border-slate-100">
                 <AnimatePresence>
                   {orders.filter(o => o.status === col.id).map(order => (
                     <motion.div 
@@ -160,54 +179,83 @@ export default function KanbanBoard() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className={`cursor-grab active:cursor-grabbing p-8 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all group relative overflow-hidden ${order.status === 'ROASTING' ? 'bg-slate-950 text-white border-blue-500/50' : 'bg-white hover:border-periwinkle'}`}
+                      className={`cursor-grab active:cursor-grabbing p-6 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all group relative overflow-hidden ${order.status === 'ROASTING' ? 'bg-slate-950 text-white border-blue-500/50' : 'bg-white hover:border-periwinkle'}`}
                     >
-                       <div className="flex justify-between items-start mb-6">
+                       <div className="flex justify-between items-start mb-4">
                           <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 opacity-60">#ORD-{order.id.slice(0, 8)}</p>
                           <button className="text-slate-300 hover:text-slate-600"><MoreVertical size={14} /></button>
                        </div>
-                       <h4 className={`font-black uppercase italic text-lg leading-tight mb-2 ${order.status === 'ROASTING' ? 'text-white' : 'text-slate-900'}`}>{order.customer_name}</h4>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8">
-                          {order.items?.length || 0} Units // Total Rp {parseInt(order.total_amount).toLocaleString()}
+                       <h4 className={`font-black uppercase italic text-base leading-tight mb-1 ${order.status === 'ROASTING' ? 'text-white' : 'text-slate-900'}`}>{order.customer_name}</h4>
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+                          {order.items?.length || 0} Items • Rp {parseInt(order.total_amount).toLocaleString()}
                        </p>
 
-                       <div className="pt-6 border-t border-slate-50/10">
+                       <div className="pt-4 border-t border-slate-50/10 space-y-2">
                           {order.status === 'UNPAID' && (
                              <Button 
                               onClick={() => handleUpdateStatus(order.id, 'PAID')}
-                              className="w-full py-6 bg-amber-50 hover:bg-slate-950 hover:text-white text-amber-600 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
+                              className="w-full py-5 bg-amber-50 hover:bg-slate-950 hover:text-white text-amber-600 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
                              >
-                               Confirm Payment <ChevronRight size={14} className="ml-1" />
+                               Konfirmasi Bayar <ChevronRight size={14} className="ml-1" />
                              </Button>
                           )}
                           {order.status === 'PAID' && (
                              <Button 
                               onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')}
-                              className="w-full py-6 bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
+                              className="w-full py-5 bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
                              >
-                               Confirm Dispatch <ChevronRight size={14} className="ml-1" />
+                               Generate Resi <ChevronRight size={14} className="ml-1" />
                              </Button>
                           )}
                           {order.status === 'READY_TO_SHIP' && (
-                             <Button 
-                              onClick={() => { handleUpdateStatus(order.id, 'ROASTING'); openQC(order); }}
-                              className="w-full py-6 bg-emerald-50 hover:bg-slate-950 hover:text-white text-emerald-600 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
-                             >
-                               Start Roast Cycle <ChevronRight size={14} className="ml-1" />
-                             </Button>
+                             <div className="space-y-2">
+                                <div className="grid grid-cols-2 gap-2">
+                                   <Button 
+                                    onClick={() => handleUpdateStatus(order.id, 'ROASTING')}
+                                    className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[8px] font-black uppercase tracking-widest h-10 px-0"
+                                   >
+                                      Terima
+                                   </Button>
+                                   <Button 
+                                    onClick={() => openReject(order)}
+                                    variant="outline"
+                                    className="border-red-100 text-red-400 hover:bg-red-50 rounded-xl text-[8px] font-black uppercase tracking-widest h-10 px-0"
+                                   >
+                                      Tolak
+                                   </Button>
+                                </div>
+                                {order.shipping_label_url && (
+                                  <Button 
+                                    onClick={() => window.open(order.shipping_label_url, '_blank')}
+                                    variant="outline"
+                                    className="w-full py-4 border-slate-100 hover:bg-slate-50 text-slate-400 hover:text-slate-900 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all gap-2"
+                                  >
+                                    <Printer size={12} /> Cetak Label
+                                  </Button>
+                                )}
+                             </div>
                           )}
                           {order.status === 'ROASTING' && (
                              <Button 
                               onClick={() => openQC(order)}
-                              className="w-full py-6 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all"
+                              className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all"
                              >
-                                Sensory Profiling <Beaker size={14} className="ml-1" />
+                                Profiling Rasa <Beaker size={14} className="ml-1" />
                              </Button>
                           )}
                           {order.status === 'SHIPPED' && (
-                             <div className="flex items-center gap-2 text-emerald-500">
-                                <CheckCircle2 size={14} />
-                                <span className="text-[9px] font-black uppercase tracking-widest">In Transit via Biteship</span>
+                             <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-emerald-500">
+                                   <CheckCircle2 size={14} />
+                                   <span className="text-[9px] font-black uppercase tracking-widest">Dalam Pengiriman</span>
+                                </div>
+                                <Button 
+                                  onClick={() => window.open(`https://biteship.com/track/${order.shipping_awb}`, '_blank')}
+                                  variant="outline"
+                                  className="w-full py-4 border-slate-100 hover:bg-slate-50 text-slate-400 hover:text-slate-900 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all gap-2"
+                                >
+                                  <Navigation size={12} /> Pantau Lokasi
+                                </Button>
                              </div>
                           )}
                        </div>
@@ -218,6 +266,42 @@ export default function KanbanBoard() {
           </div>
         ))}
       </div>
+
+      {/* REJECT MODAL */}
+      <AnimatePresence>
+        {isRejectModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+             <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-[3rem] w-full max-w-md p-10 space-y-8 shadow-2xl text-left"
+             >
+                <div className="flex justify-between items-start">
+                   <h2 className="display-font text-3xl italic font-black text-slate-950 leading-none">Tolak Pesanan.</h2>
+                   <button onClick={() => setIsRejectModalOpen(false)}><X size={20} /></button>
+                </div>
+                <div className="space-y-4">
+                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Alasan Penolakan</label>
+                   <textarea 
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    placeholder="Contoh: Stok Green Bean Gayo habis..."
+                    className="w-full h-32 bg-slate-50 border-none rounded-2xl p-4 text-xs font-bold"
+                   />
+                </div>
+                <Button 
+                  onClick={() => {
+                    handleUpdateStatus(selectedOrder!.id, 'CANCELLED', { rejection_reason: rejectionReason });
+                    setIsRejectModalOpen(false);
+                  }}
+                  disabled={!rejectionReason}
+                  className="w-full h-14 bg-red-500 text-white rounded-2xl font-black uppercase italic text-[10px]"
+                >
+                   Batalkan Pesanan <Ban size={16} className="ml-2" />
+                </Button>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* QC MODAL */}
       <AnimatePresence>
@@ -274,7 +358,7 @@ export default function KanbanBoard() {
         )}
       </AnimatePresence>
 
-      {/* AWB/RESI MODAL */}
+      {/* AWB/RESI MODAL (Manual Fallback) */}
       <AnimatePresence>
         {isAWBModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">

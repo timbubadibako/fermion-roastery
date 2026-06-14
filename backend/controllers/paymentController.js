@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { query } from '../lib/db.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
+import { publishEvent } from '../lib/ably.js';
 
 dotenv.config();
 
@@ -216,21 +217,30 @@ export const handleNotification = async (req, res) => {
       );
 
       console.log(`✅ Order ${currentOrder.id} status updated to PAID via Webhook.`);
+      publishEvent('orders', 'order_updated', { id: currentOrder.id, status: 'PAID' });
 
       // --- BITESHIP CONFIRMATION ---
       if (currentOrder.biteship_order_id) {
         try {
           console.log(`🔔 Confirming Biteship Draft: ${currentOrder.biteship_order_id}`);
           const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${currentOrder.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
+          console.log('📦 Biteship Confirm Response:', JSON.stringify(confirmRes.data, null, 2));
           
           const finalOrderId = confirmRes.data.id;
           const waybillId = confirmRes.data.courier.waybill_id;
+          
+          // Biteship confirmed orders usually have a label URL in the response
+          // Try to get it from various possible locations in the response object
+          const labelUrl = confirmRes.data.label_url || 
+                           confirmRes.data.courier?.label_url || 
+                           `https://biteship.com/shipping-label/${finalOrderId}`;
 
           await query(
-            "UPDATE orders SET biteship_order_id = $1, shipping_awb = $2, status = 'READY_TO_SHIP' WHERE xendit_invoice_id = $3",
-            [finalOrderId, waybillId, external_id]
+            "UPDATE orders SET biteship_order_id = $1, shipping_awb = $2, shipping_label_url = $3, status = 'READY_TO_SHIP' WHERE xendit_invoice_id = $4",
+            [finalOrderId, waybillId, labelUrl, external_id]
           );
-          console.log(`✅ Biteship Order Confirmed. Resi: ${waybillId}`);
+          console.log(`✅ Biteship Order Confirmed. Resi: ${waybillId} | Label: ${labelUrl}`);
+          publishEvent('orders', 'order_updated', { id: currentOrder.id, status: 'READY_TO_SHIP', awb: waybillId });
         } catch (bsError) {
           console.error('❌ Biteship Confirm Error:', bsError.response?.data || bsError.message);
         }

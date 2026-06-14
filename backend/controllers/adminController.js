@@ -1,4 +1,5 @@
 import { query } from '../lib/db.js';
+import { publishEvent } from '../lib/ably.js';
 
 // 0. Get Admin Stats for Dashboard Overview
 export const getAdminStats = async (req, res) => {
@@ -218,7 +219,7 @@ export const getOrders = async (req, res) => {
 // 5. Update Order Status (Roasting/Shipping)
 export const updateOrder = async (req, res) => {
   const { id } = req.params;
-  const { status, shipping_awb, shipping_courier } = req.body;
+  const { status, shipping_awb, shipping_courier, rejection_reason } = req.body;
 
   try {
     const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -243,6 +244,10 @@ export const updateOrder = async (req, res) => {
       updateFields.push(`shipping_courier = $${paramCount++}`);
       values.push(shipping_courier);
     }
+    if (rejection_reason !== undefined) {
+      updateFields.push(`rejection_reason = $${paramCount++}`);
+      values.push(rejection_reason);
+    }
 
     if (updateFields.length === 0) return res.status(400).json({ message: "No fields to update" });
 
@@ -259,6 +264,8 @@ export const updateOrder = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    publishEvent('orders', 'order_updated', { id: id, status: status || result.rows[0].status });
 
     res.status(200).json({ message: "Order updated successfully", order: result.rows[0] });
   } catch (error) {
