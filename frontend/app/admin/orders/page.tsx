@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Order {
   id: string;
@@ -38,6 +39,7 @@ interface Order {
 export default function KanbanBoard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isQCModalOpen, setIsQCModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -137,6 +139,11 @@ export default function KanbanBoard() {
     { id: 'SHIPPED', label: 'Sudah Diambil Kurir', icon: Truck, color: 'bg-emerald-500 text-white' },
   ];
 
+  const filteredOrders = orders.filter(o => 
+    o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    o.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -145,8 +152,20 @@ export default function KanbanBoard() {
           <p className="text-sm font-medium text-slate-500">Pusat kendali operasional dan pengiriman kopi.</p>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="rounded-xl h-12 px-6 gap-2 border-slate-200 text-[10px] font-black uppercase tracking-widest"><Filter size={14} /> Filter Antrean</Button>
-           <Button className="bg-slate-950 text-white rounded-xl h-12 px-6 gap-2 text-[10px] font-black uppercase tracking-widest"><Plus size={14} /> Pesanan Manual</Button>
+           <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <Input 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Cari ID atau Nama Pembeli..." 
+                className="pl-10 h-12 w-64 bg-white border-slate-200 rounded-xl text-[10px] font-bold" 
+              />
+           </div>
+           <Link href="/admin/manual-ledger">
+             <Button className="bg-slate-950 text-white rounded-xl h-12 px-6 gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-fermion-french-blue transition-all">
+                <Plus size={14} /> Pesanan Manual
+             </Button>
+           </Link>
         </div>
       </div>
 
@@ -164,13 +183,13 @@ export default function KanbanBoard() {
                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">{col.label}</span>
                 </div>
                 <span className="text-[10px] font-black bg-white border border-slate-100 px-3 py-1 rounded-full text-slate-400 shadow-sm">
-                   {orders.filter(o => o.status === col.id).length}
+                   {filteredOrders.filter(o => o.status === col.id).length}
                 </span>
              </div>
 
              <div className="flex-1 space-y-6 min-h-[600px] border-2 border-transparent border-dashed rounded-[3rem] transition-colors p-2 hover:border-slate-100">
                 <AnimatePresence>
-                  {orders.filter(o => o.status === col.id).map(order => (
+                  {filteredOrders.filter(o => o.status === col.id).map(order => (
                     <motion.div 
                       key={order.id}
                       layoutId={order.id}
