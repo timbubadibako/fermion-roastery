@@ -31,57 +31,57 @@ interface SidebarProps {
 
 const adminMenu = [
   {
-    group: "Intelligence",
+    group: "Statistik",
     items: [
-      { id: "overview", label: "Command Stats", href: "/admin", icon: LayoutDashboard },
+      { id: "overview", label: "Dashboard", href: "/admin", icon: LayoutDashboard },
       { id: "magic", label: "Magic Wand", href: "/admin/magic", icon: Sparkles },
     ]
   },
   {
-    group: "Commerce",
+    group: "Penjualan",
     items: [
-      { id: "partners", label: "B2B Partners", href: "/admin/partners", icon: Users },
-      { id: "manual", label: "Manual Ledger", href: "/admin/manual-ledger", icon: BookOpen },
+      { id: "partners", label: "Partner B2B", href: "/admin/partners", icon: Users },
+      { id: "manual", label: "Catatan Penjualan", href: "/admin/manual-ledger", icon: BookOpen },
     ]
   },
   {
-    group: "Operational",
+    group: "Operasional",
     items: [
-      { id: "fulfillment", label: "Kanban Board", href: "/admin/orders", icon: Package },
-      { id: "shipping", label: "Shipping Lab", href: "/admin/shipping", icon: Truck },
-      { id: "inventory", label: "Green Bean", href: "/admin/inventory", icon: BarChart3 },
+      { id: "fulfillment", label: "Daftar Pesanan", href: "/admin/orders", icon: Package },
+      { id: "shipping", label: "Manajemen Kirim", href: "/admin/shipping", icon: Truck },
+      { id: "inventory", label: "Stok Kopi", href: "/admin/inventory", icon: BarChart3 },
     ]
   },
   {
-    group: "Content",
+    group: "Konten",
     items: [
-      { id: "journal", label: "Roastery Journal", href: "/admin/journal", icon: Edit3 },
-      { id: "settings", label: "Site Settings", href: "/admin/settings", icon: Settings },
+      { id: "journal", label: "Jurnal Kopi", href: "/admin/journal", icon: Edit3 },
+      { id: "settings", label: "Pengaturan Site", href: "/admin/settings", icon: Settings },
     ]
   }
 ];
 
 const b2bMenu = [
   {
-    group: "Hub",
+    group: "Utama",
     items: [
-      { id: "overview", label: "Partner Hub", href: "/b2b", icon: LayoutDashboard },
-      { id: "shop", label: "Wholesale Shop", href: "/b2b/shop", icon: Coffee },
+      { id: "overview", label: "Dashboard", href: "/b2b", icon: LayoutDashboard },
+      { id: "shop", label: "Belanja Grosir", href: "/b2b/shop", icon: Coffee },
     ]
   },
   {
-    group: "Laboratory",
+    group: "Layanan",
     items: [
-      { id: "maintenance", label: "Premium Service", href: "/b2b/maintenance", icon: ShieldCheck },
-      { id: "calibration", label: "Calibration", href: "/b2b/calibration", icon: Scale },
+      { id: "maintenance", label: "Servis Mesin", href: "/b2b/maintenance", icon: ShieldCheck },
+      { id: "calibration", label: "Kalibrasi Rasa", href: "/b2b/calibration", icon: Scale },
     ]
   },
   {
-    group: "Business",
+    group: "Bisnis",
     items: [
-      { id: "contract", label: "My Agreement", href: "/b2b/contract", icon: FileText },
-      { id: "ledger", label: "Order Logs", href: "/b2b/ledger", icon: History },
-      { id: "shipping", label: "Cargo Tracking", href: "/b2b/shipping", icon: Package },
+      { id: "contract", label: "Kontrak Kerjasama", href: "/b2b/contract", icon: FileText },
+      { id: "ledger", label: "Riwayat Pesanan", href: "/b2b/ledger", icon: History },
+      { id: "shipping", label: "Pantau Kiriman", href: "/b2b/shipping", icon: Package },
     ]
   }
 ];
@@ -104,7 +104,7 @@ export function UnifiedSidebar({ role }: SidebarProps) {
       <div className="h-24 flex flex-col justify-center px-8 border-b border-white/5">
         <h2 className="display-font text-2xl font-black italic tracking-tighter uppercase leading-none text-white">Fermion.</h2>
         <p className="text-[8px] font-bold text-slate-500 tracking-[0.4em] uppercase mt-2">
-          {role === "ADMIN" ? "Command Center" : "Partner Portal"}
+          {role === "ADMIN" ? "Panel Admin" : "Portal Partner"}
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export function UnifiedSidebar({ role }: SidebarProps) {
       <div className="p-4 border-t border-white/5 space-y-4">
         <Link href="/" className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-[10px] font-black text-slate-500 hover:text-white hover:bg-white/5 transition-all">
           <Globe size={16} />
-          <span className="uppercase tracking-widest">Visit Website</span>
+          <span className="uppercase tracking-widest">Buka Website</span>
         </Link>
 
         <button 
@@ -154,7 +154,7 @@ export function UnifiedSidebar({ role }: SidebarProps) {
           className="w-full flex items-center gap-4 px-4 py-4 text-slate-500 hover:text-red-400 transition-colors font-black text-[10px] uppercase tracking-[0.2em]"
         >
           <LogOut size={18} /> 
-          <span>Logout Session</span>
+          <span>Keluar Sesi</span>
         </button>
 
         <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-2xl">
