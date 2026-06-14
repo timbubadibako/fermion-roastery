@@ -8,7 +8,7 @@ import {
   User, LogOut, Package, MapPin, Settings, 
   Clock, Truck, CheckCircle2, ChevronRight, 
   Coffee, ArrowRight, Loader2, Receipt,
-  LayoutDashboard
+  LayoutDashboard, Navigation, Ban
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -29,6 +29,9 @@ export default function RetailAccountPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [trackingHistory, setTrackingHistory] = useState<any[]>([]);
+  const [isTrackingLoading, setIsTrackingLoading] = useState(false);
+  const [isTrackingExpanded, setIsTrackingExpanded] = useState(false);
 
   // Form states
   const [profileData, setProfileData] = useState({
@@ -61,6 +64,30 @@ export default function RetailAccountPage() {
       }
     } catch (e) {
       console.error("Failed to load profile");
+    }
+  };
+
+  const fetchTracking = async (id: string) => {
+    if (isTrackingExpanded) {
+      setIsTrackingExpanded(false);
+      return;
+    }
+    
+    setIsTrackingExpanded(true);
+    if (trackingHistory.length > 0) return;
+
+    setIsTrackingLoading(true);
+    try {
+      // Biteship needs waybill_id or order_id
+      const res = await fetch(`/api/shipping/trackings/${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTrackingHistory(data.history || []);
+      }
+    } catch (e) {
+      console.error("Failed to load tracking history");
+    } finally {
+      setIsTrackingLoading(false);
     }
   };
 
@@ -205,61 +232,144 @@ export default function RetailAccountPage() {
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                           <div>
                             <h4 className="display-font text-3xl font-black italic text-slate-900 tracking-tighter">Order #{recentOrder.id.slice(0, 8).toUpperCase()}</h4>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Placed on {new Date(recentOrder.created_at).toLocaleDateString()}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Dipesan pada {new Date(recentOrder.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                           </div>
                           {recentOrder.shipping_awb && (
                             <div className="text-left md:text-right">
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tracking Number ({recentOrder.shipping_courier})</p>
+                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nomor Resi ({recentOrder.shipping_courier})</p>
                               <p className="text-sm font-bold text-fermion-french-blue font-mono">{recentOrder.shipping_awb}</p>
                             </div>
                           )}
                         </div>
 
-                        {/* Custom Visual Tracker */}
-                        <div className="relative pt-4">
-                           <div className="absolute top-6 left-0 w-full h-1 bg-slate-100 rounded-full" />
-                           
-                           {/* Progress Fill */}
-                           <div className={`absolute top-6 left-0 h-1 rounded-full transition-all duration-1000 ${
-                             recentOrder.status === 'UNPAID' ? 'w-[5%] bg-amber-400' :
-                             recentOrder.status === 'PAID' ? 'w-[10%] bg-fermion-french-blue' : 
-                             recentOrder.status === 'ROASTING' ? 'w-[50%] bg-fermion-french-blue' : 
-                             recentOrder.status === 'SHIPPED' ? 'w-[100%] bg-fermion-french-blue' : 'w-0'
-                           }`} />
+                        {recentOrder.status === 'CANCELLED' ? (
+                          <div className="bg-red-50 border border-red-100 p-8 rounded-[2.5rem] flex items-center gap-6">
+                             <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20">
+                                <Ban size={20} />
+                             </div>
+                             <div>
+                                <h4 className="text-xs font-black uppercase tracking-widest text-red-600 mb-1">Pesanan Dibatalkan</h4>
+                                <p className="text-xs text-red-400 font-medium">Alasan: {recentOrder.rejection_reason || "Kendala teknis pada laboratorium."}</p>
+                             </div>
+                          </div>
+                        ) : (
+                          <div className="relative pt-4 px-2">
+                             <div className="absolute top-8 left-0 w-full h-1 bg-slate-100 rounded-full" />
+                             
+                             {/* Progress Fill */}
+                             <div className={`absolute top-8 left-0 h-1 rounded-full transition-all duration-1000 ${
+                               recentOrder.status === 'UNPAID' ? 'w-[10%] bg-amber-400' :
+                               recentOrder.status === 'PAID' ? 'w-[30%] bg-fermion-french-blue' : 
+                               recentOrder.status === 'READY_TO_SHIP' ? 'w-[50%] bg-fermion-french-blue' : 
+                               recentOrder.status === 'ROASTING' ? 'w-[70%] bg-fermion-french-blue' : 
+                               ['SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'w-[100%] bg-fermion-french-blue' : 'w-0'
+                             }`} />
 
-                           <div className="flex justify-between relative z-10">
-                              <div className="flex flex-col items-center gap-3">
-                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border-2 ${
-                                   recentOrder.status === 'UNPAID' ? 'bg-amber-400 border-amber-400 text-white' :
-                                   ['PAID', 'ROASTING', 'SHIPPED'].includes(recentOrder.status) ? 'bg-fermion-french-blue border-fermion-french-blue text-white' : 'bg-white border-slate-200 text-slate-300'
-                                 }`}>
-                                   {recentOrder.status === 'UNPAID' ? <Clock size={14} /> : <CheckCircle2 size={14} />}
-                                 </div>
-                                 <p className={`text-[9px] font-black uppercase tracking-widest ${['UNPAID', 'PAID', 'ROASTING', 'SHIPPED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>
-                                   {recentOrder.status === 'UNPAID' ? 'Awaiting Payment' : 'Order Confirmed'}
-                                 </p>
-                              </div>
-                              <div className="flex flex-col items-center gap-3">
-                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border-2 ${
-                                   ['ROASTING', 'SHIPPED'].includes(recentOrder.status) ? 'bg-fermion-french-blue border-fermion-french-blue text-white' : 'bg-white border-slate-200 text-slate-300'
-                                 }`}>
-                                   {recentOrder.status === 'ROASTING' ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Coffee size={14} />}
-                                 </div>
-                                 <p className={`text-[9px] font-black uppercase tracking-widest ${['ROASTING', 'SHIPPED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Roasting Process</p>
-                              </div>
-                              <div className="flex flex-col items-center gap-3">
-                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border-2 ${
-                                   recentOrder.status === 'SHIPPED' ? 'bg-fermion-french-blue border-fermion-french-blue text-white' : 'bg-white border-slate-200 text-slate-300'
-                                 }`}><Truck size={14} /></div>
-                                 <p className={`text-[9px] font-black uppercase tracking-widest ${recentOrder.status === 'SHIPPED' ? 'text-slate-900' : 'text-slate-400'}`}>Shipped</p>
-                              </div>
-                           </div>
-                        </div>
+                             <div className="flex justify-between relative z-10">
+                                {/* Step 1: Payment */}
+                                <div className="flex flex-col items-center gap-3">
+                                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
+                                     ['UNPAID', 'PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
+                                   }`}>
+                                      {recentOrder.status === 'UNPAID' ? <Clock size={16} className="text-amber-500 animate-pulse" /> : <CheckCircle2 size={16} className="text-fermion-french-blue" />}
+                                   </div>
+                                   <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['UNPAID', 'PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>
+                                     {recentOrder.status === 'UNPAID' ? 'Menunggu Bayar' : 'Sudah Dibayar'}
+                                   </p>
+                                </div>
+
+                                {/* Step 2: Processing */}
+                                <div className="flex flex-col items-center gap-3">
+                                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
+                                     ['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
+                                   }`}>
+                                      <Package size={16} className={['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? "text-fermion-french-blue" : ""} />
+                                   </div>
+                                   <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Diproses</p>
+                                </div>
+
+                                {/* Step 3: Roasting */}
+                                <div className="flex flex-col items-center gap-3">
+                                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
+                                     ['ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
+                                   }`}>
+                                      {recentOrder.status === 'ROASTING' ? <div className="w-4 h-4 border-2 border-fermion-french-blue border-t-transparent rounded-full animate-spin" /> : <Coffee size={16} className={['ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? "text-fermion-french-blue" : ""} />}
+                                   </div>
+                                   <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['ROASTING', 'SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Dipanggang</p>
+                                </div>
+
+                                {/* Step 4: Shipped */}
+                                <div className="flex flex-col items-center gap-3">
+                                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border-2 ${
+                                     ['SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'bg-white border-fermion-french-blue shadow-lg' : 'bg-white border-slate-200 text-slate-300'
+                                   }`}>
+                                      <Truck size={16} className={['SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? "text-fermion-french-blue" : ""} />
+                                   </div>
+                                   <p className={`text-[8px] font-black uppercase tracking-widest text-center w-20 ${['SHIPPED', 'DELIVERED'].includes(recentOrder.status) ? 'text-slate-900' : 'text-slate-400'}`}>Dikirim</p>
+                                </div>
+                             </div>
+                          </div>
+                        )}
 
                         {recentOrder.status === 'SHIPPED' && (
-                          <Button className="w-full bg-slate-50 text-slate-900 hover:bg-slate-100 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] shadow-none border border-slate-200">
-                             Track Live on Biteship <ArrowRight size={16} className="ml-2" />
-                          </Button>
+                          <div className="space-y-6">
+                            <div className="flex flex-col sm:flex-row gap-4">
+                              <Button 
+                                onClick={() => fetchTracking(recentOrder.shipping_awb || recentOrder.biteship_order_id || "")}
+                                className="flex-1 bg-slate-900 text-white hover:bg-fermion-french-blue rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] italic transition-all"
+                              >
+                                 {isTrackingExpanded ? "Tutup Detail Paket" : "Pantau Detail Paket"} <Navigation size={14} className="ml-2" />
+                              </Button>
+                              <Button 
+                                variant="outline"
+                                className="flex-1 border-slate-200 text-slate-400 hover:text-slate-900 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all"
+                              >
+                                 Konfirmasi Diterima
+                              </Button>
+                            </div>
+
+                            <AnimatePresence>
+                               {isTrackingExpanded && (
+                                  <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden"
+                                  >
+                                     <div className="bg-slate-50 rounded-[2.5rem] p-10 space-y-8">
+                                        <div className="flex items-center justify-between">
+                                           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Riwayat Perjalanan</h4>
+                                           <p className="text-[9px] font-bold text-slate-400 uppercase">{recentOrder.shipping_courier}</p>
+                                        </div>
+
+                                        {isTrackingLoading ? (
+                                           <div className="flex flex-col items-center py-10 gap-4">
+                                              <div className="w-8 h-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
+                                              <p className="text-[9px] font-black uppercase text-slate-400">Menghubungi Kurir...</p>
+                                           </div>
+                                        ) : trackingHistory.length === 0 ? (
+                                           <div className="py-10 text-center">
+                                              <p className="text-[10px] font-bold text-slate-400 uppercase italic">Data belum tersedia di sistem kurir.</p>
+                                           </div>
+                                        ) : (
+                                           <div className="space-y-8 relative">
+                                              <div className="absolute left-3 top-2 bottom-2 w-px bg-slate-200" />
+                                              {trackingHistory.map((step, idx) => (
+                                                <div key={idx} className="flex gap-8 relative z-10">
+                                                   <div className={`w-6 h-6 rounded-full border-4 border-white shadow-sm shrink-0 ${idx === 0 ? 'bg-fermion-french-blue' : 'bg-slate-300'}`} />
+                                                   <div className="space-y-1">
+                                                      <p className={`text-xs font-black uppercase tracking-tight ${idx === 0 ? 'text-slate-900' : 'text-slate-500'}`}>{step.note}</p>
+                                                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(step.updated_at).toLocaleString('id-ID')}</p>
+                                                   </div>
+                                                </div>
+                                              ))}
+                                           </div>
+                                        )}
+                                     </div>
+                                  </motion.div>
+                               )}
+                            </AnimatePresence>
+                          </div>
                         )}
                       </div>
                     ) : (
