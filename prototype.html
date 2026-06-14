@@ -1,1170 +1,456 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fermion Roastery - UI Preview</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    :root {
-      --off-white: #faf9f6;
-      --surface: rgba(255, 255, 255, 0.72);
-      --surface-strong: #ffffff;
-      --charcoal: #101828;
-      --muted: #667085;
-      --border: rgba(16, 24, 40, 0.08);
-      --blue: #84a8ff;
-      --blue-deep: #6486f4;
-      --lilac: #b7a0ff;
-      --lilac-deep: #8f73ff;
-      --yellow: #f3ca57;
-      --coral: #ff826f;
-      --mint: #8cd7c5;
-      --shadow: 0 22px 60px rgba(16, 24, 40, 0.10);
-      --shadow-soft: 0 10px 30px rgba(16, 24, 40, 0.06);
-    }
-
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      scrollbar-width: none;
-      overflow-y: scroll;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Manrope", sans-serif;
-      color: var(--charcoal);
-      background:
-        radial-gradient(circle at top left, rgba(132, 168, 255, 0.22), transparent 24%),
-        radial-gradient(circle at top right, rgba(183, 160, 255, 0.20), transparent 18%),
-        linear-gradient(180deg, #ffffff 0%, var(--off-white) 18%, #f7f5ef 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
-      -ms-overflow-style: none;
-    }
-
-    body::-webkit-scrollbar,
-    html::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-
-    .noise::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
-      opacity: 0.03;
-      mix-blend-mode: multiply;
-      z-index: 1;
-    }
-
-    .wrap {
-      position: relative;
-      z-index: 2;
-      width: min(1240px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      padding: 18px 0 10px;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(180deg, rgba(250, 249, 246, 0.84), rgba(250, 249, 246, 0.34));
-      border-bottom: 1px solid rgba(16, 24, 40, 0.04);
-    }
-
-    .topbar-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .brand-mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 14px;
-      background:
-        linear-gradient(140deg, rgba(132, 168, 255, 1), rgba(183, 160, 255, 0.95));
-      box-shadow: var(--shadow-soft);
-      display: grid;
-      place-items: center;
-      color: white;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .topnav {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.7);
-      color: var(--charcoal);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
-    }
-
-    .chip:hover {
-      transform: translateY(-1px);
-      background: rgba(255, 255, 255, 0.94);
-      border-color: rgba(132, 168, 255, 0.30);
-    }
-
-    .hero {
-      padding: 28px 0 30px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 24px;
-      align-items: stretch;
-      min-height: calc(100vh - 110px);
-    }
-
-    .hero-copy {
-      position: relative;
-      border-radius: 36px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.58)),
-        radial-gradient(circle at top right, rgba(132, 168, 255, 0.16), transparent 36%),
-        radial-gradient(circle at bottom left, rgba(183, 160, 255, 0.14), transparent 30%);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: clamp(24px, 4vw, 48px);
-      overflow: hidden;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(16, 24, 40, 0.06);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    .h1 {
-      margin: 22px 0 18px;
-      font-family: "Fraunces", serif;
-      font-size: clamp(3.3rem, 8vw, 7rem);
-      line-height: 0.93;
-      letter-spacing: -0.05em;
-      max-width: 10ch;
-    }
-
-    .h2 {
-      margin: 0;
-      font-family: "Fraunces", serif;
-      font-size: clamp(2rem, 4vw, 3.7rem);
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
-    .h3 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.1;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-    }
-
-    .body {
-      margin: 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.75;
-      max-width: 68ch;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 26px;
-    }
-
-    .button {
-      appearance: none;
-      border: 0;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      height: 50px;
-      padding: 0 18px;
-      border-radius: 16px;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: 11px;
-      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .button:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .button-primary {
-      color: white;
-      background: linear-gradient(135deg, var(--blue-deep), var(--lilac-deep));
-    }
-
-    .button-secondary {
-      background: rgba(255, 255, 255, 0.78);
-      color: var(--charcoal);
-      border: 1px solid var(--border);
-    }
-
-    .button-ghost {
-      background: transparent;
-      border: 1px solid rgba(16, 24, 40, 0.12);
-      color: var(--charcoal);
-      box-shadow: none;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .stat {
-      border-radius: 20px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.74);
-      border: 1px solid rgba(16, 24, 40, 0.06);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 16px;
-      letter-spacing: -0.04em;
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .hero-visual {
-      position: relative;
-      border-radius: 36px;
-      overflow: hidden;
-      border: 1px solid rgba(16, 24, 40, 0.08);
-      box-shadow: var(--shadow);
-      background:
-        linear-gradient(180deg, rgba(132, 168, 255, 0.36), rgba(183, 160, 255, 0.22)),
-        linear-gradient(145deg, #ffffff 0%, #f6f6f1 100%);
-      min-height: 680px;
-    }
-
-    .hero-photo {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(16, 24, 40, 0.08), rgba(16, 24, 40, 0.30)),
-        url("./pack-depan.png") center center / cover no-repeat;
-      filter: saturate(1.05) contrast(0.98);
-      transform: scale(1.02);
-    }
-
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.44), transparent 18%),
-        radial-gradient(circle at bottom right, rgba(16, 24, 40, 0.20), transparent 24%);
-    }
-
-    .floating-note {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 18px;
-      border-radius: 24px;
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.48);
-      display: grid;
-      gap: 10px;
-    }
-
-    .floating-note small {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .section {
-      padding: 26px 0 0;
-    }
-
-    .section-shell {
-      border-radius: 32px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(16, 24, 40, 0.06);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    .section-head {
-      padding: 26px 24px 0;
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .section-head p {
-      max-width: 56ch;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .card {
-      position: relative;
-      border-radius: 24px;
-      padding: 18px;
-      border: 1px solid rgba(16, 24, 40, 0.07);
-      background: rgba(255, 255, 255, 0.84);
-      overflow: hidden;
-      min-height: 160px;
-    }
-
-    .card strong {
-      display: block;
-      font-size: 14px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .card--dark {
-      color: white;
-      background: linear-gradient(135deg, #1d2740, #111827);
-    }
-
-    .card--blue {
-      background: linear-gradient(135deg, rgba(132, 168, 255, 0.30), rgba(255, 255, 255, 0.88));
-    }
-
-    .card--lilac {
-      background: linear-gradient(135deg, rgba(183, 160, 255, 0.30), rgba(255, 255, 255, 0.88));
-    }
-
-    .card--yellow {
-      background: linear-gradient(135deg, rgba(243, 202, 87, 0.30), rgba(255, 255, 255, 0.88));
-    }
-
-    .card--coral {
-      background: linear-gradient(135deg, rgba(255, 130, 111, 0.26), rgba(255, 255, 255, 0.88));
-    }
-
-    .placeholder {
-      min-height: 176px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .placeholder .tag {
-      display: inline-flex;
-      width: fit-content;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.74);
-      border: 1px solid rgba(16, 24, 40, 0.06);
-    }
-
-    .placeholder .label {
-      font-family: "Fraunces", serif;
-      font-size: 28px;
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-    }
-
-    .placeholder .hint {
-      color: rgba(16, 24, 40, 0.70);
-      font-size: 12px;
-      line-height: 1.6;
-      max-width: 28ch;
-    }
-
-    .dark .placeholder .hint { color: rgba(255,255,255,0.72); }
-
-    .ui-matrix {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .form {
-      display: grid;
-      gap: 14px;
-    }
-
-    .field {
-      display: grid;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .input {
-      width: 100%;
-      border-radius: 16px;
-      border: 1px solid rgba(16, 24, 40, 0.09);
-      background: rgba(255, 255, 255, 0.80);
-      min-height: 50px;
-      padding: 0 16px;
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--charcoal);
-      outline: none;
-      transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
-    }
-
-    .input:focus {
-      border-color: rgba(132, 168, 255, 0.65);
-      box-shadow: 0 0 0 4px rgba(132, 168, 255, 0.14);
-    }
-
-    .primary-stack {
-      display: grid;
-      gap: 12px;
-      align-content: start;
-    }
-
-    .product-card {
-      min-height: 100%;
-      display: grid;
-      gap: 14px;
-    }
-
-    .product-media {
-      position: relative;
-      border-radius: 22px;
-      min-height: 220px;
-      overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(132, 168, 255, 0.60), rgba(183, 160, 255, 0.40)),
-        url("./pack-depan.png") center center / cover no-repeat;
-    }
-
-    .product-media .floating-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.86);
-      border: 1px solid rgba(255,255,255,0.42);
-    }
-
-    .swatches {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .swatch {
-      border-radius: 18px;
-      min-height: 92px;
-      padding: 12px;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid rgba(255,255,255,0.28);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
-    }
-
-    .swatch span {
-      font-size: 9px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-weight: 900;
-    }
-
-    .swatch small {
-      font-size: 11px;
-      opacity: 0.86;
-    }
-
-    .scroll-section {
-      padding: 26px 0 100px;
-    }
-
-    .scroll-rules {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 16px;
-      align-items: start;
-      padding: 24px;
-    }
-
-    .sticky-panel {
-      position: sticky;
-      top: 98px;
-    }
-
-    .rule-stack {
-      display: grid;
-      gap: 14px;
-    }
-
-    .rule {
-      min-height: 150px;
-      background: rgba(255,255,255,0.84);
-      border: 1px solid rgba(16,24,40,0.08);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: var(--shadow-soft);
-      display: grid;
-      gap: 10px;
-    }
-
-    .rule .index {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    .rule .title {
-      font-family: "Fraunces", serif;
-      font-size: 24px;
-      line-height: 0.98;
-      letter-spacing: -0.03em;
-    }
-
-    .rule .desc {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .rule--accent {
-      background: linear-gradient(135deg, rgba(132, 168, 255, 0.24), rgba(255,255,255,0.92));
-    }
-
-    .scroll-rail {
-      position: fixed;
-      top: 90px;
-      right: 16px;
-      bottom: 24px;
-      width: 14px;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      z-index: 60;
-      pointer-events: none;
-    }
-
-    .scroll-track {
-      position: relative;
-      width: 6px;
-      border-radius: 999px;
-      background: rgba(16, 24, 40, 0.06);
-      overflow: hidden;
-    }
-
-    .scroll-thumb {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--blue-deep), var(--lilac-deep));
-      transform-origin: top;
-      height: 22%;
-      box-shadow: 0 0 0 4px rgba(132, 168, 255, 0.10);
-    }
-
-    .scroll-label {
-      position: fixed;
-      top: 50%;
-      right: 34px;
-      transform: translateY(-50%) rotate(90deg);
-      transform-origin: right center;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.26em;
-      text-transform: uppercase;
-      color: var(--muted);
-      z-index: 61;
-      pointer-events: none;
-    }
-
-    .fade-up {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 500ms ease, transform 500ms ease;
-    }
-
-    .fade-up.in-view {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .pack-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .pack-card {
-      border-radius: 24px;
-      overflow: hidden;
-      min-height: 360px;
-      border: 1px solid rgba(16,24,40,0.08);
-      background: white;
-      box-shadow: var(--shadow-soft);
-      display: grid;
-      grid-template-rows: 1fr auto;
-    }
-
-    .pack-photo {
-      min-height: 280px;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .pack-photo.front {
-      background-image: url("./pack-depan.png");
-    }
-
-    .pack-photo.back {
-      background-image: url("./pack-belakang.png");
-    }
-
-    .pack-copy {
-      padding: 16px;
-      display: grid;
-      gap: 6px;
-    }
-
-    .pack-copy strong {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-    }
-
-    .pack-copy span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .footer-note {
-      padding: 22px 0 120px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .kbd {
-      padding: 4px 8px;
-      border-radius: 8px;
-      background: rgba(16,24,40,0.06);
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--charcoal);
-    }
-
-    @media (max-width: 1080px) {
-      .hero-grid,
-      .ui-matrix,
-      .scroll-rules {
-        grid-template-columns: 1fr;
-      }
-
-      .grid-2,
-      .grid-3,
-      .grid-4,
-      .pack-grid,
-      .swatches {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .hero-visual {
-        min-height: 520px;
-      }
-
-      .scroll-label {
-        display: none;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .wrap {
-        width: min(100% - 22px, 100%);
-      }
-
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .h1 {
-        max-width: 8ch;
-      }
-
-      .stats,
-      .grid-2,
-      .grid-3,
-      .grid-4,
-      .pack-grid,
-      .swatches {
-        grid-template-columns: 1fr;
-      }
-
-      .section-head,
-      .section-shell,
-      .hero-copy,
-      .hero-visual {
-        border-radius: 24px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fermion B2B V2 // Comprehensive Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:ital,opsz,wght@1,9..144,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --fermion-blue: #4A6FFF;
+            --bg-lab: #FAF9F6;
+            --periwinkle: #7D8AFF;
+            --doodle-orange: #FF8A4C;
+        }
+        body { font-family: 'JetBrains Mono', monospace; color: #101828; }
+        .display-font { font-family: 'Fraunces', serif; }
+        
+        /* THEMES */
+        .theme-admin { background-color: #FAF9F6; }
+        .theme-admin .sidebar { background-color: #0f172a; color: white; }
+        
+        .theme-b2b { background-color: #FFFFFF; }
+        .theme-b2b .sidebar { background-color: #f8fafc; color: #1e293b; border-right: 1px solid #e2e8f0; }
+        .theme-b2b .glass-card { background: #fdfdfd; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+
+        /* COMPONENTS */
+        .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(0,0,0,0.05); }
+        .status-badge { font-size: 8px; font-weight: 900; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 99px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* ANIMATIONS */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(125, 138, 255, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(125, 138, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(125, 138, 255, 0); }
+        }
+        .active-silver-ring { animation: pulse-ring 2s infinite; }
+    </style>
 </head>
-<body class="noise">
-  <div class="scroll-rail" aria-hidden="true">
-    <div class="scroll-track"><div class="scroll-thumb" id="scrollThumb"></div></div>
-  </div>
-  <div class="scroll-label">Scroll system</div>
+<body class="theme-admin flex min-h-screen overflow-hidden transition-colors duration-500" id="body-root">
 
-  <header class="topbar">
-    <div class="wrap topbar-inner">
-      <div class="brand">
-        <div class="brand-mark">F</div>
-        <span>Fermion Roastery</span>
-      </div>
-      <nav class="topnav">
-        <a class="chip" href="#hero">Hero</a>
-        <a class="chip" href="#type">Type</a>
-        <a class="chip" href="#ui">Cards</a>
-        <a class="chip" href="#palette">Palette</a>
-        <a class="chip" href="#scroll">Scroll rules</a>
-      </nav>
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar w-[260px] flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-500">
+        <div class="h-24 flex flex-col justify-center px-8 border-b border-black/5">
+            <h1 class="display-font text-2xl italic font-black tracking-tighter" id="logo-text">Fermion.</h1>
+            <p id="role-label" class="text-[8px] font-bold uppercase tracking-[0.4em] text-slate-500 mt-1">Command Center</p>
+        </div>
+
+        <nav class="flex-1 px-4 py-8 space-y-10 overflow-y-auto no-scrollbar" id="sidebar-nav">
+            <!-- Content Injected via JS -->
+        </nav>
+
+        <div class="p-6 border-t border-black/5 space-y-4">
+            <button onclick="toggleGlobalView()" class="w-full py-3 bg-black/5 hover:bg-black/10 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-black/10" id="view-toggle-btn">Switch to Partner Hub</button>
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center font-bold text-xs text-white">JD</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-[10px] font-bold truncate">John Doe</p>
+                    <p class="text-[8px] text-slate-500 truncate" id="user-email">admin@fermion.co</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 ml-[260px] h-screen overflow-y-auto">
+        <!-- TOP BAR -->
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40 px-12 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <h2 id="header-title" class="font-black italic uppercase tracking-tight text-slate-900">Dashboard Overview</h2>
+                <div id="tier-badge-container" class="hidden">
+                    <span class="status-badge bg-periwinkle/10 text-periwinkle uppercase border border-periwinkle/20">Tier: Bronze</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="relative">
+                    <input type="text" placeholder="Search Specimen..." class="bg-slate-100 border-none rounded-full px-10 py-2 text-[10px] font-bold w-64 outline-none focus:ring-2 focus:ring-periwinkle/30">
+                    <svg class="absolute left-4 top-2 text-slate-400" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <button class="relative text-slate-400 hover:text-slate-900 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEWS -->
+        <div id="view-container" class="p-12 space-y-12 max-w-[1400px] mx-auto">
+            <!-- Views Injected Here -->
+        </div>
+    </main>
+
+    <!-- MODAL OVERLAY (For Profile Completion) -->
+    <div id="profile-modal" class="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-md hidden flex items-center justify-center p-6">
+        <div class="bg-white rounded-[3.5rem] w-full max-w-xl p-12 space-y-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12"><svg width="160" height="160" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="currentColor"/></svg></div>
+            <div class="text-center space-y-2">
+                <h2 class="display-font text-4xl italic font-black tracking-tighter text-slate-950">Identity Verification.</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Complete your profile to unlock full dashboard access & showcase your brand.</p>
+            </div>
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Cafe Logo (PNG/SVG)</label>
+                    <div class="border-2 border-dashed border-slate-200 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center group hover:bg-slate-50 cursor-pointer transition-colors">
+                        <svg class="text-slate-300 group-hover:text-periwinkle transition-colors mb-2" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">Drag & drop logo specimen</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Tax ID (NPWP)</label>
+                        <input type="text" placeholder="00.000..." class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none ring-2 ring-transparent focus:ring-periwinkle/20 transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Billing Ref</label>
+                        <input type="text" placeholder="Accounting Dept." class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none ring-2 ring-transparent focus:ring-periwinkle/20 transition-all">
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeProfileModal()" class="w-full py-5 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-[0.3em] italic text-[10px] shadow-xl hover:bg-periwinkle transition-all">Enter Partner Hub</button>
+        </div>
     </div>
-  </header>
 
-  <main class="wrap">
-    <section class="hero" id="hero">
-      <div class="hero-grid">
-        <article class="hero-copy fade-up">
-          <div class="eyebrow">
-            <i data-lucide="sparkles" width="14" height="14"></i>
-            Fermion UI preview
-          </div>
-          <h1 class="h1">Modern, joyful coffee commerce with playful premium energy.</h1>
-          <p class="body">
-            HTML preview ini menunjukkan arah visual Fermion: off-white base, blue-lilac gradient, playful accent, dan ruang kosong yang bisa diisi placeholder informatif.
-          </p>
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let state = {
+            role: 'admin', // admin | b2b
+            page: 'dashboard',
+            b2bStep: 'onboarding', // onboarding | active
+            b2bVolume: 12.5
+        };
 
-          <div class="hero-actions">
-            <button class="button button-primary">
-              <i data-lucide="arrow-up-right" width="14" height="14"></i>
-              Primary CTA
-            </button>
-            <button class="button button-secondary">
-              <i data-lucide="mouse-pointer-click" width="14" height="14"></i>
-              Secondary CTA
-            </button>
-            <button class="button button-ghost">
-              <i data-lucide="layers-3" width="14" height="14"></i>
-              Scroll cue
-            </button>
-          </div>
+        const adminNav = [
+            { group: "Intelligence", items: [{ id: 'dashboard', label: 'Overview', icon: '📊' }, { id: 'magic', label: 'Magic Wand', icon: '🪄' }] },
+            { group: "Commerce", items: [{ id: 'partners', label: 'B2B Partners', icon: '🤝' }, { id: 'manual', label: 'Manual Ledger', icon: '📝' }] },
+            { group: "Operational", items: [{ id: 'fulfillment', label: 'Kanban', icon: '📦' }, { id: 'inventory', label: 'Green Bean', icon: '📉' }] }
+        ];
 
-          <div class="stats">
-            <div class="stat">
-              <strong>B2B first</strong>
-              <span>wholesale priority</span>
-            </div>
-            <div class="stat">
-              <strong>Retail second</strong>
-              <span>our coffee path</span>
-            </div>
-            <div class="stat">
-              <strong>Playful premium</strong>
-              <span>brand tone</span>
-            </div>
-          </div>
-        </article>
+        const b2bNav = [
+            { group: "Hub", items: [{ id: 'dashboard', label: 'Overview', icon: '🏛️' }, { id: 'shop', label: 'Wholesale Shop', icon: '🛒' }] },
+            { group: "Services", items: [{ id: 'maintenance', label: 'Premium Service', icon: '🛠️' }, { id: 'calibration', label: 'Calibration', icon: '⚖️' }] },
+            { group: "Legal", items: [{ id: 'contract', label: 'Agreement', icon: '📜' }, { id: 'ledger', label: 'Commercial Logs', icon: '📄' }] }
+        ];
 
-        <aside class="hero-visual fade-up">
-          <div class="hero-photo"></div>
-          <div class="hero-overlay"></div>
-          <div class="floating-note">
-            <div class="eyebrow" style="width: fit-content;">
-              <i data-lucide="package" width="14" height="14"></i>
-              Packaging reference
-            </div>
-            <h3 class="h3">Front pack color direction</h3>
-            <small>
-              Off-white text, soft blue and lilac body, with restrained contrast. The goal is premium, clean, and warm without leaning cream.
-            </small>
-          </div>
-        </aside>
-      </div>
-    </section>
+        function renderSidebar() {
+            const nav = document.getElementById('sidebar-nav');
+            const roleLabel = document.getElementById('role-label');
+            const viewBtn = document.getElementById('view-toggle-btn');
+            const logo = document.getElementById('logo-text');
+            const menu = state.role === 'admin' ? adminNav : b2bNav;
+            
+            roleLabel.innerText = state.role === 'admin' ? 'Command Center' : 'Partner Hub';
+            viewBtn.innerText = state.role === 'admin' ? 'Switch to Partner Hub' : 'Switch to Command Center';
+            logo.className = `display-font text-2xl italic font-black tracking-tighter ${state.role === 'admin' ? 'text-white' : 'text-slate-900'}`;
 
-    <section class="section" id="type">
-      <div class="section-shell">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow"><i data-lucide="type" width="14" height="14"></i> Typography</div>
-            <h2 class="h2" style="margin-top: 14px;">Headline scale for the Fermion story.</h2>
-          </div>
-          <p class="body">Use Fraunces for expressive display type, and Manrope for clean body copy. The contrast keeps the brand premium but still friendly.</p>
-        </div>
-        <div class="grid-2">
-          <div class="card card--blue">
-            <strong>H1</strong>
-            <h1 class="h1" style="margin: 0; font-size: clamp(2.8rem, 6vw, 5.5rem); max-width: 9ch;">Fermion makes coffee feel alive.</h1>
-          </div>
-          <div class="card card--lilac">
-            <strong>H2 / H3 / body</strong>
-            <h2 class="h2">Built for premium wholesale and retail flow.</h2>
-            <p style="margin-top: 12px;">H2 should feel editorial and persuasive. H3 is for sections, cards, and CTA blocks. Body text stays calm, readable, and specific.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+            nav.innerHTML = menu.map(group => `
+                <div class="space-y-4">
+                    <h4 class="px-4 text-[9px] font-black text-slate-500 uppercase tracking-widest">${group.group}</h4>
+                    <div class="space-y-1">
+                        ${group.items.map(item => `
+                            <button onclick="navigate('${item.id}')" class="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-[11px] font-bold ${state.page === item.id ? (state.role === 'admin' ? 'bg-white/10 text-white border-l-4 border-periwinkle' : 'bg-slate-200/50 text-slate-900 border-l-4 border-periwinkle') : 'text-slate-400 hover:text-slate-600 transition-all'} group">
+                                <span class="text-lg">${item.icon}</span>
+                                <span class="uppercase tracking-widest">${item.label}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
 
-    <section class="section" id="ui">
-      <div class="section-shell">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow"><i data-lucide="layout-grid" width="14" height="14"></i> Components</div>
-            <h2 class="h2" style="margin-top: 14px;">Cards, inputs, buttons, and placeholder states.</h2>
-          </div>
-          <p class="body">Area kosong tidak dibiarkan kosong. Setiap blok kosong punya placeholder dengan konteks penempatan gambar, dan warna berbeda sesuai jenis kontennya.</p>
-        </div>
+        function navigate(pageId) {
+            state.page = pageId;
+            renderSidebar();
+            renderView();
+        }
 
-        <div class="ui-matrix">
-          <div class="primary-stack">
-            <article class="card product-card">
-              <div class="product-media">
-                <div class="floating-badge">Hero product</div>
-              </div>
-              <div>
-                <strong>Product card</strong>
-                <p>Dipakai untuk showcase bean, retail item, subscription tier, atau featured journal article.</p>
-              </div>
-              <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="button button-primary" style="height:44px;">Add to cart</button>
-                <button class="button button-secondary" style="height:44px;">View details</button>
-              </div>
-            </article>
+        function toggleGlobalView() {
+            state.role = state.role === 'admin' ? 'b2b' : 'admin';
+            document.getElementById('body-root').className = state.role === 'admin' ? 'theme-admin flex min-h-screen overflow-hidden' : 'theme-b2b flex min-h-screen overflow-hidden';
+            document.getElementById('tier-badge-container').className = state.role === 'admin' ? 'hidden' : 'block';
+            
+            if (state.role === 'b2b' && state.b2bStep === 'onboarding') {
+                navigate('onboarding');
+            } else {
+                navigate('dashboard');
+            }
+        }
 
-            <article class="card placeholder card--blue">
-              <span class="tag">Placeholder / Hero image</span>
-              <div class="label">Insert coffee bean pack hero, workshop photo, or lifestyle image</div>
-              <div class="hint">Use this when a section needs a visual anchor before the final assets are ready.</div>
-            </article>
-          </div>
+        function renderView() {
+            const container = document.getElementById('view-container');
+            const title = document.getElementById('header-title');
+            
+            if (state.role === 'admin') {
+                if (state.page === 'dashboard') {
+                    title.innerText = 'Command Overview';
+                    container.innerHTML = `
+                        <!-- CHURN ALERT -->
+                        <div class="bg-red-50 border border-red-100 rounded-[2.5rem] p-10 flex items-center justify-between relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-8 opacity-10"><svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.45L20.14 19H3.86L12 5.45zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg></div>
+                            <div class="flex items-center gap-10">
+                                <div class="w-20 h-20 bg-red-500 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-red-500/20"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg></div>
+                                <div>
+                                    <span class="status-badge bg-red-500 text-white uppercase">Churn_Alert</span>
+                                    <h3 class="display-font text-3xl italic font-black mt-2">Buku Janari Cafe Inactive</h3>
+                                    <p class="text-xs font-bold text-red-400 tracking-widest mt-1 uppercase">48 Days No Order Protocol</p>
+                                </div>
+                            </div>
+                            <button class="bg-slate-950 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-red-600 transition-all">Re-Engage via WA</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                            ${mockStatCard('REVENUE', 'Rp 2.71M', '+12%', 'Live')}
+                            ${mockStatCard('VOLUME', '4.3 Kg', '8.2', 'Monthly')}
+                            ${mockStatCard('PARTNERS', '14', '2', 'Active')}
+                            ${mockStatCard('PENDING', '0', 'Clean', 'Safety')}
+                        </div>
+                    `;
+                } else if (state.page === 'fulfillment') {
+                    title.innerText = 'Fulfillment Pipeline';
+                    container.innerHTML = `
+                        <div class="grid grid-cols-3 gap-10 h-[600px]">
+                            ${mockKanbanCol('Incoming', 2, `
+                                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 space-y-4 shadow-sm">
+                                    <p class="text-[8px] font-black text-slate-300 uppercase">#ORD-0922</p>
+                                    <h4 class="font-black italic uppercase text-lg">Fore Coffee</h4>
+                                    <p class="text-[10px] font-bold text-slate-400">20.0 KG // ESPRESSO_V2</p>
+                                    <button class="w-full py-4 bg-periwinkle/10 text-periwinkle rounded-xl text-[9px] font-black uppercase tracking-widest">Request Biteship Pickup</button>
+                                </div>
+                            `)}
+                            ${mockKanbanCol('QC & Packaging', 1, `
+                                <div class="bg-slate-900 p-8 rounded-[2.5rem] border-2 border-periwinkle space-y-6 text-white shadow-2xl">
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="font-black italic uppercase">Common Grounds</h4>
+                                        <span class="status-badge bg-periwinkle text-white">ROASTING</span>
+                                    </div>
+                                    <div class="space-y-4">
+                                        ${mockSlider('Sweetness', 4.5)}
+                                        ${mockSlider('Acidity', 3.2)}
+                                        ${mockSlider('Body', 4.0)}
+                                    </div>
+                                    <button class="w-full py-4 bg-periwinkle text-white rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-lg shadow-periwinkle/30">Submit QC Profile</button>
+                                </div>
+                            `)}
+                            ${mockKanbanCol('Shipped', 84, `<div class="p-12 text-center opacity-20"><p class="text-[10px] font-black uppercase tracking-widest italic">Automated via Webhook</p></div>`)}
+                        </div>
+                    `;
+                } else if (state.page === 'partners') {
+                   title.innerText = 'B2B Partner Verification';
+                   container.innerHTML = `
+                        <div class="bg-white rounded-[3rem] border border-slate-100 overflow-hidden shadow-sm">
+                            <table class="w-full text-left">
+                                <tr class="bg-slate-50 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                    <th class="p-8">Cafe Name</th>
+                                    <th class="p-8">Contract</th>
+                                    <th class="p-8">Quota Target</th>
+                                    <th class="p-8 text-right">Actions</th>
+                                </tr>
+                                <tr class="border-b border-slate-50">
+                                    <td class="p-8 font-black uppercase italic">Kopi Kenangan Senayan</td>
+                                    <td class="p-8"><button class="text-periwinkle flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> <span class="text-[10px] font-black underline uppercase">View_Contract.pdf</span></button></td>
+                                    <td class="p-8 font-bold">15 KG / MO</td>
+                                    <td class="p-8 text-right"><button class="px-6 py-3 bg-periwinkle text-white text-[9px] font-black uppercase rounded-xl">Approve</button></td>
+                                </tr>
+                            </table>
+                        </div>
+                   `;
+                } else if (state.page === 'manual') {
+                    title.innerText = 'Manual Transaction Ledger';
+                    container.innerHTML = `
+                        <div class="flex justify-between items-center mb-10">
+                            <h3 class="display-font text-3xl italic font-black">Offline Protocol.</h3>
+                            <button onclick="alert('Manual Entry Logic Activated')" class="bg-slate-950 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl">+ Input Manual Transaction</button>
+                        </div>
+                        <div class="bg-white rounded-[3rem] border border-slate-100 p-20 flex flex-col items-center justify-center text-center space-y-4 opacity-50 grayscale">
+                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                             <p class="text-[10px] font-black uppercase tracking-[0.3em]">Historical Data Entry Portal</p>
+                        </div>
+                    `;
+                }
+            } else {
+                // B2B VIEW
+                if (state.page === 'onboarding') {
+                    title.innerText = 'Registration Pipeline';
+                    container.innerHTML = `
+                        <div class="max-w-4xl mx-auto space-y-12">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div class="glass-card p-12 rounded-[4rem] space-y-8">
+                                    <div class="w-16 h-16 bg-periwinkle/10 rounded-3xl flex items-center justify-center text-periwinkle"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+                                    <div class="space-y-2">
+                                        <h3 class="display-font text-3xl italic font-black">Step 1.</h3>
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Download Partnership Agreement</p>
+                                    </div>
+                                    <button class="w-full py-5 bg-periwinkle text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-periwinkle/20">Download .PDF</button>
+                                </div>
+                                <div class="glass-card p-12 rounded-[4rem] space-y-8 border-2 border-dashed border-periwinkle">
+                                    <div class="w-16 h-16 bg-periwinkle/10 rounded-3xl flex items-center justify-center text-periwinkle"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
+                                    <div class="space-y-2">
+                                        <h3 class="display-font text-3xl italic font-black">Step 2.</h3>
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Upload Signed Contract</p>
+                                    </div>
+                                    <div class="border border-slate-200 border-dashed rounded-2xl p-4 text-center cursor-pointer hover:bg-slate-50">
+                                        <p class="text-[9px] font-black uppercase text-slate-400">Click to Select File</p>
+                                    </div>
+                                </div>
+                            </div>
 
-          <div class="card" style="display:grid; gap:16px;">
-            <strong>Form preview</strong>
-            <p>Input styling for login, register, wholesale inquiry, and newsletter capture.</p>
-            <div class="form">
-              <div class="field">
-                <label>Name</label>
-                <input class="input" placeholder="Enter name" />
-              </div>
-              <div class="field">
-                <label>Email</label>
-                <input class="input" placeholder="name@company.com" />
-              </div>
-              <div class="field">
-                <label>Message</label>
-                <input class="input" placeholder="Wholesale / retail / subscription question" />
-              </div>
-              <button class="button button-primary" style="width:100%;">Submit form</button>
-            </div>
-          </div>
-        </div>
+                            <div class="glass-card p-12 rounded-[4rem] flex items-center justify-between relative overflow-hidden bg-gradient-to-r from-white to-slate-50">
+                                <div class="space-y-4">
+                                    <span class="status-badge bg-amber-500 text-white">STATUS: AWAITING_CONTRACT_REVIEW</span>
+                                    <h3 class="display-font text-4xl italic font-black text-slate-900 leading-none tracking-tighter">En Route to <br/> Laboratory.</h3>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">"Si Gunung" is verifying your documents</p>
+                                </div>
+                                <div class="w-48 h-48 relative animate-float">
+                                    <div class="w-full h-full bg-periwinkle/5 rounded-full flex items-center justify-center border border-periwinkle/10">
+                                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="var(--periwinkle)" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    </div>
+                                    <div class="absolute -top-4 -right-4 bg-periwinkle text-white p-4 rounded-3xl shadow-xl text-center"><p class="text-[8px] font-black uppercase">Reviewing<br/>Phase</p></div>
+                                </div>
+                            </div>
+                            <button onclick="openProfileModal()" class="w-full py-3 text-[9px] font-black uppercase underline text-slate-300">Secret: Force Approve & Complete Profile (Sim)</button>
+                        </div>
+                    `;
+                } else if (state.page === 'dashboard') {
+                    title.innerText = 'Partner Portal Overview';
+                    container.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                            <!-- PROGRESS RING -->
+                            <div class="glass-card p-12 rounded-[4rem] flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden">
+                                <div class="w-48 h-48 rounded-full border-[14px] border-slate-50 flex items-center justify-center relative ${state.b2bVolume >= 15 ? 'active-silver-ring' : ''}">
+                                    <svg class="absolute inset-0 w-full h-full -rotate-90">
+                                        <circle cx="96" cy="96" r="82" stroke="currentColor" stroke-width="14" fill="transparent" class="text-periwinkle" stroke-dasharray="515" stroke-dashoffset="${515 - (state.b2bVolume / 15 * 515)}" stroke-linecap="round" />
+                                    </svg>
+                                    <div class="space-y-0.5">
+                                        <p class="text-5xl font-black italic tracking-tighter text-slate-900">${state.b2bVolume}</p>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">/ 15.0 KG</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <h4 class="font-black uppercase italic text-sm text-slate-900">Volume Velocity</h4>
+                                    ${state.b2bVolume >= 15 ? 
+                                        `<button onclick="alert('Silver Tier Claimed!')" class="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-500/20">Claim Silver Tier</button>` :
+                                        `<p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">${(15 - state.b2bVolume).toFixed(1)}kg left to unlock <br/> <span class="text-periwinkle">Silver Tier Discount</span> next month</p>`
+                                    }
+                                </div>
+                            </div>
 
-        <div class="grid-4" style="padding-top: 0;">
-          <article class="card card--yellow placeholder">
-            <span class="tag">Subscription image</span>
-            <div class="label">Coffee bag, ritual, or delivery box</div>
-            <div class="hint">Warm, friendly, and slightly brighter for retention-oriented sections.</div>
-          </article>
-          <article class="card card--coral placeholder">
-            <span class="tag">Journal image</span>
-            <div class="label">Event, roasting note, or story photo</div>
-            <div class="hint">Use for storytelling articles, travel logs, cupping notes, or owner updates.</div>
-          </article>
-          <article class="card card--lilac placeholder">
-            <span class="tag">Wholesale image</span>
-            <div class="label">Partner cafe, beans, or supply flow</div>
-            <div class="hint">Should feel more business oriented, but still premium and approachable.</div>
-          </article>
-          <article class="card card--dark placeholder">
-            <span class="tag">Our story image</span>
-            <div class="label">Founder portrait or team moment</div>
-            <div class="hint">Use when the brand needs more trust, origin, and identity.</div>
-          </article>
-        </div>
-      </div>
-    </section>
+                            <!-- SHOP GATEWAY -->
+                            <div class="md:col-span-2 space-y-10">
+                                <div class="p-12 rounded-[3.5rem] bg-slate-900 text-white flex items-center justify-between relative overflow-hidden group shadow-2xl">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-periwinkle/20 via-transparent to-transparent"></div>
+                                    <div class="space-y-6 relative z-10 flex-1">
+                                        <div class="space-y-1">
+                                            <span class="status-badge bg-periwinkle text-white">BRONZE_ACTIVE</span>
+                                            <h3 class="display-font text-5xl italic font-black tracking-tighter leading-none">Enter <br/> Wholesale.</h3>
+                                        </div>
+                                        <p class="text-xs text-slate-400 font-medium tracking-wide">Locked Pricing: -Rp 10.000 / Kg applied to all specimens.</p>
+                                        <button class="bg-white text-slate-900 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-periwinkle hover:text-white transition-all">Start Procurement</button>
+                                    </div>
+                                    <div class="w-40 h-40 bg-white/5 rounded-[3rem] rotate-12 flex items-center justify-center opacity-40 group-hover:rotate-0 transition-transform duration-700">
+                                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                    </div>
+                                </div>
 
-    <section class="section" id="palette">
-      <div class="section-shell">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow"><i data-lucide="palette" width="14" height="14"></i> Palette</div>
-            <h2 class="h2" style="margin-top: 14px;">Packaging-inspired color system.</h2>
-          </div>
-          <p class="body">Front pack = off-white + blue + lilac. Back pack = playful multicolor accents. Keep the UI refined; let the accents do the talking.</p>
-        </div>
+                                <div class="grid grid-cols-2 gap-8">
+                                    <div class="glass-card p-10 rounded-[3rem] space-y-4">
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic leading-none">Days Remaining</p>
+                                        <h4 class="text-4xl font-black italic tracking-tighter text-slate-900">134 <span class="text-lg text-slate-300">DAYS</span></h4>
+                                        <span class="status-badge bg-green-50 text-green-600">CONTRACT_ID: #FM-0922</span>
+                                    </div>
+                                    <div class="glass-card p-10 rounded-[3rem] bg-slate-50 flex items-center justify-center opacity-40">
+                                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-300 italic">Biteship Webhook Idle</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="swatches">
-          <div class="swatch" style="background: linear-gradient(135deg, #faf9f6, #ffffff); color: var(--charcoal);">
-            <span>Off-white</span><small>base surface</small>
-          </div>
-          <div class="swatch" style="background: linear-gradient(135deg, #84a8ff, #6486f4);">
-            <span>Blue</span><small>primary</small>
-          </div>
-          <div class="swatch" style="background: linear-gradient(135deg, #b7a0ff, #8f73ff);">
-            <span>Lilac</span><small>secondary</small>
-          </div>
-          <div class="swatch" style="background: linear-gradient(135deg, #f3ca57, #e6b83e); color: #101828;">
-            <span>Yellow</span><small>accent</small>
-          </div>
-          <div class="swatch" style="background: linear-gradient(135deg, #ff826f, #f15f6f);">
-            <span>Coral</span><small>accent</small>
-          </div>
-          <div class="swatch" style="background: linear-gradient(135deg, #101828, #1c2540);">
-            <span>Charcoal</span><small>text</small>
-          </div>
-        </div>
+                        <!-- MAINTENANCE TEASER -->
+                        <div class="glass-card p-12 rounded-[4rem] bg-slate-900 text-white flex items-center justify-between relative overflow-hidden grayscale opacity-50 group cursor-not-allowed">
+                             <div class="space-y-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.7a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.7z"></path></svg></div>
+                                    <h3 class="display-font text-3xl italic font-black">Fermion Premium Service.</h3>
+                                </div>
+                                <p class="text-xs text-slate-400 font-medium tracking-wide">Machine calibration and grinder maintenance provided 2x per contract cycle.</p>
+                             </div>
+                             <div class="text-right space-y-2">
+                                <span class="status-badge border border-white/20 text-white">LOCKED_PROTOCOL</span>
+                                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Requires Contract Sequence #2</p>
+                             </div>
+                        </div>
+                    `;
+                }
+            }
+        }
 
-        <div class="pack-grid">
-          <article class="pack-card">
-            <div class="pack-photo front"></div>
-            <div class="pack-copy">
-              <strong>Front packaging reference</strong>
-              <span>Use this for hero lighting, off-white treatment, and the blue-lilac brand mood.</span>
-            </div>
-          </article>
-          <article class="pack-card">
-            <div class="pack-photo back"></div>
-            <div class="pack-copy">
-              <strong>Back packaging reference</strong>
-              <span>Use this for playful detail language, emoji stickers, and colorful micro-accent moments.</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
+        function mockStatCard(label, val, change, sub) {
+            return `
+                <div class="glass-card p-10 rounded-[3.5rem] space-y-6 group hover:shadow-2xl transition-all duration-500">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${label}</p>
+                        <span class="text-[8px] font-black text-periwinkle uppercase tracking-widest">${sub}</span>
+                    </div>
+                    <div>
+                        <h4 class="text-4xl font-black italic tracking-tighter text-slate-900">${val}</h4>
+                        <p class="text-[9px] text-green-500 font-black uppercase mt-1 tracking-widest">${change}</p>
+                    </div>
+                </div>
+            `;
+        }
 
-    <section class="scroll-section" id="scroll">
-      <div class="section-shell">
-        <div class="section-head">
-          <div>
-            <div class="eyebrow"><i data-lucide="mouse-pointer-2" width="14" height="14"></i> Scroll animation rules</div>
-            <h2 class="h2" style="margin-top: 14px;">What the page should do while scrolling.</h2>
-          </div>
-          <p class="body">These rules are the baseline for stacking, parallax, and reveal behavior on the marketing homepage. Keep them cinematic but readable.</p>
-        </div>
+        function mockKanbanCol(name, count, content) {
+            return `
+                <div class="space-y-6 flex flex-col h-full">
+                    <div class="flex justify-between items-center px-4">
+                        <span class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">${name}</span>
+                        <span class="text-[10px] font-black bg-white border border-slate-100 px-3 py-1 rounded-full">${count}</span>
+                    </div>
+                    <div class="flex-1 space-y-6 no-scrollbar overflow-y-auto">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
 
-        <div class="scroll-rules">
-          <div class="sticky-panel">
-            <article class="card card--dark" style="min-height: 320px;">
-              <strong>Motion summary</strong>
-              <h3 class="h3" style="font-family: Fraunces, serif; font-size: 40px; line-height: 0.95; margin-top: 8px;">Stack, glide, reveal, then convert.</h3>
-              <p style="margin-top: 14px; color: rgba(255,255,255,0.74);">The homepage should feel like one continuous story, with sales CTAs surfacing at the right moments instead of competing all at once.</p>
-              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top: 14px;">
-                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Stacking</span>
-                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Parallax</span>
-                <span class="chip" style="background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.14);">Reveal</span>
-              </div>
-            </article>
-          </div>
+        function mockSlider(label, val) {
+            return `
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400"><span>${label}</span><span class="text-periwinkle">${val}/5.0</span></div>
+                    <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-periwinkle transition-all" style="width: ${val/5*100}%"></div>
+                    </div>
+                </div>
+            `;
+        }
 
-          <div class="rule-stack">
-            <article class="rule fade-up in-view">
-              <div class="index">01</div>
-              <div class="title">Hero enters first, then the supporting copy follows.</div>
-              <div class="desc">Use staged reveal timing so the headline, subcopy, CTA, and visual all arrive in sequence. The first impression should feel intentional, not busy.</div>
-            </article>
-            <article class="rule rule--accent fade-up in-view">
-              <div class="index">02</div>
-              <div class="title">Parallax belongs to product images and packaging panels.</div>
-              <div class="desc">Move the image layers subtly against the scroll direction. Keep text stable so the page still feels readable and premium.</div>
-            </article>
-            <article class="rule fade-up in-view">
-              <div class="index">03</div>
-              <div class="title">Stacking should happen in major section transitions.</div>
-              <div class="desc">The next section can overlap the previous one slightly with depth, shadow, and vertical offset. This makes the landing feel cinematic without needing excessive motion.</div>
-            </article>
-            <article class="rule rule--accent fade-up in-view">
-              <div class="index">04</div>
-              <div class="title">Every major block needs a real CTA.</div>
-              <div class="desc">Wholesale and retail must be visually dominant, while journal and story stay accessible but secondary.</div>
-            </article>
-            <article class="rule fade-up in-view">
-              <div class="index">05</div>
-              <div class="title">Reduced motion must keep the structure intact.</div>
-              <div class="desc">If motion is reduced, the page should still read like a complete brand story. Animation is an enhancer, not a dependency.</div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
+        function openProfileModal() { document.getElementById('profile-modal').classList.remove('hidden'); }
+        function closeProfileModal() { 
+            document.getElementById('profile-modal').classList.add('hidden'); 
+            state.b2bStep = 'active';
+            navigate('dashboard');
+        }
 
-    <div class="footer-note">
-      Tip: this preview file is meant to be opened directly from the repo root. It is a visual reference for color, typography, button style, cards, placeholder treatment, and the scroll animation system.
-      <br />
-      Keyboard note: use <span class="kbd">Tab</span> to inspect focus states and <span class="kbd">Shift</span> + <span class="kbd">Tab</span> to move backward.
-    </div>
-  </main>
-
-  <script>
-    const thumb = document.getElementById("scrollThumb");
-    const fadeEls = Array.from(document.querySelectorAll(".fade-up"));
-
-    function updateThumb() {
-      const doc = document.documentElement;
-      const maxScroll = doc.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-      const thumbHeight = Math.max(18, (window.innerHeight / doc.scrollHeight) * 100);
-      const maxTop = 100 - thumbHeight;
-      thumb.style.height = thumbHeight + "%";
-      thumb.style.transform = `translateY(${progress * maxTop}%)`;
-    }
-
-    function observeCards() {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("in-view");
-        });
-      }, { threshold: 0.18 });
-
-      fadeEls.forEach((el) => io.observe(el));
-    }
-
-    updateThumb();
-    observeCards();
-    window.addEventListener("scroll", updateThumb, { passive: true });
-    window.addEventListener("resize", updateThumb);
-    lucide.createIcons();
-  </script>
+        // Initial Boot
+        renderSidebar();
+        renderView();
+    </script>
 </body>
 </html>
