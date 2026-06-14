@@ -8,7 +8,7 @@ import { Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp, Coffee, 
 import { Separator } from "@/components/ui/separator";
 
 interface CoffeeProduct {
-  id: number;
+  id: string;
   name: string;
   notes: string;
   origin: string;
@@ -41,11 +41,14 @@ function CharacterLevel({ label, level }: { label: string; level: number }) {
   );
 }
 
-import { useCartStore } from "@/lib/store";
+import { useCartStore, useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ProductPage() {
   const { id } = useParams();
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [product, setProduct] = useState<CoffeeProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<CoffeeProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +61,7 @@ export default function ProductPage() {
   
   const addItem = useCartStore((state) => state.addItem);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (silent: boolean = false) => {
     if (!product) return;
     
     addItem({
@@ -69,11 +72,21 @@ export default function ProductPage() {
       image: product.image,
       weight: weight,
       grind: grind
-    });
+    }, silent); // Use silent as the selectOnly flag
 
-    toast.success(`${product.name} added to cart!`, {
-      description: `${weight} • ${grind}`,
-    });
+    if (!silent) {
+      toast.success(`${product.name} added to cart!`, {
+        description: `${weight} • ${grind}`,
+      });
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    // selectOnly = true will unselect everything else
+    handleAddToCart(true); 
+    const checkoutPath = user?.role === 'B2B' ? "/b2b/checkout" : "/cart";
+    router.push(checkoutPath);
   };
 
   useEffect(() => {
@@ -304,12 +317,15 @@ export default function ProductPage() {
             {/* CTA Buttons */}
             <div className="space-y-4 pt-6 border-t border-slate-50 mt-6">
               <button 
-               onClick={handleAddToCart}
+               onClick={() => handleAddToCart(false)}
                className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.15em] hover:bg-slate-900 hover:text-white transition-all duration-500 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 uppercase text-center"
               >
                 Add to Cart • Rp {(product.price * quantity).toLocaleString('id-ID')}
               </button>
-              <button className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-french-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center">
+              <button 
+               onClick={handleBuyNow}
+               className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-french-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center"
+              >
                 <ShoppingBag size={18} strokeWidth={2.5} />
                 Buy It Now
               </button>

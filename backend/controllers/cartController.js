@@ -38,8 +38,8 @@ export const getCart = async (req, res) => {
 
   try {
     const result = await query(`
-      SELECT ci.product_id as id, p.name, p.price, ci.variant_weight as weight, 
-             ci.variant_grind as grind, ci.quantity, p.image
+      SELECT ci.product_id as id, p.name, p.price_retail as price, ci.variant_weight as weight, 
+             ci.variant_grind as grind, ci.quantity, p.image_url as image
       FROM cart_items ci
       JOIN products p ON ci.product_id = p.id
       WHERE ci.profile_id = $1
