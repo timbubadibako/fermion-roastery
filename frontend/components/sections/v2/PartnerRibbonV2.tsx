@@ -3,38 +3,40 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { siteContent } from "@/lib/content";
+import { PartnerCard } from "./PartnerCard";
 
 /**
  * SECTION 2: PARTNER RIBBON
- * Key text items imported from @/lib/content:
- * - placeholder (labels for dashed cafe partner boxes)
  */
 export function PartnerRibbonV2() {
   const content = siteContent.partnerRibbon;
-  const [partners, setPartners] = React.useState<any[]>([]);
+  
+  // Mapping of partner IDs to their desired background colors
+  const partnerBgColors: Record<string, string> = {
+    'dewata': '#1d3e26', // Example dark green for Dewata
+    'lilla': '#000000',  // Example black for Lilla
+    'elvizo' : '#ebebeb',
+    // Add more as needed
+  };
 
-  React.useEffect(() => {
-    fetch('/api/admin/partners')
-      .then(res => res.ok ? res.json() : [])
-      .then(data => {
-        const approved = data.filter((p: any) => p.status === 'approved' && p.cafe_logo_url);
-        setPartners(approved);
-      })
-      .catch(() => {});
-  }, []);
+  const staticPartners = [
+    { id: 'dewata', name: 'Dewata', url: '/dewata-partner.jpeg' },
+    { id: 'domo', name: 'Domo', url: '/domo-partner.jpeg' },
+    { id: 'elvizo', name: 'Elvizo', url: '/elvizo-partner.jpeg' },
+    { id: 'go', name: 'Go', url: '/go-partner.jpeg' },
+    { id: 'lilla', name: 'Lilla', url: '/lilla-partner.jpeg' },
+    { id: 'littleheaven', name: 'Little Heaven', url: '/littleheaven-partner.jpeg' },
+  ];
 
   const renderPartners = () => {
-    if (partners.length === 0) {
-      return [1, 2, 3, 4, 5, 6].map((p) => (
-        <div key={p} className="w-48 h-20 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center text-[9px] font-black text-slate-300 tracking-[0.4em] uppercase">
-          {content.placeholder}
-        </div>
-      ));
-    }
-    return partners.map((p) => (
-      <div key={p.id} className="w-48 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-700 opacity-60 hover:opacity-100">
-        <img src={p.cafe_logo_url} alt={p.company_name} className="max-h-12 max-w-[140px] object-contain" />
-      </div>
+    // For static partners, we use the config map
+    return staticPartners.map((p) => (
+      <PartnerCard 
+        key={p.id} 
+        url={p.url} 
+        name={p.name} 
+        bgColor={partnerBgColors[p.id] || 'white'} 
+      />
     ));
   };
 

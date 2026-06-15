@@ -1,8 +1,8 @@
 export const strings = {
   id: {
     hero: {
-      title: "Precision roasted coffee engineered with scientific rigor.",
-      subtitle: "Biji kopi pilihan yang diproses dengan dedikasi tinggi untuk menghasilkan cita rasa yang konsisten dan memukau.",
+      title: "CURATED, ROASTED, | REVERED",
+      subtitle: "Proses presisi untuk menghasilkan kopi yang tak terlupakan dan berkualitas tinggi.",
       cta_primary: "Belanja Sekarang",
       cta_secondary: "Lihat Produk",
     },
@@ -24,8 +24,8 @@ export const strings = {
   },
   en: {
     hero: {
-      title: "Precision roasted coffee engineered with scientific rigor.",
-      subtitle: "Carefully selected coffee beans processed with high dedication to produce consistent and stunning flavors.",
+      title: "CURATED, ROASTED, | REVERED",
+      subtitle: "Precision processes to produce unforgettable, high-quality coffee.",
       cta_primary: "Shop Now",
       cta_secondary: "View Products",
     },
