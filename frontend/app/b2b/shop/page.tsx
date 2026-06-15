@@ -71,13 +71,13 @@ export default function WholesaleShopPage() {
       priceType: product.priceType || 'tier',
       original_price: Number(product.price_retail)
     });
-    toast.success(`${product.name} added to procurement basket`);
+    toast.success(`${product.name} dimasukkan ke keranjang grosir`);
   };
 
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Loading Catalog...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Memuat Katalog Grosir...</p>
     </div>
   );
 
@@ -106,8 +106,8 @@ export default function WholesaleShopPage() {
                 Tier: {currentTier} Pricing Active
              </span>
           </div>
-          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-900 leading-none">Wholesale <br/> Laboratory.</h1>
-          <p className="text-sm font-medium text-slate-500">Secure your next batch of laboratory-grade specimens at your locked-in partner rates.</p>
+          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-900 leading-none">Belanja <br/> Grosir.</h1>
+          <p className="text-sm font-medium text-slate-500">Katalog produk khusus untuk cafe dan partner bisnis dengan harga tier aktif.</p>
         </div>
       </div>
 

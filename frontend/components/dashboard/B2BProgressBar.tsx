@@ -26,7 +26,7 @@ export function B2BProgressBar({ currentKg, targetKg }: B2BProgressBarProps) {
       <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden">
         <div 
           className={`h-full transition-all duration-1000 ease-out rounded-full ${isEligible ? 'bg-[var(--color-fermion-sea-green)]' : 'bg-[var(--color-fermion-french-blue)]'}`}
-          style={{ width: \`\${percentage}%\` }}
+          style={{ width: `${percentage}%` }}
         />
       </div>
       

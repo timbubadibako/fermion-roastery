@@ -119,7 +119,7 @@ export function RetailCatalog() {
       image: product.image_url,
       weight: "250g",
       grind: "Whole Bean",
-      priceType: product.priceType,
+      priceType: (product as any).priceType,
       original_price: Number(product.price_retail)
     });
 

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface Partner {
   id: string;
@@ -38,6 +39,8 @@ interface Partner {
 export default function PartnerManagement() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [partnerToReject, setPartnerToReject] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPartners();
@@ -65,6 +68,18 @@ export default function PartnerManagement() {
       }
     } catch (error) {
       toast.error("Failed to update partner protocol");
+    }
+  };
+
+  const openReject = (id: string) => {
+    setPartnerToReject(id);
+    setIsRejectModalOpen(true);
+  };
+
+  const confirmReject = () => {
+    if (partnerToReject) {
+      handleUpdateStatus(partnerToReject, 'rejected', null);
+      setPartnerToReject(null);
     }
   };
 
@@ -150,7 +165,12 @@ export default function PartnerManagement() {
                               <SelectItem value="Gold" className="text-[10px] font-bold uppercase">Gold Negotiation</SelectItem>
                             </SelectContent>
                           </Select>
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-red-50 text-red-400"><XCircle size={18} /></Button>
+                          <Button 
+                            onClick={() => openReject(partner.id)}
+                            variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-red-50 text-red-400"
+                          >
+                            <XCircle size={18} />
+                          </Button>
                         </div>
                       ) : (
                         <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-300"><MoreVertical size={18} /></Button>
@@ -163,6 +183,17 @@ export default function PartnerManagement() {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal 
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+        onConfirm={confirmReject}
+        title="Tolak Partner?"
+        description="Tindakan ini akan menolak aplikasi kemitraan cafe ini. Mereka tidak akan mendapatkan akses ke harga grosir."
+        confirmText="Tolak Partner"
+        cancelText="Batal"
+        variant="danger"
+      />
     </div>
   );
 }
