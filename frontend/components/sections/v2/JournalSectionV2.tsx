@@ -12,6 +12,7 @@ interface Post {
   slug: string;
   featured_image: string;
   published_at: string;
+  created_at?: string;
 }
 
 export function JournalSectionV2() {
@@ -92,7 +93,7 @@ export function JournalSectionV2() {
                            <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xl border border-white/50">
                               <Calendar size={12} className="text-fermion-french-blue" />
                               <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">
-                                 {new Date(post.published_at || post.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                                 {new Date(post.published_at || post.created_at || new Date()).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                               </span>
                            </div>
                         </div>

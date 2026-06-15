@@ -129,7 +129,7 @@ export default function B2BCheckoutPage() {
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Initializing Checkout Protocol...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Mempersiapkan Pesanan Grosir...</p>
     </div>
   );
 
@@ -149,18 +149,18 @@ export default function B2BCheckoutPage() {
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
       <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Initializing Checkout Protocol...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Mempersiapkan Pesanan Grosir...</p>
     </div>
   );
 
   if (items.length === 0) {
     return (
       <div className="space-y-12 pb-20 text-center pt-20">
-         <Package size={64} className="mx-auto text-slate-200" />
-         <h1 className="display-font text-4xl font-black italic">No Specimens Selected.</h1>
-         <p className="text-slate-500 font-medium">Please select items from the wholesale catalog before proceeding.</p>
+         <Package size={48} className="text-slate-200" />
+         <h1 className="display-font text-4xl font-black italic">Keranjang Grosir Kosong.</h1>
+         <p className="text-slate-500 font-medium">Silakan pilih produk grosir terlebih dahulu sebelum melanjutkan.</p>
          <Link href="/b2b/shop">
-            <Button className="bg-slate-900 text-white rounded-2xl h-14 px-8 uppercase font-black tracking-widest text-[10px]">Return to Catalog</Button>
+            <Button className="bg-slate-900 text-white rounded-2xl h-14 px-8 uppercase font-black tracking-widest text-[10px]">Kembali ke Katalog</Button>
          </Link>
       </div>
     );
@@ -170,10 +170,10 @@ export default function B2BCheckoutPage() {
     <div className="space-y-12 pb-20">
       <div className="space-y-2 text-left">
         <div className="flex items-center gap-2">
-           <span className="status-badge bg-periwinkle/10 text-periwinkle uppercase border border-periwinkle/20">Checkout_Protocol</span>
-           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Step 2 of 2</span>
+           <span className="status-badge bg-periwinkle/10 text-periwinkle uppercase border border-periwinkle/20">Protokol_Bayar</span>
+           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahap 2 dari 2</span>
         </div>
-        <h1 className="display-font text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Order <br/> Finalization.</h1>
+        <h1 className="display-font text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Penyelesaian <br/> Pesanan.</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -182,7 +182,7 @@ export default function B2BCheckoutPage() {
         <div className="lg:col-span-7 space-y-8">
            <div className="bg-white border border-slate-100 rounded-[3rem] p-10 space-y-8 shadow-sm">
               <div className="flex items-center justify-between">
-                 <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">Logistics Destination</h3>
+                 <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400">Tujuan Pengiriman</h3>
                  <MapPin size={16} className="text-slate-300" />
               </div>
 
@@ -193,7 +193,7 @@ export default function B2BCheckoutPage() {
                  >
                     <div className="flex items-center gap-3 mb-4">
                        <Building2 size={16} className={useDefaultAddress ? "text-periwinkle" : "text-slate-400"} />
-                       <span className={`text-[10px] font-black uppercase tracking-widest ${useDefaultAddress ? "text-slate-900" : "text-slate-500"}`}>Default Cafe Address</span>
+                       <span className={`text-[10px] font-black uppercase tracking-widest ${useDefaultAddress ? "text-slate-900" : "text-slate-500"}`}>Alamat Cafe Default</span>
                     </div>
                     <p className="text-xs font-bold text-slate-900 mb-1">{partner?.company_name}</p>
                     <p className="text-[10px] text-slate-500 font-medium leading-relaxed">{partner?.address || "Jl. Sudirman No. 1, Jakarta Selatan"}</p>
@@ -260,7 +260,7 @@ export default function B2BCheckoutPage() {
            <div className="bg-slate-950 text-white rounded-[3.5rem] p-10 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-periwinkle/10 blur-3xl -mr-32 -mt-32" />
               <div className="space-y-8 relative z-10">
-                 <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Selected Matrix</h3>
+                 <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Ringkasan Pesanan</h3>
                  
                  <div className="space-y-4">
                     {items.map(item => (
@@ -277,17 +277,17 @@ export default function B2BCheckoutPage() {
                  <div className="bg-white/10 border border-white/20 rounded-2xl p-4 flex items-start gap-3">
                     <Info size={16} className="text-periwinkle mt-0.5 shrink-0" />
                     <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest leading-relaxed">
-                       This purchase of <span className="text-white">{totalVolumeKg}KG</span> will be added to your monthly accumulation.
+                       Pembelian sebesar <span className="text-white">{totalVolumeKg}KG</span> ini akan ditambahkan ke akumulasi bulanan Anda.
                     </p>
                  </div>
 
                  <div className="space-y-4 pt-4">
                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
-                       <span>Selected Subtotal</span>
+                       <span>Subtotal Produk</span>
                        <span className="font-mono text-slate-300">Rp {subtotal.toLocaleString('id-ID')}</span>
                     </div>
                     <div className="flex justify-between text-lg font-black uppercase italic text-white pt-4 border-t border-white/20">
-                       <span>Net Settlement</span>
+                       <span>Total Pembayaran</span>
                        <span className="font-mono text-periwinkle">Rp {grandTotal.toLocaleString('id-ID')}</span>
                     </div>
                  </div>
@@ -297,7 +297,7 @@ export default function B2BCheckoutPage() {
                    disabled={processing || !selectedCourier}
                    className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] italic text-[10px] rounded-2xl hover:bg-periwinkle hover:text-white transition-all shadow-xl"
                  >
-                    {processing ? <Loader2 className="animate-spin" /> : "Finalize & Pay Invoice"}
+                    {processing ? <Loader2 className="animate-spin" /> : "Bayar Invoice Sekarang"}
                  </Button>
               </div>
            </div>

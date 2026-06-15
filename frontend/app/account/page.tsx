@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { toast } from "sonner";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface Order {
   id: string;
@@ -21,6 +22,7 @@ interface Order {
   created_at: string;
   shipping_awb?: string;
   shipping_courier?: string;
+  biteship_order_id?: string;
   rejection_reason?: string;
   items: any[];
 }
@@ -33,6 +35,9 @@ export default function RetailAccountPage() {
   const [trackingHistory, setTrackingHistory] = useState<any[]>([]);
   const [isTrackingLoading, setIsTrackingLoading] = useState(false);
   const [isTrackingExpanded, setIsTrackingExpanded] = useState(false);
+  
+  const [isDeliverModalOpen, setIsDeliverModalOpen] = useState(false);
+  const [orderToDeliver, setOrderToConfirmDeliver] = useState<string | null>(null);
 
   // Form states
   const [profileData, setProfileData] = useState({
@@ -130,6 +135,25 @@ export default function RetailAccountPage() {
     } catch (e: any) {
       console.error("Update Profile Error:", e);
       toast.error("Gagal terhubung ke server.");
+    }
+  };
+
+  const handleConfirmReceipt = async () => {
+    if (!orderToDeliver) return;
+    try {
+      const res = await fetch(`/api/admin/orders/${orderToDeliver}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'DELIVERED' })
+      });
+      if (res.ok) {
+        toast.success("Pesanan selesai. Terima kasih telah berbelanja!");
+        fetchOrders();
+      }
+    } catch (e) {
+      toast.error("Gagal melakukan konfirmasi");
+    } finally {
+      setOrderToConfirmDeliver(null);
     }
   };
 
@@ -310,6 +334,10 @@ export default function RetailAccountPage() {
                                  {isTrackingExpanded ? "Tutup Detail Paket" : "Pantau Perjalanan Paket"} <Navigation size={14} className="ml-2" />
                               </Button>
                               <Button 
+                                onClick={() => {
+                                  setOrderToConfirmDeliver(recentOrder.id);
+                                  setIsDeliverModalOpen(true);
+                                }}
                                 variant="outline"
                                 className="flex-1 border-slate-200 text-slate-400 hover:text-slate-900 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] transition-all"
                               >
@@ -506,6 +534,16 @@ export default function RetailAccountPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmationModal 
+        isOpen={isDeliverModalOpen}
+        onClose={() => setIsDeliverModalOpen(false)}
+        onConfirm={handleConfirmReceipt}
+        title="Selesaikan Pesanan?"
+        description="Apakah Anda yakin paket sudah diterima dengan baik? Tindakan ini akan menyelesaikan status pesanan Anda."
+        confirmText="Ya, Sudah Diterima"
+        cancelText="Belum"
+      />
     </div>
   );
 }

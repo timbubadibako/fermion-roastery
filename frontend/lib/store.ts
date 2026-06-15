@@ -27,6 +27,7 @@ interface CartStore {
   clearCart: () => void;
   setItems: (items: CartItem[]) => void;
   getTotal: (onlySelected?: boolean) => number;
+  syncWithServer: () => Promise<void>;
 }
 
 export const useCartStore = create<CartStore>()(

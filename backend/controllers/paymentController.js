@@ -5,6 +5,7 @@ import axios from 'axios';
 import { query } from '../lib/db.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 import { publishEvent } from '../lib/ably.js';
+import { sendOrderNotification } from '../lib/notifications.js';
 
 dotenv.config();
 
@@ -185,13 +186,13 @@ export const handleNotification = async (req, res) => {
 
   try {
     // 0. Flexible Lookup: Try xendit_invoice_id first, then fallback to internal order id
-    let currentOrderRes = await query("SELECT status, id, biteship_order_id FROM orders WHERE xendit_invoice_id = $1", [external_id]);
+    let currentOrderRes = await query("SELECT status, id, biteship_order_id, customer_name, customer_email, customer_phone FROM orders WHERE xendit_invoice_id = $1", [external_id]);
     
     if (currentOrderRes.rows.length === 0) {
       console.log(`🔍 Invoice ID not found, trying fallback to Order ID: ${external_id}`);
       // Clean ID from # if present
       const cleanId = external_id.replace('#', '').toLowerCase();
-      currentOrderRes = await query("SELECT status, id, biteship_order_id FROM orders WHERE id::text = $1", [cleanId]);
+      currentOrderRes = await query("SELECT status, id, biteship_order_id, customer_name, customer_email, customer_phone FROM orders WHERE id::text = $1", [cleanId]);
     }
 
     const currentOrder = currentOrderRes.rows[0];
@@ -218,6 +219,45 @@ export const handleNotification = async (req, res) => {
 
       console.log(`✅ Order ${currentOrder.id} status updated to PAID via Webhook.`);
       publishEvent('orders', 'order_updated', { id: currentOrder.id, status: 'PAID' });
+      await sendOrderNotification(currentOrder.id, currentOrder.customer_name, currentOrder.customer_email, currentOrder.customer_phone);
+
+      // --- INVENTORY SYNC ---
+      try {
+        const itemsRes = await query("SELECT product_id, variant_weight, quantity FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL", [currentOrder.id]);
+        
+        for (const item of itemsRes.rows) {
+          let deductionUnits = 0;
+          const weightLower = (item.variant_weight || "250g").toLowerCase();
+          
+          if (weightLower.includes('250g')) {
+            deductionUnits = item.quantity * 1;
+          } else if (weightLower.includes('500g')) {
+            deductionUnits = item.quantity * 2;
+          } else if (weightLower.includes('1kg') || weightLower.includes('1000g')) {
+            deductionUnits = item.quantity * 4;
+          } else {
+             // Fallback dynamic parser
+             const match = weightLower.match(/(\d+)(g|kg)/);
+             if (match) {
+               const val = parseInt(match[1]);
+               const unit = match[2];
+               const grams = unit === 'kg' ? val * 1000 : val;
+               deductionUnits = item.quantity * (grams / 250);
+             }
+          }
+          
+          if (deductionUnits > 0) {
+            await query(
+              "UPDATE products SET stock_quantity = stock_quantity - $1 WHERE id = $2",
+              [deductionUnits, item.product_id]
+            );
+            console.log(`📦 Inventory Sync: Deducted ${deductionUnits} units (250g/unit) from product ${item.product_id}`);
+          }
+        }
+      } catch (invError) {
+        console.error('❌ Inventory Sync Error:', invError);
+      }
+      // ----------------------
 
       // --- BITESHIP CONFIRMATION ---
       if (currentOrder.biteship_order_id) {
