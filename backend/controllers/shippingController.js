@@ -1,5 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { query } from '../lib/db.js';
 
 dotenv.config();
 
@@ -89,23 +90,62 @@ export const getRates = async (req, res) => {
 };
 
 /**
+ * Get real-time tracking history from our local database (Cached from webhooks)
+ */
+export const getTracking = async (req, res) => {
+  const { id } = req.params; // internal order_id
+
+  try {
+    const result = await query(
+      `SELECT status, note, updated_at 
+       FROM tracking_history 
+       WHERE order_id = $1 OR order_id::text IN (SELECT id::text FROM orders WHERE biteship_order_id = $1 OR shipping_awb = $1)
+       ORDER BY updated_at DESC`,
+      [id]
+    );
+    res.status(200).json({ history: result.rows });
+  } catch (error) {
+    console.error('Local Tracking Fetch Error:', error);
+    res.status(500).json({ message: "Failed to fetch tracking info" });
+  }
+};
+
+/**
  * Handle Webhook from Biteship for tracking updates
  */
-import { query } from '../lib/db.js';
-
 export const handleBiteshipWebhook = async (req, res) => {
   console.log('🚚 Biteship Webhook Received:', JSON.stringify(req.body, null, 2));
 
-  const { event, order_id, status, courier } = req.body;
+  const { event, order_id, status, courier, note } = req.body;
   const waybill_id = courier?.waybill_id;
 
   try {
-    // Mapping status Biteship ke status Database kita
+    // 1. Find the internal order ID
+    const orderLookup = await query(
+      "SELECT id FROM orders WHERE biteship_order_id = $1 OR shipping_awb = $2",
+      [order_id, waybill_id]
+    );
+
+    if (orderLookup.rows.length === 0) {
+      console.log(`⚠️ Webhook received for unknown order: ${order_id} / ${waybill_id}`);
+      return res.status(200).send('OK');
+    }
+
+    const internalOrderId = orderLookup.rows[0].id;
+
+    // 2. Save history event
+    await query(
+      "INSERT INTO tracking_history (order_id, status, note, updated_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
+      [internalOrderId, status, note || `Status updated to ${status}`]
+    );
+
+    // 3. Mapping status Biteship ke status Database utama kita
     let newStatus = null;
 
     switch (status) {
       case 'picked_up':
       case 'dropping_off':
+      case 'picked':
         newStatus = 'SHIPPED';
         break;
       case 'delivered':
@@ -118,25 +158,16 @@ export const handleBiteshipWebhook = async (req, res) => {
       case 'returned':
         newStatus = 'RETURNED';
         break;
-      default:
-        console.log(`ℹ️ Status ${status} ignored (No mapping).`);
     }
 
     if (newStatus) {
-      // Cari order berdasarkan biteship_order_id ATAU waybill_id (resi)
-      const updateRes = await query(
-        `UPDATE orders 
-         SET status = $1, updated_at = CURRENT_TIMESTAMP 
-         WHERE biteship_order_id = $2 OR shipping_awb = $3
-         RETURNING id`,
-        [newStatus, order_id, waybill_id]
+      await query(
+        "UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+        [newStatus, internalOrderId]
       );
-
-      if (updateRes.rows.length > 0) {
-        console.log(`✅ Order ${updateRes.rows[0].id} updated to ${newStatus} via Biteship Webhook.`);
-      } else {
-        console.log(`⚠️ Webhook received for order ${order_id} / ${waybill_id} but not found in database.`);
-      }
+      console.log(`✅ Order ${internalOrderId} updated to ${newStatus} and history recorded.`);
+    } else {
+      console.log(`ℹ️ History recorded for order ${internalOrderId}, status ${status} (No main status update).`);
     }
 
     res.status(200).send('Webhook Processed');

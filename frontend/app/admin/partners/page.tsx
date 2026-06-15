@@ -1,16 +1,29 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, Loader2 } from "lucide-react";
+import { 
+  Users, 
+  CheckCircle2, 
+  XCircle, 
+  Clock, 
+  FileText, 
+  ShieldAlert, 
+  Loader2,
+  ExternalLink,
+  MoreVertical,
+  ChevronRight
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import {
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface Partner {
   id: string;
@@ -18,15 +31,16 @@ interface Partner {
   address: string;
   estimated_volume_kg: string;
   status: string;
-  tier_name: string | null;
-  created_at: string;
+  tier_name: string;
   email: string;
   full_name: string;
 }
 
-export default function AdminPartnersPage() {
+export default function PartnerManagement() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [partnerToReject, setPartnerToReject] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPartners();
@@ -35,154 +49,151 @@ export default function AdminPartnersPage() {
   const fetchPartners = async () => {
     try {
       const res = await fetch("/api/admin/partners");
-      if (res.ok) {
-        const data = await res.json();
-        setPartners(data);
-      } else {
-        toast.error("Failed to load partners");
-      }
-    } catch (error) {
-      toast.error("Network error");
+      if (res.ok) setPartners(await res.json());
     } finally {
       setLoading(false);
     }
   };
 
   const handleUpdateStatus = async (id: string, status: string, tier: string | null) => {
-    if (status === 'approved' && !tier) {
-      toast.error("Please select a tier before approving.");
-      return;
-    }
-
     try {
       const res = await fetch(`/api/admin/partners/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, tier_name: tier }),
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, tier_name: tier })
       });
-
       if (res.ok) {
-        toast.success(`Partner ${status} successfully!`);
-        fetchPartners(); // Refresh list
-      } else {
-        toast.error("Failed to update status");
+        toast.success(`Partner ${status} successfully`);
+        fetchPartners();
       }
     } catch (error) {
-      toast.error("Network error");
+      toast.error("Failed to update partner protocol");
     }
   };
 
-  if (loading) return <div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-fermion-blue" /></div>;
+  const openReject = (id: string) => {
+    setPartnerToReject(id);
+    setIsRejectModalOpen(true);
+  };
+
+  const confirmReject = () => {
+    if (partnerToReject) {
+      handleUpdateStatus(partnerToReject, 'rejected', null);
+      setPartnerToReject(null);
+    }
+  };
+
+  if (loading) return (
+    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
+      <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Querying Partner Database...</p>
+    </div>
+  );
 
   return (
     <div className="space-y-12">
-        {/* Header */}
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 uppercase italic">
-            Wholesale Partners.
-          </h1>
-          <p className="text-sm text-slate-500 font-medium max-w-xl">
-            Review B2B applications and manage your wholesale network tiers.
-          </p>
-        </div>
+      <div className="space-y-2 text-left">
+        <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Partner <br/> Relations.</h1>
+        <p className="text-sm font-medium text-slate-500">Verify contracts and manage B2B partnership lifecycles.</p>
+      </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Business Details</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Est. Volume</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status / Tier</th>
-                  <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {partners.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-12 text-center text-slate-400 text-sm font-medium">
-                      No applications found.
+      <div className="bg-white border border-slate-100 rounded-[3.5rem] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/50 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="p-8">Entity Details</th>
+                <th className="p-8">Contract Phase</th>
+                <th className="p-8">Protocol Target</th>
+                <th className="p-8">System Status</th>
+                <th className="p-8 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {partners.length === 0 ? (
+                <tr><td colSpan={5} className="p-20 text-center text-slate-300 font-bold uppercase tracking-widest text-xs italic">No partnership records found.</td></tr>
+              ) : (
+                partners.map((partner, i) => (
+                  <motion.tr 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    key={partner.id} 
+                    className="hover:bg-slate-50/50 transition-colors"
+                  >
+                    <td className="p-8">
+                      <div className="space-y-1">
+                        <p className="font-black uppercase italic text-slate-900 tracking-tight">{partner.company_name}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">{partner.email}</p>
+                      </div>
                     </td>
-                  </tr>
-                ) : (
-                  partners.map((partner) => (
-                    <tr key={partner.id} className="hover:bg-slate-50/30 transition-colors">
-                      <td className="p-6">
-                        <div className="space-y-1">
-                          <p className="font-bold text-slate-900 uppercase tracking-tight">{partner.company_name}</p>
-                          <p className="text-xs text-slate-500">{partner.address}</p>
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <div className="space-y-1">
-                          <p className="font-semibold text-slate-700 text-sm">{partner.full_name}</p>
-                          <p className="text-xs text-slate-500">{partner.email}</p>
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600">
-                          {partner.estimated_volume_kg}
-                        </span>
-                      </td>
-                      <td className="p-6">
-                        <div className="space-y-2">
-                          {partner.status === 'pending' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-700">
-                              <Clock size={12} /> Pending
-                            </span>
-                          )}
-                          {partner.status === 'approved' && (
-                            <div className="flex flex-col gap-1">
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 w-fit">
-                                <CheckCircle2 size={12} /> Approved
-                              </span>
-                              <span className="text-[10px] font-bold text-fermion-blue">Tier: {partner.tier_name}</span>
-                            </div>
-                          )}
-                          {partner.status === 'rejected' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-100 text-red-700">
-                              <XCircle size={12} /> Rejected
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-6 text-right">
-                        {partner.status === 'pending' ? (
-                          <div className="flex items-center justify-end gap-2">
-                            <Select onValueChange={(tier) => handleUpdateStatus(partner.id, 'approved', tier)}>
-                              <SelectTrigger className="w-[120px] h-9 text-[10px] font-bold uppercase tracking-widest bg-white border-slate-200">
-                                <SelectValue placeholder="Assign Tier" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Bronze">Bronze Tier</SelectItem>
-                                <SelectItem value="Silver">Silver Tier</SelectItem>
-                                <SelectItem value="Gold">Gold Tier</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            
-                            <Button 
-                              variant="ghost" 
-                              onClick={() => handleUpdateStatus(partner.id, 'rejected', null)}
-                              className="h-9 px-3 text-red-500 hover:text-red-600 hover:bg-red-50 text-[10px] font-bold uppercase tracking-widest"
-                            >
-                              Reject
-                            </Button>
-                          </div>
-                        ) : (
-                           <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                             Locked
-                           </span>
+                    <td className="p-8">
+                      <button className="flex items-center gap-2 text-periwinkle group">
+                         <FileText size={16} />
+                         <span className="text-[10px] font-black uppercase underline decoration-periwinkle/30 group-hover:decoration-periwinkle transition-all">Review_Agreement.pdf</span>
+                      </button>
+                    </td>
+                    <td className="p-8 font-bold text-xs">
+                      {partner.estimated_volume_kg} <span className="text-slate-300 font-medium">KG / MO</span>
+                    </td>
+                    <td className="p-8">
+                      <div className="space-y-2">
+                        {partner.status === 'onboarding' && (
+                          <span className="status-badge bg-blue-50 text-blue-500 uppercase">En_Route</span>
                         )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                        {partner.status === 'awaiting_contract_review' && (
+                          <span className="status-badge bg-purple-50 text-purple-600 uppercase border border-purple-100">Pending_Verification</span>
+                        )}
+                        {partner.status === 'approved' && (
+                          <div className="flex flex-col gap-1">
+                            <span className="status-badge bg-emerald-50 text-emerald-600 uppercase">Authorized_Partner</span>
+                            <span className="text-[9px] font-black text-periwinkle uppercase tracking-widest">{partner.tier_name} Tier</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-8 text-right">
+                      {['onboarding', 'awaiting_contract_review', 'pending'].includes(partner.status) ? (
+                        <div className="flex items-center justify-end gap-3">
+                          <Select onValueChange={(tier) => handleUpdateStatus(partner.id, 'approved', tier)}>
+                            <SelectTrigger className="w-[140px] h-10 text-[9px] font-black uppercase tracking-widest bg-white border-slate-200 rounded-xl">
+                              <SelectValue placeholder="Authorize Tier" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Bronze" className="text-[10px] font-bold uppercase">Bronze Protocol</SelectItem>
+                              <SelectItem value="Silver" className="text-[10px] font-bold uppercase">Silver Protocol</SelectItem>
+                              <SelectItem value="Gold" className="text-[10px] font-bold uppercase">Gold Negotiation</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button 
+                            onClick={() => openReject(partner.id)}
+                            variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-red-50 text-red-400"
+                          >
+                            <XCircle size={18} />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-slate-300"><MoreVertical size={18} /></Button>
+                      )}
+                    </td>
+                  </motion.tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      <ConfirmationModal 
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+        onConfirm={confirmReject}
+        title="Tolak Partner?"
+        description="Tindakan ini akan menolak aplikasi kemitraan cafe ini. Mereka tidak akan mendapatkan akses ke harga grosir."
+        confirmText="Tolak Partner"
+        cancelText="Batal"
+        variant="danger"
+      />
     </div>
   );
 }

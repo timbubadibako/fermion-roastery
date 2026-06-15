@@ -14,12 +14,13 @@ import {
   ChevronRight
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store";
 
 const menuItems = [
   { 
     group: "Overview", 
     items: [
-      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "View Website", href: "/", icon: ChevronRight },
     ]
   },
   { 
@@ -40,6 +41,7 @@ const menuItems = [
   { 
     group: "Content", 
     items: [
+      { name: "FAQs", href: "/admin/faqs", icon: BookOpen },
       { name: "Journal", href: "/admin/journal", icon: BookOpen },
       { name: "Settings", href: "/admin/settings", icon: Settings },
     ]
@@ -49,15 +51,15 @@ const menuItems = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
 
   const handleLogout = () => {
-    // Clear the security cookie
-    document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    logout();
     router.push("/auth");
   };
 
   return (
-    <aside className="w-64 bg-[#101828] h-screen fixed left-0 top-0 text-white flex flex-col z-50">
+    <aside className="w-64 bg-[#101828] h-screen fixed left-0 top-0 text-white flex flex-col z-50 border-r border-white/5">
       {/* Brand Header */}
       <div className="p-8 pb-12">
         <h2 className="text-2xl font-black italic tracking-tighter uppercase leading-none">Fermion.</h2>
@@ -84,7 +86,7 @@ export function AdminSidebar() {
                     <item.icon size={18} strokeWidth={pathname === item.href ? 2.5 : 2} />
                     <span>{item.name}</span>
                   </div>
-                  {pathname === item.href && <ChevronRight size={14} className="text-fermion-blue" />}
+                  {pathname === item.href && <ChevronRight size={14} className="text-fermion-french-blue" />}
                 </Link>
               ))}
             </div>

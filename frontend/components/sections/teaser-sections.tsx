@@ -29,7 +29,7 @@ export function JournalTeaserSection() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-16 space-y-4">
-            <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+            <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
               The Fermion Journal
             </p>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -39,7 +39,7 @@ export function JournalTeaserSection() {
                 The Beans.
               </h2>
               <Link href="/journal">
-                <button className="inline-flex items-center gap-2 px-6 py-3 text-fermion-blue font-black tracking-widest text-[10px] uppercase border-b-2 border-fermion-blue hover:text-fermion-lilac hover:border-fermion-lilac transition-all">
+                <button className="inline-flex items-center gap-2 px-6 py-3 text-fermion-french-blue font-black tracking-widest text-[10px] uppercase border-b-2 border-fermion-french-blue hover:text-fermion-lilac hover:border-fermion-lilac transition-all">
                   Read Journal
                   <ArrowRight size={14} />
                 </button>
@@ -57,7 +57,7 @@ export function JournalTeaserSection() {
                     text={article.category}
                     className="aspect-video group-hover:shadow-lg transition-all duration-300"
                   />
-                  <h3 className="text-lg font-black tracking-tighter text-foreground uppercase group-hover:text-fermion-blue transition-colors">
+                  <h3 className="text-lg font-black tracking-tighter text-foreground uppercase group-hover:text-fermion-french-blue transition-colors">
                     {article.title}
                   </h3>
                 </div>
@@ -79,7 +79,7 @@ export function OurStoryTeaserSection() {
             {/* Left: Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+                <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
                   The Roastery Story
                 </p>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic">
@@ -98,7 +98,7 @@ export function OurStoryTeaserSection() {
               </p>
 
               <Link href="/our-story">
-                <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-blue/40 transition-all">
+                <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all">
                   Learn Our Story
                   <ArrowRight size={16} />
                 </button>

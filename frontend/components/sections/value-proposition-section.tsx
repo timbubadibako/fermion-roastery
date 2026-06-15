@@ -25,7 +25,7 @@ export function ValuePropositionSection() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-20 space-y-4">
-            <p className="text-[10px] font-black text-fermion-blue tracking-[0.4em] uppercase">
+            <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
               Why Fermion
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground uppercase italic">
@@ -40,10 +40,10 @@ export function ValuePropositionSection() {
             {values.map((value) => (
               <div
                 key={value.number}
-                className="relative bg-fermion-soft rounded-3xl p-8 md:p-10 border border-fermion-blue/10 hover:shadow-lg hover:shadow-fermion-blue/10 transition-all duration-500"
+                className="relative bg-fermion-soft rounded-3xl p-8 md:p-10 border border-fermion-french-blue/10 hover:shadow-lg hover:shadow-fermion-french-blue/10 transition-all duration-500"
               >
                 {/* Number */}
-                <span className="absolute top-6 right-8 text-6xl font-black text-fermion-blue/5 italic">
+                <span className="absolute top-6 right-8 text-6xl font-black text-fermion-french-blue/5 italic">
                   {value.number}
                 </span>
 

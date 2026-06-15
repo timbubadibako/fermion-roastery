@@ -1,77 +1,65 @@
-# ☕ Fermion Roastery - Project Progress
+# Fermion Roastery - Master Implementation & User Journey TODO
 
-## ✅ Completed
-- [x] Initial Brainstorming & Design Spec
-- [x] Architecture selection (Engine-Heavy Hybrid)
-- [x] Backend Setup (Express v5, Supabase, Axios)
-- [x] Frontend Setup (Next.js 15, Tailwind v4)
-- [x] Fix Frontend Build & Runtime Errors
-- [x] Finalize Artisan Navigation (Our Coffee, Wholesale, Subscription, Journal, Our Story)
-- [x] Implement Dynamic Floating Navbar (Pill transition + Glassmorphism)
-- [x] Setup Multi-page Routing & Under Construction placeholders
-- [x] Setup Local Postgres Database (`fermion`)
-- [x] Implement Core Schema (Products, Pricing Tiers, B2B Partners, Batches)
-- [x] Connect Express Backend to Local Postgres
-- [x] Build Product API with Dynamic Pricing data
-- [x] Create B2B Onboarding Flow (Multi-step form)
+## 📂 Phase 0: Workspace & Infrastructure (Done)
+- [x] **Cleanup:** Removed legacy SQA screenshots, logs, and unused templates.
+- [x] **Database:** Postgres Schema established with support for B2B tiers, Orders, and Tracking History.
+- [x] **Logistics:** Biteship API integrated (Area Search, Rates, Draft Confirmation).
+- [x] **Payments:** Xendit Invoice API integrated with automated webhook handlers.
+- [x] **Real-time:** Robust polling (15s) and Ably-ready infrastructure for Admin/User sync.
 
-## ⏳ To Do
+---
 
-### Phase 1: Core Engine & Data Architecture (Postgres)
-- [x] Setup Production Postgres Database
-- [x] Implement Core Schema (Products, Batches, Pricing)
-- [x] Connect Express Backend to Postgres
-- [x] Build Basic Product API (CRUD)
+## ☕ Phase 1: Retail Customer Journey (Production Ready)
+### 1.1 Authentication & Profile
+- [x] **Login/Register:** Standard retail entry via `/auth`.
+- [x] **Account Management:** Save full shipping address (City, Postal Code, Phone) in `/account`.
+- [x] **Auto-Fill:** Address is automatically injected into the checkout form from the profile.
 
-### Phase 2: B2B Core Logic
-- [ ] Implement Google Places API in Backend (Scraping/API Proxy) - *Skipped/Pending API Key*
-- [x] Create B2B Onboarding Flow (Full-stack integration)
-- [x] Setup Tiered Pricing & Contract Logic (Pricing Engine)
-- [x] Automated Invoicing System (PDF Generation)
-- [x] B2B Partner Admin Approval Dashboard
+### 1.2 The "Ritual" Purchase Flow
+- [x] **Catalog:** Browse beans with dynamic weight and grind variants.
+- [x] **Selective Checkout:** Toggle specific items in the cart sidebar to purchase.
+- [x] **Biteship Area Search:** Real-time city/district lookup during checkout.
+- [x] **Courier Selection:** Live shipping rates from JNE, SiCepat, J&T, etc.
+- [x] **Payment Redirect:** Instant hand-off to Xendit Secure Checkout.
 
-### Phase 3: Marketplace & Auth
-- [x] Implement Custom Local Auth (Laravel Breeze style)
-- [x] Link Profiles & Roles to Postgres
-- [x] Product Catalog with "Interactive Stickers"
-- [x] Cart & Checkout (Xendit Integration)
-### Phase 4: Full Order Fulfillment Pipeline (Marketplace v2.0)
-- [x] Database Migration (Orders & Order Items Tables)
-- [ ] Add `category` or `brew_method` column to `products` table (For Espresso/Filter filtering)
-- [x] Refine Order State Machine (Add `READY_TO_SHIP` state)
-- [x] Implement Backend Price Locking (Checkout Snapshot)
-- [x] Implement Xendit Webhook Idempotency (Duplicate Prevention)
-- [x] Refine Role-Dynamic Header (4 Role Faces)
-- [x] Server-side Cart Persistence (Synced per User)
-- [ ] Implement Admin "Magic Wand" (Quick Edit Buttons)
-- [x] Basic Customer Tracking Timeline UI
-- [/] Advanced B2B Dashboard (Tier Progress mockup done)
-- [x] Geolocation Helper ("Use Current Location" button)
+### 1.3 Post-Purchase Experience
+- [x] **Order Status:** 5-step visual tracker (Menunggu Bayar -> Dibayar -> Diproses -> Dipanggang -> Dikirim).
+- [x] **Expandable Tracking:** Click "Pantau Detail Paket" to see vertical timeline history (cost-saving local cache).
+- [x] **Cancellation Awareness:** Clear UI feedback if an order is rejected with reasons.
 
-### Phase 5: Production Polish
-- [ ] Admin Real-time Chat Panel
-- [ ] Admin Batch Roasting Management UI
-- [ ] Final UI Refinement & Responsive Audit
-- [ ] Production Deployment (Vercel & Render)
+---
 
-          initial={{ x: -100, y: 800, rotate: 20 }}
-          animate={{ x: -45, y: 25, rotate: 20 }}
+## 🏢 Phase 2: B2B Partner Ecosystem (Enterprise Ready)
+### 2.1 Self-Service Onboarding
+- [x] **B2B Registration:** Story-driven onboarding flow at `/b2b/register`.
+- [x] **Contract Protocol:** Optional PDF contract upload and tier explanation.
+- [x] **Verification:** Admin approval gate (Status changes from 'pending' to 'approved').
 
-          FERMION
-Precision roasted coffee engineered with scientific rigor and artisan passion. Direct sourced from Java's finest farms.
+### 2.2 Wholesale Procurement
+- [x] **B2B Shop:** Specialized wholesale catalog with bulk volume options.
+- [x] **Tiered Pricing:** Automatic logic for Bronze/Silver discounts based on monthly volume.
+- [x] **Cart Interceptor:** Forces B2B users to the wholesale checkout to prevent retail price leakage.
+- [x] **B2B Ledger:** Private procurement history and digital contract management.
 
-Shop
-Our Coffee
-Subscription
-Wholesale
-Account
-About
-Our Story
-Journal
-Contact
-B2B Register
-Service
-FAQ
-Shipping
-Returns
-Privacy
+---
+
+## 🛠️ Phase 3: Admin Command Center (Laboratory Ops)
+### 3.1 Fulfillment Kanban (The Hub)
+- [x] **5-Column Pipeline:** Total control over the Roastery workflow.
+- [x] **Manual Override:** Admin can confirm payments manually if webhooks are delayed.
+- [x] **Decision Gate:** Accept or Reject orders with custom feedback notes for customers.
+- [x] **Logistics Print:** One-click "Print Shipping Label" (Direct Biteship PDF).
+
+### 3.2 Inventory & Commerce
+- [x] **Manual Ledger:** Record offline (WhatsApp) sales with automatic stock deduction.
+- [x] **B2B Partner Management:** Approve/Reject partner applications and assign tiers.
+- [x] **Site Settings:** Update landing page content and roastery journal entries dynamically.
+
+---
+
+## 🚀 Final Production Checklist (Remaining)
+- [ ] **Live Keys:** Transition from Xendit/Biteship TEST keys to LIVE environment.
+- [ ] **Webhook Tunneling:** Setup permanent production URL for Biteship/Xendit callbacks.
+- [ ] **Inventory Sync:** Automated stock deduction on PAID webhook (Retail & B2B).
+- [ ] **Notifications:** Email/WA trigger upon order confirmation.
+- [ ] **Performance:** Final image optimization and Next.js build verification.

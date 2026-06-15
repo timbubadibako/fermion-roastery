@@ -8,7 +8,7 @@ import { Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp, Coffee, 
 import { Separator } from "@/components/ui/separator";
 
 interface CoffeeProduct {
-  id: number;
+  id: string;
   name: string;
   notes: string;
   origin: string;
@@ -33,7 +33,7 @@ function CharacterLevel({ label, level }: { label: string; level: number }) {
         {[1, 2, 3, 4, 5].map((i) => (
           <div 
             key={i} 
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i <= level ? "bg-fermion-blue" : "bg-slate-200"}`} 
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i <= level ? "bg-fermion-french-blue" : "bg-slate-200"}`} 
           />
         ))}
       </div>
@@ -41,11 +41,14 @@ function CharacterLevel({ label, level }: { label: string; level: number }) {
   );
 }
 
-import { useCartStore } from "@/lib/store";
+import { useCartStore, useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ProductPage() {
   const { id } = useParams();
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [product, setProduct] = useState<CoffeeProduct | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<CoffeeProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +61,7 @@ export default function ProductPage() {
   
   const addItem = useCartStore((state) => state.addItem);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (silent: boolean = false) => {
     if (!product) return;
     
     addItem({
@@ -69,11 +72,21 @@ export default function ProductPage() {
       image: product.image,
       weight: weight,
       grind: grind
-    });
+    }, silent); // Use silent as the selectOnly flag
 
-    toast.success(`${product.name} added to cart!`, {
-      description: `${weight} • ${grind}`,
-    });
+    if (!silent) {
+      toast.success(`${product.name} added to cart!`, {
+        description: `${weight} • ${grind}`,
+      });
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    // selectOnly = true will unselect everything else
+    handleAddToCart(true); 
+    const checkoutPath = user?.role === 'B2B' ? "/b2b/checkout" : "/cart";
+    router.push(checkoutPath);
   };
 
   useEffect(() => {
@@ -109,7 +122,7 @@ export default function ProductPage() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
       <div className="flex flex-col items-center gap-4">
-        <Loader2 className="w-12 h-12 text-fermion-blue animate-spin" />
+        <Loader2 className="w-12 h-12 text-fermion-french-blue animate-spin" />
         <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Grinding details...</p>
       </div>
     </div>
@@ -145,7 +158,7 @@ export default function ProductPage() {
             <div className="bg-white/40 backdrop-blur-sm rounded-[2rem] p-8 border border-slate-100 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white rounded-2xl shadow-sm">
-                  <Coffee size={24} className="text-fermion-blue" />
+                  <Coffee size={24} className="text-fermion-french-blue" />
                 </div>
                 <div>
                    <h3 className="text-sm font-black tracking-widest uppercase">Brewing Guide</h3>
@@ -184,7 +197,7 @@ export default function ProductPage() {
               <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase italic leading-none">
                 {product.name}
               </h1>
-              <p className="text-sm font-bold text-fermion-blue uppercase tracking-widest">
+              <p className="text-sm font-bold text-fermion-french-blue uppercase tracking-widest">
                 {product.notes}
               </p>
               <div className="pt-4">
@@ -271,7 +284,7 @@ export default function ProductPage() {
               <div className="space-y-3">
                 <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Roast Profile</p>
                 <div className="flex items-center gap-3 py-1">
-                   <div className="w-2 h-2 rounded-full bg-fermion-blue animate-pulse" />
+                   <div className="w-2 h-2 rounded-full bg-fermion-french-blue animate-pulse" />
                    <span className="text-xs font-black text-slate-900 tracking-widest uppercase italic">
                       {product.roast_profile || "Medium Roast"}
                    </span>
@@ -304,12 +317,15 @@ export default function ProductPage() {
             {/* CTA Buttons */}
             <div className="space-y-4 pt-6 border-t border-slate-50 mt-6">
               <button 
-               onClick={handleAddToCart}
+               onClick={() => handleAddToCart(false)}
                className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.15em] hover:bg-slate-900 hover:text-white transition-all duration-500 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 uppercase text-center"
               >
                 Add to Cart • Rp {(product.price * quantity).toLocaleString('id-ID')}
               </button>
-              <button className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center">
+              <button 
+               onClick={handleBuyNow}
+               className="w-full h-16 bg-slate-900 text-white font-black tracking-[0.2em] hover:bg-fermion-french-blue transition-all duration-500 active:scale-[0.98] rounded-2xl shadow-2xl shadow-slate-900/20 uppercase italic flex items-center justify-center gap-3 text-center"
+              >
                 <ShoppingBag size={18} strokeWidth={2.5} />
                 Buy It Now
               </button>
@@ -322,7 +338,7 @@ export default function ProductPage() {
           <div className="space-y-12 border-t border-slate-100 pt-20">
             <div className="flex items-end justify-between text-left">
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-fermion-blue tracking-[0.3em] uppercase">Recommendations</p>
+                <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.3em] uppercase">Recommendations</p>
                 <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase italic">You may also like</h2>
               </div>
               <Link href="/our-coffee" className="text-[10px] font-black tracking-widest text-slate-400 hover:text-slate-900 border-b border-slate-200 pb-1 transition-all uppercase">

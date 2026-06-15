@@ -34,13 +34,13 @@ export function LabRecordsV2() {
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto py-40 px-6 space-y-16">
+    <section className="max-w-7xl mx-auto pt-12 pb-40 px-6 space-y-16">
       <div className="flex items-end justify-between border-b-2 border-slate-900 pb-8 relative">
         <div className="space-y-2">
           <h2 className="text-5xl font-black uppercase italic tracking-tighter text-slate-900">{content.title}</h2>
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{content.subtitle}</p>
         </div>
-        <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-fermion-blue transition-colors group">
+        <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-fermion-french-blue transition-colors group">
            {content.ctaExplore} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
@@ -57,7 +57,7 @@ export function LabRecordsV2() {
               whileHover={{ y: -10 }}
               className="aspect-square bg-white/20 backdrop-blur-[40px] border border-white/50 rounded-[3rem] p-12 flex flex-col justify-end group cursor-pointer relative overflow-hidden shadow-xl"
             >
-               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -mr-16 -mt-16 blur-2xl" />
+               <div className="absolute top-0 right-0 w-32 h-32 bg-fermion-lavender/5 rounded-full -mr-16 -mt-16 blur-2xl" />
                <Sticker rotate={idx % 2 === 0 ? 6 : -4} className="top-10 right-10">Batch #{batch.batch_number}</Sticker>
                
                <div className="space-y-4 relative z-10">
@@ -85,14 +85,14 @@ export function LabRecordsV2() {
             className="aspect-square bg-slate-950 rounded-[3rem] p-12 flex flex-col items-center justify-center text-center space-y-8 shadow-2xl shadow-slate-900/40 relative overflow-hidden"
           >
              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(122,156,255,0.15),transparent)]" />
-             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-fermion-blue backdrop-blur-xl border border-white/10 mb-2">
+             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-fermion-french-blue backdrop-blur-xl border border-white/10 mb-2">
                 <Beaker size={28} strokeWidth={2.5} />
              </div>
              <div className="space-y-2">
                 <h4 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">{content.ctaDiveTitle}</h4>
                 <p className="text-slate-500 text-xs font-medium max-w-[220px] mx-auto leading-relaxed">{content.ctaDiveDesc}</p>
              </div>
-             <button className="bg-fermion-blue text-white px-10 py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest italic shadow-xl hover:bg-white hover:text-slate-900 transition-all active:scale-95">
+             <button className="bg-fermion-french-blue text-white px-10 py-5 rounded-2xl text-[9px] font-black uppercase tracking-widest italic shadow-xl hover:bg-white hover:text-slate-900 transition-all active:scale-95">
                 {content.ctaDiveBtn}
              </button>
           </motion.div>
@@ -158,7 +158,7 @@ export function NewReleasesV2() {
                 <div className="px-4 space-y-8">
                    <div className="flex justify-between items-end border-b border-slate-100 pb-8">
                       <div className="space-y-1">
-                         <p className="text-[10px] font-black text-fermion-blue uppercase tracking-widest">{product.origin || 'Single Origin'}</p>
+                         <p className="text-[10px] font-black text-fermion-french-blue uppercase tracking-widest">{product.origin || 'Single Origin'}</p>
                          <h4 className="text-4xl font-black uppercase italic tracking-tighter leading-none text-slate-900">{product.name}</h4>
                       </div>
                       <div className="text-right">
@@ -166,7 +166,7 @@ export function NewReleasesV2() {
                       </div>
                    </div>
                    <Link href={`/our-coffee/${product.id}`} className="block">
-                      <button className="w-full bg-slate-950 text-white py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.5em] italic hover:bg-fermion-blue transition-all shadow-xl active:scale-[0.98]">
+                      <button className="w-full bg-slate-950 text-white py-6 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.5em] italic hover:bg-fermion-french-blue transition-all shadow-xl active:scale-[0.98]">
                           {content.cta}
                       </button>
                    </Link>

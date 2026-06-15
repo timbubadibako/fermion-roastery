@@ -10,10 +10,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface AuthFormProps {
   onSuccess: (profile: any) => void;
   defaultRole?: "RETAIL" | "B2B";
+  initialMode?: "login" | "register";
 }
 
-export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
-  const [mode, setMode] = useState<"login" | "register">("register");
+export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "login" }: AuthFormProps) {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,17 +44,26 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
         body: JSON.stringify(body),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `Failed to ${mode}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorMessage;
+        } catch (e) {
+          errorMessage = errorText || errorMessage;
+        }
+        console.error(`📡 Backend Error (${response.status}):`, errorMessage);
+        throw new Error(errorMessage);
+      }
+
       const data = await response.json();
       console.log(`📡 Backend Response:`, data);
 
-      if (response.ok) {
-        // Set security cookie for middleware (expires in 24h)
-        document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
-        toast.success(data.message);
-        onSuccess(data.profile); // Pass profile back to parent
-      } else {
-        toast.error(data.message || `Failed to ${mode}`);
-      }
+      // Set security cookie for middleware (expires in 24h)
+      document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
+      toast.success(data.message);
+      onSuccess(data.profile); // Pass profile back to parent
     } catch (error: any) {
       console.error("❌ Auth error:", error);
       toast.error(`Network error: ${error.message || 'Please try again later.'}`);
@@ -124,7 +134,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
           <Button 
             type="submit"
             disabled={loading}
-            className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic mt-4"
+            className="w-full h-14 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic mt-4"
           >
             {loading ? (
               <div className="flex items-center gap-2">
@@ -141,7 +151,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL" }: AuthFormProps) {
         <button 
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          className="text-fermion-blue hover:text-slate-900 transition-colors ml-1 underline underline-offset-4"
+          className="text-fermion-french-blue hover:text-slate-900 transition-colors ml-1 underline underline-offset-4"
         >
           {mode === "login" ? "Register" : "Log In"}
         </button>

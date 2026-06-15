@@ -39,12 +39,17 @@
   --font-display: 'Fraunces', 'Times New Roman', serif;
   --font-cloude: var(--font-cloude), 'Fraunces', serif;
   
-  --color-fermion-blue: #6486F4;
-  --color-fermion-soft: #F3F6FF;
-  --color-fermion-charcoal: #101828;
-  --color-fermion-lilac: #8F73FF;
-  --color-fermion-yellow: #F3CA57;
-  --color-fermion-coral: #FF826F;
+  /* Fermion V2 Palette */
+  --color-fermion-black: #000000;
+  --color-fermion-sea-green: #367F4D;
+  --color-fermion-blush: #EBA294;
+  --color-fermion-coral: #EC625D;
+  --color-fermion-french-blue: #0F3A8D;
+  --color-fermion-horizon: #8CADD8;
+  --color-fermion-wisteria: #CBA8D8;
+  --color-fermion-lavender: #8D5B9E;
+  --color-fermion-gold: #F1B941;
+  --color-fermion-light-coral: #EC726C;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -95,8 +100,8 @@
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(132, 168, 255, 0.16), transparent 25%),
-    radial-gradient(circle at top right, rgba(183, 160, 255, 0.14), transparent 20%),
+    radial-gradient(circle at top left, rgba(140, 173, 216, 0.16), transparent 25%),
+    radial-gradient(circle at top right, rgba(203, 168, 216, 0.14), transparent 20%),
     linear-gradient(180deg, #ffffff 0%, #faf9f6 18%, #f7f5ef 100%);
 }
 
@@ -142,19 +147,19 @@ body {
 }
 
 .fermion-placeholder--blue {
-  background: linear-gradient(135deg, rgba(132, 168, 255, 0.24), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(135deg, rgba(140, 173, 216, 0.24), rgba(255, 255, 255, 0.92));
 }
 
 .fermion-placeholder--lilac {
-  background: linear-gradient(135deg, rgba(183, 160, 255, 0.24), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(135deg, rgba(141, 91, 158, 0.15), rgba(255, 255, 255, 0.92));
 }
 
 .fermion-placeholder--yellow {
-  background: linear-gradient(135deg, rgba(243, 202, 87, 0.24), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(135deg, rgba(241, 185, 65, 0.24), rgba(255, 255, 255, 0.92));
 }
 
 .fermion-placeholder--coral {
-  background: linear-gradient(135deg, rgba(255, 130, 111, 0.22), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(135deg, rgba(236, 98, 93, 0.15), rgba(255, 255, 255, 0.92));
 }
 
 .fermion-placeholder--dark {

@@ -33,6 +33,11 @@ export function Header() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { addItem } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // --- States ---
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
@@ -55,7 +60,7 @@ export function Header() {
   // --- Handlers ---
   const handleLogout = () => {
     logout();
-    router.push("/auth");
+    window.location.href = "/auth";
     setIsMenuOpen(false);
   };
 
@@ -141,10 +146,11 @@ export function Header() {
   }, [isSearchOpen]);
 
   // V2 UI CONSTANTS: Smoother Pill Transition
-  const displayLinks = navLinks.length > 0 ? navLinks : [
+  const isB2B = mounted && user?.role === 'B2B';
+  const displayLinks = [
     { label: "OUR COFFEE", href: "/our-coffee" },
-    { label: "WHOLESALE", href: "/wholesale" },
-    ...(user?.role !== 'B2B' ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
+    ...(!isB2B ? [{ label: "WHOLESALE", href: "/wholesale" }] : []),
+    ...(!isB2B ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
     { label: "JOURNAL", href: "/journal" },
     { label: "OUR STORY", href: "/our-story" },
   ];
@@ -152,19 +158,21 @@ export function Header() {
   return (
     <>
       {/* Floating Announcement (Diagonal Corner Ribbon - Bottom Left) */}
-      <div className="fixed bottom-0 left-0 z-[110] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
-        <motion.div
-          initial={{ x: -100, y: 800, rotate: 20 }}
-          animate={{ x: -45, y: 25, rotate: 20 }}
-          className="absolute bottom-6 left-[-40px] w-[120%] bg-white shadow-2xl border-y-[1.5px] border-slate-100 py-3 pointer-events-auto flex flex-col items-center justify-center"
-          style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
-        >
-          <div className="border-y border-dashed border-slate-200 w-full py-2 flex flex-col items-center justify-center gap-0.5">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 leading-none">Free Shipping</p>
-            <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mt-1">Above Rp 500.000</p>
-          </div>
-        </motion.div>
-      </div>
+      {mounted && (
+        <div className="fixed bottom-0 left-0 z-[50] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
+          <motion.div
+            initial={{ x: -100, y: 800, rotate: 20 }}
+            animate={{ x: -45, y: 25, rotate: 20 }}
+            className="absolute bottom-6 left-[-40px] w-[120%] bg-white shadow-2xl border-y-[1.5px] border-slate-100 py-3 pointer-events-auto flex flex-col items-center justify-center"
+            style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+          >
+            <div className="border-y border-dashed border-slate-200 w-full py-2 flex flex-col items-center justify-center gap-0.5">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-900 leading-none">Free Shipping</p>
+              <p className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 leading-none mt-1">Above Rp 500.000</p>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <header className="fixed top-0 left-0 right-0 z-[100] pointer-events-none flex flex-col items-center">
         {/* The Pill Navbar - Smoothened with Framer Motion */}
@@ -221,10 +229,10 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`group relative text-[9px] font-black tracking-[0.3em] transition-all duration-300 uppercase ${isActive ? "text-slate-900" : "text-slate-400 hover:text-fermion-blue"}`}
+                    className={`group relative text-[9px] font-black tracking-[0.3em] transition-all duration-300 uppercase ${isActive ? "text-slate-900" : "text-slate-400 hover:text-fermion-french-blue"}`}
                   >
                     {link.label}
-                    <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] bg-fermion-blue transition-all duration-500 ${isActive ? "w-4 opacity-100" : "w-0 opacity-0"}`} />
+                    <span className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] bg-fermion-french-blue transition-all duration-500 ${isActive ? "w-4 opacity-100" : "w-0 opacity-0"}`} />
                   </Link>
                 );
               })}
@@ -233,7 +241,7 @@ export function Header() {
             <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
               <div className="relative">
                 <div className={`flex items-center transition-all duration-700 ease-out h-9 ${isSearchOpen ? "w-64 md:w-[280px] bg-white/60 backdrop-blur-xl rounded-full px-4 shadow-lg shadow-slate-900/5" : "w-9"}`}>
-                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-slate-900 hover:text-fermion-blue transition-colors flex-shrink-0 focus:outline-none">
+                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-slate-900 hover:text-fermion-french-blue transition-colors flex-shrink-0 focus:outline-none">
                     <Search size={16} strokeWidth={1.5} />
                   </button>
                   <input
@@ -267,7 +275,7 @@ export function Header() {
                         <div className="space-y-5">
                           <div className="flex items-center justify-between">
                             <h4 className="text-[9px] font-black tracking-[0.3em] text-slate-300 uppercase italic">Promoted</h4>
-                            <Sparkles size={12} className="text-fermion-blue" />
+                            <Sparkles size={12} className="text-fermion-french-blue" />
                           </div>
                           <div className="space-y-4">
                             {promotedProducts.map((product) => (
@@ -282,11 +290,11 @@ export function Header() {
                                 </div>
                                 <div className="flex-1">
                                   <p className="text-[10px] font-black text-slate-900 leading-tight mb-0.5 uppercase truncate">{product.name}</p>
-                                  <p className="text-[9px] font-bold text-fermion-blue font-mono">Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
+                                  <p className="text-[9px] font-bold text-fermion-french-blue font-mono">Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
                                 </div>
                                 <button
                                   onClick={(e) => handleQuickAdd(e, product)}
-                                  className="p-2 bg-slate-900 text-white rounded-xl hover:bg-fermion-blue transition-colors duration-500 shadow-md group-hover:scale-110 transition-transform"
+                                  className="p-2 bg-slate-900 text-white rounded-xl hover:bg-fermion-french-blue transition-colors duration-500 shadow-md group-hover:scale-110 transition-transform"
                                 >
                                   <ShoppingBag size={12} strokeWidth={1.5} />
                                 </button>
@@ -307,10 +315,10 @@ export function Header() {
                                   className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl text-left transition-all duration-300 group"
                                 >
                                   <div>
-                                    <p className="text-[11px] font-black text-slate-900 group-hover:text-fermion-blue uppercase tracking-tighter">{result.name}</p>
+                                    <p className="text-[11px] font-black text-slate-900 group-hover:text-fermion-french-blue uppercase tracking-tighter">{result.name}</p>
                                     <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{result.origin}</p>
                                   </div>
-                                  <ArrowRight size={12} className="text-slate-200 group-hover:text-fermion-blue group-hover:translate-x-1 transition-all" />
+                                  <ArrowRight size={12} className="text-slate-200 group-hover:text-fermion-french-blue group-hover:translate-x-1 transition-all" />
                                 </Link>
                               ))
                             ) : (
@@ -337,29 +345,32 @@ export function Header() {
               </div>
 
               <div className="flex items-center gap-4">
-                {user?.role === 'RETAIL' && (
-                  <Link href="/account/orders" title="My Orders" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                {mounted && user?.role === 'RETAIL' && (
+                  <Link href="/account" title="My Account" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <PackageSearch size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {user?.role === 'B2B' && (
-                  <Link href="/b2b/dashboard" title="Partner Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                {mounted && user?.role === 'B2B' && (
+                  <Link href="/b2b" title="Partner Hub" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutGrid size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {user?.role === 'ADMIN' && (
-                  <Link href="/admin/dashboard" title="Admin Dashboard" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                {mounted && user?.role === 'ADMIN' && (
+                  <Link href="/admin" title="Admin Portal" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <LayoutDashboard size={18} strokeWidth={1.5} />
                   </Link>
                 )}
-                {!user && (
-                  <Link href="/auth" title="Login" className="text-slate-900 hover:text-fermion-blue transition-all flex items-center gap-2">
+                {mounted && !user && (
+                  <Link href="/auth" title="Login" className="text-slate-900 hover:text-fermion-french-blue transition-all flex items-center gap-2">
                     <User size={18} strokeWidth={1.5} />
                   </Link>
                 )}
+                {!mounted && (
+                  <div className="w-18 h-4 animate-pulse bg-slate-50 rounded-full" />
+                )}
               </div>
 
-              {user?.role !== 'ADMIN' && (
+              {mounted && (
                 <div className="relative border-l border-slate-200/50 pl-4 ml-1">
                   <CartSheet />
                 </div>
@@ -381,16 +392,19 @@ export function Header() {
                 </Link>
               ))}
               <div className="pt-8 mt-4 border-t border-slate-100 flex flex-col gap-6 text-center">
-                {user?.role === 'RETAIL' && (
-                  <Link href="/account/orders" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Orders</Link>
+                {mounted && user?.role === 'RETAIL' && (
+                  <Link href="/account" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Account</Link>
                 )}
-                {user?.role === 'B2B' && (
-                  <Link href="/b2b/dashboard" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Dashboard</Link>
+                {mounted && user?.role === 'B2B' && (
+                  <Link href="/b2b" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Hub</Link>
                 )}
-                {!user && (
+                {mounted && user?.role === 'ADMIN' && (
+                  <Link href="/admin" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Admin Portal</Link>
+                )}
+                {mounted && !user && (
                   <Link href="/auth" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>
                 )}
-                {user?.role !== 'ADMIN' && (
+                {mounted && (
                   <Link href="/cart" className="text-[10px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Cart</Link>
                 )}
               </div>

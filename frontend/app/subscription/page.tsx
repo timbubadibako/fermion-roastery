@@ -15,7 +15,7 @@ const plans = [
     price: 135000,
     priceLabel: "Rp 135.000",
     desc: "A surprise rotating single-origin bag delivered to your door.",
-    color: "bg-fermion-blue text-white",
+    color: "bg-fermion-french-blue text-white",
     hoverColor: "hover:bg-blue-600",
     features: ["Rotating Origins", "Roast Date Guarantee", "Brewing Guide Included"],
     icon: <Sprout size={24} className="text-slate-400 mb-6" />
@@ -91,15 +91,15 @@ export default function SubscriptionPageV2() {
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
       />
-      <div className="fixed top-[-200px] left-[-100px] w-[900px] h-[900px] bg-purple-200/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
-      <div className="fixed bottom-[-100px] right-[-100px] w-[700px] h-[700px] bg-blue-200/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed top-[-200px] left-[-100px] w-[900px] h-[900px] bg-fermion-wisteria/30 rounded-full blur-[120px] z-[-1] pointer-events-none" />
+      <div className="fixed bottom-[-100px] right-[-100px] w-[700px] h-[700px] bg-fermion-horizon/20 rounded-full blur-[120px] z-[-1] pointer-events-none" />
 
       {/* SECTION 1: HERO NARRATIVE */}
       <section className="pt-40 pb-20 px-6 relative z-10 text-center">
         <div className="max-w-5xl mx-auto space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-purple-600 uppercase"
+            className="inline-block px-4 py-2 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full text-[9px] font-black tracking-[0.4em] text-fermion-lavender uppercase"
           >
             Fermion Subscriptions
           </motion.div>
@@ -107,7 +107,7 @@ export default function SubscriptionPageV2() {
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="text-6xl md:text-8xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-[0.85]"
           >
-            Don't choose. <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 font-sans not-italic">Let the Master decide.</span>
+            Don't choose. <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-fermion-lavender to-fermion-horizon font-sans not-italic">Let the Master decide.</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -121,7 +121,7 @@ export default function SubscriptionPageV2() {
       {/* SECTION 2: THE MASTER ROASTER NARRATIVE */}
       <section className="py-24 px-6 relative z-10">
         <div className="max-w-6xl mx-auto bg-slate-950 rounded-[4rem] border border-slate-800 p-8 md:p-16 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-16">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-fermion-blue/20 via-transparent to-transparent opacity-50" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-fermion-french-blue/20 via-transparent to-transparent opacity-50" />
 
           {/* Visual */}
           <div className="w-full md:w-[45%] relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-slate-800">
@@ -139,12 +139,12 @@ export default function SubscriptionPageV2() {
 
           {/* Narrative */}
           <div className="w-full md:w-[55%] space-y-8 relative z-10 text-white">
-            <Quote size={40} className="text-fermion-blue/50" />
+            <Quote size={40} className="text-fermion-french-blue/50" />
             <h3 className="text-4xl md:text-5xl font-display font-black tracking-tighter italic leading-tight">
               "I taste over 50 cups a day. The Subscription box is where I put the 2 cups that made me stop and smile."
             </h3>
             <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-fermion-blue">Mr. Yanotama</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-fermion-french-blue">Mr. Yanotama</p>
               <p className="text-xs text-slate-400 font-medium">Head Roaster & Q-Grader, Fermion</p>
             </div>
 
@@ -170,8 +170,8 @@ export default function SubscriptionPageV2() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: <Calendar size={24} className="text-fermion-blue" />, title: "1. Choose Your Vibe", desc: "Select the plan that fits your caffeine needs. From casual discovery to hardcore collector." },
-              { icon: <Sparkles size={24} className="text-purple-500" />, title: "2. The Lab Curates", desc: "Arif and the team will pick the best beans roasting that week specifically for you." },
+              { icon: <Calendar size={24} className="text-fermion-french-blue" />, title: "1. Choose Your Vibe", desc: "Select the plan that fits your caffeine needs. From casual discovery to hardcore collector." },
+              { icon: <Sparkles size={24} className="text-fermion-lavender" />, title: "2. The Lab Curates", desc: "Arif and the team will pick the best beans roasting that week specifically for you." },
               { icon: <Package size={24} className="text-emerald-500" />, title: "3. Doorstep Magic", desc: "Freshly roasted. Rested precisely. Delivered to you right when it tastes best." }
             ].map((step, i) => (
               <motion.div
@@ -206,7 +206,7 @@ export default function SubscriptionPageV2() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15, type: "spring", stiffness: 200, damping: 20 }}
-                className={`relative bg-white/60 backdrop-blur-3xl rounded-[3rem] p-10 border flex flex-col transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl ${plan.popular ? 'border-fermion-blue shadow-xl shadow-fermion-blue/10 scale-105 lg:z-20 bg-white/90' : 'border-white/60 shadow-lg lg:z-10'}`}
+                className={`relative bg-white/60 backdrop-blur-3xl rounded-[3rem] p-10 border flex flex-col transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl ${plan.popular ? 'border-fermion-french-blue shadow-xl shadow-fermion-french-blue/10 scale-105 lg:z-20 bg-white/90' : 'border-white/60 shadow-lg lg:z-10'}`}
               >
                 {plan.popular && (
                   <Sticker rotate={-6} className="-top-4 -right-4" color="var(--cartoon-pink)" variant="solid">
@@ -231,7 +231,7 @@ export default function SubscriptionPageV2() {
                   <ul className="space-y-4 pt-4">
                     {plan.features.map(f => (
                       <li key={f} className="flex items-start gap-3 text-[11px] font-bold text-slate-700 uppercase tracking-widest leading-snug">
-                        <Check size={16} strokeWidth={3} className="text-fermion-blue shrink-0 mt-0.5" />
+                        <Check size={16} strokeWidth={3} className="text-fermion-french-blue shrink-0 mt-0.5" />
                         {f}
                       </li>
                     ))}

@@ -33,7 +33,7 @@ export default function SubscriptionSuccessPage() {
           </div>
 
           <div className="bg-slate-50 rounded-3xl p-8 flex flex-col justify-center items-center text-center border border-slate-100">
-             <CalendarHeart size={32} className="text-fermion-blue mb-4" />
+             <CalendarHeart size={32} className="text-fermion-french-blue mb-4" />
              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Next Delivery</p>
              <p className="text-lg font-bold text-slate-900">Preparing Schedule...</p>
           </div>
@@ -45,7 +45,7 @@ export default function SubscriptionSuccessPage() {
           {/* Actions */}
           <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/our-coffee">
-              <Button className="w-full sm:w-auto h-14 px-8 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-blue transition-all duration-500 uppercase italic">
+              <Button className="w-full sm:w-auto h-14 px-8 bg-slate-900 text-white font-black tracking-[0.2em] rounded-2xl hover:bg-fermion-french-blue transition-all duration-500 uppercase italic">
                 Back to Shop <ArrowRight size={16} className="ml-2" />
               </Button>
             </Link>
