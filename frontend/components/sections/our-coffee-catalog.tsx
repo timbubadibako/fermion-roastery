@@ -7,7 +7,7 @@ import {
   Plus, SlidersHorizontal, ArrowUpDown, 
   Grid2X2, Grid3X3, LayoutGrid, 
   Loader2, Sparkles, Flame, Percent,
-  Beaker, Search, Edit3, X
+  Beaker, Search, Edit3, X, ArrowLeft, ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,6 +38,7 @@ export function RetailCatalog() {
   const [showSort, setShowSort] = useState(false);
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("FEATURED");
+  const [currentPage, setCurrentPage] = useState(1);
   
   const sortContainerRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((state) => state.addItem);
@@ -103,7 +104,15 @@ export function RetailCatalog() {
     }
 
     setDisplayProducts(result);
+    setCurrentPage(1);
   }, [activeFilter, sortBy, products]);
+
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(displayProducts.length / itemsPerPage);
+  const currentItems = displayProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault();
@@ -264,12 +273,12 @@ export function RetailCatalog() {
           cols === 3 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:gap-16" : 
           "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10"
         }`}>
-          {displayProducts.map((product, index) => (
+          {currentItems.map((product, index) => (
             <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative">
               <div className="artisan-glass rounded-[3rem] p-6 pb-10 flex flex-col gap-8 transition-all duration-500 hover:bg-white/40 hover:shadow-2xl hover:shadow-fermion-lavender/10 hover:-translate-y-2">
                 <div className="relative aspect-[4/5] bg-slate-50/50 rounded-[2.5rem] overflow-hidden border border-white/60">
-                  {index === 0 && <Sticker rotate={6} className="top-6 right-6">Best Seller</Sticker>}
-                  {index === 2 && <Sticker rotate={-4} color="var(--cartoon-pink)" className="top-6 right-6">New Crop</Sticker>}
+                  {index === 0 && currentPage === 1 && <Sticker rotate={6} className="top-6 right-6">Best Seller</Sticker>}
+                  {index === 2 && currentPage === 1 && <Sticker rotate={-4} color="var(--cartoon-pink)" className="top-6 right-6">New Crop</Sticker>}
                   
                   <Image
                     src={product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE"}
@@ -328,6 +337,41 @@ export function RetailCatalog() {
             </Link>
           ))}
         </div>
+
+        {/* LAB PAGINATION - Pill Style */}
+        {totalPages > 1 && (
+          <div className="mt-24 flex justify-center pb-20">
+             <div className="bg-white/40 backdrop-blur-2xl border border-white/60 rounded-full h-16 flex items-center px-4 shadow-2xl shadow-slate-900/5 gap-2">
+                <button 
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => prev - 1)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-white transition-all disabled:opacity-20"
+                >
+                  <ArrowLeft size={16} />
+                </button>
+
+                <div className="flex items-center px-4 gap-6">
+                   {Array.from({ length: totalPages }).map((_, i) => (
+                     <button 
+                       key={i}
+                       onClick={() => setCurrentPage(i + 1)}
+                       className={`text-[10px] font-black transition-all ${currentPage === i + 1 ? 'text-fermion-french-blue scale-125' : 'text-slate-300 hover:text-slate-500'}`}
+                     >
+                       {String(i + 1).padStart(2, '0')}
+                     </button>
+                   ))}
+                </div>
+
+                <button 
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-white transition-all disabled:opacity-20"
+                >
+                  <ArrowRight size={16} />
+                </button>
+             </div>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { strings } from "@/lib/strings";
+import Image from 'next/image';
 
 export function HeroV2() {
   const [settings, setSettings] = useState<any>(null);
@@ -22,14 +23,14 @@ export function HeroV2() {
       .catch(err => console.error("Failed to load hero settings", err));
   }, []);
 
-  const title = settings?.hero_title || fallbackContent.title;
-  const subtitle = settings?.hero_description || fallbackContent.subtitle;
+  const title = fallbackContent.title;
+  const subtitle = fallbackContent.subtitle;
   const badge = settings?.hero_subtitle || "Exclusive Coffee Roastery";
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-slate-900">
       {/* Cinematic Video Background */}
-      <video
+      {/* <video
         autoPlay
         loop
         muted
@@ -37,7 +38,15 @@ export function HeroV2() {
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       >
         <source src="/watermarked_preview.mp4" type="video/mp4" />
-      </video>
+      </video> */}
+
+      <Image 
+        src="/hero-bg.jpg"
+        alt="Fermion Roastery"
+        fill
+        priority
+        className="object-cover pointer-events-none"
+      />
 
       {/* Scrim Overlay: Linear gradient from black to transparent */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent mix-blend-multiply pointer-events-none" />
@@ -59,7 +68,12 @@ export function HeroV2() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight leading-tight text-white drop-shadow-md">
-               {title}
+               {title.split('|').map((part, i) => (
+                 <React.Fragment key={i}>
+                   {part.trim()}
+                   {i < title.split('|').length - 1 && <br />}
+                 </React.Fragment>
+               ))}
             </h1>
           </motion.div>
 
