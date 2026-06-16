@@ -3,20 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { 
-  FileText, 
-  Download, 
-  Upload, 
-  CheckCircle2, 
-  ArrowRight, 
-  Loader2, 
-  Clock,
-  ArrowLeft,
-  Mountain,
-  Coffee,
-  Zap,
-  Star
+  FileText, Download, Upload, CheckCircle2, ArrowRight, Loader2, 
+  ArrowLeft, Coffee, Zap, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,14 +30,9 @@ export default function B2BRegisterPageV2() {
     volumeEstimate: ""
   });
 
-  const [onboardingStatus, setOnboardingStatus] = useState<string | null>(null);
-
-  // Logic 1: Skip Auth if logged in
   useEffect(() => {
     setMounted(true);
-    if (user) {
-      setStep(2);
-    }
+    if (user) { setStep(2); }
   }, [user]);
 
   const handleAuthSuccess = (userData: any) => {
@@ -59,35 +43,20 @@ export default function B2BRegisterPageV2() {
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (!formData.volumeEstimate) {
-      toast.error("Please select your monthly volume goal.");
-      return;
-    }
     setLoading(true);
-
     try {
       const res = await fetch('/api/b2b/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileId: user.id,
-          ...formData
-        })
+        body: JSON.stringify({ profileId: user.id, ...formData })
       });
-
       if (res.ok) {
-        toast.success("Application data saved.");
-        setOnboardingStatus('onboarding');
+        toast.success("Partnership details saved.");
         setStep(3);
       } else {
-        const data = await res.json();
-        toast.error(data.message || "Registration failed");
+        toast.error("Registration failed");
       }
-    } catch (error) {
-      toast.error("Network error");
-    } finally {
-      setLoading(false);
-    }
+    } catch (error) { toast.error("Network error"); } finally { setLoading(false); }
   };
 
   const handleDownloadContract = () => {
@@ -99,11 +68,6 @@ export default function B2BRegisterPageV2() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
-      toast.error("Please upload a PDF file");
-      return;
-    }
-
     setUploading(true);
     setTimeout(async () => {
       try {
@@ -113,8 +77,8 @@ export default function B2BRegisterPageV2() {
           body: JSON.stringify({ profileId: user?.id })
         });
         if (res.ok) {
-          setOnboardingStatus('awaiting_contract_review');
           toast.success("Contract uploaded successfully");
+          router.push('/account');
         }
       } catch (e) {
         toast.error("Upload failed");
@@ -127,176 +91,147 @@ export default function B2BRegisterPageV2() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4 md:p-10 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#F4F0E6] flex items-center justify-center p-6 relative overflow-hidden font-sans">
       
       {/* Background Polish */}
-      <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.03]" 
-           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Client%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+      <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.04]" 
+           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
 
-      <div className="w-full max-w-6xl bg-white/40 backdrop-blur-3xl rounded-[3rem] border border-white/60 overflow-hidden flex flex-col lg:flex-row shadow-2xl shadow-slate-900/10 relative z-10">
+      {/* Main Container: Stacked Paper Effect */}
+      <div className="relative w-full max-w-5xl">
         
-        {/* Left Panel */}
-        <div className="lg:w-[40%] p-4 md:p-6 flex flex-col relative overflow-hidden">
-          <div className="flex items-center justify-between mb-6 z-10 relative">
-            <h1 className="text-xl font-black italic tracking-tighter text-slate-900">FERMION.</h1>
-            <Link href="/wholesale">
-              <button className="flex items-center gap-2 bg-white/50 backdrop-blur-md hover:bg-white text-slate-600 hover:text-slate-900 text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full transition-all border border-white/60 shadow-sm">
-                <ArrowLeft size={12} strokeWidth={2.5} /> Cancel
-              </button>
-            </Link>
-          </div>
+        {/* Main Card */}
+        <div className="relative bg-white border border-black/10 shadow-[10px_10px_0px_rgba(0,0,0,0.05)] rotate-[-1deg] p-10 md:p-16 flex flex-col lg:flex-row gap-16 rounded-sm">
+           
+           {/* Left Panel - Visual Narrative */}
+           <div className="lg:w-1/3 space-y-10">
+              <div className="flex items-center justify-between z-10 relative">
+                <h1 className="text-xl font-black italic tracking-tighter text-slate-900">FERMION.</h1>
+                <Link href="/wholesale">
+                  <button className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest hover:text-[#367F4D] transition-all">
+                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                  </button>
+                </Link>
+              </div>
 
-          <div className="flex-1 relative rounded-[2rem] overflow-hidden min-h-[300px] border border-slate-100/50 group">
-            <Image
-              src="https://placehold.co/800x1200/101828/ffffff?text=B2B+Partner+Hub"
-              alt="Fermion B2B"
-              fill
-              className="object-cover transition-transform duration-1000 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-            
-            <div className="absolute bottom-8 left-8 right-8 text-left z-10 space-y-4">
-              <Sticker rotate={-10} variant="solid" color="var(--color-fermion-french-blue)">
-                 <span className="p-2 text-white text-[10px]">ECOSYSTEM</span>
-              </Sticker>
-              <h2 className="text-white text-4xl font-black italic leading-none tracking-tighter">
-                {step === 1 ? "Partner \n Access." : step === 2 ? "The Coffee \n Story." : "Secure \n Contract."}
-              </h2>
-              <p className="text-slate-400 text-xs font-medium max-w-xs leading-relaxed">
-                {step === 1 ? "Secure your business credentials to enter our professional hub." : 
-                 step === 2 ? "Tell us about your business goals and specific laboratory needs." :
-                 "Finalize your official partnership agreement with Fermion Roastery."}
-              </p>
-            </div>
-          </div>
-        </div>
+              <div className="space-y-4">
+                 <h2 className="text-5xl font-cloude italic leading-none tracking-tighter text-slate-900">
+                    {step === 1 ? "Partner Access." : step === 2 ? "Roastery Profile." : "Contract Protocol."}
+                 </h2>
+                 <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.2em]">
+                    {step === 1 ? "Secure your credentials." : step === 2 ? "Define your needs." : "Legal finalization."}
+                 </p>
+              </div>
+           </div>
 
-        {/* Right Panel */}
-        <div className="lg:w-[60%] p-6 md:p-12 flex flex-col justify-center bg-white/60 relative">
-          <div className="max-w-2xl mx-auto w-full relative z-10">
-            <AnimatePresence mode="wait">
+           {/* Right Panel - Content */}
+           <div className="lg:w-2/3">
+             <AnimatePresence mode="wait">
               
-              {/* STEP 1: AUTH (Only if not logged in) */}
+              {/* STEP 1: AUTH */}
               {step === 1 && (
-                <motion.div key="auth" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8 max-w-md mx-auto">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Authentication.</h2>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Secure your business credentials</p>
-                  </div>
-                  <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
+                <motion.div key="auth" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                  <div className="bg-white border border-black/10 p-8 shadow-sm">
                      <AuthForm onSuccess={handleAuthSuccess} defaultRole="B2B" initialMode="login" />
                   </div>
                 </motion.div>
               )}
 
-              {/* STEP 2: BUSINESS FORM + STORYTELLING VOLUME */}
+              {/* STEP 2: B2B Form */}
               {step === 2 && (
-                <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-12">
-                  <div className="space-y-2">
-                    <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Business Profile.</h2>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Crafting your partnership identity</p>
-                  </div>
-
-                  <form onSubmit={handleRegisterSubmit} className="space-y-12">
-                    {/* Basic Info Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Cafe / Company Name</label>
-                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder="e.g. Lab Kopi Senayan" className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
+                <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                  <form onSubmit={handleRegisterSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div className="space-y-1">
+                          <label className="text-[9px] font-black text-stone-500 uppercase tracking-widest">Cafe / Company Name</label>
+                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder="e.g. Lab Kopi" className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
-                       <div className="space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">WhatsApp Number</label>
-                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="0812..." className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
+                       <div className="space-y-1">
+                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">WhatsApp Number</label>
+                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="08..." className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
-                       <div className="md:col-span-2 space-y-2">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Address</label>
-                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder="Street, City, Province" className="h-14 rounded-2xl bg-white border-none font-bold shadow-sm" />
+                       <div className="md:col-span-2 space-y-1">
+                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Full Address</label>
+                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder="Street, City..." className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
                     </div>
 
-                    {/* Story-driven Volume Selection */}
-                    <div className="space-y-6">
-                       <div className="text-left space-y-1">
-                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Monthly Beans Goal</label>
-                          <p className="text-xs text-slate-500 font-medium italic">What level of throughput are you aiming for?</p>
-                       </div>
-
-                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                          {[
-                            { val: "10-20KG", icon: Coffee, title: "Artisan Startup", desc: "For new cafes or niche micro-lots." },
-                            { val: "20-50KG", icon: Zap, title: "Growth Hub", desc: "For high-traffic, established shops." },
-                            { val: "50KG+", icon: Star, title: "Scale Master", desc: "Wholesale distribution and big networks." }
-                          ].map((option) => (
-                            <div 
-                              key={option.val}
-                              onClick={() => setFormData({...formData, volumeEstimate: option.val})}
-                              className={`p-6 rounded-[2.5rem] border-2 transition-all cursor-pointer group flex flex-col items-center text-center space-y-4 ${
-                                formData.volumeEstimate === option.val 
-                                  ? "bg-slate-900 border-slate-900 text-white shadow-2xl scale-105" 
-                                  : "bg-white border-slate-100 hover:border-slate-200 text-slate-600"
-                              }`}
-                            >
-                               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
-                                 formData.volumeEstimate === option.val ? "bg-white/10 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
-                               }`}>
-                                  <option.icon size={20} />
-                               </div>
-                               <div className="space-y-1">
-                                  <h4 className="text-xs font-black uppercase tracking-widest">{option.title}</h4>
-                                  <p className={`text-[10px] font-bold ${formData.volumeEstimate === option.val ? "text-slate-400" : "text-slate-300"}`}>{option.val}</p>
-                               </div>
-                            </div>
-                          ))}
-                       </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                       {[
+                         { val: "10-20KG", icon: Coffee, title: "Artisan" },
+                         { val: "20-50KG", icon: Zap, title: "Growth" },
+                         { val: "50KG+", icon: Star, title: "Scale" }
+                       ].map((option) => (
+                         <div 
+                           key={option.val}
+                           onClick={() => setFormData({...formData, volumeEstimate: option.val})}
+                           className={`p-4 rounded-sm border transition-all cursor-pointer flex flex-col items-center text-center gap-2 ${
+                             formData.volumeEstimate === option.val 
+                               ? "bg-slate-900 text-white border-slate-900" 
+                               : "bg-white border-black/10 hover:border-[#367F4D]"
+                           }`}
+                         >
+                            <option.icon size={16} />
+                            <h4 className="text-[9px] font-black uppercase tracking-widest">{option.title}</h4>
+                            <p className="text-[8px] font-bold opacity-60">{option.val}</p>
+                         </div>
+                       ))}
                     </div>
 
-                    <Button disabled={loading} type="submit" className="w-full h-16 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-widest italic shadow-2xl hover:bg-fermion-french-blue transition-all">
-                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Prepare Partnership <ArrowRight size={18} /></span>}
+                    <Button disabled={loading} type="submit" className="w-full h-14 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic hover:bg-[#367F4D] transition-all">
+                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2">Prepare Partnership <ArrowRight size={14} /></span>}
                     </Button>
                   </form>
                 </motion.div>
               )}
-
-              {/* STEP 3: CONTRACT ONBOARDING (Optional) */}
+              
+              {/* STEP 3: CONTRACT ONBOARDING */}
               {step === 3 && (
-                <motion.div key="onboarding" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8 max-w-md mx-auto">
-                  <div className="bg-white p-12 rounded-[3.5rem] border border-slate-100 shadow-2xl text-center space-y-10 relative overflow-hidden">
-                    
-                    <div className="space-y-4">
-                       <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300 mb-6">
-                          <FileText size={32} />
-                       </div>
-                       <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Partnership <br/> Agreement.</h2>
-                       <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-xs mx-auto">You can finalize your contract now or complete it later from your account dashboard.</p>
-                    </div>
+                <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                   <div className="bg-[#FDFBF7] p-12 border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.02)] rounded-none relative text-center overflow-visible">
+                      {/* Grid Pattern */}
+                      <div className="absolute inset-0 opacity-[0.1] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                      
+                      {/* Tape - fixed positioning to overlap */}
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
+                      
+                      <div className="space-y-6 relative z-10">
+                        <h2 className="text-4xl font-cloude italic tracking-tighter text-slate-900 leading-none">Contract Protocol.</h2>
+                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Legal Finalization</p>
+                        <p className="text-sm text-stone-600 font-medium leading-relaxed italic">
+                          "Your partnership agreement is ready. Please download, sign, and upload to finalize your lab access."
+                        </p>
+                      </div>
 
-                    <div className="grid grid-cols-1 gap-4 opacity-60 grayscale pointer-events-none">
-                       <div className="h-16 bg-slate-50 border border-slate-200 text-slate-400 rounded-2xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]">
-                          <Download className="mr-2" size={16} /> 1. Download Contract (Placeholder)
-                       </div>
-                       <div className="h-16 bg-slate-50 border border-slate-200 text-slate-400 rounded-2xl flex items-center justify-center font-black uppercase tracking-widest text-[10px]">
-                          <Upload className="mr-2" size={16} /> 2. Upload Signed PDF (Placeholder)
-                       </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-slate-50 flex flex-col gap-4">
-                       <Link href="/account">
-                          <Button className="w-full h-14 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-widest italic shadow-xl">
-                             Finish Later in Dashboard <ArrowRight className="ml-2" size={16} />
-                          </Button>
-                       </Link>
-                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Pricing will remain Retail until activated.</p>
-                    </div>
-
-                    <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-slate-50 rounded-full blur-3xl opacity-50" />
-                  </div>
+                      <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
+                        <Button 
+                          onClick={handleDownloadContract}
+                          className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
+                        >
+                           <Download size={14} className="mr-3" /> Download Contract PDF
+                        </Button>
+                        
+                        <div className="relative group">
+                           <label className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
+                              {uploading ? <Loader2 className="animate-spin text-[#367F4D]" size={24} /> : <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />}
+                              <div className="text-center">
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{uploading ? "Uploading..." : "Drop or Click to Upload"}</p>
+                                 <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">Accepted Format: PDF Only (Max 5MB)</p>
+                              </div>
+                              <input type="file" className="hidden" accept="application/pdf" onChange={handleUploadContract} />
+                           </label>
+                        </div>
+                      </div>
+                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </div>
+           </div>
 
+           {/* Tape Accent */}
+           <div className="absolute -top-4 -right-4 w-20 h-6 bg-white/60 border border-black/5 rotate-[15deg] backdrop-blur-sm z-20 shadow-sm"></div>
+        </div>
       </div>
     </div>
   );

@@ -5,10 +5,25 @@ import Link from "next/link";
 import { CheckCircle2, ArrowRight, Package, Truck, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useCartStore } from "@/lib/store";
 
 export default function OrderSuccessPage() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const { removeItems } = useCartStore();
+
+  useEffect(() => { 
+    setMounted(true); 
+    const purchased = sessionStorage.getItem('purchasedItems');
+    console.log("DEBUG: Purchased items found in session storage:", purchased);
+    if (purchased) {
+        const itemsToRemove = JSON.parse(purchased);
+        console.log("DEBUG: Removing these items:", itemsToRemove);
+        removeItems(itemsToRemove);
+        sessionStorage.removeItem('purchasedItems');
+    } else {
+        console.log("DEBUG: No purchased items found in session storage.");
+    }
+  }, [removeItems]);
 
   if (!mounted) return null;
 

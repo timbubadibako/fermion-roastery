@@ -6,7 +6,9 @@ This document outlines the core aesthetic direction and technical implementation
 
 The overarching theme is a dynamic, slightly irregular "scrapbook" feel that conveys freedom and artisan craftsmanship without relying on generic AI aesthetics. 
 
-### What We LIKE (Do This)
+## UI/UX Design Constraints
+
+- **Font Readability (Crucial):** All numerical values and monetary amounts MUST use standard, highly-readable sans-serif fonts (`font-sans`/Manrope). NEVER use hand-drawn or decorative fonts (like the custom 'Cloude'/Permanent Marker font) for prices, as this negatively impacts UX and readability.
 - **Clean Note Cards:** We prefer clean, off-white/cream or pure white cards that resemble pieces of paper or notes (as seen in "The Fermion Way" section).
 - **Subtle Accents:** Use soft drop shadows (`shadow-[8px_8px_0px_rgba(0,0,0,0.05)]`), subtle masking tape elements (`bg-white/60`, `backdrop-blur`), and hand-drawn accents like squiggly lines for separators.
 - **Varied Zig-Zag Flow:** The page should flow through alternating Light and Dark themes (e.g., Cream -> Dark Maroon -> Pale Beige -> Dark Green). 

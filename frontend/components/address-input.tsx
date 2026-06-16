@@ -25,8 +25,10 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
   const [areas, setAreas] = useState<any[]>([]);
   const [showAreas, setShowAreas] = useState(false);
   const [areaSearchLoading, setAreaSearchLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // Local state for search
 
   const fetchAreas = async (input: string) => {
+    setSearchQuery(input);
     if (input.length < 3) {
       setAreas([]);
       return;
@@ -50,7 +52,7 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
     <div className="space-y-8">
       {/* Detailed Address */}
       <div className="space-y-3">
-         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">{label}</label>
+         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">Alamat Lengkap</label>
          <div className="relative group">
             <textarea 
                required
@@ -72,6 +74,7 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
           <Input 
             placeholder="Ketik minimal 3 huruf..." 
             className="h-14 bg-white border border-black/10 font-bold rounded-sm pl-14 shadow-sm focus:border-stone-400 transition-all" 
+            value={searchQuery} // Use local state
             onChange={(e) => fetchAreas(e.target.value)}
           />
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-stone-400" size={20} />
@@ -102,6 +105,7 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
                     });
                     setAreas([]);
                     setShowAreas(false);
+                    setSearchQuery(area.name); // Optionally update input with selected
                   }}
                   className="w-full p-5 text-left hover:bg-stone-50 border-b border-black/5 last:border-none transition-colors group"
                 >
