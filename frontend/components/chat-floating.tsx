@@ -51,22 +51,25 @@ export function ChatFloating() {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-8 right-8 z-[80]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="absolute bottom-24 right-0 w-[350px] h-[550px] bg-white/40 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 flex flex-col overflow-hidden"
+            className="absolute bottom-24 right-0 w-[350px] h-[550px] bg-[#FDFBF7] backdrop-blur-[20px] rounded-2xl shadow-[12px_12px_0px_rgba(0,0,0,0.04)] border border-black/10 flex flex-col overflow-hidden"
           >
-            {/* Header: Glass Style */}
-            <div className="bg-slate-900/90 p-8 flex items-center justify-between">
+            {/* Header: Scrapbook Style */}
+            <div className="bg-[#2B4031] p-8 flex items-center justify-between relative">
+               {/* Tape */}
+               <div className="absolute top-[-5px] left-1/2 -translate-x-1/2 w-16 h-4 bg-white/20 border border-white/5 rotate-[-2deg] z-20 backdrop-blur-sm"></div>
+
                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-fermion-french-blue rounded-2xl flex items-center justify-center text-white italic font-black shadow-lg shadow-fermion-french-blue/30 text-lg">F</div>
+                  <div className="w-10 h-10 bg-[#F1B941] border border-black/10 rounded-lg flex items-center justify-center text-black font-cloude shadow-sm text-lg rotate-[-5deg]">F</div>
                   <div>
-                    <h4 className="text-white text-xs font-black uppercase tracking-widest leading-none">Fermion Lab</h4>
-                    <p className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-1.5 flex items-center gap-1">
+                    <h4 className="text-white text-sm font-cloude tracking-widest leading-none">Fermion Lab</h4>
+                    <p className="text-emerald-400 text-[9px] font-black uppercase tracking-[0.2em] mt-2 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> Live Support
                     </p>
                   </div>
@@ -76,27 +79,27 @@ export function ChatFloating() {
                </button>
             </div>
 
-            {/* Messages: Floating in Glass */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
+            {/* Messages: Floating on Paper */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F4F0E6]/30">
                {messages.map((msg, idx) => (
                  <div key={idx} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] p-5 rounded-[1.5rem] text-[11px] font-medium leading-relaxed shadow-sm border transition-all ${msg.isUser ? 'bg-slate-900 text-white border-slate-800 rounded-tr-none' : 'bg-white/80 text-slate-700 border-white/60 rounded-tl-none'}`}>
+                    <div className={`max-w-[85%] p-5 rounded-xl text-[11px] font-medium leading-relaxed shadow-sm border transition-all ${msg.isUser ? 'bg-[#1A2B20] text-white border-black/10' : 'bg-white text-stone-700 border-black/5'}`}>
                        {msg.text}
-                       <p className={`text-[8px] mt-2 font-black uppercase tracking-widest opacity-40`}>{msg.time}</p>
+                       <p className={`text-[8px] mt-2 font-black uppercase tracking-widest opacity-40 italic`}>{msg.time}</p>
                     </div>
                  </div>
                ))}
             </div>
 
-            {/* Input: Integrated Glass Form */}
-            <form onSubmit={handleSendMessage} className="p-6 bg-white/60 border-t border-white/60 flex gap-3">
+            {/* Input: Integrated Notebook Form */}
+            <form onSubmit={handleSendMessage} className="p-6 bg-white border-t border-black/5 flex gap-3">
                <Input 
                  placeholder="Type your question..." 
-                 className="flex-1 h-12 bg-white/50 border-none rounded-2xl text-[11px] font-bold px-5 focus:ring-2 focus:ring-fermion-french-blue/20 transition-all"
+                 className="flex-1 h-12 bg-stone-50 border border-black/5 rounded-xl text-[11px] font-display italic px-5 focus:ring-1 focus:ring-[#367F4D]/20 transition-all shadow-inner"
                  value={inputText}
                  onChange={(e) => setInputText(e.target.value)}
                />
-               <Button type="submit" className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-fermion-french-blue transition-all shadow-xl">
+               <Button type="submit" className="w-12 h-12 bg-[#367F4D] text-white rounded-xl flex items-center justify-center hover:bg-[#2B4031] transition-all shadow-sm">
                  <Send size={16} />
                </Button>
             </form>
@@ -113,15 +116,18 @@ export function ChatFloating() {
         } : {}}
         transition={{ duration: 1.5, repeat: isWaving ? 2 : 0 }}
         className={`
-          w-16 h-16 bg-slate-900 text-white rounded-[1.5rem] shadow-2xl flex items-center justify-center 
-          hover:scale-110 transition-transform active:scale-95 group relative border-4 border-white
-          ${isOpen ? 'bg-fermion-french-blue rotate-0' : ''}
+          w-16 h-16 bg-white text-stone-900 rounded-2xl shadow-[6px_6px_0px_rgba(0,0,0,0.04)] flex items-center justify-center 
+          hover:scale-110 transition-transform active:scale-95 group relative border border-black/5
+          ${isOpen ? 'bg-[#F4F0E6] rotate-0' : 'rotate-3'}
         `}
       >
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 border-2 border-white rounded-full flex items-center justify-center">
+        {/* Fake Tape on button */}
+        <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-8 h-3 bg-[#367F4D]/20 border border-black/5 rotate-[-5deg] z-20 backdrop-blur-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+        
+        <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#EC625D] border border-white rounded-full flex items-center justify-center z-30">
            <Sparkles size={10} className="text-white" />
         </div>
-        {isOpen ? <X size={24} strokeWidth={2.5} /> : <MessageCircle size={24} className="group-hover:rotate-12 transition-transform" />}
+        {isOpen ? <X size={24} strokeWidth={2.2} /> : <MessageCircle size={24} className="text-[#367F4D] group-hover:rotate-12 transition-transform" strokeWidth={2.2} />}
       </motion.button>
     </div>
   );

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Fraunces, Manrope } from 'next/font/google';
-import localFont from 'next/font/local';
+import { Fraunces, Manrope, Permanent_Marker } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { Header } from "@/components/header";
 import { UnifiedSidebar } from "@/components/dashboard/sidebar";
@@ -17,8 +16,9 @@ import './globals.css';
 const fraunces = Fraunces({ subsets: ["latin"], variable: '--font-display' });
 const manrope = Manrope({ subsets: ["latin"], variable: '--font-sans' });
 
-const cloude = localFont({
-  src: './fonts/cloude.otf',
+const marker = Permanent_Marker({ 
+  weight: '400',
+  subsets: ["latin"], 
   variable: '--font-cloude',
 });
 
@@ -45,7 +45,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${manrope.variable} ${cloude.variable} font-sans antialiased bg-[#FAF9F6]`}>
+      <body className={`${fraunces.variable} ${manrope.variable} ${marker.variable} font-sans antialiased bg-[#FAF9F6]`}>
         <LoadingCover />
         <CartSync />
 

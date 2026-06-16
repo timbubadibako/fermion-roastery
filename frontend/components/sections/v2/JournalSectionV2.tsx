@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Calendar, ChevronRight } from "lucide-react";
+import { BookOpen, Calendar, ArrowRight } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Sticker } from "@/components/ui/sticker";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface Post {
   id: string;
@@ -19,6 +23,9 @@ export function JournalSectionV2() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetch("/api/journal?status=published")
       .then(res => res.ok ? res.json() : [])
@@ -29,101 +36,154 @@ export function JournalSectionV2() {
       .catch(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+    
+    let ctx = gsap.context(() => {
+      gsap.from(".journal-header", {
+        x: -50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 75%",
+        }
+      });
+
+      const cards = gsap.utils.toArray<HTMLElement>('.journal-card');
+      gsap.from(cards, {
+        y: 50,
+        rotation: (idx) => idx % 2 === 0 ? 1 : -2,
+        stagger: 0.15,
+        duration: 1,
+        ease: "back.out(1.2)",
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: "top 80%",
+        }
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [loading, posts]);
+
   if (!loading && posts.length === 0) return null;
 
   return (
-    <section className="py-32 relative overflow-hidden bg-white">
+    <section 
+      ref={sectionRef}
+      // Light side of the zig-zag (Pale Beige / Old Paper)
+      className="py-40 relative z-30 -mt-20 overflow-hidden bg-[#F4F0E6]"
+    >
+      {/* Paper Grain Overlay */}
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+
+      {/* Giant faded text background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15vw] font-cloude text-black opacity-5 pointer-events-none select-none rotate-[-5deg]">
+         Chronicle
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-          <div className="space-y-4">
-             <div className="flex items-center gap-3 text-fermion-french-blue">
-                <BookOpen size={20} strokeWidth={2.5} />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Roastery Journal</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20 journal-header">
+          <div className="space-y-4 relative">
+             <Sticker rotate={15} className="-top-12 -left-8 hidden md:block border border-black/10 shadow-sm" color="#8CADD8" variant="dashed">
+               Read Me
+             </Sticker>
+             
+             <div className="flex items-center gap-3 text-black">
+                <BookOpen size={24} strokeWidth={2} />
+                <span className="text-[12px] font-black uppercase tracking-[0.4em] bg-white px-2 border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.03)] rotate-[-2deg]">
+                  Roastery Journal
+                </span>
              </div>
-             <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">
-                Stories from <br/> the Field.
+             <h2 className="text-7xl md:text-8xl font-cloude tracking-tighter text-slate-900 leading-[0.85] pt-4">
+                Stories from <br/>
+                <span className="font-display italic text-[#367F4D]">the Field.</span>
              </h2>
           </div>
-          <Link href="/journal" className="group flex items-center gap-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-fermion-french-blue transition-colors pb-2">
-             <span>Browse All Entries</span>
-             <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:border-fermion-french-blue transition-all">
-                <ArrowRight size={16} />
-             </div>
+          
+          <Link href="/journal" className="group flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] text-black hover:text-[#367F4D] transition-all duration-300 pb-2 bg-white px-6 py-3 border border-black/10 shadow-sm rotate-[1deg] hover:-translate-y-1 hover:scale-105 active:scale-95">
+             <span>Browse All</span>
+             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {/* Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        {/* Posts Grid - Scrapbook Stack */}
+        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
           {loading ? (
              [1,2,3].map(i => (
-                <div key={i} className="space-y-6 animate-pulse">
-                   <div className="aspect-[4/5] bg-slate-100 rounded-[3rem]" />
-                   <div className="h-4 bg-slate-100 w-2/3 rounded-full" />
-                   <div className="h-20 bg-slate-50 rounded-2xl" />
-                </div>
+                <div key={i} className="aspect-[4/5] bg-white border border-black/5 shadow-[8px_8px_0_rgba(0,0,0,0.02)] animate-pulse" style={{ transform: `rotate(1deg)` }} />
              ))
           ) : (
             posts.map((post, i) => (
-              <motion.div 
+              <div 
                 key={post.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="group cursor-pointer"
+                className="journal-card group cursor-pointer relative flex flex-col"
               >
-                <Link href={`/journal/${post.slug}`}>
-                  <div className="space-y-8">
+                <Link href={`/journal/${post.slug}`} className="h-full">
+                  <div 
+                    className="bg-white p-6 pb-8 border border-black/10 hover:border-black/20 hover:-translate-y-2 hover:scale-[1.02] shadow-[8px_8px_0px_rgba(0,0,0,0.02)] hover:shadow-[12px_12px_0px_rgba(0,0,0,0.04)] transition-all duration-500 h-full flex flex-col"
+                    style={{ borderRadius: "4px 2px 6px 3px" }}
+                  >
+                     {/* Masking tape effect */}
+                     <div className="absolute top-[-8px] right-10 w-16 h-5 bg-white/60 border border-black/5 rotate-[8deg] z-20 backdrop-blur-sm shadow-sm"></div>
+
                      {/* Image Container */}
-                     <div className="aspect-[4/5] overflow-hidden rounded-[3.5rem] relative bg-slate-100">
+                     <div className="aspect-[4/5] overflow-hidden relative bg-slate-50 mb-6 rounded-sm">
                         {post.featured_image ? (
                           <img 
                             src={post.featured_image} 
                             alt={post.title}
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-200">
+                          <div className="w-full h-full flex items-center justify-center text-slate-300">
                              <BookOpen size={48} />
                           </div>
                         )}
-                        <div className="absolute top-6 left-6">
-                           <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xl border border-white/50">
+                        
+                        {/* Date Stamp */}
+                        <div className="absolute bottom-4 left-4">
+                           <div className="bg-white/90 backdrop-blur-md text-slate-900 px-3 py-1.5 rounded-full border border-black/5 shadow-sm flex items-center gap-2">
                               <Calendar size={12} className="text-fermion-french-blue" />
-                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">
+                              <span className="text-[9px] font-black uppercase tracking-widest">
                                  {new Date(post.published_at || post.created_at || new Date()).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
                               </span>
                            </div>
                         </div>
                      </div>
 
-                     {/* Content */}
-                     <div className="space-y-4 px-2">
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900 group-hover:text-fermion-french-blue transition-colors leading-tight">
+                     {/* Content - Typed Note */}
+                     <div className="flex-1 flex flex-col px-2 relative">
+                        <h3 className="text-2xl font-display font-black uppercase tracking-tight text-slate-900 group-hover:text-fermion-french-blue transition-colors leading-tight mb-3 relative z-10">
                            {post.title}
                         </h3>
-                        <p className="text-sm text-slate-500 font-medium line-clamp-3 leading-relaxed">
+                        
+                        {/* Squiggly line separator */}
+                        <svg className="w-12 opacity-20 mb-4" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+
+                        <p className="text-sm text-slate-500 font-sans font-medium line-clamp-3 leading-relaxed relative z-10">
                            {post.excerpt}
                         </p>
-                        <div className="pt-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-fermion-french-blue opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-                           <span>Read Full Story</span>
-                           <ChevronRight size={14} />
+                        
+                        <div className="pt-6 mt-auto">
+                           <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-fermion-french-blue transition-colors relative z-10">
+                             <span>Read Full Story</span>
+                             <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                           </div>
                         </div>
                      </div>
                   </div>
                 </Link>
-              </motion.div>
+              </div>
             ))
           )}
         </div>
 
-      </div>
-
-      {/* Background Decor */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 text-[20vw] font-black text-slate-50 opacity-[0.03] select-none pointer-events-none uppercase italic italic tracking-tighter">
-         Chronicle.
       </div>
     </section>
   );

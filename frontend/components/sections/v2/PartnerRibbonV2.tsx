@@ -41,32 +41,37 @@ export function PartnerRibbonV2() {
   };
 
   return (
-    <section className="py-10 border-y border-slate-100 bg-white/50 backdrop-blur-sm relative z-20 overflow-hidden">
-      <div className="flex">
-        <motion.div 
-          animate={{ x: [0, -1000] }}
-          transition={{ 
-            duration: 40, 
-            repeat: Infinity, 
-            ease: "linear" 
-          }}
-          className="flex gap-16 items-center whitespace-nowrap pr-16"
-        >
-          {renderPartners()}
-        </motion.div>
+    <section className="py-12 bg-[#FAF9F6] relative z-30 overflow-hidden border-y-2 border-dashed border-black/5">
+      {/* Label for the ribbon */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40">
+         <div className="bg-white px-3 py-1 border border-black/10 shadow-sm rounded-sm text-[8px] font-black uppercase tracking-[0.3em] text-stone-400 rotate-[-1deg]">
+           Trusted Laboratory Partners
+         </div>
+      </div>
 
+      <div className="flex overflow-hidden opacity-100 transition-opacity duration-700">
         <motion.div 
-          animate={{ x: [0, -1000] }}
+          animate={{ x: "-50%" }}
           transition={{ 
-            duration: 40, 
+            duration: 30, 
             repeat: Infinity, 
             ease: "linear" 
           }}
-          className="flex gap-16 items-center whitespace-nowrap pr-16"
+          className="flex w-max"
         >
-          {renderPartners()}
+          {/* First Set */}
+          <div className="flex gap-20 items-center px-10">
+            {renderPartners()}
+          </div>
+          {/* Second Set (Duplicate for seamless loop) */}
+          <div className="flex gap-20 items-center px-10">
+            {renderPartners()}
+          </div>
         </motion.div>
       </div>
+
+      {/* Subtle bottom shadow to separate from Series */}
+      <div className="absolute bottom-0 left-0 w-full h-px bg-black/5"></div>
     </section>
   );
 }
