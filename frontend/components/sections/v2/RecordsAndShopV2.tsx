@@ -135,7 +135,7 @@ export function NewReleasesV2() {
                           {product.name}
                         </h4>
                      </div>
-                     <div className="text-xl font-cloude text-fermion-french-blue whitespace-nowrap">
+                     <div className="text-sm font-bold text-slate-900 whitespace-nowrap">
                        Rp{Number(product.price_retail).toLocaleString('id-ID')}
                      </div>
                    </div>

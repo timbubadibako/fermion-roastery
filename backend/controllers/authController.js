@@ -112,7 +112,7 @@ export const getProfile = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await query(
-      'SELECT id, email, full_name, role, phone, address, city, postal_code FROM profiles WHERE id = $1',
+      'SELECT id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json FROM profiles WHERE id = $1',
       [id]
     );
     if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
@@ -124,14 +124,25 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const { id } = req.params;
-  const { fullName, phone, address, city, postalCode } = req.body;
+  const { 
+    fullName, phone, address, city, postalCode, 
+    areaId, district, regency, province, patokan,
+    addresses 
+  } = req.body;
 
   try {
     const result = await query(
       `UPDATE profiles 
-       SET full_name = $1, phone = $2, address = $3, city = $4, postal_code = $5, updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $6 RETURNING id, email, full_name, role, phone, address, city, postal_code`,
-      [fullName, phone, address, city, postalCode, id]
+       SET full_name = $1, phone = $2, address = $3, city = $4, postal_code = $5, 
+           area_id = $6, district = $7, regency = $8, province = $9, patokan = $10,
+           addresses_json = $11, updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $12 RETURNING id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json`,
+      [
+        fullName, phone, address, city, postalCode, 
+        areaId, district, regency, province, patokan,
+        JSON.stringify(addresses || []),
+        id
+      ]
     );
 
     if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });

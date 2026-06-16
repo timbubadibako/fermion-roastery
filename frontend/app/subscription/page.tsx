@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { Check, Loader2, ArrowRight, FlaskConical, Beaker, Sprout, Quote, Microscope, PenTool, Star } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { toast } from "sonner";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useAuthStore } from "@/lib/store";
+import { AddressInput } from "@/components/address-input";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,9 +50,13 @@ const plans = [
 ];
 
 export default function SubscriptionPageV2() {
+  const { user } = useAuthStore();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  
+  const [address, setAddress] = useState({ address: '', city: '', postalCode: '' });
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
+
   const heroRef = useRef<HTMLElement>(null);
   const masterRef = useRef<HTMLElement>(null);
   const stepsRef = useRef<HTMLElement>(null);
@@ -69,13 +76,42 @@ export default function SubscriptionPageV2() {
     return () => ctx.revert();
   }, [mounted]);
 
-  const handleSubscribe = async (plan: typeof plans[0]) => {
-    setLoadingPlan(plan.name);
+  const handleSaveAddress = async () => {
+    try {
+        const res = await fetch(`/api/auth/profile/${user?.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                address: address.address, 
+                city: address.city, 
+                postal_code: address.postalCode 
+            })
+        });
+        if (res.ok) {
+            setShowAddressForm(false);
+            toast.success("Address saved.");
+        } else {
+            toast.error("Failed to save address.");
+        }
+    } catch (e) {
+        toast.error("Error saving address.");
+    }
+  };
+
+  const handleFinalizeSubscribe = async () => {
+    if (!selectedPlan) return;
+    setLoadingPlan(selectedPlan.name);
     try {
       const res = await fetch("/api/payments/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: plan.price, planName: plan.name, interval: 'MONTH', intervalCount: 1 }),
+        body: JSON.stringify({ 
+            amount: selectedPlan.price, 
+            planName: selectedPlan.name, 
+            interval: 'MONTH', 
+            intervalCount: 1,
+            shippingAddress: address
+        }),
       });
       const data = await res.json();
       if (res.ok && data.invoiceUrl) window.location.href = data.invoiceUrl;
@@ -187,7 +223,7 @@ export default function SubscriptionPageV2() {
                    {plan.icon}
                    <h3 className="text-3xl font-cloude text-[#2A1619]">{plan.name}</h3>
                    <div className="flex items-baseline justify-center gap-1">
-                     <span className="text-5xl font-display font-black italic text-[#5C1B1B]">{plan.priceLabel}</span>
+                     <span className="text-4xl font-bold text-slate-900 leading-none">{plan.priceLabel}</span>
                      <span className="text-[11px] font-black uppercase text-stone-400">/MO</span>
                    </div>
                 </div>
@@ -199,13 +235,56 @@ export default function SubscriptionPageV2() {
                   ))}
                 </ul>
               </div>
-              <button onClick={() => handleSubscribe(plan)} disabled={loadingPlan === plan.name} className={`mt-10 w-full h-16 rounded-xl font-black tracking-[0.3em] text-[10px] uppercase transition-all duration-300 shadow-sm flex items-center justify-center gap-3 hover:-translate-y-1 active:scale-95 ${plan.color} ${plan.hoverColor}`}>
-                {loadingPlan === plan.name ? <Loader2 className="animate-spin" size={16} /> : <>Initialize Ritual <ArrowRight size={14} strokeWidth={3} /></>}
+              <button onClick={() => handleInitSubscribe(plan)} className={`mt-10 w-full h-16 rounded-xl font-black tracking-[0.3em] text-[10px] uppercase transition-all duration-300 shadow-sm flex items-center justify-center gap-3 hover:-translate-y-1 active:scale-95 ${plan.color} ${plan.hoverColor}`}>
+                Initialize Ritual <ArrowRight size={14} strokeWidth={3} />
               </button>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Address Modal/Form Overlay */}
+      <AnimatePresence>
+        {(showAddressForm || selectedPlan) && (
+            <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-6"
+            >
+                <div className="bg-white p-10 border border-black/10 shadow-2xl max-w-lg w-full rounded-sm relative">
+                    {/* Tape */}
+                    <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-6 bg-white/60 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
+                    
+                    {showAddressForm ? (
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-cloude">Set Shipping Address</h3>
+                            <AddressInput value={address} onChange={setAddress} />
+                            <Button onClick={handleSaveAddress} className="w-full rounded-sm font-black uppercase">Confirm Address</Button>
+                        </div>
+                    ) : selectedPlan && (
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-cloude">Confirm Subscription</h3>
+                            <div className="p-4 bg-stone-50 rounded-sm text-xs space-y-2 border border-black/5">
+                                <p>Plan: <strong>{selectedPlan.name}</strong></p>
+                                <p>Address: {address.address}, {address.city}</p>
+                                <p className="flex justify-between">
+                                    <span>Shipping:</span>
+                                    <span><del className="mr-2 text-stone-400">Rp 15.000</del> Free</span>
+                                </p>
+                            </div>
+                            <Button 
+                                onClick={handleFinalizeSubscribe} 
+                                disabled={!!loadingPlan}
+                                className="w-full rounded-sm font-black uppercase"
+                            >
+                                {loadingPlan ? <Loader2 className="animate-spin" /> : "Confirm & Pay"}
+                            </Button>
+                            <Button variant="ghost" onClick={() => setSelectedPlan(null)} className="w-full">Cancel</Button>
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
 
       <FooterV2 />
     </div>
