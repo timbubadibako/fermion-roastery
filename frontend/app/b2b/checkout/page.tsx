@@ -110,8 +110,9 @@ export default function B2BCheckoutPage() {
         const data = await res.json();
         toast.success("Procurement protocol initiated! Redirecting to payment...");
         
-        // Remove only checked out items
-        items.forEach(i => removeItem(i.id, i.weight, i.grind));
+        // Save only the lineItemIds of selected items to localStorage for consistent cleanup
+        const lineItemIdsToRemove = items.map(item => item.lineItemId);
+        localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
         
         // Redirect to Xendit
         window.location.href = data.invoiceUrl;

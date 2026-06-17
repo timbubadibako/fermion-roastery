@@ -281,13 +281,13 @@ export default function CartPage() {
                                 <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest italic">{item.grind}</span>
                               </div>
                             </div>
-                            <button onClick={() => removeItem(item.id, item.weight, item.grind)} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 text-stone-300 hover:bg-red-50 hover:text-red-500 transition-all border border-black/5"><Trash2 size={14} /></button>
+                            <button onClick={() => removeItem(item.lineItemId)} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 text-stone-300 hover:bg-red-50 hover:text-red-500 transition-all border border-black/5"><Trash2 size={14} /></button>
                           </div>
                           <div className="flex justify-between items-end mt-4">
                             <div className="flex items-center bg-stone-50 rounded-full px-2 py-1 border border-black/5">
-                              <button onClick={() => updateQuantity(item.id, item.weight, item.grind, item.quantity - 1)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"><Minus size={12} /></button>
+                              <button onClick={() => updateQuantity(item.lineItemId, item.quantity - 1)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"><Minus size={12} /></button>
                               <span className="w-10 text-center text-xs font-black font-sans">{item.quantity}</span>
-                              <button onClick={() => updateQuantity(item.id, item.weight, item.grind, item.quantity + 1)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"><Plus size={12} /></button>
+                              <button onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"><Plus size={12} /></button>
                             </div>
                             <div className="text-right">
                               <p className="text-[9px] font-black text-stone-300 uppercase tracking-widest mb-1 italic">Subtotal Item</p>
