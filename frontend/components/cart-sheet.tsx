@@ -21,8 +21,13 @@ import { cn } from "@/lib/utils";
 
 export function CartSheet() {
   const router = useRouter();
-  const { items, isOpen, setIsOpen, updateQuantity, removeItem, toggleSelection, getTotal } = useCartStore();
+  const { items, isOpen, setIsOpen, updateQuantity, removeItem, toggleSelection, getTotal, ensureIds } = useCartStore();
   const { user } = useAuthStore();
+
+  // Migration: Ensure all existing items have unique IDs
+  React.useEffect(() => {
+    ensureIds();
+  }, [ensureIds]);
 
   const selectedItems = items.filter(i => i.selected !== false);
   const selectedTotal = getTotal(true);

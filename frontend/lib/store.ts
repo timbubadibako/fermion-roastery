@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 15);
+};
+
 export interface CartItem {
   lineItemId: string; // Unique identifier for this cart line
   id: string | number;
@@ -30,6 +37,8 @@ interface CartStore {
   setItems: (items: CartItem[]) => void;
   getTotal: (onlySelected?: boolean) => number;
   syncWithServer: () => Promise<void>;
+  // Migration helper
+  ensureIds: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -42,6 +51,18 @@ export const useCartStore = create<CartStore>()(
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
+      ensureIds: () => {
+        const currentItems = get().items;
+        const needsFix = currentItems.some(item => !item.lineItemId);
+        if (needsFix) {
+          const fixedItems = currentItems.map(item => ({
+            ...item,
+            lineItemId: item.lineItemId || generateId()
+          }));
+          set({ items: fixedItems });
+        }
+      },
+
       addItem: (newItem, selectOnly = false) => {
         const currentItems = get().items;
         
@@ -49,6 +70,7 @@ export const useCartStore = create<CartStore>()(
           ? currentItems.map(item => ({ ...item, selected: false }))
           : currentItems;
 
+        // Try to merge if item is exactly same (product + options)
         const existingItemIndex = baseItems.findIndex(
           (item) => item.id === newItem.id && item.weight === newItem.weight && item.grind === newItem.grind
         );
@@ -61,7 +83,7 @@ export const useCartStore = create<CartStore>()(
         } else {
           updatedItems = [...baseItems, { 
             ...newItem, 
-            lineItemId: crypto.randomUUID(), 
+            lineItemId: generateId(), 
             selected: true 
           }];
         }
@@ -71,16 +93,14 @@ export const useCartStore = create<CartStore>()(
       },
 
       removeItem: (lineItemId) => {
-        const updatedItems = get().items.filter(
-          (item) => item.lineItemId !== lineItemId
-        );
-        set({ items: updatedItems });
+        set({ items: get().items.filter((item) => item.lineItemId !== lineItemId) });
         get().syncWithServer();
       },
 
       removeItems: (lineItemIdsToRemove) => {
-        const currentItems = get().items;
-        const updatedItems = currentItems.filter(
+        if (!lineItemIdsToRemove || lineItemIdsToRemove.length === 0) return;
+        
+        const updatedItems = get().items.filter(
           (item) => !lineItemIdsToRemove.includes(item.lineItemId)
         );
         set({ items: updatedItems });
@@ -114,7 +134,11 @@ export const useCartStore = create<CartStore>()(
         get().syncWithServer();
       },
 
-      setItems: (items) => set({ items }),
+      setItems: (items) => {
+        // Ensure incoming items have IDs
+        const itemsWithIds = items.map(i => ({ ...i, lineItemId: i.lineItemId || generateId() }));
+        set({ items: itemsWithIds });
+      },
 
       getTotal: (onlySelected = false) => {
         const targetItems = onlySelected 
@@ -124,7 +148,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       syncWithServer: async () => {
-        // Placeholder for server sync
+        // Future sync logic
       }
     }),
     {
