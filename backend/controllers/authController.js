@@ -1,4 +1,12 @@
 import { supabase } from '../lib/supabase.js';
+import { createClient } from '@supabase/supabase-js';
+
+// Helper to get a clean client for auth checks to avoid RLS pollution
+const getAuthClient = () => createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { auth: { persistSession: false } }
+);
 
 export const register = async (req, res) => {
   const { id: externalId, email, password, fullName, role = 'RETAIL' } = req.body;
@@ -80,8 +88,9 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   
   try {
-    // 1. Authenticate with Supabase
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+    // 1. Authenticate with a separate client to avoid polluting the service_role client
+    const authClient = getAuthClient();
+    const { data: authData, error: authError } = await authClient.auth.signInWithPassword({
         email,
         password,
     });
@@ -92,14 +101,14 @@ export const login = async (req, res) => {
 
     const supabaseUser = authData.user;
 
-    // 2. Fetch or Sync local profile
+    // 2. Fetch or Sync local profile using the MAIN service_role client
     let { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, email, full_name, role')
       .eq('id', supabaseUser.id)
-      .single();
+      .maybeSingle();
     
-    if (profileError && profileError.code === 'PGRST116') {
+    if (!profile) {
       // Auto-sync if profile missing locally
       const { data: syncData, error: syncError } = await supabase
         .from('profiles')
@@ -114,8 +123,6 @@ export const login = async (req, res) => {
       
       if (syncError) throw syncError;
       profile = syncData;
-    } else if (profileError) {
-      throw profileError;
     }
 
     res.status(200).json({ 
