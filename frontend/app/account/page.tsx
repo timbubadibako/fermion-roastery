@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ interface AddressDetail {
   isPrimary: boolean;
 }
 
-export default function RetailAccountPage() {
+function AccountContent() {
   const { user, logout, setUser } = useAuthStore();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
@@ -550,5 +550,18 @@ export default function RetailAccountPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RetailAccountPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FDFBF7] flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin" />
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 italic">Initializing Laboratory...</p>
+      </div>
+    }>
+      <AccountContent />
+    </Suspense>
   );
 }
