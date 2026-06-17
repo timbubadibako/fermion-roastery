@@ -1,35 +1,34 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-import { query } from './db.js';
+import { supabase } from './supabase.js';
 
 const generateInvoicePDF = async (orderId) => {
   try {
-    // 1. Fetch complete order details
-    const result = await query(`
-      SELECT o.*, 
-             COALESCE(
-               json_agg(json_build_object(
-                 'name', oi.product_name, 
-                 'quantity', oi.quantity, 
-                 'price', oi.unit_price,
-                 'weight', oi.variant_weight,
-                 'grind', oi.variant_grind
-               )) FILTER (WHERE oi.id IS NOT NULL), '[]'
-             ) as items
-      FROM orders o
-      LEFT JOIN order_items oi ON o.id = oi.order_id
-      WHERE o.id = $1
-      GROUP BY o.id
-    `, [orderId]);
+    // 1. Fetch complete order details with items
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        items:order_items(
+          product_name,
+          quantity,
+          unit_price,
+          variant_weight,
+          variant_grind
+        )
+      `)
+      .eq('id', orderId)
+      .single();
 
-    if (result.rows.length === 0) throw new Error("Order not found");
-    const order = result.rows[0];
+    if (orderError || !order) throw new Error("Order not found or error fetching order");
 
     // 2. Setup PDF Document
     const doc = new PDFDocument({ margin: 50 });
     const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
-    const filePath = path.resolve(`invoices/${fileName}`);
+    const invoicesDir = path.join(process.cwd(), 'invoices');
+    if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir);
+    const filePath = path.join(invoicesDir, fileName);
     
     // Pipe to file
     doc.pipe(fs.createWriteStream(filePath));
@@ -73,10 +72,10 @@ const generateInvoicePDF = async (orderId) => {
     doc.font('Helvetica');
     
     order.items.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      doc.text(`${item.name} (${item.weight} - ${item.grind})`, 50, y, { width: 280 });
+      const itemTotal = item.unit_price * item.quantity;
+      doc.text(`${item.product_name} (${item.variant_weight} - ${item.variant_grind})`, 50, y, { width: 280 });
       doc.text(item.quantity.toString(), 350, y, { width: 50, align: 'right' });
-      doc.text(Number(item.price).toLocaleString('id-ID'), 400, y, { width: 70, align: 'right' });
+      doc.text(Number(item.unit_price).toLocaleString('id-ID'), 400, y, { width: 70, align: 'right' });
       doc.text(itemTotal.toLocaleString('id-ID'), 470, y, { width: 70, align: 'right' });
       y += 20;
     });
@@ -125,22 +124,19 @@ const generateShippingLabelsBatch = async (orderIds, res) => {
     for (let i = 0; i < orderIds.length; i++) {
       if (i > 0) doc.addPage();
 
-      const result = await query(`
-        SELECT o.*, 
-               COALESCE(
-                 json_agg(json_build_object(
-                   'name', oi.product_name, 
-                   'quantity', oi.quantity
-                 )) FILTER (WHERE oi.id IS NOT NULL), '[]'
-               ) as items
-        FROM orders o
-        LEFT JOIN order_items oi ON o.id = oi.order_id
-        WHERE o.id = $1
-        GROUP BY o.id
-      `, [orderIds[i]]);
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          items:order_items(
+            product_name,
+            quantity
+          )
+        `)
+        .eq('id', orderIds[i])
+        .single();
 
-      if (result.rows.length === 0) continue;
-      const order = result.rows[0];
+      if (orderError || !order) continue;
 
       doc.rect(10, 10, 278, 398).stroke();
       doc.fontSize(14).font('Helvetica-Bold').text(order.shipping_courier?.toUpperCase() || 'PENGIRIMAN', 20, 25);
@@ -161,7 +157,7 @@ const generateShippingLabelsBatch = async (orderIds, res) => {
       doc.fontSize(7).font('Helvetica-Bold').text('ISI PAKET:', 20, 260);
       let itemY = 270;
       order.items.forEach(item => {
-        doc.fontSize(7).font('Helvetica').text(`- ${item.name} (${item.quantity} pcs)`, 20, itemY);
+        doc.fontSize(7).font('Helvetica').text(`- ${item.product_name} (${item.quantity} pcs)`, 20, itemY);
         itemY += 10;
       });
       doc.fontSize(6).font('Helvetica-Oblique').text('Dicetak otomatis oleh Fermion Business Engine', 20, 385, { align: 'center', width: 258 });

@@ -1,4 +1,3 @@
-import { query } from '../lib/db.js';
 import { supabase } from '../lib/supabase.js';
 
 export const register = async (req, res) => {
@@ -35,19 +34,22 @@ export const register = async (req, res) => {
     }
 
     // 2. Sync with local profiles table
-    const profileResult = await query(
-      `INSERT INTO profiles (id, email, password_hash, full_name, role) 
-       VALUES ($1, $2, $3, $4, $5) 
-       ON CONFLICT (email) DO UPDATE SET 
-         full_name = EXCLUDED.full_name,
-         role = EXCLUDED.role,
-         updated_at = CURRENT_TIMESTAMP
-       RETURNING id, email, full_name, role`,
-      [finalId, email, password, fullName || email.split('@')[0], role] 
-    );
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: finalId,
+        email,
+        password_hash: password,
+        full_name: fullName || email.split('@')[0],
+        role,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'email' })
+      .select('id, email, full_name, role')
+      .single();
     
-    const profile = profileResult.rows[0];
-    res.status(201).json({ message: "Registration successful", profile });
+    if (error) throw error;
+
+    res.status(201).json({ message: "Registration successful", profile: data });
   } catch (error) {
     console.error('Registration Error:', error);
     res.status(500).json({ message: "Error during registration", error: error.message });
@@ -59,12 +61,16 @@ export const getProfileByEmail = async (req, res) => {
   if (!email) return res.status(400).json({ message: "Email required" });
 
   try {
-    const result = await query(
-      'SELECT id, email, full_name, role, phone, address, city, postal_code FROM profiles WHERE email = $1',
-      [email]
-    );
-    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
-    res.status(200).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, email, full_name, role, phone, address, city, postal_code')
+      .eq('email', email)
+      .single();
+
+    if (error && error.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
+    if (error) throw error;
+
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
@@ -87,20 +93,31 @@ export const login = async (req, res) => {
     const supabaseUser = authData.user;
 
     // 2. Fetch or Sync local profile
-    let result = await query('SELECT id, email, full_name, role FROM profiles WHERE id = $1', [supabaseUser.id]);
+    let { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name, role')
+      .eq('id', supabaseUser.id)
+      .single();
     
-    if (result.rows.length === 0) {
+    if (profileError && profileError.code === 'PGRST116') {
       // Auto-sync if profile missing locally
-      const syncResult = await query(
-        `INSERT INTO profiles (id, email, full_name, role) 
-         VALUES ($1, $2, $3, $4) 
-         RETURNING id, email, full_name, role`,
-        [supabaseUser.id, email, supabaseUser.user_metadata?.full_name || email.split('@')[0], supabaseUser.user_metadata?.role || 'RETAIL']
-      );
-      result = syncResult;
+      const { data: syncData, error: syncError } = await supabase
+        .from('profiles')
+        .insert({
+          id: supabaseUser.id,
+          email,
+          full_name: supabaseUser.user_metadata?.full_name || email.split('@')[0],
+          role: supabaseUser.user_metadata?.role || 'RETAIL'
+        })
+        .select('id, email, full_name, role')
+        .single();
+      
+      if (syncError) throw syncError;
+      profile = syncData;
+    } else if (profileError) {
+      throw profileError;
     }
 
-    const profile = result.rows[0];
     res.status(200).json({ 
         message: "Login successful", 
         profile,
@@ -117,27 +134,51 @@ export const applyB2B = async (req, res) => {
   
   try {
     // Check if profile exists
-    const profileRes = await query('SELECT id FROM profiles WHERE id = $1', [profileId]);
-    if (profileRes.rows.length === 0) {
-        return res.status(404).json({ message: "Profile not found" });
-    }
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', profileId)
+      .single();
+
+    if (profileError && profileError.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
+    if (profileError) throw profileError;
 
     // Update role to B2B if it isn't already
-    await query("UPDATE profiles SET role = 'B2B' WHERE id = $1 AND role != 'B2B'", [profileId]);
+    await supabase
+      .from('profiles')
+      .update({ role: 'B2B' })
+      .eq('id', profileId)
+      .neq('role', 'B2B');
 
     // Create or update B2B Partner Application
-    const existingApp = await query('SELECT id FROM b2b_partners WHERE profile_id = $1', [profileId]);
+    const { data: existingApp, error: appError } = await supabase
+      .from('b2b_partners')
+      .select('id')
+      .eq('profile_id', profileId)
+      .maybeSingle();
+
+    if (appError) throw appError;
     
-    if (existingApp.rows.length > 0) {
-       await query(
-        'UPDATE b2b_partners SET company_name = $1, address = $2, estimated_volume_kg = $3, status = $4 WHERE profile_id = $5',
-        [cafeName, cafeAddress, volume, 'pending', profileId]
-       );
+    if (existingApp) {
+       await supabase
+        .from('b2b_partners')
+        .update({
+          company_name: cafeName,
+          address: cafeAddress,
+          estimated_volume_kg: volume,
+          status: 'pending'
+        })
+        .eq('profile_id', profileId);
     } else {
-       await query(
-        'INSERT INTO b2b_partners (profile_id, company_name, address, estimated_volume_kg, status) VALUES ($1, $2, $3, $4, $5)',
-        [profileId, cafeName, cafeAddress, volume, 'pending']
-      );
+       await supabase
+        .from('b2b_partners')
+        .insert({
+          profile_id: profileId,
+          company_name: cafeName,
+          address: cafeAddress,
+          estimated_volume_kg: volume,
+          status: 'pending'
+        });
     }
     
     res.status(201).json({ message: "B2B Application submitted successfully" });
@@ -159,8 +200,13 @@ export const verifyAdmin = async (req, res) => {
   }
 
   try {
-    const result = await query('SELECT role FROM profiles WHERE id = $1', [id]);
-    const profile = result.rows[0];
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw error;
 
     if (profile && profile.role === 'ADMIN') {
       return res.status(200).json({ isAdmin: true });
@@ -176,12 +222,16 @@ export const verifyAdmin = async (req, res) => {
 export const getProfile = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await query(
-      'SELECT id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json FROM profiles WHERE id = $1',
-      [id]
-    );
-    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
-    res.status(200).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
+    if (error) throw error;
+
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
@@ -196,22 +246,30 @@ export const updateProfile = async (req, res) => {
   } = req.body;
 
   try {
-    const result = await query(
-      `UPDATE profiles 
-       SET full_name = $1, phone = $2, address = $3, city = $4, postal_code = $5, 
-           area_id = $6, district = $7, regency = $8, province = $9, patokan = $10,
-           addresses_json = $11, updated_at = CURRENT_TIMESTAMP 
-       WHERE id = $12 RETURNING id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json`,
-      [
-        fullName, phone, address, city, postalCode, 
-        areaId, district, regency, province, patokan,
-        JSON.stringify(addresses || []),
-        id
-      ]
-    );
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: fullName,
+        phone: phone,
+        address: address,
+        city: city,
+        postal_code: postalCode,
+        area_id: areaId,
+        district: district,
+        regency: regency,
+        province: province,
+        patokan: patokan,
+        addresses_json: addresses || [],
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json')
+      .single();
 
-    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
-    res.status(200).json({ message: "Profile updated successfully", profile: result.rows[0] });
+    if (error && error.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
+    if (error) throw error;
+
+    res.status(200).json({ message: "Profile updated successfully", profile: data });
   } catch (error) {
     console.error('Update Profile Error:', error);
     res.status(500).json({ message: "Error updating profile", error: error.message });
@@ -221,16 +279,20 @@ export const updateProfile = async (req, res) => {
 export const claimSilverTier = async (req, res) => {
   const { profileId } = req.body;
   try {
-    const result = await query(
-      "UPDATE b2b_partners SET tier_name = 'Silver' WHERE profile_id = $1 AND is_silver_eligible = true RETURNING *",
-      [profileId]
-    );
+    const { data, error } = await supabase
+      .from('b2b_partners')
+      .update({ tier_name: 'Silver' })
+      .eq('profile_id', profileId)
+      .eq('is_silver_eligible', true)
+      .select()
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error && error.code === 'PGRST116') {
       return res.status(400).json({ message: "Not eligible for Silver Tier or profile not found" });
     }
+    if (error) throw error;
 
-    res.status(200).json({ message: "Silver Tier claimed successfully", partner: result.rows[0] });
+    res.status(200).json({ message: "Silver Tier claimed successfully", partner: data });
   } catch (error) {
     console.error('Claim Tier Error:', error);
     res.status(500).json({ message: "Failed to claim tier", error: error.message });

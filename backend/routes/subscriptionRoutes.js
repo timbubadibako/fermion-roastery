@@ -1,12 +1,18 @@
 import express from 'express';
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
 
 router.get('/plans', async (req, res) => {
   try {
-    const result = await query('SELECT * FROM subscription_plans WHERE is_active = true ORDER BY price ASC');
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('subscription_plans')
+      .select('*')
+      .eq('is_active', true)
+      .order('price', { ascending: true });
+    
+    if (error) throw error;
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -15,11 +21,18 @@ router.get('/plans', async (req, res) => {
 router.get('/active/:profileId', async (req, res) => {
   const { profileId } = req.params;
   try {
-    const result = await query('SELECT * FROM subscriptions WHERE profile_id = $1 AND status = $2 LIMIT 1', [profileId, 'active']);
-    if (result.rows.length === 0) {
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('profile_id', profileId)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
       return res.status(404).json({ message: "No active subscription found" });
     }
-    res.json(result.rows[0]);
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -28,7 +41,12 @@ router.get('/active/:profileId', async (req, res) => {
 router.post('/cancel/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await query('UPDATE subscriptions SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', ['cancelled', id]);
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw error;
     res.json({ message: "Subscription cancelled successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

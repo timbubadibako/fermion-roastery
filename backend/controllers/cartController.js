@@ -1,4 +1,4 @@
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 
 // 1. Sync / Save Cart
 export const syncCart = async (req, res) => {
@@ -7,35 +7,37 @@ export const syncCart = async (req, res) => {
   if (!profileId) return res.status(400).json({ message: "Profile ID required" });
 
   try {
-    await query('BEGIN');
-    
     // Clear existing cart for this user
-    await query('DELETE FROM cart_items WHERE profile_id = $1', [profileId]);
+    const { error: deleteError } = await supabase
+      .from('cart_items')
+      .delete()
+      .eq('profile_id', profileId);
 
-    // Insert current items with UPSERT
-    for (const item of items) {
-      try {
-        await query(
-          `INSERT INTO cart_items (id, profile_id, product_id, weight, grind, quantity, selected)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)
-           ON CONFLICT (id) DO UPDATE SET 
-             quantity = EXCLUDED.quantity,
-             selected = EXCLUDED.selected,
-             updated_at = CURRENT_TIMESTAMP`,
-          [item.lineItemId, profileId, item.id, item.weight, item.grind, item.quantity, item.selected ?? true]
-        );
-      } catch (itemError) {
-        console.error('Insert/Update Item Error:', item, itemError);
-        throw itemError;
-      }
+    if (deleteError) throw deleteError;
+
+    if (items.length > 0) {
+      const cartData = items.map(item => ({
+        id: item.lineItemId,
+        profile_id: profileId,
+        product_id: item.id,
+        weight: item.weight,
+        grind: item.grind,
+        quantity: item.quantity,
+        selected: item.selected ?? true,
+        updated_at: new Date().toISOString()
+      }));
+
+      const { error: insertError } = await supabase
+        .from('cart_items')
+        .insert(cartData);
+
+      if (insertError) throw insertError;
     }
 
-    await query('COMMIT');
     res.status(200).json({ message: "Cart synced successfully" });
   } catch (error) {
-    await query('ROLLBACK');
     console.error('Sync Cart Error:', error);
-    res.status(500).json({ message: "Failed to sync cart" });
+    res.status(500).json({ message: "Failed to sync cart", error: error.message });
   }
 };
 
@@ -46,17 +48,40 @@ export const getCart = async (req, res) => {
   if (!profileId) return res.status(400).json({ message: "Profile ID required" });
 
   try {
-    const result = await query(`
-      SELECT ci.id as "lineItemId", ci.product_id as id, p.name, p.price_retail as price, 
-             ci.weight, ci.grind, ci.quantity, ci.selected, p.image_url as image
-      FROM cart_items ci
-      JOIN products p ON ci.product_id = p.id
-      WHERE ci.profile_id = $1
-    `, [profileId]);
+    const { data, error } = await supabase
+      .from('cart_items')
+      .select(`
+        id,
+        product_id,
+        weight,
+        grind,
+        quantity,
+        selected,
+        products!inner (
+          name,
+          price_retail,
+          image_url
+        )
+      `)
+      .eq('profile_id', profileId);
 
-    res.status(200).json(result.rows);
+    if (error) throw error;
+
+    const formattedData = data.map(item => ({
+      lineItemId: item.id,
+      id: item.product_id,
+      name: item.products?.name,
+      price: item.products?.price_retail,
+      weight: item.weight,
+      grind: item.grind,
+      quantity: item.quantity,
+      selected: item.selected,
+      image: item.products?.image_url
+    }));
+
+    res.status(200).json(formattedData);
   } catch (error) {
     console.error('Get Cart Error:', error);
-    res.status(500).json({ message: "Failed to fetch cart" });
+    res.status(500).json({ message: "Failed to fetch cart", error: error.message });
   }
 };

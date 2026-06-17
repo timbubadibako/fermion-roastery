@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { query } from './db.js';
+import { supabase } from './supabase.js';
 
 /**
  * Monthly Volume & Tier Evaluation
@@ -11,24 +11,58 @@ export const startMonthlyEvaluation = () => {
     
     try {
       // 1. Get all approved B2B partners
-      const partnersRes = await query("SELECT profile_id, tier_name FROM b2b_partners WHERE status = 'approved'");
-      const partners = partnersRes.rows;
+      const { data: partners, error: partnerError } = await supabase
+        .from('b2b_partners')
+        .select('profile_id, tier_name')
+        .eq('status', 'approved');
+
+      if (partnerError) throw partnerError;
+
+      const now = new Date();
+      const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+      const firstDayCurrMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
       for (const partner of partners) {
-        // 2. Calculate volume for the previous month (PAID or SHIPPED only)
-        // Previous month calculation logic
-        const volumeRes = await query(
-          `SELECT COALESCE(SUM(oi.quantity * 0.25), 0) as total_kg 
-           FROM orders o
-           JOIN order_items oi ON o.id = oi.order_id
-           WHERE o.profile_id = $1 
-           AND o.status IN ('PAID', 'SHIPPED', 'DELIVERED')
-           AND o.created_at >= date_trunc('month', current_date - interval '1 month')
-           AND o.created_at < date_trunc('month', current_date)`,
-          [partner.profile_id]
-        );
+        // 2. Calculate volume for the previous month (PAID, SHIPPED, or DELIVERED only)
+        const { data: orders, error: orderError } = await supabase
+          .from('orders')
+          .select(`
+            id,
+            status,
+            created_at,
+            items:order_items(quantity, variant_weight)
+          `)
+          .eq('profile_id', partner.profile_id)
+          .in('status', ['PAID', 'SHIPPED', 'DELIVERED'])
+          .gte('created_at', firstDayPrevMonth)
+          .lt('created_at', firstDayCurrMonth);
 
-        const totalKg = parseFloat(volumeRes.rows[0].total_kg);
+        if (orderError) {
+          console.error(`Error fetching orders for partner ${partner.profile_id}:`, orderError);
+          continue;
+        }
+
+        let totalKg = 0;
+        orders.forEach(order => {
+          order.items.forEach(item => {
+            const quantity = item.quantity || 0;
+            const weightStr = (item.variant_weight || "250g").toLowerCase();
+            
+            let weightInKg = 0.25; // Default 250g
+            if (weightStr.includes('500g')) weightInKg = 0.5;
+            else if (weightStr.includes('1kg') || weightStr.includes('1000g')) weightInKg = 1;
+            else {
+              const match = weightStr.match(/(\d+)(g|kg)/);
+              if (match) {
+                const val = parseInt(match[1]);
+                const unit = match[2];
+                weightInKg = unit === 'kg' ? val : val / 1000;
+              }
+            }
+            totalKg += quantity * weightInKg;
+          });
+        });
+
         let isSilverEligible = totalKg >= 15;
         
         // 3. Reset Tier if threshold not met, OR set eligibility for next month
@@ -38,14 +72,20 @@ export const startMonthlyEvaluation = () => {
           console.log(`📉 Partner ${partner.profile_id} reverted to Bronze (Volume: ${totalKg}kg)`);
         }
 
-        await query(
-          `UPDATE b2b_partners 
-           SET tier_name = $1, is_silver_eligible = $2, updated_at = CURRENT_TIMESTAMP 
-           WHERE profile_id = $3`,
-          [newTier, isSilverEligible, partner.profile_id]
-        );
+        const { error: updateError } = await supabase
+          .from('b2b_partners')
+          .update({ 
+            tier_name: newTier, 
+            is_silver_eligible: isSilverEligible, 
+            updated_at: new Date().toISOString() 
+          })
+          .eq('profile_id', partner.profile_id);
 
-        console.log(`✅ Evaluated Partner ${partner.profile_id}: ${totalKg}kg. Silver Eligible: ${isSilverEligible}`);
+        if (updateError) {
+          console.error(`Error updating partner ${partner.profile_id}:`, updateError);
+        } else {
+          console.log(`✅ Evaluated Partner ${partner.profile_id}: ${totalKg}kg. Silver Eligible: ${isSilverEligible}`);
+        }
       }
 
       console.log('🎉 Monthly B2B Evaluation Complete.');

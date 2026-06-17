@@ -1,4 +1,4 @@
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 import PDFDocument from 'pdfkit';
 
 /**
@@ -13,32 +13,52 @@ export const registerB2B = async (req, res) => {
 
   try {
     // 1. Check if profile exists
-    const profileRes = await query('SELECT id, email, full_name FROM profiles WHERE id = $1', [profileId]);
-    if (profileRes.rows.length === 0) {
-      return res.status(404).json({ message: "Profile not found" });
-    }
-    const profile = profileRes.rows[0];
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .eq('id', profileId)
+      .single();
+
+    if (profileError && profileError.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
+    if (profileError) throw profileError;
 
     // 2. Create or Update B2B Partner entry with 'onboarding' status
-    const existing = await query('SELECT id FROM b2b_partners WHERE profile_id = $1', [profileId]);
+    const { data: existing, error: appError } = await supabase
+      .from('b2b_partners')
+      .select('id')
+      .eq('profile_id', profileId)
+      .maybeSingle();
+
+    if (appError) throw appError;
     
-    if (existing.rows.length > 0) {
-      await query(
-        `UPDATE b2b_partners 
-         SET company_name = $1, address = $2, estimated_volume_kg = $3, status = 'onboarding'
-         WHERE profile_id = $4`,
-        [cafeName, cafeAddress, volumeEstimate, profileId]
-      );
+    if (existing) {
+      await supabase
+        .from('b2b_partners')
+        .update({
+          company_name: cafeName,
+          address: cafeAddress,
+          estimated_volume_kg: volumeEstimate,
+          status: 'onboarding',
+          updated_at: new Date().toISOString()
+        })
+        .eq('profile_id', profileId);
     } else {
-      await query(
-        `INSERT INTO b2b_partners (profile_id, company_name, address, estimated_volume_kg, status)
-         VALUES ($1, $2, $3, $4, 'onboarding')`,
-        [profileId, cafeName, cafeAddress, volumeEstimate]
-      );
+      await supabase
+        .from('b2b_partners')
+        .insert({
+          profile_id: profileId,
+          company_name: cafeName,
+          address: cafeAddress,
+          estimated_volume_kg: volumeEstimate,
+          status: 'onboarding'
+        });
     }
 
     // 3. Force role update (security measure)
-    await query("UPDATE profiles SET role = 'B2B' WHERE id = $1", [profileId]);
+    await supabase
+      .from('profiles')
+      .update({ role: 'B2B' })
+      .eq('id', profileId);
 
     res.status(201).json({ 
       message: "Registration data saved. Please download and sign the contract.",
@@ -57,19 +77,23 @@ export const generateContract = async (req, res) => {
   const { profileId } = req.query;
 
   try {
-    const result = await query(
-      `SELECT p.full_name, p.email, b.company_name, b.address, b.estimated_volume_kg 
-       FROM profiles p 
-       JOIN b2b_partners b ON p.id = b.profile_id 
-       WHERE p.id = $1`, 
-      [profileId]
-    );
+    const { data, error } = await supabase
+      .from('b2b_partners')
+      .select(`
+        company_name,
+        address,
+        estimated_volume_kg,
+        profiles!inner (
+          full_name,
+          email
+        )
+      `)
+      .eq('profile_id', profileId)
+      .single();
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "B2B Profile not found" });
-    }
+    if (error && error.code === 'PGRST116') return res.status(404).json({ message: "B2B Profile not found" });
+    if (error) throw error;
 
-    const data = result.rows[0];
     const doc = new PDFDocument({ margin: 50, size: 'A4' });
 
     // Stream directly to response
@@ -96,7 +120,7 @@ export const generateContract = async (req, res) => {
     doc.moveDown(0.5);
     doc.font('Courier-Bold').text('DAN:');
     doc.font('Courier').text(`${data.company_name} (Pihak Kedua)`);
-    doc.text(`Perwakilan: ${data.full_name}`);
+    doc.text(`Perwakilan: ${data.profiles?.full_name}`);
     doc.text(`Alamat: ${data.address}`);
     doc.moveDown(2);
 
@@ -137,14 +161,15 @@ export const generateContract = async (req, res) => {
  */
 export const uploadContract = async (req, res) => {
   const { profileId } = req.body;
-  // File would be handled by middleware like multer, here we assume it's processed
-  // For prototype, we just update the status
   
   try {
-    await query(
-      "UPDATE b2b_partners SET status = 'awaiting_contract_review' WHERE profile_id = $1",
-      [profileId]
-    );
+    const { error } = await supabase
+      .from('b2b_partners')
+      .update({ status: 'awaiting_contract_review' })
+      .eq('profile_id', profileId);
+
+    if (error) throw error;
+
     res.status(200).json({ message: "Contract uploaded successfully. Awaiting admin review.", status: 'awaiting_contract_review' });
   } catch (error) {
     res.status(500).json({ message: "Failed to upload contract", error: error.message });

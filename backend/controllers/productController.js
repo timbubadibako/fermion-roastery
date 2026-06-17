@@ -1,4 +1,4 @@
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 
 /**
  * Get all products with dynamic tiered pricing
@@ -7,14 +7,26 @@ export const getAllProducts = async (req, res) => {
   const profileId = req.query.profileId; 
 
   try {
-    const result = await query('SELECT * FROM products WHERE is_active = true ORDER BY created_at DESC');
-    let products = result.rows;
+    const { data: products, error: productError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (productError) throw productError;
 
     let partner = null;
 
     if (profileId) {
-      const partnerRes = await query('SELECT status, tier_name FROM b2b_partners WHERE profile_id = $1', [profileId]);
-      partner = partnerRes.rows[0];
+      const { data: partnerData, error: partnerError } = await supabase
+        .from('b2b_partners')
+        .select('status, tier_name')
+        .eq('profile_id', profileId)
+        .single();
+      
+      if (!partnerError) {
+        partner = partnerData;
+      }
     }
 
     const resolvedProducts = products.map(product => {
@@ -65,23 +77,29 @@ export const getProductById = async (req, res) => {
   const profileId = req.query.profileId;
 
   try {
-    const result = await query('SELECT * FROM products WHERE id = $1', [id]);
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
     
-    if (result.rows.length === 0) {
+    if (productError || !product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const product = result.rows[0];
     const retailPrice = parseFloat(product.price_retail);
     let finalPrice = retailPrice;
     let priceType = 'retail';
     let discountAmount = 0;
 
     if (profileId) {
-      const partnerRes = await query('SELECT status, tier_name FROM b2b_partners WHERE profile_id = $1', [profileId]);
-      const partner = partnerRes.rows[0];
+      const { data: partner, error: partnerError } = await supabase
+        .from('b2b_partners')
+        .select('status, tier_name')
+        .eq('profile_id', profileId)
+        .single();
 
-      if (partner) {
+      if (!partnerError && partner) {
         if (partner.tier_name === 'Silver') {
           discountAmount = 15000;
           priceType = 'tier_silver';
@@ -118,16 +136,18 @@ export const createProduct = async (req, res) => {
   } = req.body;
   
   try {
-    const result = await query(
-      `INSERT INTO products (
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
         name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
         description, farm, image_url, fermentation, sweetness, acidity, body, 
-        stock_quantity, linked_journal_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) 
-      RETURNING *`,
-      [name, slug, notes, origin, process, altitude, price_retail, roast_profile, description, farm, image_url, fermentation, sweetness, acidity, body, stock_quantity, linked_journal_id || null]
-    );
-    res.status(201).json(result.rows[0]);
+        stock_quantity, linked_journal_id: linked_journal_id || null
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to create product", error: error.message });
   }
@@ -151,18 +171,20 @@ export const updateProduct = async (req, res) => {
       return obj;
     }, {});
 
-  const keys = Object.keys(filteredFields);
-  const values = Object.values(filteredFields);
-  
-  if (keys.length === 0) return res.status(400).json({ message: "No valid fields to update" });
+  if (Object.keys(filteredFields).length === 0) {
+    return res.status(400).json({ message: "No valid fields to update" });
+  }
 
   try {
-    const setClause = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
-    const result = await query(
-      `UPDATE products SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = $${keys.length + 1} RETURNING *`,
-      [...values, id]
-    );
-    res.status(200).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('products')
+      .update(filteredFields)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to update product", error: error.message });
   }
@@ -171,7 +193,12 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
-    await query('DELETE FROM products WHERE id = $1', [id]);
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
     res.status(200).json({ message: "Product deleted", id });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete product", error: error.message });

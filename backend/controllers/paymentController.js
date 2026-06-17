@@ -2,7 +2,7 @@ import { Xendit } from 'xendit-node';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 import { publishEvent } from '../lib/ably.js';
 import { sendOrderNotification } from '../lib/notifications.js';
@@ -86,45 +86,56 @@ export const createInvoice = async (req, res) => {
     }
 
     // 2. Save to Database (UNPAID)
-    await query('BEGIN');
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert([
+        {
+          profile_id: profileId,
+          xendit_invoice_id: referenceId,
+          biteship_order_id: biteshipDraftId,
+          status: 'UNPAID',
+          total_amount: amount,
+          shipping_fee: shippingFee,
+          shipping_courier: courier?.courier_name || null,
+          customer_name: customerDetails?.name || 'Guest',
+          customer_email: customerDetails?.email || 'guest@example.com',
+          customer_phone: customerDetails?.phone || '-',
+          shipping_address: shipping.address || 'Pickup',
+          shipping_city: shipping.city || 'Cirebon',
+          shipping_notes: shipping.notes || ''
+        }
+      ])
+      .select()
+      .single();
 
-    // Insert into orders
-    const orderResult = await query(
-      `INSERT INTO orders (
-        profile_id, xendit_invoice_id, biteship_order_id, status, total_amount, shipping_fee, 
-        shipping_courier, customer_name, customer_email, customer_phone, 
-        shipping_address, shipping_city, shipping_notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
-      [
-        profileId, referenceId, biteshipDraftId, 'UNPAID', amount, shippingFee,
-        courier?.courier_name || null,
-        customerDetails?.name || 'Guest', 
-        customerDetails?.email || 'guest@example.com', 
-        customerDetails?.phone || '-', 
-        shipping.address || 'Pickup', 
-        shipping.city || 'Cirebon', 
-        shipping.notes || ''
-      ]
-    );
-    const orderId = orderResult.rows[0].id;
+    if (orderError) throw orderError;
+    const orderId = orderData.id;
 
     // Insert into order_items
-    for (const item of items) {
+    const orderItemsToInsert = items.map(item => {
       // Try to parse weight from "Name (Weight)"
       const nameParts = item.name.match(/(.*)\s\((.*?)\)/);
       const cleanName = nameParts ? nameParts[1].trim() : item.name;
       const weight = nameParts ? nameParts[2] : '250g';
 
-      await query(
-        `INSERT INTO order_items (order_id, product_id, product_name, variant_weight, variant_grind, quantity, unit_price)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [orderId, item.id || null, cleanName, weight, item.grind || 'Whole Bean', item.quantity, item.price]
-      );
-    }
+      return {
+        order_id: orderId,
+        product_id: item.id || null,
+        product_name: cleanName,
+        variant_weight: weight,
+        variant_grind: item.grind || 'Whole Bean',
+        quantity: item.quantity,
+        unit_price: item.price
+      };
+    });
 
-    await query('COMMIT');
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItemsToInsert);
 
-    // 2. Generate Xendit Invoice
+    if (itemsError) throw itemsError;
+
+    // 3. Generate Xendit Invoice
     const data = {
       externalId: referenceId,
       amount: amount,
@@ -147,7 +158,6 @@ export const createInvoice = async (req, res) => {
       orderId: orderId
     });
   } catch (error) {
-    await query('ROLLBACK');
     console.error('Xendit Error:', error);
     res.status(500).json({ message: "Failed to create payment invoice", error: error.message });
   }
@@ -159,24 +169,41 @@ export const createSubscription = async (req, res) => {
   try {
     const referenceId = `sub-${uuidv4()}`;
     
-    await query('BEGIN');
-    
     // 1. Create Order record with type 'subscription'
-    const orderResult = await query(
-      `INSERT INTO orders (profile_id, status, total_amount, customer_name, customer_email, customer_phone, shipping_address, shipping_city, type)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-      [profileId, 'UNPAID', amount, customerDetails.name, customerDetails.email, customerDetails.phone, shippingAddress.address, shippingAddress.city || 'Cirebon', 'subscription']
-    );
-    const orderId = orderResult.rows[0].id;
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert([
+        {
+          profile_id: profileId,
+          status: 'UNPAID',
+          total_amount: amount,
+          customer_name: customerDetails.name,
+          customer_email: customerDetails.email,
+          customer_phone: customerDetails.phone,
+          shipping_address: shippingAddress.address,
+          shipping_city: shippingAddress.city || 'Cirebon',
+          type: 'subscription'
+        }
+      ])
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+    const orderId = orderData.id;
 
     // 2. Create Active Subscription record
-    await query(
-      `INSERT INTO subscriptions (profile_id, plan_id, plan_name, status)
-       VALUES ($1, $2, $3, $4)`,
-      [profileId, planId, planName, 'active']
-    );
+    const { error: subError } = await supabase
+      .from('subscriptions')
+      .insert([
+        {
+          profile_id: profileId,
+          plan_id: planId,
+          plan_name: planName,
+          status: 'active'
+        }
+      ]);
     
-    await query('COMMIT');
+    if (subError) throw subError;
 
     const data = {
       externalId: referenceId, // Or use orderId
@@ -195,11 +222,11 @@ export const createSubscription = async (req, res) => {
       message: "Subscription initial charge created"
     });
   } catch (error) {
-    await query('ROLLBACK');
     console.error('Xendit Subscription Error:', error);
     res.status(500).json({ message: "Failed to create subscription", error: error.message });
   }
 };
+
 export const handleNotification = async (req, res) => {
   console.log("Xendit Payment Notification Received:", JSON.stringify(req.body, null, 2));
 
@@ -207,46 +234,63 @@ export const handleNotification = async (req, res) => {
 
   try {
     // 0. Flexible Lookup: Try xendit_invoice_id first, then fallback to internal order id
-    let currentOrderRes = await query("SELECT status, id, biteship_order_id, customer_name, customer_email, customer_phone FROM orders WHERE xendit_invoice_id = $1", [external_id]);
+    let { data: orderData, error: lookupError } = await supabase
+      .from('orders')
+      .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
+      .eq('xendit_invoice_id', external_id)
+      .maybeSingle();
     
-    if (currentOrderRes.rows.length === 0) {
+    if (!orderData) {
       console.log(`🔍 Invoice ID not found, trying fallback to Order ID: ${external_id}`);
       // Clean ID from # if present
       const cleanId = external_id.replace('#', '').toLowerCase();
-      currentOrderRes = await query("SELECT status, id, biteship_order_id, customer_name, customer_email, customer_phone FROM orders WHERE id::text = $1", [cleanId]);
+      
+      const { data: fallbackData } = await supabase
+        .from('orders')
+        .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
+        .eq('id', cleanId)
+        .maybeSingle();
+      
+      orderData = fallbackData;
     }
 
-    const currentOrder = currentOrderRes.rows[0];
-
-    if (!currentOrder) {
+    if (!orderData) {
       console.log(`❌ ERROR: Webhook received for completely unknown ID: ${external_id}`);
       return res.status(200).send("OK");
     }
 
-    console.log(`📦 Found Order: ${currentOrder.id} (Current Status: ${currentOrder.status})`);
+    console.log(`📦 Found Order: ${orderData.id} (Current Status: ${orderData.status})`);
 
     // If already paid or beyond, skip
-    if (['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(currentOrder.status)) {
-      console.log(`ℹ️ Order ${currentOrder.id} already processed. Skipping.`);
+    if (['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(orderData.status)) {
+      console.log(`ℹ️ Order ${orderData.id} already processed. Skipping.`);
       return res.status(200).send("OK");
     }
 
     // 1. Update status to PAID if payment is completed/settled
     if (status === 'PAID' || status === 'SETTLED') {
-      await query(
-        "UPDATE orders SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1",
-        [external_id]
-      );
+      const { error: updateError } = await supabase
+        .from('orders')
+        .update({ status: 'PAID', updated_at: new Date() })
+        .eq('xendit_invoice_id', external_id);
 
-      console.log(`✅ Order ${currentOrder.id} status updated to PAID via Webhook.`);
-      publishEvent('orders', 'order_updated', { id: currentOrder.id, status: 'PAID' });
-      await sendOrderNotification(currentOrder.id, currentOrder.customer_name, currentOrder.customer_email, currentOrder.customer_phone);
+      if (updateError) throw updateError;
+
+      console.log(`✅ Order ${orderData.id} status updated to PAID via Webhook.`);
+      publishEvent('orders', 'order_updated', { id: orderData.id, status: 'PAID' });
+      await sendOrderNotification(orderData.id, orderData.customer_name, orderData.customer_email, orderData.customer_phone);
 
       // --- INVENTORY SYNC ---
       try {
-        const itemsRes = await query("SELECT product_id, variant_weight, quantity FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL", [currentOrder.id]);
+        const { data: items, error: itemsError } = await supabase
+          .from('order_items')
+          .select('product_id, variant_weight, quantity')
+          .eq('order_id', orderData.id)
+          .not('product_id', 'is', null);
         
-        for (const item of itemsRes.rows) {
+        if (itemsError) throw itemsError;
+
+        for (const item of items) {
           let deductionUnits = 0;
           const weightLower = (item.variant_weight || "250g").toLowerCase();
           
@@ -268,11 +312,19 @@ export const handleNotification = async (req, res) => {
           }
           
           if (deductionUnits > 0) {
-            await query(
-              "UPDATE products SET stock_quantity = stock_quantity - $1 WHERE id = $2",
-              [deductionUnits, item.product_id]
-            );
-            console.log(`📦 Inventory Sync: Deducted ${deductionUnits} units (250g/unit) from product ${item.product_id}`);
+            const { data: product } = await supabase
+              .from('products')
+              .select('stock_quantity')
+              .eq('id', item.product_id)
+              .single();
+            
+            if (product) {
+              await supabase
+                .from('products')
+                .update({ stock_quantity: product.stock_quantity - deductionUnits })
+                .eq('id', item.product_id);
+              console.log(`📦 Inventory Sync: Deducted ${deductionUnits} units (250g/unit) from product ${item.product_id}`);
+            }
           }
         }
       } catch (invError) {
@@ -281,10 +333,10 @@ export const handleNotification = async (req, res) => {
       // ----------------------
 
       // --- BITESHIP CONFIRMATION ---
-      if (currentOrder.biteship_order_id) {
+      if (orderData.biteship_order_id) {
         try {
-          console.log(`🔔 Confirming Biteship Draft: ${currentOrder.biteship_order_id}`);
-          const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${currentOrder.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
+          console.log(`🔔 Confirming Biteship Draft: ${orderData.biteship_order_id}`);
+          const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${orderData.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
           console.log('📦 Biteship Confirm Response:', JSON.stringify(confirmRes.data, null, 2));
           
           const finalOrderId = confirmRes.data.id;
@@ -295,12 +347,18 @@ export const handleNotification = async (req, res) => {
                            confirmRes.data.courier?.label_url || 
                            `https://dashboard.biteship.com/labels/${finalOrderId}`;
 
-          await query(
-            "UPDATE orders SET biteship_order_id = $1, shipping_awb = $2, shipping_label_url = $3, status = 'READY_TO_SHIP' WHERE xendit_invoice_id = $4",
-            [finalOrderId, waybillId, labelUrl, external_id]
-          );
+          await supabase
+            .from('orders')
+            .update({
+              biteship_order_id: finalOrderId,
+              shipping_awb: waybillId,
+              shipping_label_url: labelUrl,
+              status: 'READY_TO_SHIP'
+            })
+            .eq('xendit_invoice_id', external_id);
+
           console.log(`✅ Biteship Order Confirmed. Resi: ${waybillId} | Label: ${labelUrl}`);
-          publishEvent('orders', 'order_updated', { id: currentOrder.id, status: 'READY_TO_SHIP', awb: waybillId });
+          publishEvent('orders', 'order_updated', { id: orderData.id, status: 'READY_TO_SHIP', awb: waybillId });
         } catch (bsError) {
           console.error('❌ Biteship Confirm Error:', bsError.response?.data || bsError.message);
         }
@@ -308,13 +366,13 @@ export const handleNotification = async (req, res) => {
       // ----------------------------
 
       // 2. Generate PDF Invoice automatically
-      await generateInvoicePDF(currentOrder.id);
+      await generateInvoicePDF(orderData.id);
 
     } else if (status === 'EXPIRED') {
-      await query(
-        "UPDATE orders SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP WHERE xendit_invoice_id = $1",
-        [external_id]
-      );
+      await supabase
+        .from('orders')
+        .update({ status: 'CANCELLED', updated_at: new Date() })
+        .eq('xendit_invoice_id', external_id);
       console.log(`❌ Order with invoice ${external_id} marked as CANCELLED via Webhook.`);
     }
 

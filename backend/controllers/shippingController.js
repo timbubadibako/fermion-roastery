@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 import { generateShippingLabelsBatch } from '../lib/pdfGenerator.js';
 
 dotenv.config();
@@ -97,14 +97,24 @@ export const getTracking = async (req, res) => {
   const { id } = req.params; // internal order_id
 
   try {
-    const result = await query(
-      `SELECT status, note, updated_at 
-       FROM tracking_history 
-       WHERE order_id = $1 OR order_id::text IN (SELECT id::text FROM orders WHERE biteship_order_id = $1 OR shipping_awb = $1)
-       ORDER BY updated_at DESC`,
-      [id]
-    );
-    res.status(200).json({ history: result.rows });
+    // We need to support lookup by internal order_id, biteship_order_id, or shipping_awb
+    // First, find the order to get the internal ID if 'id' is a biteship ID or AWB
+    const { data: order } = await supabase
+      .from('orders')
+      .select('id')
+      .or(`id.eq.${id},biteship_order_id.eq.${id},shipping_awb.eq.${id}`)
+      .maybeSingle();
+
+    const orderId = order ? order.id : id;
+
+    const { data, error } = await supabase
+      .from('tracking_history')
+      .select('status, note, updated_at')
+      .eq('order_id', orderId)
+      .order('updated_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ history: data });
   } catch (error) {
     console.error('Local Tracking Fetch Error:', error);
     res.status(500).json({ message: "Failed to fetch tracking info" });
@@ -122,23 +132,32 @@ export const handleBiteshipWebhook = async (req, res) => {
 
   try {
     // 1. Find the internal order ID
-    const orderLookup = await query(
-      "SELECT id FROM orders WHERE biteship_order_id = $1 OR shipping_awb = $2",
-      [order_id, waybill_id]
-    );
+    const { data: orderData, error: lookupError } = await supabase
+      .from('orders')
+      .select('id')
+      .or(`biteship_order_id.eq.${order_id},shipping_awb.eq.${waybill_id}`)
+      .maybeSingle();
 
-    if (orderLookup.rows.length === 0) {
+    if (lookupError || !orderData) {
       console.log(`⚠️ Webhook received for unknown order: ${order_id} / ${waybill_id}`);
       return res.status(200).send('OK');
     }
 
-    const internalOrderId = orderLookup.rows[0].id;
+    const internalOrderId = orderData.id;
 
     // 2. Save history event
-    await query(
-      "INSERT INTO tracking_history (order_id, status, note, updated_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
-      [internalOrderId, status, note || `Status updated to ${status}`]
-    );
+    const { error: historyError } = await supabase
+      .from('tracking_history')
+      .insert([
+        {
+          order_id: internalOrderId,
+          status,
+          note: note || `Status updated to ${status}`,
+          updated_at: new Date()
+        }
+      ]);
+
+    if (historyError) throw historyError;
 
     // 3. Mapping status Biteship ke status Database utama kita
     let newStatus = null;
@@ -162,10 +181,12 @@ export const handleBiteshipWebhook = async (req, res) => {
     }
 
     if (newStatus) {
-      await query(
-        "UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
-        [newStatus, internalOrderId]
-      );
+      const { error: updateError } = await supabase
+        .from('orders')
+        .update({ status: newStatus, updated_at: new Date() })
+        .eq('id', internalOrderId);
+      
+      if (updateError) throw updateError;
       console.log(`✅ Order ${internalOrderId} updated to ${newStatus} and history recorded.`);
     } else {
       console.log(`ℹ️ History recorded for order ${internalOrderId}, status ${status} (No main status update).`);

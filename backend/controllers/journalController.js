@@ -1,18 +1,22 @@
-import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const getJournalPosts = async (req, res) => {
   try {
     const { status } = req.query;
-    let sql = 'SELECT * FROM journal_posts';
-    let params = [];
+    let query = supabase
+      .from('journal_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     if (status) {
-      sql += ' WHERE status = $1';
-      params.push(status);
+      query = query.eq('status', status);
     }
-    sql += ' ORDER BY created_at DESC';
-    const result = await query(sql, params);
-    res.status(200).json(result.rows);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch journal posts", error: error.message });
   }
@@ -23,12 +27,25 @@ export const createJournalPost = async (req, res) => {
   const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
   
   try {
-    const result = await query(
-      `INSERT INTO journal_posts (title, slug, content, excerpt, featured_image, status, author_id, published_at) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [title, slug, content, excerpt, featured_image, status || 'draft', author_id, status === 'published' ? new Date() : null]
-    );
-    res.status(201).json(result.rows[0]);
+    const { data, error } = await supabase
+      .from('journal_posts')
+      .insert([
+        { 
+          title, 
+          slug, 
+          content, 
+          excerpt, 
+          featured_image, 
+          status: status || 'draft', 
+          author_id, 
+          published_at: status === 'published' ? new Date() : null 
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to create journal post", error: error.message });
   }
@@ -40,13 +57,28 @@ export const updateJournalPost = async (req, res) => {
   
   try {
     const publishedAt = status === 'published' ? new Date() : null;
-    const result = await query(
-      `UPDATE journal_posts 
-       SET title = $1, content = $2, excerpt = $3, featured_image = $4, status = $5, published_at = COALESCE($6, published_at), updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 RETURNING *`,
-      [title, content, excerpt, featured_image, status, publishedAt, id]
-    );
-    res.status(200).json(result.rows[0]);
+    const updateData = {
+      title,
+      content,
+      excerpt,
+      featured_image,
+      status,
+      updated_at: new Date()
+    };
+    
+    if (publishedAt) {
+      updateData.published_at = publishedAt;
+    }
+
+    const { data, error } = await supabase
+      .from('journal_posts')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to update journal post", error: error.message });
   }
@@ -55,7 +87,12 @@ export const updateJournalPost = async (req, res) => {
 export const deleteJournalPost = async (req, res) => {
   const { id } = req.params;
   try {
-    await query('DELETE FROM journal_posts WHERE id = $1', [id]);
+    const { error } = await supabase
+      .from('journal_posts')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
     res.status(200).json({ message: "Post deleted" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete post", error: error.message });
