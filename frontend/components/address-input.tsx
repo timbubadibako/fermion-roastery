@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface AddressValue {
+export interface AddressValue {
   address: string;
   city: string;
   postalCode: string;
@@ -15,7 +15,7 @@ interface AddressValue {
   regency?: string;
 }
 
-interface AddressInputProps {
+export interface AddressInputProps {
   value: AddressValue;
   onChange: (value: AddressValue) => void;
   label?: string;

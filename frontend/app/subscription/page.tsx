@@ -9,7 +9,7 @@ import { FooterV2 } from "@/components/sections/v2/FooterV2";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAuthStore } from "@/lib/store";
-import { AddressInput } from "@/components/address-input";
+import { AddressInput, AddressValue } from "@/components/address-input";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -53,14 +53,11 @@ export default function SubscriptionPageV2() {
   const { user } = useAuthStore();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [address, setAddress] = useState({ 
+  const [address, setAddress] = useState<AddressValue>({ 
     address: '', 
     city: '', 
     postalCode: '',
-    area_id: '',
-    district: '',
-    province: '',
-    regency: ''
+    area_id: ''
   });
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
