@@ -1,22 +1,72 @@
 import { query } from '../lib/db.js';
+import { supabase } from '../lib/supabase.js';
 
 export const register = async (req, res) => {
-  const { email, password, fullName, role = 'RETAIL' } = req.body;
+  const { id: externalId, email, password, fullName, role = 'RETAIL' } = req.body;
   
   try {
+    let finalId = externalId;
+
+    // 1. If no external ID provided, try to create in Supabase Auth first
+    if (!finalId) {
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: fullName, role }
+      });
+
+      if (authError) {
+        // If user already exists in Supabase, we might just want to sync them
+        if (authError.message.includes('already registered')) {
+            const { data: existingUser } = await supabase.auth.admin.listUsers();
+            const foundUser = existingUser.users.find(u => u.email === email);
+            if (foundUser) {
+                finalId = foundUser.id;
+            } else {
+                throw authError;
+            }
+        } else {
+            throw authError;
+        }
+      } else {
+        finalId = authData.user.id;
+      }
+    }
+
+    // 2. Sync with local profiles table
     const profileResult = await query(
-      'INSERT INTO profiles (email, password_hash, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, full_name, role',
-      [email, password, fullName || email.split('@')[0], role] 
+      `INSERT INTO profiles (id, email, password_hash, full_name, role) 
+       VALUES ($1, $2, $3, $4, $5) 
+       ON CONFLICT (email) DO UPDATE SET 
+         full_name = EXCLUDED.full_name,
+         role = EXCLUDED.role,
+         updated_at = CURRENT_TIMESTAMP
+       RETURNING id, email, full_name, role`,
+      [finalId, email, password, fullName || email.split('@')[0], role] 
     );
     
     const profile = profileResult.rows[0];
     res.status(201).json({ message: "Registration successful", profile });
   } catch (error) {
     console.error('Registration Error:', error);
-    if (error.code === '23505') { 
-      return res.status(400).json({ message: "Email already registered" });
-    }
     res.status(500).json({ message: "Error during registration", error: error.message });
+  }
+};
+
+export const getProfileByEmail = async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ message: "Email required" });
+
+  try {
+    const result = await query(
+      'SELECT id, email, full_name, role, phone, address, city, postal_code FROM profiles WHERE email = $1',
+      [email]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: "Profile not found" });
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
 };
 
@@ -24,23 +74,38 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   
   try {
-    const result = await query('SELECT id, email, full_name, role, password_hash FROM profiles WHERE email = $1', [email]);
+    // 1. Authenticate with Supabase
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (authError) {
+        return res.status(401).json({ message: "Invalid credentials", error: authError.message });
+    }
+
+    const supabaseUser = authData.user;
+
+    // 2. Fetch or Sync local profile
+    let result = await query('SELECT id, email, full_name, role FROM profiles WHERE id = $1', [supabaseUser.id]);
     
     if (result.rows.length === 0) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      // Auto-sync if profile missing locally
+      const syncResult = await query(
+        `INSERT INTO profiles (id, email, full_name, role) 
+         VALUES ($1, $2, $3, $4) 
+         RETURNING id, email, full_name, role`,
+        [supabaseUser.id, email, supabaseUser.user_metadata?.full_name || email.split('@')[0], supabaseUser.user_metadata?.role || 'RETAIL']
+      );
+      result = syncResult;
     }
 
     const profile = result.rows[0];
-    
-    // In production, use bcrypt.compare here
-    if (profile.password_hash !== password) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Remove password hash from response
-    delete profile.password_hash;
-    
-    res.status(200).json({ message: "Login successful", profile });
+    res.status(200).json({ 
+        message: "Login successful", 
+        profile,
+        session: authData.session 
+    });
   } catch (error) {
     console.error('Login Error:', error);
     res.status(500).json({ message: "Error during login", error: error.message });

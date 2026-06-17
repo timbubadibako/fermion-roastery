@@ -1,6 +1,7 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { query } from '../lib/db.js';
+import { generateShippingLabelsBatch } from '../lib/pdfGenerator.js';
 
 dotenv.config();
 
@@ -174,5 +175,26 @@ export const handleBiteshipWebhook = async (req, res) => {
   } catch (error) {
     console.error('❌ Biteship Webhook Error:', error);
     res.status(500).send('Internal Server Error');
+  }
+};
+
+/**
+ * Generate PDF Shipping Labels for a list of orders
+ */
+export const getBatchLabels = async (req, res) => {
+  const { orderIds } = req.body; // Array of internal order IDs
+
+  if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
+    return res.status(400).json({ message: "List of order IDs is required" });
+  }
+
+  try {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=shipping-labels.pdf');
+    
+    await generateShippingLabelsBatch(orderIds, res);
+  } catch (error) {
+    console.error('Batch Label Fetch Error:', error);
+    res.status(500).json({ message: "Failed to generate batch labels" });
   }
 };

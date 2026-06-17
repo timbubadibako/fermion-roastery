@@ -53,20 +53,21 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
         } catch (e) {
           errorMessage = errorText || errorMessage;
         }
-        console.error(`📡 Backend Error (${response.status}):`, errorMessage);
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      console.log(`📡 Backend Response:`, data);
+      const profile = data.profile;
+
+      if (!profile) throw new Error("Failed to resolve profile data.");
 
       // Set security cookie for middleware (expires in 24h)
-      document.cookie = `fermion_profile_id=${data.profile.id}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `fermion_profile_id=${profile.id}; path=/; max-age=86400; SameSite=Lax`;
       toast.success(data.message);
-      onSuccess(data.profile); // Pass profile back to parent
+      onSuccess(profile); 
     } catch (error: any) {
       console.error("❌ Auth error:", error);
-      toast.error(`Network error: ${error.message || 'Please try again later.'}`);
+      toast.error(`${error.message || 'Please try again later.'}`);
     } finally {
       setLoading(false);
     }

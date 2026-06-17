@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Sticker } from "@/components/ui/sticker";
 import {
   User, LogOut, Package, Settings,
   Clock, Truck, CheckCircle2, ChevronRight,
   Coffee, ArrowRight, Loader2, Receipt,
-  LayoutDashboard, Navigation, Ban, Search,
-  MapPin, Phone, Info, Globe, Crosshair
+  LayoutDashboard, Ban, MapPin, Phone, Crosshair, Sparkles
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
-
 
 interface Order {
   id: string;
@@ -26,8 +23,6 @@ interface Order {
   created_at: string;
   shipping_awb?: string;
   shipping_courier?: string;
-  biteship_order_id?: string;
-  rejection_reason?: string;
   items: any[];
 }
 
@@ -49,12 +44,13 @@ interface AddressDetail {
 
 export default function RetailAccountPage() {
   const { user, logout, setUser } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [trackingHistory, setTrackingHistory] = useState<any[]>([]);
-  const [isTrackingLoading, setIsTrackingLoading] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
   const [activeTrackingId, setActiveTrackingId] = useState<string | null>(null);
+  const [isTrackingLoading, setIsTrackingLoading] = useState(false);
 
   const [profileData, setProfileData] = useState({
     fullName: user?.full_name || "",
@@ -81,6 +77,7 @@ export default function RetailAccountPage() {
     if (user) {
       fetchOrders();
       fetchProfile();
+      fetchSubscription();
     }
   }, [user]);
 
@@ -116,18 +113,27 @@ export default function RetailAccountPage() {
     } catch (e) { console.error("Failed to load profile"); }
   };
 
-  const fetchTracking = async (order: Order) => {
-    if (activeTrackingId === order.id) { setActiveTrackingId(null); return; }
-    setActiveTrackingId(order.id);
-    setIsTrackingLoading(true);
+  const fetchSubscription = async () => {
     try {
-      // Logic for fetching tracking from biteship or internal API
-      const res = await fetch(`/api/shipping/trackings/${order.shipping_awb || order.id}`);
+      const res = await fetch(`/api/subscription/active/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
-        setTrackingHistory(data.history || []);
+        setSubscription(data);
       }
-    } catch (e) { console.error("Tracking error"); } finally { setIsTrackingLoading(false); }
+    } catch (e) { console.error("Failed to load subscription"); }
+  };
+
+  const cancelSubscription = async () => {
+    if (!subscription) return;
+    try {
+        const res = await fetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
+        if (res.ok) {
+            toast.success("Langganan berhasil dihentikan.");
+            fetchSubscription();
+        } else {
+            toast.error("Gagal menghentikan langganan.");
+        }
+    } catch (e) { toast.error("Terjadi kesalahan jaringan."); }
   };
 
   const fetchOrders = async () => {
@@ -138,6 +144,20 @@ export default function RetailAccountPage() {
         setOrders(data);
       }
     } catch (e) { toast.error("Gagal memuat daftar pesanan."); } finally { setLoading(false); }
+  };
+
+  const fetchTracking = (order: Order) => {
+    if (activeTrackingId === order.id) {
+      setActiveTrackingId(null);
+      return;
+    }
+    
+    setActiveTrackingId(order.id);
+    
+    if (order.shipping_awb) {
+      setIsTrackingLoading(true);
+      setTimeout(() => setIsTrackingLoading(false), 800);
+    }
   };
 
   const handleLogout = () => { logout(); window.location.href = "/auth"; };
@@ -169,7 +189,6 @@ export default function RetailAccountPage() {
     }
     toast.loading("Mendeteksi lokasi...");
     navigator.geolocation.getCurrentPosition((pos) => {
-      // Mock reverse geocode
       setTimeout(() => {
         toast.dismiss();
         setProfileData(prev => ({
@@ -203,15 +222,11 @@ export default function RetailAccountPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pt-32 pb-20 px-6 font-sans relative overflow-hidden">
-
-      {/* Subtle Background Texture */}
       <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.02]"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
       />
 
       <div className="max-w-6xl mx-auto relative z-10 space-y-12">
-
-        {/* Simplified Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/5 pb-10">
           <div className="space-y-3">
             <h1 className="text-5xl md:text-7xl font-cloude italic tracking-tighter text-slate-900 leading-none">Account Hub<span className="text-[#367F4D]">.</span></h1>
@@ -223,12 +238,11 @@ export default function RetailAccountPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-
-          {/* Navigation Sidebar (Professional Minimal) */}
           <div className="lg:col-span-3 space-y-1">
             {[
               { id: "overview", label: "Overview", icon: LayoutDashboard },
               { id: "orders", label: "Order Records", icon: Package },
+              { id: "subscription", label: "Subscription", icon: Sparkles },
               { id: "settings", label: "Lab Settings", icon: Settings }
             ].map(tab => {
               const isActive = activeTab === tab.id;
@@ -248,11 +262,8 @@ export default function RetailAccountPage() {
             })}
           </div>
 
-          {/* Content Area */}
           <div className="lg:col-span-9">
             <AnimatePresence mode="wait">
-
-              {/* OVERVIEW */}
               {activeTab === "overview" && (
                 <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 shadow-sm rounded-sm relative group overflow-hidden">
@@ -270,14 +281,12 @@ export default function RetailAccountPage() {
                               <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">{new Date(recentOrder.created_at).toLocaleDateString('id-ID')}</p>
                             </div>
                           </div>
-                          <Link href="/account?tab=orders" onClick={() => setActiveTab("orders")}>
-                            <Button className="h-12 bg-white border border-black/10 text-slate-900 font-black uppercase tracking-widest text-[9px] hover:bg-stone-50 rounded-sm italic shadow-sm px-8">Lihat Detail <ArrowRight size={14} className="ml-2" /></Button>
-                          </Link>
+                          <Button onClick={() => setActiveTab("orders")} className="h-12 bg-white border border-black/10 text-slate-900 font-black uppercase tracking-widest text-[9px] hover:bg-stone-50 rounded-sm italic shadow-sm px-8">Lihat Detail <ArrowRight size={14} className="ml-2" /></Button>
                         </div>
                       ) : (
                         <div className="py-8 text-center bg-stone-50 border border-dashed border-black/10 rounded-sm">
                           <Coffee size={24} className="mx-auto text-stone-200 mb-2" />
-                          <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Belum ada ritual aktif.</p>
+                          <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Belum ada pesanan aktif.</p>
                         </div>
                       )}
                     </div>
@@ -289,10 +298,37 @@ export default function RetailAccountPage() {
                       <div className="text-4xl font-bold tracking-tight text-slate-900">{orders.length} <span className="text-xs font-sans font-bold uppercase tracking-widest text-stone-400 ml-2">Pesanan</span></div>
                     </div>
                     <div className="bg-white p-8 border border-black/5 rounded-sm shadow-sm">
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-6 flex items-center gap-2"><User size={14} /> Keanggotaan</h4>
-                      <div className="text-xl font-bold tracking-tight text-slate-900">Retail Ritualist</div>
-                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-2">Since {new Date(user?.created_at || Date.now()).getFullYear()}</p>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-6 flex items-center gap-2"><Sparkles size={14} /> Subscription</h4>
+                      <div className="text-xl font-bold tracking-tight text-slate-900">{subscription ? subscription.plan_name : 'No Active Plan'}</div>
+                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-2">{subscription ? `Aktif sejak ${new Date(subscription.created_at).toLocaleDateString('id-ID')}` : 'Belum berlangganan'}</p>
                     </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === "subscription" && (
+                <motion.div key="subscription" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                  <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
+                    <h3 className="text-3xl font-cloude italic tracking-tighter text-slate-900">Lab Subscription<span className="text-[#367F4D]">.</span></h3>
+                    {subscription ? (
+                        <div className="p-8 bg-stone-50 border border-black/5 rounded-sm space-y-6">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 italic">Paket Aktif</span>
+                                <span className="px-3 py-1 bg-[#367F4D] text-white text-[9px] font-black uppercase rounded-full">Aktif</span>
+                            </div>
+                            <div className="text-4xl font-display font-black italic text-slate-900">{subscription.plan_name}</div>
+                            <Button onClick={cancelSubscription} variant="destructive" className="bg-red-900 text-white font-black uppercase tracking-widest text-[9px] rounded-sm h-12 px-8">
+                                <Ban size={14} className="mr-2" /> Hentikan Langganan
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="py-20 text-center bg-stone-50 border border-dashed border-black/10 rounded-sm">
+                            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest italic mb-6">Belum ada paket langganan aktif.</p>
+                            <Link href="/subscription">
+                                <Button className="bg-slate-900 text-white font-black uppercase tracking-widest italic rounded-sm h-12 px-8">Mulai Langganan</Button>
+                            </Link>
+                        </div>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -399,9 +435,8 @@ export default function RetailAccountPage() {
                 </motion.div>
               )}
 
-              {/* SETTINGS */}
               {activeTab === "settings" && (
-                <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                 <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-12">
                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
                       <h3 className="text-3xl font-bold tracking-tight text-slate-900">Lab Settings</h3>
@@ -410,7 +445,6 @@ export default function RetailAccountPage() {
                       </div>
                     </div>
 
-                    {/* Profile Identity */}
                     <div className="space-y-8">
                       <div className="flex items-center gap-4">
                         <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md">
@@ -433,7 +467,6 @@ export default function RetailAccountPage() {
                       </div>
                     </div>
 
-                    {/* Multi-Address Management */}
                     <div className="space-y-8 pt-10 border-t border-dashed border-black/5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -447,7 +480,6 @@ export default function RetailAccountPage() {
                         </Button>
                       </div>
 
-                      {/* Address Tabs */}
                       <div className="flex gap-2 p-1 bg-stone-50 rounded-sm border border-black/5">
                         {addresses.map(addr => (
                           <button
@@ -463,7 +495,6 @@ export default function RetailAccountPage() {
                         ))}
                       </div>
 
-                      {/* Address Form (Filtered by Active Tab) */}
                       {addresses.filter(a => editingAddressId ? a.id === editingAddressId : a.isPrimary).map(addr => (
                         <motion.div key={addr.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-8 border border-dashed border-black/10 rounded-sm">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -477,49 +508,42 @@ export default function RetailAccountPage() {
                             </div>
                           </div>
 
-                          <div className="space-y-6">
-                            <div className="space-y-2">
-                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Patokan / Detail Tambahan</label>
-                              <Input value={addr.patokan} onChange={e => updateAddressField(addr.id, 'patokan', e.target.value)} placeholder="Contoh: Pagar Merah, Depan Indomaret..." className="h-12 bg-white border border-black/10 font-bold rounded-sm" />
-                            </div>
-
-                            {/* Integrated Biteship Area Search */}
-                            <div className="pt-4">
-                              <AddressInput
-                                label="Cari Kecamatan / Kota"
-                                value={{
-                                  address: addr.address,
-                                  city: addr.city,
-                                  postalCode: addr.postalCode,
-                                  area_id: addr.area_id,
-                                  district: addr.district,
-                                  province: addr.province,
-                                  regency: addr.regency
-                                }}
-                                onChange={(v) => {
-                                  updateAddressField(addr.id, 'address', v.address);
-                                  updateAddressField(addr.id, 'city', v.city);
-                                  updateAddressField(addr.id, 'postalCode', v.postalCode);
-                                  updateAddressField(addr.id, 'area_id', v.area_id);
-                                  updateAddressField(addr.id, 'district', v.district || '');
-                                  updateAddressField(addr.id, 'province', v.province || '');
-                                  updateAddressField(addr.id, 'regency', v.regency || '');
-                                }}
-                              />
-                            </div>
+                          <div className="pt-4">
+                            <AddressInput
+                              label="Cari Kecamatan / Kota"
+                              value={{
+                                address: addr.address,
+                                city: addr.city,
+                                postalCode: addr.postalCode,
+                                area_id: addr.area_id,
+                                district: addr.district,
+                                province: addr.province,
+                                regency: addr.regency,
+                                patokan: addr.patokan
+                              }}
+                              onChange={(v) => {
+                                updateAddressField(addr.id, 'address', v.address);
+                                updateAddressField(addr.id, 'city', v.city);
+                                updateAddressField(addr.id, 'postalCode', v.postalCode);
+                                updateAddressField(addr.id, 'area_id', v.area_id);
+                                updateAddressField(addr.id, 'district', v.district || '');
+                                updateAddressField(addr.id, 'province', v.province || '');
+                                updateAddressField(addr.id, 'regency', v.regency || '');
+                                updateAddressField(addr.id, 'patokan', v.patokan || '');
+                              }}
+                            />
                           </div>
                         </motion.div>
                       ))}
                     </div>
 
-                    {/* Action Footer */}
                     <div className="pt-10 flex justify-center">
                       <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
                         Konfirmasi & Simpan Semua Perubahan
                       </Button>
                     </div>
                   </div>
-                </motion.div>
+                 </motion.div>
               )}
             </AnimatePresence>
           </div>

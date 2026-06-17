@@ -12,13 +12,22 @@ export const syncCart = async (req, res) => {
     // Clear existing cart for this user
     await query('DELETE FROM cart_items WHERE profile_id = $1', [profileId]);
 
-    // Insert current items
+    // Insert current items with UPSERT
     for (const item of items) {
-      await query(
-        `INSERT INTO cart_items (id, profile_id, product_id, weight, grind, quantity, selected)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [item.lineItemId, profileId, item.id, item.weight, item.grind, item.quantity, item.selected ?? true]
-      );
+      try {
+        await query(
+          `INSERT INTO cart_items (id, profile_id, product_id, weight, grind, quantity, selected)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           ON CONFLICT (id) DO UPDATE SET 
+             quantity = EXCLUDED.quantity,
+             selected = EXCLUDED.selected,
+             updated_at = CURRENT_TIMESTAMP`,
+          [item.lineItemId, profileId, item.id, item.weight, item.grind, item.quantity, item.selected ?? true]
+        );
+      } catch (itemError) {
+        console.error('Insert/Update Item Error:', item, itemError);
+        throw itemError;
+      }
     }
 
     await query('COMMIT');

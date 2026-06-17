@@ -1,56 +1,92 @@
 import { query } from '../lib/db.js';
 import { publishEvent } from '../lib/ably.js';
+import { subDays, startOfDay, endOfDay, differenceInDays, format } from 'date-fns';
 
 // 0. Get Admin Stats for Dashboard Overview
 export const getAdminStats = async (req, res) => {
+  const { startDate, endDate, days } = req.query;
+  
+  let start, end;
+  
+  if (startDate && endDate) {
+    start = new Date(startDate);
+    end = new Date(endDate);
+  } else {
+    const d = parseInt(days) || 30;
+    end = new Date();
+    start = subDays(end, d);
+  }
+
+  // Sanitize to start/end of day
+  const finalStart = startOfDay(start).toISOString();
+  const finalEnd = endOfDay(end).toISOString();
+  const diffDays = differenceInDays(new Date(finalEnd), new Date(finalStart));
+  const isMonthly = diffDays > 60;
+
   try {
     // Total Revenue
-    const revenueRes = await query("SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status != 'CANCELLED'");
+    const revenueRes = await query(`
+      SELECT COALESCE(SUM(total_amount), 0) as total 
+      FROM orders 
+      WHERE status != 'CANCELLED' 
+      AND created_at BETWEEN $1 AND $2
+    `, [finalStart, finalEnd]);
     
-    // Volume Sold (assuming 250g per unit if not specified, but let's just sum items quantity for now or use a multiplier)
+    // Volume Sold
     const volumeRes = await query(`
       SELECT COALESCE(SUM(oi.quantity * 0.25), 0) as total_kg 
       FROM order_items oi
       JOIN orders o ON oi.order_id = o.id
       WHERE o.status != 'CANCELLED'
-    `);
+      AND o.created_at BETWEEN $1 AND $2
+    `, [finalStart, finalEnd]);
 
-    // Pending B2B Partners
+    // Global Stats
     const pendingB2BRes = await query("SELECT COUNT(*) as count FROM b2b_partners WHERE status = 'pending'");
+    const activePartnersRes = await query("SELECT COUNT(*) as count FROM b2b_partners WHERE status = 'approved'");
 
-    // Active Subscriptions (mocked for now as we don't have a subs table yet, but let's count PAID orders as a proxy or just 0)
-    const activeSubsRes = await query("SELECT COUNT(*) as count FROM profiles WHERE role = 'B2B'");
+    // Revenue Trends
+    const trendQuery = isMonthly ? `
+      WITH months AS (
+        SELECT generate_series(
+          DATE_TRUNC('month', $1::timestamp), 
+          DATE_TRUNC('month', $2::timestamp), 
+          '1 month'::interval
+        )::date as month
+      )
+      SELECT TO_CHAR(ms.month, 'Mon YY') as label, COALESCE(SUM(o.total_amount), 0) as revenue
+      FROM months ms
+      LEFT JOIN orders o ON DATE_TRUNC('month', o.created_at) = ms.month AND o.status != 'CANCELLED'
+      GROUP BY ms.month ORDER BY ms.month ASC
+    ` : `
+      WITH dates AS (
+        SELECT generate_series(
+          ($1::timestamp)::date, 
+          ($2::timestamp)::date, 
+          '1 day'::interval
+        )::date as day
+      )
+      SELECT TO_CHAR(ds.day, 'DD Mon') as label, COALESCE(SUM(o.total_amount), 0) as revenue
+      FROM dates ds
+      LEFT JOIN orders o ON DATE(o.created_at) = ds.day AND o.status != 'CANCELLED'
+      GROUP BY ds.day ORDER BY ds.day ASC
+    `;
 
-    // Volume Mix (Top Products)
-    const volumeMixRes = await query(`
-      SELECT product_name as name, SUM(quantity * 0.25) as kg
-      FROM order_items
-      GROUP BY product_name
-      ORDER BY kg DESC
-      LIMIT 5
-    `);
-
-    // Revenue Trends (Last 7 days)
-    const revenueTrendsRes = await query(`
-      SELECT TO_CHAR(created_at, 'DD Mon') as name, SUM(total_amount) as value
-      FROM orders
-      WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
-      AND status != 'CANCELLED'
-      GROUP BY TO_CHAR(created_at, 'DD Mon'), DATE_TRUNC('day', created_at)
-      ORDER BY DATE_TRUNC('day', created_at) ASC
-    `);
+    const revenueTrendsRes = await query(trendQuery, [finalStart, finalEnd]);
 
     res.status(200).json({
       revenue: parseFloat(revenueRes.rows[0].total),
       volume: parseFloat(volumeRes.rows[0].total_kg),
       pendingB2B: parseInt(pendingB2BRes.rows[0].count),
-      activeSubs: parseInt(activeSubsRes.rows[0].count),
-      volumeTrends: volumeMixRes.rows.map(r => ({ name: r.name, kg: parseFloat(r.kg) })),
-      revenueTrends: revenueTrendsRes.rows.map(r => ({ name: r.name, value: parseFloat(r.value) })),
+      activeSubs: parseInt(activePartnersRes.rows[0].count),
+      revenueTrends: revenueTrendsRes.rows.map(r => ({ 
+        label: r.label, 
+        revenue: parseFloat(r.revenue) 
+      })),
       recentOrders: (await query("SELECT id, customer_name, customer_email, total_amount, status, created_at FROM orders ORDER BY created_at DESC LIMIT 5")).rows
     });
   } catch (error) {
-    console.error('Error fetching admin stats:', error);
+    console.error('❌ Admin Stats Error:', error);
     res.status(500).json({ message: "Failed to fetch dashboard stats", error: error.message });
   }
 };
@@ -88,30 +124,46 @@ export const updatePartnerStatus = async (req, res) => {
 
   try {
     // Validate status
-    if (!['pending', 'approved', 'rejected'].includes(status)) {
+    const validStatuses = ['pending', 'approved', 'rejected', 'suspended', 'flagged', 'onboarding', 'awaiting_contract_review'];
+    if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    const updateQuery = `
+    // Build dynamic update
+    let updateFields = [];
+    let values = [];
+    let idx = 1;
+
+    if (status) {
+      updateFields.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (tier_name !== undefined) {
+      updateFields.push(`tier_name = $${idx++}`);
+      values.push(tier_name);
+    }
+
+    if (updateFields.length === 0) return res.status(400).json({ message: "No fields to update" });
+
+    values.push(id);
+    const result = await query(`
       UPDATE b2b_partners 
-      SET status = $1, tier_name = $2 
-      WHERE id = $3 
+      SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $${idx} 
       RETURNING *
-    `;
-    
-    const result = await query(updateQuery, [status, tier_name || null, id]);
+    `, values);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Partner application not found" });
     }
 
     res.status(200).json({ 
-      message: `Partner successfully ${status}`, 
+      message: "Data mitra berhasil diperbarui", 
       partner: result.rows[0] 
     });
   } catch (error) {
     console.error('Error updating partner status:', error);
-    res.status(500).json({ message: "Failed to update partner", error: error.message });
+    res.status(500).json({ message: "Gagal memperbarui data mitra", error: error.message });
   }
 };
 
@@ -219,7 +271,7 @@ export const getOrders = async (req, res) => {
 // 5. Update Order Status (Roasting/Shipping)
 export const updateOrder = async (req, res) => {
   const { id } = req.params;
-  const { status, shipping_awb, shipping_courier, rejection_reason } = req.body;
+  const { status, shipping_awb, shipping_courier, rejection_reason, qcData } = req.body;
 
   try {
     const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -247,6 +299,20 @@ export const updateOrder = async (req, res) => {
     if (rejection_reason !== undefined) {
       updateFields.push(`rejection_reason = $${paramCount++}`);
       values.push(rejection_reason);
+    }
+    if (qcData) {
+      if (qcData.sweetness !== undefined) {
+        updateFields.push(`qc_sweetness = $${paramCount++}`);
+        values.push(qcData.sweetness);
+      }
+      if (qcData.acidity !== undefined) {
+        updateFields.push(`qc_acidity = $${paramCount++}`);
+        values.push(qcData.acidity);
+      }
+      if (qcData.body !== undefined) {
+        updateFields.push(`qc_body = $${paramCount++}`);
+        values.push(qcData.body);
+      }
     }
 
     if (updateFields.length === 0) return res.status(400).json({ message: "No fields to update" });

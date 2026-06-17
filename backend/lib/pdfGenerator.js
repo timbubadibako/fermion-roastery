@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { query } from './db.js';
 
-export const generateInvoicePDF = async (orderId) => {
+const generateInvoicePDF = async (orderId) => {
   try {
     // 1. Fetch complete order details
     const result = await query(`
@@ -110,11 +110,68 @@ export const generateInvoicePDF = async (orderId) => {
 
     // Finalize
     doc.end();
-    
-    console.log(`📄 Invoice generated: ${fileName}`);
     return filePath;
-
   } catch (error) {
     console.error('PDF Generation Error:', error);
+    throw error;
   }
 };
+
+const generateShippingLabelsBatch = async (orderIds, res) => {
+  try {
+    const doc = new PDFDocument({ size: 'A6', margin: 20 });
+    doc.pipe(res);
+
+    for (let i = 0; i < orderIds.length; i++) {
+      if (i > 0) doc.addPage();
+
+      const result = await query(`
+        SELECT o.*, 
+               COALESCE(
+                 json_agg(json_build_object(
+                   'name', oi.product_name, 
+                   'quantity', oi.quantity
+                 )) FILTER (WHERE oi.id IS NOT NULL), '[]'
+               ) as items
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.id = $1
+        GROUP BY o.id
+      `, [orderIds[i]]);
+
+      if (result.rows.length === 0) continue;
+      const order = result.rows[0];
+
+      doc.rect(10, 10, 278, 398).stroke();
+      doc.fontSize(14).font('Helvetica-Bold').text(order.shipping_courier?.toUpperCase() || 'PENGIRIMAN', 20, 25);
+      doc.fontSize(8).font('Helvetica').text('No. Resi:', 20, 45);
+      doc.fontSize(12).font('Helvetica-Bold').text(order.shipping_awb || 'MENUNGGU RESI', 20, 55);
+      doc.moveTo(10, 80).lineTo(288, 80).stroke();
+      doc.fontSize(7).font('Helvetica-Bold').text('PENGIRIM:', 20, 90);
+      doc.fontSize(8).font('Helvetica-Bold').text('FERMION ROASTERY', 20, 100);
+      doc.fontSize(7).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', 20, 110);
+      doc.text('081234567890', 20, 120);
+      doc.moveTo(10, 135).lineTo(288, 135).stroke();
+      doc.fontSize(7).font('Helvetica-Bold').text('PENERIMA:', 20, 145);
+      doc.fontSize(10).font('Helvetica-Bold').text(order.customer_name.toUpperCase(), 20, 155);
+      doc.fontSize(8).font('Helvetica-Bold').text(order.customer_phone, 20, 170);
+      doc.fontSize(8).font('Helvetica').text(order.shipping_address, 20, 185, { width: 250 });
+      doc.text(order.shipping_city, 20, doc.y + 2);
+      doc.moveTo(10, 250).lineTo(288, 250).stroke();
+      doc.fontSize(7).font('Helvetica-Bold').text('ISI PAKET:', 20, 260);
+      let itemY = 270;
+      order.items.forEach(item => {
+        doc.fontSize(7).font('Helvetica').text(`- ${item.name} (${item.quantity} pcs)`, 20, itemY);
+        itemY += 10;
+      });
+      doc.fontSize(6).font('Helvetica-Oblique').text('Dicetak otomatis oleh Fermion Business Engine', 20, 385, { align: 'center', width: 258 });
+    }
+
+    doc.end();
+  } catch (error) {
+    console.error('Batch Label Generation Error:', error);
+    if (!res.headersSent) res.status(500).send("Error generating labels");
+  }
+};
+
+export { generateInvoicePDF, generateShippingLabelsBatch };

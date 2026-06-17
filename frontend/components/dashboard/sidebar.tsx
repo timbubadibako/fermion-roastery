@@ -56,7 +56,6 @@ const adminMenu = [
     group: "Konten",
     items: [
       { id: "journal", label: "Jurnal Kopi", href: "/admin/journal", icon: Edit3 },
-      { id: "settings", label: "Pengaturan Site", href: "/admin/settings", icon: Settings },
     ]
   }
 ];

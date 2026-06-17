@@ -15,6 +15,7 @@ import { useCartStore, useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { AddressInput } from "@/components/address-input";
+import { AddressSelection } from "@/components/address-selection";
 
 export default function CartPage() {
   const { items: allItems, updateQuantity, removeItem, getTotal, clearCart, ensureIds } = useCartStore();
@@ -80,6 +81,7 @@ export default function CartPage() {
   }, [user]);
 
   const [addresses, setAddresses] = useState<any[]>([]);
+  const [activeAddressId, setActiveAddressId] = useState<string | null>(null);
 
   // Fetch presets on load
   useEffect(() => {
@@ -89,31 +91,29 @@ export default function CartPage() {
           const res = await fetch(`/api/auth/profile/${user.id}`);
           if (res.ok) {
             const data = await res.json();
-            console.log("Profile data:", data);
             if (data.addresses_json) {
-              console.log("Addresses found:", data.addresses_json);
-              setAddresses(data.addresses_json);
-            } else {
-              console.log("No addresses_json found in profile data.");
+              const parsedAddresses = typeof data.addresses_json === 'string' ? JSON.parse(data.addresses_json) : data.addresses_json;
+              setAddresses(parsedAddresses);
             }
           }
         } catch (e) { console.error("Failed to fetch addresses", e); }
       };
       fetchAddresses();
-    }
-  }, [user]);
+      }
+      }, [user]);
 
-  const selectAddress = (addr: any) => {
-    setShippingData(prev => ({
-      ...prev,
-      name: addr.name || prev.name,
-      phone: addr.phone || prev.phone,
-      address: addr.address,
-      city: addr.city,
-      postal_code: addr.postalCode,
-      area_id: addr.area_id
-    }));
-  };
+      const selectAddress = (addr: any) => {
+        setActiveAddressId(addr.id || null);
+        setShippingData(prev => ({
+          ...prev,
+          name: addr.name || prev.name,
+          phone: addr.phone || prev.phone,
+          address: addr.address || "",
+          city: addr.city || "",
+          postal_code: addr.postalCode || addr.postal_code || "",
+          area_id: addr.area_id || addr.areaId || ""
+        }));
+      };
 
   // Fetch rates when area_id changes
   useEffect(() => {
@@ -249,8 +249,8 @@ export default function CartPage() {
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="space-y-2 mb-12">
-                <h2 className="text-5xl font-cloude italic tracking-tighter text-slate-900 uppercase leading-none">Daftar Produk<span className="text-[#367F4D]">.</span></h2>
+              <div className="space-y-4 mb-12 text-left">
+                <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none uppercase">Daftar Produk<span className="text-[#367F4D]">.</span></h1>
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Specimen selection for your next ritual</p>
               </div>
 
@@ -351,94 +351,43 @@ export default function CartPage() {
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="space-y-2 mb-12">
-                <h2 className="text-5xl font-cloude italic tracking-tighter text-slate-900 uppercase leading-none">Info Pengiriman<span className="text-[#367F4D]">.</span></h2>
+                <h2 className="text-5xl font-display italic font-bold tracking-tighter text-slate-900 uppercase leading-none">Info Pengiriman<span className="text-[#367F4D]">.</span></h2>
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Where should we dispatch your specimens?</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
                 <div className="lg:col-span-8 space-y-12">
-                  <div className="space-y-12 bg-white p-10 border border-black/10 shadow-[12px_12px_0px_rgba(0,0,0,0.02)] rounded-sm relative">
-                    {/* Tape Element */}
-                    <div className="absolute -top-4 right-10 w-24 h-8 bg-white/40 border border-black/5 rotate-[3deg] z-20 backdrop-blur-sm shadow-sm flex items-center justify-center">
-                      <div className="w-16 h-px bg-black/5" />
-                    </div>
-
-                    {/* Identification Section */}
-                    <div className="space-y-10">
-
-                      {/* Address Preset Selector */}
-                      <div className="p-6 bg-stone-50 border border-black/5 rounded-sm mb-10">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 mb-6">Pilih Alamat Tersimpan</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {addresses.length === 0 && <p className="text-[9px] font-bold text-stone-400 italic">Belum ada alamat tersimpan.</p>}
-                          {addresses.map((addr, idx) => (
-                            <button
-                              key={addr.id || idx}
-                              type="button"
-                              onClick={() => selectAddress(addr)}
-                              className="p-4 bg-white border border-black/5 rounded-sm text-left hover:border-[#367F4D] transition-all group"
-                            >
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 group-hover:text-[#367F4D]">{addr.label || `Alamat ${idx + 1}`}</p>
-                              <p className="text-[8px] font-bold text-stone-400 mt-1 line-clamp-1">{addr.address || "Alamat belum diatur"}</p>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md">
-                          <User size={18} />
-                        </div>
-                        <div>
-                          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Identitas Penerima</h3>
-                          <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">Who is receiving this ritual?</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-3">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Nama Lengkap</label>
-                          <Input required value={shippingData.name} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-14 bg-stone-50/50 border border-black/5 font-bold rounded-sm focus:bg-white transition-all shadow-inner" />
-                        </div>
-                        <div className="space-y-3">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Nomor WhatsApp</label>
-                          <div className="relative">
-                            <Input required value={shippingData.phone} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-14 bg-stone-50/50 border border-black/5 font-bold rounded-sm pl-12 focus:bg-white transition-all shadow-inner" />
-                            <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Address Section */}
-                    <div className="space-y-10 pt-6 border-t border-dashed border-black/10">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[#367F4D] text-white flex items-center justify-center shadow-md">
-                          <MapPin size={18} />
-                        </div>
-                        <div>
-                          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Alamat Tujuan</h3>
-                          <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">The final coordinates</p>
-                        </div>
-                      </div>
-                      <AddressInput
-                        value={{
+                  <AddressSelection 
+                      address={{
                           address: shippingData.address,
                           city: shippingData.city,
                           postalCode: shippingData.postal_code,
                           area_id: shippingData.area_id
-                        }}
-                        onChange={(v) => setShippingData({
-                          ...shippingData,
+                      }}
+                      setAddress={(v) => setShippingData(prev => ({
+                          ...prev,
                           address: v.address,
                           city: v.city,
                           postal_code: v.postalCode,
                           area_id: v.area_id
-                        })}
-                      />
-                    </div>
+                      }))}
+                      shippingData={{
+                          name: shippingData.name,
+                          phone: shippingData.phone
+                      }}
+                      setShippingData={(data) => setShippingData(prev => ({
+                          ...prev,
+                          name: data.name,
+                          phone: data.phone
+                      }))}
+                      savedAddresses={addresses}
+                      onSelectSaved={selectAddress}
+                      activeAddressId={activeAddressId || undefined}
+                      contextType='retail'
+                  />
 
-                    {/* Courier Section */}
-                    <div className="space-y-10 pt-6 border-t border-dashed border-black/10">
+                  {/* Courier Section (Kept from CartPage logic) */}
+                  <div className="space-y-10 pt-6 border-t border-dashed border-black/10 bg-white p-10 border border-black/10 rounded-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center shadow-inner border border-black/5">
@@ -499,15 +448,11 @@ export default function CartPage() {
                         )}
                       </div>
                     </div>
-                  </div>
 
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-dashed border-black/10">
                     <button onClick={() => setStep(1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 hover:text-slate-900 flex items-center gap-3 transition-colors group">
                       <div className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-white transition-all"><ArrowLeft size={14} /></div> Kembali ke Review
                     </button>
-                    <Button onClick={handleCheckout} disabled={loading || !selectedCourier} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0">
-                      {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Bayar Sekarang <ArrowRight size={20} /></span>}
-                    </Button>
                   </div>
                 </div>
 
@@ -533,16 +478,19 @@ export default function CartPage() {
                         </span>
                       </div>
 
-                      <div className="pt-8 border-t border-dashed border-black/10">
+                      <div className="pt-8 border-t border-dashed border-black/10 space-y-8">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-black uppercase tracking-[0.3em] text-slate-900 italic">Total</span>
                           <span className="font-bold italic text-slate-900 tracking-tighter font-sans text-3xl">Rp {total.toLocaleString('id-ID')}</span>
                         </div>
-                        <div className="mt-8 flex items-center gap-3 justify-center">
-                          <div className="w-10 h-[1px] bg-black/5" />
-                          <CreditCard size={14} className="text-stone-300" />
-                          <div className="w-10 h-[1px] bg-black/5" />
-                        </div>
+                        
+                        <Button 
+                          onClick={handleCheckout} 
+                          disabled={loading || !selectedCourier} 
+                          className="w-full h-16 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0"
+                        >
+                          {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Bayar Sekarang <ArrowRight size={20} /></span>}
+                        </Button>
                       </div>
                     </div>
 

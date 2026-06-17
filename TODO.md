@@ -76,5 +76,6 @@
 
 ## 🔧 Fixes/Optimization (Pending for Tomorrow)
 - [ ] **Cart Refactor:** Implement `lineItemId` in `CartStore` for reliable item removal, replacing the unreliable `id`/`weight`/`grind` matching logic.
+- [ ] **Production Phase Discussion:** Review best practices for live keys, webhook tunneling, and scalable label printing.
 - [ ] **Production Readiness:** Transition to live keys and verify webhook tunneling.
 

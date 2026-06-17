@@ -77,43 +77,43 @@ export const generateContract = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename=Fermion_Contract_${data.company_name.replace(/ /g, '_')}.pdf`);
     doc.pipe(res);
 
-    // --- PDF Header (Laboratory Aesthetic) ---
+    // --- PDF Header (Professional Artisan Aesthetic) ---
     doc.font('Courier-Bold').fontSize(24).text('FERMION.', { characterSpacing: 2 });
-    doc.font('Courier').fontSize(8).text('B2B ECOSYSTEM // SERVICE PROTOCOL V2.0', { characterSpacing: 1 });
+    doc.font('Courier').fontSize(8).text('B2B ECOSYSTEM // SYARAT KEMITRAAN V2.0', { characterSpacing: 1 });
     doc.moveDown(2);
 
     // --- Contract Info ---
-    doc.font('Courier-Bold').fontSize(14).text('PARTNERSHIP AGREEMENT: WHOLESALE & SERVICE');
+    doc.font('Courier-Bold').fontSize(14).text('PERJANJIAN KERJASAMA: PEMASOK KOPI & LAYANAN');
     doc.moveDown();
     doc.font('Courier').fontSize(10);
-    doc.text(`CONTRACT ID: #CTR-${profileId.slice(0, 8).toUpperCase()}`);
-    doc.text(`DATE: ${new Date().toLocaleDateString()}`);
+    doc.text(`ID KONTRAK: #CTR-${profileId.slice(0, 8).toUpperCase()}`);
+    doc.text(`TANGGAL: ${new Date().toLocaleDateString('id-ID')}`);
     doc.moveDown(2);
 
     // --- Parties ---
-    doc.font('Courier-Bold').text('BETWEEN:');
-    doc.font('Courier').text('FERMION ROASTERY (First Party)');
+    doc.font('Courier-Bold').text('ANTARA:');
+    doc.font('Courier').text('FERMION ROASTERY (Pihak Pertama)');
     doc.moveDown(0.5);
-    doc.font('Courier-Bold').text('AND:');
-    doc.font('Courier').text(`${data.company_name} (Second Party)`);
-    doc.text(`Representative: ${data.full_name}`);
-    doc.text(`Address: ${data.address}`);
+    doc.font('Courier-Bold').text('DAN:');
+    doc.font('Courier').text(`${data.company_name} (Pihak Kedua)`);
+    doc.text(`Perwakilan: ${data.full_name}`);
+    doc.text(`Alamat: ${data.address}`);
     doc.moveDown(2);
 
     // --- Terms ---
-    doc.font('Courier-Bold').text('ARTICLE 1: PROCUREMENT COMMITMENT');
-    doc.font('Courier').text('1.1 The Second Party commits to a minimum monthly volume of 10kg.');
-    doc.text('1.2 This agreement remains valid for a period of 6 months.');
-    doc.text('1.3 Bronze Tier pricing (-Rp 10,000/kg) is unlocked upon contract activation.');
+    doc.font('Courier-Bold').text('PASAL 1: KOMITMEN PENGADAAN');
+    doc.font('Courier').text('1.1 Pihak Kedua berkomitmen untuk volume pembelian minimal 10kg per bulan.');
+    doc.text('1.2 Perjanjian ini berlaku selama periode 6 bulan.');
+    doc.text('1.3 Harga Tier Bronze (potongan Rp 10.000/kg) otomatis aktif setelah kontrak disetujui.');
     doc.moveDown();
 
-    doc.font('Courier-Bold').text('ARTICLE 2: RETENTION & MAINTENANCE');
-    doc.font('Courier').text('2.1 Free espresso machine & grinder service is provided 2x per contract.');
-    doc.text('2.2 Service benefit is unlocked starting from the second contract sequence.');
+    doc.font('Courier-Bold').text('PASAL 2: LAYANAN & PEMELIHARAAN');
+    doc.font('Courier').text('2.1 Servis mesin espresso & grinder gratis disediakan 2x per periode kontrak.');
+    doc.text('2.2 Manfaat servis aktif mulai dari urutan kontrak kedua.');
     doc.moveDown(3);
 
     // --- Signature Area ---
-    doc.font('Courier-Bold').text('SIGNATURES:', { underline: true });
+    doc.font('Courier-Bold').text('TANDA TANGAN:', { underline: true });
     doc.moveDown(4);
     
     const startX = doc.x;

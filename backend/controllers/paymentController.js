@@ -154,12 +154,32 @@ export const createInvoice = async (req, res) => {
 };
 
 export const createSubscription = async (req, res) => {
-  const { amount, planName, customerDetails, interval, intervalCount } = req.body;
+  const { amount, planName, planId, customerDetails, interval, intervalCount, shippingAddress, profileId } = req.body;
 
   try {
     const referenceId = `sub-${uuidv4()}`;
+    
+    await query('BEGIN');
+    
+    // 1. Create Order record with type 'subscription'
+    const orderResult = await query(
+      `INSERT INTO orders (profile_id, status, total_amount, customer_name, customer_email, customer_phone, shipping_address, shipping_city, type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+      [profileId, 'UNPAID', amount, customerDetails.name, customerDetails.email, customerDetails.phone, shippingAddress.address, shippingAddress.city || 'Cirebon', 'subscription']
+    );
+    const orderId = orderResult.rows[0].id;
+
+    // 2. Create Active Subscription record
+    await query(
+      `INSERT INTO subscriptions (profile_id, plan_id, plan_name, status)
+       VALUES ($1, $2, $3, $4)`,
+      [profileId, planId, planName, 'active']
+    );
+    
+    await query('COMMIT');
+
     const data = {
-      externalId: referenceId,
+      externalId: referenceId, // Or use orderId
       amount: amount,
       payerEmail: customerDetails?.email || 'subscriber@example.com',
       description: `Fermion Subscription: ${planName} (Auto-renews)`,
@@ -175,6 +195,7 @@ export const createSubscription = async (req, res) => {
       message: "Subscription initial charge created"
     });
   } catch (error) {
+    await query('ROLLBACK');
     console.error('Xendit Subscription Error:', error);
     res.status(500).json({ message: "Failed to create subscription", error: error.message });
   }
@@ -269,11 +290,10 @@ export const handleNotification = async (req, res) => {
           const finalOrderId = confirmRes.data.id;
           const waybillId = confirmRes.data.courier.waybill_id;
           
-          // Biteship confirmed orders usually have a label URL in the response
-          // Try to get it from various possible locations in the response object
+          // Biteship dashboard provides the functional label route
           const labelUrl = confirmRes.data.label_url || 
                            confirmRes.data.courier?.label_url || 
-                           `https://biteship.com/shipping-label/${finalOrderId}`;
+                           `https://dashboard.biteship.com/labels/${finalOrderId}`;
 
           await query(
             "UPDATE orders SET biteship_order_id = $1, shipping_awb = $2, shipping_label_url = $3, status = 'READY_TO_SHIP' WHERE xendit_invoice_id = $4",

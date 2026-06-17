@@ -24,16 +24,32 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { 
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 interface Order {
   id: string;
   customer_name: string;
+  customer_phone?: string;
   status: string;
   total_amount: string;
   items: any[];
   shipping_awb?: string;
   shipping_courier?: string;
   shipping_label_url?: string;
+  biteship_order_id?: string;
 }
 
 export default function KanbanBoard() {
@@ -47,17 +63,16 @@ export default function KanbanBoard() {
   const [isAWBModalOpen, setIsAWBModalOpen] = useState(false);
   const [awbData, setAwbData] = useState({ courier: '', resi: '' });
   
+  // Batch Mode State
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  
   // QC Sliders State
   const [qcData, setQcData] = useState({ sweetness: 4.5, acidity: 3.2, body: 4.0 });
 
   useEffect(() => {
     fetchOrders();
-
-    // Auto-refresh using Polling (Every 15 seconds)
-    const interval = setInterval(() => {
-      fetchOrders();
-    }, 15000);
-
+    const interval = setInterval(fetchOrders, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -72,34 +87,64 @@ export default function KanbanBoard() {
 
   const handleUpdateStatus = async (id: string, newStatus: string, additionalData?: any) => {
     try {
-      const payload = { status: newStatus, ...additionalData };
       const res = await fetch(`/api/admin/orders/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ status: newStatus, ...additionalData })
       });
       if (res.ok) {
-        toast.success(`Order status updated to ${newStatus}`);
+        toast.success(`Status diperbarui ke ${newStatus}`);
         fetchOrders();
       }
     } catch (e) {
-      toast.error("Status update failed");
+      toast.error("Gagal memperbarui status.");
     }
   };
 
-  const openQC = (order: Order) => {
-    setSelectedOrder(order);
-    setIsQCModalOpen(true);
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const openReject = (order: Order) => {
-    setSelectedOrder(order);
-    setRejectionReason("");
-    setIsRejectModalOpen(true);
+  const handleBatchPrint = async (ids?: any) => {
+    const targetIds = Array.isArray(ids) ? ids : selectedIds;
+    if (!targetIds || targetIds.length === 0) return;
+    
+    toast.loading(`Mempersiapkan ${targetIds.length} label pengiriman...`);
+    try {
+      const res = await fetch("/api/shipping/batch-labels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderIds: targetIds })
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const win = window.open(url, '_blank');
+        if (win) {
+            win.focus();
+            toast.dismiss();
+            toast.success("PDF Berhasil dibuat.");
+        } else {
+            toast.error("Gagal membuka tab baru. Mohon periksa pop-up blocker.");
+        }
+      } else {
+        toast.error("Gagal membuat PDF label.");
+      }
+    } catch (e) {
+      console.error("Batch print error:", e);
+      toast.error("Kesalahan jaringan saat membuat PDF.");
+    } finally {
+        toast.dismiss();
+    }
   };
 
-  const handleDragStart = (e: React.DragEvent, order: Order) => {
-    e.dataTransfer.setData("orderId", order.id);
+  const handlePrintLabel = (order: Order) => {
+    handleBatchPrint([order.id]);
+  };
+
+  const handleDragStart = (e: React.DragEvent, orderId: string) => {
+    e.dataTransfer.setData("orderId", orderId);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -118,58 +163,83 @@ export default function KanbanBoard() {
       setIsAWBModalOpen(true);
     } else if (newStatus === 'ROASTING') {
       handleUpdateStatus(orderId, newStatus);
-      openQC(order);
+      setSelectedOrder(order);
+      setIsQCModalOpen(true);
     } else {
       handleUpdateStatus(orderId, newStatus);
     }
   };
 
+  const openReject = (order: Order) => {
+    setSelectedOrder(order);
+    setIsRejectModalOpen(true);
+  };
+
+  const openQC = (order: Order) => {
+    setSelectedOrder(order);
+    setIsQCModalOpen(true);
+  };
+
   if (loading) return (
-    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
-      <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Memuat Antrean...</p>
+    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
+      <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin" />
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Mengakses Data Logistik...</p>
     </div>
   );
 
   const columns = [
-    { id: 'UNPAID', label: 'Belum Bayar', icon: Clock, color: 'bg-amber-50 text-amber-600' },
-    { id: 'PAID', label: 'Pesanan Baru', icon: Package, color: 'bg-slate-100 text-slate-600' },
-    { id: 'READY_TO_SHIP', label: 'Siap Kirim (Resi OK)', icon: CheckCircle2, color: 'bg-emerald-50 text-emerald-600' },
-    { id: 'ROASTING', label: 'Proses Roasting', icon: Beaker, color: 'bg-blue-500 text-white' },
-    { id: 'SHIPPED', label: 'Sudah Diambil Kurir', icon: Truck, color: 'bg-emerald-500 text-white' },
+    { id: 'UNPAID', label: 'Menunggu Bayar', icon: Clock },
+    { id: 'PAID', label: 'Pesanan Baru', icon: Package },
+    { id: 'READY_TO_SHIP', label: 'Siap Kirim', icon: CheckCircle2 },
+    { id: 'ROASTING', label: 'Proses Roasting', icon: Beaker },
+    { id: 'SHIPPED', label: 'Sudah Dikirim', icon: Truck },
   ];
 
-  const filteredOrders = orders.filter(o => 
-    o.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    o.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredOrders = orders.filter(o => {
+    const query = searchQuery.toLowerCase();
+    return (
+      o.customer_name.toLowerCase().includes(query) || 
+      o.id.toLowerCase().includes(query) ||
+      `#ORD-${o.id.slice(0, 8)}`.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="space-y-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2 text-left">
-          <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Papan <br/> Pesanan.</h1>
-          <p className="text-sm font-medium text-slate-500">Pusat kendali operasional dan pengiriman kopi.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black/5 pb-10">
+        <div className="space-y-3 text-left">
+          <h1 className="text-5xl md:text-7xl font-display italic tracking-tighter text-slate-900 leading-none">Manajemen <br/> Pesanan.</h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pusat kendali operasional dan pengiriman kopi.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4 items-center">
+           <Button 
+            onClick={() => {
+              setIsBatchMode(!isBatchMode);
+              if (isBatchMode) setSelectedIds([]);
+              else setSelectedIds(orders.filter(o => o.status === 'READY_TO_SHIP').map(o => o.id));
+            }}
+            className={`h-12 px-6 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border shadow-none ${isBatchMode ? 'bg-[#367F4D] text-white border-[#367F4D] hover:bg-[#2d6a41]' : 'bg-white border-black/10 text-slate-600 hover:bg-stone-50 hover:text-[#367F4D] hover:border-[#367F4D]/30'}`}
+           >
+             {isBatchMode ? 'Matikan Mode Massal' : 'Mode Cetak Massal'}
+           </Button>
            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Cari ID atau Nama Pembeli..." 
-                className="pl-10 h-12 w-64 bg-white border-slate-200 rounded-xl text-[10px] font-bold" 
+                placeholder="Cari Nama atau #ORD-..." 
+                className="pl-10 h-12 w-64 bg-white border-black/10 rounded-sm text-[10px] font-bold focus-visible:ring-[#367F4D] focus-visible:border-[#367F4D]/30" 
               />
            </div>
-           <Link href="/admin/manual-ledger">
-             <Button className="bg-slate-950 text-white rounded-xl h-12 px-6 gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-fermion-french-blue transition-all">
-                <Plus size={14} /> Pesanan Manual
+           {isBatchMode && selectedIds.length > 0 && (
+             <Button onClick={handleBatchPrint} className="h-12 px-8 bg-slate-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all gap-3 animate-in fade-in slide-in-from-right-4 border-none">
+                <Printer size={14} /> Cetak {selectedIds.length} Label
              </Button>
-           </Link>
+           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         {columns.map(col => (
           <div 
             key={col.id} 
@@ -177,109 +247,130 @@ export default function KanbanBoard() {
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, col.id)}
           >
-             <div className="flex justify-between items-center px-4">
+             <div className="flex justify-between items-center px-2">
                 <div className="flex items-center gap-3">
-                   <col.icon size={16} className="text-slate-400" />
-                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">{col.label}</span>
+                   <col.icon size={16} className="text-[#367F4D]" />
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">{col.label}</span>
                 </div>
-                <span className="text-[10px] font-black bg-white border border-slate-100 px-3 py-1 rounded-full text-slate-400 shadow-sm">
+                <span className="text-sm font-black bg-stone-900 text-white px-3 py-1 rounded-sm shadow-md min-w-[32px] text-center">
                    {filteredOrders.filter(o => o.status === col.id).length}
                 </span>
              </div>
 
-             <div className="flex-1 space-y-6 min-h-[600px] border-2 border-transparent border-dashed rounded-[3rem] transition-colors p-2 hover:border-slate-100">
+             <div className="flex-1 space-y-4 min-h-[600px] border border-transparent border-dashed rounded-sm transition-colors p-1 hover:border-black/5">
                 <AnimatePresence>
-                  {filteredOrders.filter(o => o.status === col.id).map(order => (
-                    <motion.div 
-                      key={order.id}
-                      layoutId={order.id}
-                      draggable
-                      onDragStart={(e: any) => handleDragStart(e, order)}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className={`cursor-grab active:cursor-grabbing p-6 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all group relative overflow-hidden ${order.status === 'ROASTING' ? 'bg-slate-950 text-white border-blue-500/50' : 'bg-white hover:border-periwinkle'}`}
-                    >
-                       <div className="flex justify-between items-start mb-4">
-                          <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 opacity-60">#ORD-{order.id.slice(0, 8)}</p>
-                          <button className="text-slate-300 hover:text-slate-600"><MoreVertical size={14} /></button>
-                       </div>
-                       <h4 className={`font-black uppercase italic text-base leading-tight mb-1 ${order.status === 'ROASTING' ? 'text-white' : 'text-slate-900'}`}>{order.customer_name}</h4>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
-                          {order.items?.length || 0} Items • Rp {parseInt(order.total_amount).toLocaleString()}
-                       </p>
+                  {filteredOrders.filter(o => o.status === col.id).map(order => {
+                    const isSelected = selectedIds.includes(order.id);
+                    return (
+                      <motion.div 
+                        key={order.id}
+                        layoutId={order.id}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent, order.id)}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className={`p-6 rounded-sm border transition-all relative overflow-hidden group cursor-grab active:cursor-grabbing ${
+                          isSelected ? 'border-[#367F4D] bg-[#367F4D]/[0.02] shadow-md' : 'bg-white border-black/5 hover:border-black/10 shadow-sm'
+                        }`}
+                      >
+                         {isBatchMode && col.id === 'READY_TO_SHIP' && (
+                           <button 
+                            onClick={() => toggleSelect(order.id)}
+                            className={`absolute top-0 left-0 w-full h-full z-20 transition-all ${isSelected ? 'bg-transparent' : 'bg-transparent hover:bg-stone-50/40'}`}
+                           />
+                         )}
 
-                       <div className="pt-4 border-t border-slate-50/10 space-y-2">
-                          {order.status === 'UNPAID' && (
-                             <Button 
-                              onClick={() => handleUpdateStatus(order.id, 'PAID')}
-                              className="w-full py-5 bg-amber-50 hover:bg-slate-950 hover:text-white text-amber-600 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
-                             >
-                               Konfirmasi Bayar <ChevronRight size={14} className="ml-1" />
-                             </Button>
-                          )}
-                          {order.status === 'PAID' && (
-                             <Button 
-                              onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')}
-                              className="w-full py-5 bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all"
-                             >
-                               Terbitkan Resi <ChevronRight size={14} className="ml-1" />
-                             </Button>
-                          )}
-                          {order.status === 'READY_TO_SHIP' && (
-                             <div className="space-y-2">
-                                <div className="grid grid-cols-2 gap-2">
-                                   <Button 
-                                    onClick={() => handleUpdateStatus(order.id, 'ROASTING')}
-                                    className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[8px] font-black uppercase tracking-widest h-10 px-0"
+                         <div className="flex justify-between items-start mb-4 relative z-10">
+                            {order.biteship_order_id ? (
+                               <a 
+                                 href={order.status === 'UNPAID' ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`} 
+                                 target="_blank" 
+                                 rel="noopener noreferrer"
+                                 className="text-[8px] font-black uppercase tracking-widest text-[#367F4D] hover:underline"
+                               >
+                                 #ORD-{order.id.slice(0, 8)}
+                               </a>
+                            ) : (
+                               <p className="text-[8px] font-black uppercase tracking-widest text-stone-300">#ORD-{order.id.slice(0, 8)}</p>
+                            )}
+                            
+                            {isBatchMode && col.id === 'READY_TO_SHIP' ? (
+                               <div className={`w-5 h-5 rounded-sm border transition-all flex items-center justify-center ${isSelected ? 'bg-[#367F4D] border-[#367F4D] text-white' : 'bg-white border-black/10'}`}>
+                                  {isSelected && <CheckCircle2 size={12} />}
+                               </div>
+                            ) : (
+                               <DropdownMenu>
+                                 <DropdownMenuTrigger asChild>
+                                   <button className="text-stone-300 hover:text-slate-600 transition-colors p-1 outline-none"><MoreVertical size={14} /></button>
+                                 </DropdownMenuTrigger>
+                                 <DropdownMenuContent align="end" className="w-48 rounded-sm border-black/5 shadow-xl font-sans p-1 bg-white">
+                                   <DropdownMenuItem 
+                                     className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-slate-600 focus:bg-stone-50 focus:text-slate-900 outline-none" 
+                                     onClick={() => window.open(order.status === 'UNPAID' ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`, '_blank')}
                                    >
-                                      Terima
-                                   </Button>
-                                   <Button 
-                                    onClick={() => openReject(order)}
-                                    variant="outline"
-                                    className="border-red-100 text-red-400 hover:bg-red-50 rounded-xl text-[8px] font-black uppercase tracking-widest h-10 px-0"
+                                     Detail Biteship
+                                   </DropdownMenuItem>
+                                   <DropdownMenuItem 
+                                     className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-[#367F4D] focus:bg-[#367F4D]/5 focus:text-[#367F4D] outline-none"
+                                     onClick={() => window.open(`https://wa.me/${order.customer_phone?.replace(/\D/g, '')}`, '_blank')}
                                    >
-                                      Tolak
-                                   </Button>
-                                </div>
-                                {order.shipping_label_url && (
-                                  <Button 
-                                    onClick={() => window.open(order.shipping_label_url, '_blank')}
-                                    variant="outline"
-                                    className="w-full py-4 border-slate-100 hover:bg-slate-50 text-slate-400 hover:text-slate-900 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all gap-2"
-                                  >
-                                    <Printer size={12} /> Cetak Label
-                                  </Button>
-                                )}
-                             </div>
-                          )}
-                          {order.status === 'ROASTING' && (
-                             <Button 
-                              onClick={() => openQC(order)}
-                              className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 transition-all"
-                             >
-                                Input Detail Rasa <Beaker size={14} className="ml-1" />
-                             </Button>
-                          )}
-                          {order.status === 'SHIPPED' && (
-                             <div className="space-y-3">
-                                <div className="flex items-center gap-2 text-emerald-500">
-                                   <CheckCircle2 size={14} />
-                                   <span className="text-[9px] font-black uppercase tracking-widest">Dalam Pengiriman</span>
-                                </div>
-                                <Button 
-                                  onClick={() => window.open(`https://biteship.com/track/${order.shipping_awb}`, '_blank')}
-                                  variant="outline"
-                                  className="w-full py-4 border-slate-100 hover:bg-slate-50 text-slate-400 hover:text-slate-900 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all gap-2"
-                                >
-                                  <Navigation size={12} /> Pantau Lokasi
-                                </Button>
-                             </div>
-                          )}
-                       </div>
-                    </motion.div>
-                  ))}
+                                     Hubungi WhatsApp
+                                   </DropdownMenuItem>
+                                   <DropdownMenuSeparator className="bg-black/5" />
+                                   <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-red-500 focus:bg-red-50 focus:text-red-600 outline-none" onClick={() => openReject(order)}>
+                                     Batalkan Pesanan
+                                   </DropdownMenuItem>
+                                 </DropdownMenuContent>
+                               </DropdownMenu>
+                            )}
+                         </div>
+
+                         <div className="relative z-10">
+                            <h4 className="font-bold uppercase tracking-tight text-sm text-slate-900 leading-tight mb-1">{order.customer_name}</h4>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6 font-mono">
+                               Rp {parseInt(order.total_amount).toLocaleString('id-ID')}
+                            </p>
+                         </div>
+
+                         <div className="pt-4 border-t border-black/5 space-y-2 relative z-10">
+                            {order.status === 'UNPAID' && (
+                               <Button onClick={() => handleUpdateStatus(order.id, 'PAID')} className="w-full h-10 bg-amber-50 hover:bg-slate-900 hover:text-white text-amber-600 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">
+                                 Konfirmasi Bayar
+                               </Button>
+                            )}
+                            {order.status === 'PAID' && (
+                               <Button onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')} className="w-full h-10 bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-900 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">
+                                 Terbitkan Resi
+                               </Button>
+                            )}
+                            {order.status === 'READY_TO_SHIP' && !isBatchMode && (
+                               <div className="space-y-2">
+                                  <div className="grid grid-cols-2 gap-2">
+                                     <Button onClick={() => handleUpdateStatus(order.id, 'ROASTING')} className="bg-[#367F4D] hover:bg-emerald-700 text-white rounded-sm text-[8px] font-black uppercase tracking-widest h-9 border-none">Terima</Button>
+                                     <Button onClick={() => openReject(order)} className="bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-sm text-[8px] font-black uppercase tracking-widest h-9 border-none">Tolak</Button>
+                                  </div>
+                                  {order.shipping_label_url && (
+                                    <Button onClick={() => handlePrintLabel(order)} className="w-full h-9 bg-white border border-black/5 hover:bg-stone-50 text-slate-400 hover:text-slate-900 rounded-sm text-[8px] font-black uppercase tracking-widest transition-all gap-2 shadow-none">
+                                      <Printer size={12} /> Cetak Label
+                                    </Button>
+                                  )}
+                               </div>
+                            )}
+                            {order.status === 'ROASTING' && (
+                               <Button onClick={() => openQC(order)} className="w-full h-10 bg-slate-900 hover:bg-[#367F4D] text-white rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">
+                                  Input Detail Rasa
+                               </Button>
+                            )}
+                            {order.status === 'SHIPPED' && (
+                               <Button onClick={() => window.open(`https://biteship.com/track/${order.shipping_awb}`, '_blank')} className="w-full h-10 bg-white border border-black/5 hover:bg-stone-50 text-slate-400 hover:text-slate-900 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all gap-2 shadow-none">
+                                  <Navigation size={12} /> Lacak Lokasi
+                               </Button>
+                            )}
+                         </div>
+                      </motion.div>
+                    );
+                  })}
                 </AnimatePresence>
              </div>
           </div>
@@ -292,10 +383,10 @@ export default function KanbanBoard() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
              <motion.div 
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-[3rem] w-full max-w-md p-10 space-y-8 shadow-2xl text-left"
+              className="bg-white rounded-sm w-full max-w-md p-10 space-y-8 shadow-2xl text-left border border-black/5"
              >
                 <div className="flex justify-between items-start">
-                   <h2 className="display-font text-3xl italic font-black text-slate-950 leading-none">Tolak Pesanan.</h2>
+                   <h2 className="font-display text-3xl italic font-bold text-slate-950 leading-none">Tolak Pesanan.</h2>
                    <button onClick={() => setIsRejectModalOpen(false)}><X size={20} /></button>
                 </div>
                 <div className="space-y-4">
@@ -304,7 +395,7 @@ export default function KanbanBoard() {
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Contoh: Stok Green Bean Gayo habis..."
-                    className="w-full h-32 bg-slate-50 border-none rounded-2xl p-4 text-xs font-bold"
+                    className="w-full h-32 bg-stone-50 border border-black/5 rounded-sm p-4 text-xs font-bold focus:ring-[#367F4D] outline-none"
                    />
                 </div>
                 <Button 
@@ -313,7 +404,7 @@ export default function KanbanBoard() {
                     setIsRejectModalOpen(false);
                   }}
                   disabled={!rejectionReason}
-                  className="w-full h-14 bg-red-500 text-white rounded-2xl font-black uppercase italic text-[10px]"
+                  className="w-full h-14 bg-red-500 text-white rounded-sm font-black uppercase italic text-[10px] hover:bg-red-600 border-none shadow-none"
                 >
                    Batalkan Pesanan <Ban size={16} className="ml-2" />
                 </Button>
@@ -322,116 +413,100 @@ export default function KanbanBoard() {
         )}
       </AnimatePresence>
 
-      {/* QC MODAL */}
-      <AnimatePresence>
-        {isQCModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
-             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[3.5rem] w-full max-w-xl p-12 space-y-10 shadow-2xl relative overflow-hidden text-left"
-             >
-                <div className="flex justify-between items-start">
-                   <div className="space-y-1">
-                      <span className="status-badge bg-blue-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Detail_Rasa</span>
-                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-950 leading-none mt-2">Detail Produk.</h2>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedOrder?.customer_name}</p>
-                   </div>
-                   <button onClick={() => setIsQCModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={24} /></button>
-                </div>
+      {/* QC SIDE SHEET */}
+      <Sheet open={isQCModalOpen} onOpenChange={setIsQCModalOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md p-10 border-l border-black/5 shadow-2xl">
+          <SheetHeader className="text-left space-y-6 pb-8 border-b border-black/5 mb-10">
+            <div className="space-y-1">
+               <span className="status-badge bg-[#367F4D] text-white uppercase tracking-widest px-3 py-1 rounded-sm text-[8px] font-black border-none">Detail Rasa</span>
+               <SheetTitle className="font-display text-4xl italic font-bold tracking-tighter text-slate-900 leading-none pt-4">Data Produk.</SheetTitle>
+               <SheetDescription className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedOrder?.customer_name}</SheetDescription>
+            </div>
+          </SheetHeader>
 
-                <div className="space-y-10">
-                   {[
-                     { id: 'sweetness', label: 'Sweetness Intensity' },
-                     { id: 'acidity', label: 'Acidity Brightness' },
-                     { id: 'body', label: 'Mouthfeel / Body' }
-                   ].map(sensor => (
-                     <div key={sensor.id} className="space-y-4">
-                        <div className="flex justify-between items-end">
-                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{sensor.label}</label>
-                           <span className="text-xl font-black italic text-periwinkle">{(qcData as any)[sensor.id]}/5.0</span>
-                        </div>
-                        <input 
-                          type="range" min="0" max="5" step="0.1" 
-                          value={(qcData as any)[sensor.id]}
-                          onChange={(e) => setQcData({...qcData, [sensor.id]: parseFloat(e.target.value)})}
-                          className="w-full h-1.5 bg-slate-100 appearance-none cursor-pointer rounded-full accent-periwinkle" 
-                        />
-                     </div>
-                   ))}
-                </div>
+          <div className="space-y-10">
+             {[
+               { id: 'sweetness', label: 'Sweetness Intensity' },
+               { id: 'acidity', label: 'Acidity Brightness' },
+               { id: 'body', label: 'Mouthfeel / Body' }
+             ].map(sensor => (
+               <div key={sensor.id} className="space-y-4">
+                  <div className="flex justify-between items-end text-left">
+                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{sensor.label}</label>
+                     <span className="text-xl font-black italic text-[#367F4D]">{(qcData as any)[sensor.id]}/5.0</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="5" step="0.1" 
+                    value={(qcData as any)[sensor.id]}
+                    onChange={(e) => setQcData({...qcData, [sensor.id]: parseFloat(e.target.value)})}
+                    className="w-full h-1.5 bg-stone-100 appearance-none cursor-pointer rounded-full accent-[#367F4D]" 
+                  />
+               </div>
+             ))}
+          </div>
 
-                <Button 
-                  onClick={() => {
-                    handleUpdateStatus(selectedOrder!.id, 'ROASTING', { qcData }); // Keep in ROASTING but save QC
+          <div className="absolute bottom-10 left-10 right-10">
+            <Button 
+                onClick={() => {
+                    handleUpdateStatus(selectedOrder!.id, 'ROASTING', { qcData });
                     setIsQCModalOpen(false);
                     toast.success("Data disimpan. Pesanan siap dikirim.");
-                  }}
-                  className="w-full h-16 bg-slate-950 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-periwinkle transition-all"
-                >
-                   Simpan & Tutup <CheckCircle2 size={18} className="ml-2" />
-                </Button>
-             </motion.div>
+                }}
+                className="w-full h-16 bg-slate-950 text-white rounded-sm font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-[#367F4D] transition-all border-none"
+            >
+                Simpan & Tutup <CheckCircle2 size={18} className="ml-2" />
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        </SheetContent>
+      </Sheet>
 
-      {/* AWB/RESI MODAL (Manual Fallback) */}
-      <AnimatePresence>
-        {isAWBModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
-             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[3.5rem] w-full max-w-lg p-12 space-y-10 shadow-2xl relative overflow-hidden text-left"
-             >
-                <div className="flex justify-between items-start">
-                   <div className="space-y-1">
-                      <span className="status-badge bg-emerald-500 text-white uppercase tracking-widest px-3 py-1 rounded-full text-[8px] font-black">Manajemen_Kirim</span>
-                      <h2 className="display-font text-4xl italic font-black tracking-tighter text-slate-900 leading-none mt-2">Pengiriman.</h2>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Input Resi Manual untuk #{selectedOrder?.id.slice(0,8)}</p>
-                   </div>
-                   <button onClick={() => setIsAWBModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X size={24} /></button>
-                </div>
+      {/* AWB/RESI SIDE SHEET */}
+      <Sheet open={isAWBModalOpen} onOpenChange={setIsAWBModalOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md p-10 border-l border-black/5 shadow-2xl">
+          <SheetHeader className="text-left space-y-6 pb-8 border-b border-black/5 mb-10">
+             <div className="space-y-1">
+                <span className="status-badge bg-emerald-500 text-white uppercase tracking-widest px-3 py-1 rounded-sm text-[8px] font-black border-none">Logistik</span>
+                <SheetTitle className="font-display text-4xl italic font-bold tracking-tighter text-slate-900 leading-none pt-4">Kirim Paket.</SheetTitle>
+                <SheetDescription className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Input Resi Manual untuk #{selectedOrder?.id.slice(0,8)}</SheetDescription>
+             </div>
+          </SheetHeader>
 
-                <div className="space-y-6">
-                   <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Courier Name</label>
-                      <Input 
-                        value={awbData.courier}
-                        onChange={(e) => setAwbData({...awbData, courier: e.target.value})}
-                        placeholder="e.g. JNE Trucking" 
-                        className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900" 
-                      />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Air Waybill (Resi)</label>
-                      <Input 
-                        value={awbData.resi}
-                        onChange={(e) => setAwbData({...awbData, resi: e.target.value})}
-                        placeholder="AWB123456789" 
-                        className="h-14 bg-slate-50 border-none rounded-2xl px-6 text-xs font-bold text-slate-900 font-mono" 
-                      />
-                   </div>
-                </div>
+          <div className="space-y-8">
+             <div className="space-y-2 text-left">
+                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nama Kurir</label>
+                <Input 
+                  value={awbData.courier}
+                  onChange={(e) => setAwbData({...awbData, courier: e.target.value})}
+                  placeholder="e.g. JNE Trucking" 
+                  className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus-visible:ring-[#367F4D]" 
+                />
+             </div>
+             <div className="space-y-2 text-left">
+                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nomor Resi (AWB)</label>
+                <Input 
+                  value={awbData.resi}
+                  onChange={(e) => setAwbData({...awbData, resi: e.target.value})}
+                  placeholder="AWB123456789" 
+                  className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 font-mono focus-visible:ring-[#367F4D]" 
+                />
+             </div>
+          </div>
 
-                <Button 
-                  onClick={() => {
+          <div className="absolute bottom-10 left-10 right-10">
+            <Button 
+                onClick={() => {
                     handleUpdateStatus(selectedOrder!.id, 'SHIPPED', { shipping_courier: awbData.courier, shipping_awb: awbData.resi });
                     setIsAWBModalOpen(false);
                     setAwbData({ courier: '', resi: '' });
-                  }}
-                  disabled={!awbData.courier || !awbData.resi}
-                  className="w-full h-16 bg-emerald-500 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-emerald-600 transition-all"
-                >
-                   Konfirmasi Pengiriman <Truck size={18} className="ml-2" />
-                </Button>
-             </motion.div>
+                }}
+                disabled={!awbData.courier || !awbData.resi}
+                className="w-full h-16 bg-[#367F4D] text-white rounded-sm font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-emerald-600 transition-all border-none"
+            >
+                Konfirmasi Kirim <Truck size={18} className="ml-2" />
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

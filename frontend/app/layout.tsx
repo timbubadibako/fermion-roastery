@@ -28,12 +28,20 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   const pathname = usePathname();
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Hydrate auth state from localStorage
+    const savedAuth = localStorage.getItem('fermion-auth-storage');
+    if (savedAuth) {
+      try {
+        const { state } = JSON.parse(savedAuth);
+        if (state.user) setUser(state.user);
+      } catch (e) { console.error("Hydration failed"); }
+    }
+  }, [setUser]);
   
   // Portal detection
   const isAdmin = pathname.startsWith('/admin');

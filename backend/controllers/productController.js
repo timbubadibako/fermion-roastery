@@ -114,17 +114,18 @@ export const createProduct = async (req, res) => {
   const { 
     name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
     description, farm, image_url, fermentation, sweetness, acidity, body, 
-    stock_quantity
+    stock_quantity, linked_journal_id
   } = req.body;
   
   try {
     const result = await query(
       `INSERT INTO products (
         name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
-        description, farm, image_url, fermentation, sweetness, acidity, body, stock_quantity
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
+        description, farm, image_url, fermentation, sweetness, acidity, body, 
+        stock_quantity, linked_journal_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) 
       RETURNING *`,
-      [name, slug, notes, origin, process, altitude, price_retail, roast_profile, description, farm, image_url, fermentation, sweetness, acidity, body, stock_quantity]
+      [name, slug, notes, origin, process, altitude, price_retail, roast_profile, description, farm, image_url, fermentation, sweetness, acidity, body, stock_quantity, linked_journal_id || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -140,7 +141,7 @@ export const updateProduct = async (req, res) => {
     'name', 'slug', 'notes', 'origin', 'process', 'altitude', 
     'price_retail', 'discount_percent', 'roast_profile', 'description', 
     'farm', 'image_url', 'fermentation', 'sweetness', 'acidity', 
-    'body', 'stock_quantity', 'is_active'
+    'body', 'stock_quantity', 'is_active', 'linked_journal_id'
   ];
 
   const filteredFields = Object.keys(bodyFields)

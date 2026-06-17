@@ -13,6 +13,7 @@ export interface AddressValue {
   district?: string;
   province?: string;
   regency?: string;
+  patokan?: string;
 }
 
 export interface AddressInputProps {
@@ -61,10 +62,18 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
                placeholder="Nama jalan, No Rumah, RT/RW, dsb..."
                className="w-full h-28 bg-stone-50/50 border border-black/5 rounded-sm p-5 text-sm font-bold resize-none placeholder:text-stone-300 transition-all focus:bg-white focus:border-stone-200 focus:ring-0 shadow-inner"
             />
-            <div className="absolute bottom-2 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-               <p className="text-[8px] font-black uppercase tracking-widest text-stone-300 italic">Alamat Lengkap</p>
-            </div>
          </div>
+      </div>
+
+      {/* Patokan Field */}
+      <div className="space-y-3">
+         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">Patokan (Opsional)</label>
+         <Input 
+            value={value.patokan || ""}
+            onChange={(e) => onChange({ ...value, patokan: e.target.value })}
+            placeholder="Contoh: Depan Indomaret, Cat Rumah Warna Biru"
+            className="w-full h-14 bg-stone-50/50 border border-black/5 rounded-sm px-5 text-sm font-bold placeholder:text-stone-300 transition-all focus:bg-white focus:border-stone-200 focus:ring-0 shadow-inner"
+         />
       </div>
 
       {/* City/Area Search */}
