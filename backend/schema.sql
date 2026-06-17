@@ -5,6 +5,16 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- --- Utility Functions ---
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
 -- 0. Profiles Table (Users & Admins)
 CREATE TABLE IF NOT EXISTS profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -31,6 +41,9 @@ CREATE TABLE IF NOT EXISTS profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- 1. Journal / Blog Posts Table
 CREATE TABLE IF NOT EXISTS journal_posts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -46,6 +59,9 @@ CREATE TABLE IF NOT EXISTS journal_posts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+DROP TRIGGER IF EXISTS update_journal_posts_updated_at ON journal_posts;
+CREATE TRIGGER update_journal_posts_updated_at BEFORE UPDATE ON journal_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- 2. Products Table
 CREATE TABLE IF NOT EXISTS products (
@@ -78,6 +94,9 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TRIGGER IF EXISTS update_products_updated_at ON products;
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- 3. Pricing Tiers Table (B2B Fixed Prices per SKU)
 CREATE TABLE IF NOT EXISTS pricing_tiers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -105,6 +124,9 @@ CREATE TABLE IF NOT EXISTS b2b_partners (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+DROP TRIGGER IF EXISTS update_b2b_partners_updated_at ON b2b_partners;
+CREATE TRIGGER update_b2b_partners_updated_at BEFORE UPDATE ON b2b_partners FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- 5. Batches Table (Roastery Inventory Tracking)
 CREATE TABLE IF NOT EXISTS batches (
@@ -173,6 +195,9 @@ CREATE TABLE IF NOT EXISTS orders (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- 9. Order Items Table
 CREATE TABLE IF NOT EXISTS order_items (
@@ -252,6 +277,7 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TRIGGER IF EXISTS update_subscription_plans_updated_at ON subscription_plans;
 CREATE TRIGGER update_subscription_plans_updated_at BEFORE UPDATE ON subscription_plans FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- 16. Subscriptions Table
@@ -266,20 +292,5 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON subscriptions;
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- --- Utility Triggers for auto-updating updated_at ---
-
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_journal_posts_updated_at BEFORE UPDATE ON journal_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_b2b_partners_updated_at BEFORE UPDATE ON b2b_partners FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
