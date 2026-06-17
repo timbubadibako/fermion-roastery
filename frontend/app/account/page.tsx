@@ -70,9 +70,9 @@ export default function RetailAccountPage() {
   });
 
   const [addresses, setAddresses] = useState<AddressDetail[]>([
-    { id: 'primary', label: 'Alamat Utama', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', postalCode: '', area_id: '', isPrimary: true },
-    { id: '2', label: 'Alamat 2', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', postalCode: '', area_id: '', isPrimary: false },
-    { id: '3', label: 'Alamat 3', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', postalCode: '', area_id: '', isPrimary: false }
+    { id: 'primary', label: 'Alamat Utama', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', regency: '', postalCode: '', area_id: '', isPrimary: true },
+    { id: '2', label: 'Alamat 2', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', regency: '', postalCode: '', area_id: '', isPrimary: false },
+    { id: '3', label: 'Alamat 3', name: '', phone: '', address: '', patokan: '', city: '', district: '', province: '', regency: '', postalCode: '', area_id: '', isPrimary: false }
   ]);
 
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
