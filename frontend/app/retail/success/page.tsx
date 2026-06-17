@@ -13,14 +13,22 @@ export default function OrderSuccessPage() {
 
   useEffect(() => { 
     setMounted(true); 
-    const purchasedIds = sessionStorage.getItem('purchasedLineItemIds');
-    if (purchasedIds) {
-        try {
-            const idsToRemove = JSON.parse(purchasedIds);
-            removeItems(idsToRemove);
-            sessionStorage.removeItem('purchasedLineItemIds');
-        } catch (e) { console.error("Failed to parse purchased IDs", e); }
-    }
+    
+    // Add a small delay to ensure store hydration is complete
+    const timer = setTimeout(() => {
+        const purchasedIds = localStorage.getItem('purchasedLineItemIds');
+        if (purchasedIds) {
+            try {
+                const idsToRemove = JSON.parse(purchasedIds);
+                if (Array.isArray(idsToRemove) && idsToRemove.length > 0) {
+                    removeItems(idsToRemove);
+                }
+                localStorage.removeItem('purchasedLineItemIds');
+            } catch (e) { console.error("Failed to parse purchased IDs", e); }
+        }
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [removeItems]);
 
   if (!mounted) return null;

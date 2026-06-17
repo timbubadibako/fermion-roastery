@@ -194,7 +194,11 @@ export default function CartPage() {
       if (res.ok) {
         const data = await res.json();
         toast.success("Pesanan dibuat! Mengalihkan ke pembayaran...");
-        clearCart();
+        
+        // Save only the lineItemIds of selected items to localStorage
+        const lineItemIdsToRemove = items.map(item => item.lineItemId);
+        localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
+        
         window.location.href = data.invoiceUrl;
       } else {
         const errorRes = await res.json();
