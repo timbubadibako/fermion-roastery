@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
+  lineItemId: string; // Unique identifier for this cart line
   id: string | number;
   name: string;
   price: number;
@@ -20,11 +21,11 @@ interface CartStore {
   setIsOpen: (isOpen: boolean) => void;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (item: CartItem, selectOnly?: boolean) => void;
+  addItem: (item: Omit<CartItem, 'lineItemId'>, selectOnly?: boolean) => void;
   removeItem: (lineItemId: string) => void;
   removeItems: (lineItemIdsToRemove: string[]) => void;
-  updateQuantity: (id: string | number, weight: string, grind: string, quantity: number) => void;
-  toggleSelection: (id: string | number, weight: string, grind: string) => void;
+  updateQuantity: (lineItemId: string, quantity: number) => void;
+  toggleSelection: (lineItemId: string) => void;
   clearCart: () => void;
   setItems: (items: CartItem[]) => void;
   getTotal: (onlySelected?: boolean) => number;
@@ -44,7 +45,6 @@ export const useCartStore = create<CartStore>()(
       addItem: (newItem, selectOnly = false) => {
         const currentItems = get().items;
         
-        // If selectOnly is true (Buy It Now), unselect everything first
         let baseItems = selectOnly 
           ? currentItems.map(item => ({ ...item, selected: false }))
           : currentItems;
@@ -59,7 +59,11 @@ export const useCartStore = create<CartStore>()(
           updatedItems[existingItemIndex].quantity += newItem.quantity;
           updatedItems[existingItemIndex].selected = true; 
         } else {
-          updatedItems = [...baseItems, { ...newItem, selected: true }];
+          updatedItems = [...baseItems, { 
+            ...newItem, 
+            lineItemId: crypto.randomUUID(), 
+            selected: true 
+          }];
         }
         
         set({ items: updatedItems, isOpen: !selectOnly }); 
@@ -83,9 +87,9 @@ export const useCartStore = create<CartStore>()(
         get().syncWithServer();
       },
 
-      updateQuantity: (id, weight, grind, quantity) => {
+      updateQuantity: (lineItemId, quantity) => {
         const updatedItems = get().items.map((item) =>
-          (item.id === id && item.weight === weight && item.grind === grind) 
+          (item.lineItemId === lineItemId) 
             ? { ...item, quantity: Math.max(1, quantity) } 
             : item
         );
@@ -93,16 +97,16 @@ export const useCartStore = create<CartStore>()(
         get().syncWithServer();
       },
 
-      toggleSelection: (id, weight, grind) => {
+      toggleSelection: (lineItemId) => {
         const updatedItems = get().items.map((item) => {
-          if (item.id === id && item.weight === weight && item.grind === grind) {
-            // If selected is undefined, it was implicitly true, so toggle to false
+          if (item.lineItemId === lineItemId) {
             const currentSelected = item.selected === undefined ? true : item.selected;
             return { ...item, selected: !currentSelected };
           }
           return item;
         });
         set({ items: updatedItems });
+        get().syncWithServer();
       },
 
       clearCart: () => {
@@ -114,7 +118,7 @@ export const useCartStore = create<CartStore>()(
 
       getTotal: (onlySelected = false) => {
         const targetItems = onlySelected 
-          ? get().items.filter(item => item.selected !== false) // Implicitly true if undefined
+          ? get().items.filter(item => item.selected !== false) 
           : get().items;
         return targetItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
       },
