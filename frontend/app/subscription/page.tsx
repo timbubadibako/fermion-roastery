@@ -53,7 +53,15 @@ export default function SubscriptionPageV2() {
   const { user } = useAuthStore();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [address, setAddress] = useState({ address: '', city: '', postalCode: '' });
+  const [address, setAddress] = useState({ 
+    address: '', 
+    city: '', 
+    postalCode: '',
+    area_id: '',
+    district: '',
+    province: '',
+    regency: ''
+  });
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
 
@@ -84,7 +92,11 @@ export default function SubscriptionPageV2() {
             body: JSON.stringify({ 
                 address: address.address, 
                 city: address.city, 
-                postal_code: address.postalCode 
+                postal_code: address.postalCode,
+                area_id: address.area_id,
+                district: address.district,
+                regency: address.regency,
+                province: address.province
             })
         });
         if (res.ok) {
@@ -117,6 +129,14 @@ export default function SubscriptionPageV2() {
       if (res.ok && data.invoiceUrl) window.location.href = data.invoiceUrl;
       else { toast.error(data.message || "Error."); setLoadingPlan(null); }
     } catch { toast.error("Error."); setLoadingPlan(null); }
+  };
+
+  const handleInitSubscribe = (plan: typeof plans[0]) => {
+    if (!user) {
+      toast.error("Please login to initialize your ritual.");
+      return;
+    }
+    setSelectedPlan(plan);
   };
 
   if (!mounted) return null;
