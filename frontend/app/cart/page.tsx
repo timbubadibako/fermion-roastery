@@ -191,10 +191,12 @@ const handleCheckout = async () => {
       const data = await res.json();
       toast.success("Pesanan dibuat! Mengalihkan ke pembayaran...");
       
-      console.log("DEBUG: Items to checkout (selected):", items);
+      // CRUCIAL: Capture the exact lineItemIds being checked out
+      const lineItemIdsToRemove = items.map(item => item.lineItemId);
+      console.log("DEBUG: lineItemIds to remove later:", lineItemIdsToRemove);
       
-      // Save items to remove in sessionStorage
-      sessionStorage.setItem('purchasedItems', JSON.stringify(items));
+      // Save ONLY the IDs to sessionStorage for the success page to handle
+      sessionStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
       
       window.location.href = data.invoiceUrl;
     } else {

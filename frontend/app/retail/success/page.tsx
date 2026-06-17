@@ -13,15 +13,13 @@ export default function OrderSuccessPage() {
 
   useEffect(() => { 
     setMounted(true); 
-    const purchased = sessionStorage.getItem('purchasedItems');
-    console.log("DEBUG: Purchased items found in session storage:", purchased);
-    if (purchased) {
-        const itemsToRemove = JSON.parse(purchased);
-        console.log("DEBUG: Removing these items:", itemsToRemove);
-        removeItems(itemsToRemove);
-        sessionStorage.removeItem('purchasedItems');
-    } else {
-        console.log("DEBUG: No purchased items found in session storage.");
+    const purchasedIds = sessionStorage.getItem('purchasedLineItemIds');
+    if (purchasedIds) {
+        try {
+            const idsToRemove = JSON.parse(purchasedIds);
+            removeItems(idsToRemove);
+            sessionStorage.removeItem('purchasedLineItemIds');
+        } catch (e) { console.error("Failed to parse purchased IDs", e); }
     }
   }, [removeItems]);
 

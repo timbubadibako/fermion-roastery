@@ -21,8 +21,8 @@ interface CartStore {
   openCart: () => void;
   closeCart: () => void;
   addItem: (item: CartItem, selectOnly?: boolean) => void;
-  removeItem: (id: string | number, weight: string, grind: string) => void;
-  removeItems: (itemsToRemove: CartItem[]) => void;
+  removeItem: (lineItemId: string) => void;
+  removeItems: (lineItemIdsToRemove: string[]) => void;
   updateQuantity: (id: string | number, weight: string, grind: string, quantity: number) => void;
   toggleSelection: (id: string | number, weight: string, grind: string) => void;
   clearCart: () => void;
@@ -66,31 +66,19 @@ export const useCartStore = create<CartStore>()(
         get().syncWithServer();
       },
 
-      removeItem: (id, weight, grind) => {
+      removeItem: (lineItemId) => {
         const updatedItems = get().items.filter(
-          (item) => !(item.id === id && item.weight === weight && item.grind === grind)
+          (item) => item.lineItemId !== lineItemId
         );
         set({ items: updatedItems });
         get().syncWithServer();
       },
 
-      removeItems: (itemsToRemove) => {
+      removeItems: (lineItemIdsToRemove) => {
         const currentItems = get().items;
-        
-        console.log("DEBUG: Current cart items:", JSON.stringify(currentItems));
-        console.log("DEBUG: Items to remove (received):", JSON.stringify(itemsToRemove));
-
-        const updatedItems = currentItems.filter(item => {
-          const isMatch = itemsToRemove.some(toRemove => {
-            console.log("DEBUG: Comparing", JSON.stringify(item), "with", JSON.stringify(toRemove));
-            return toRemove.id == item.id && 
-                   toRemove.weight.trim() == item.weight.trim() && 
-                   toRemove.grind.trim() == item.grind.trim();
-          });
-          return !isMatch;
-        });
-        
-        console.log("DEBUG: Updated items:", JSON.stringify(updatedItems));
+        const updatedItems = currentItems.filter(
+          (item) => !lineItemIdsToRemove.includes(item.lineItemId)
+        );
         set({ items: updatedItems });
         get().syncWithServer();
       },
