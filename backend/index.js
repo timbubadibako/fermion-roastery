@@ -53,7 +53,4 @@ app.get('/', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
-});
+module.exports = app;
