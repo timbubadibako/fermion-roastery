@@ -21,13 +21,43 @@ export default function StoryPageV2() {
 
   useEffect(() => {
     if (!mounted) return;
-    let ctx = gsap.context(() => {
-      gsap.from(".story-hero-text", { y: 60, opacity: 0, stagger: 0.1, duration: 1, ease: "power3.out" });
-      gsap.from(".hero-polaroid", { x: 100, rotation: 5, opacity: 0, duration: 1.5, ease: "back.out(1.2)" });
-      gsap.from(".philosophy-card", { y: 50, opacity: 0, stagger: 0.2, duration: 1, ease: "power2.out", scrollTrigger: { trigger: philosophyRef.current, start: "top 75%" } });
-      gsap.from(".gallery-item", { scale: 0.9, opacity: 0, stagger: 0.15, duration: 1, ease: "power2.out", scrollTrigger: { trigger: galleryRef.current, start: "top 70%" } });
-    }, [heroRef, philosophyRef, galleryRef]);
-    return () => ctx.revert();
+    
+    let ctx: gsap.Context;
+
+    const runAnimations = () => {
+      ctx = gsap.context(() => {
+        const heroText = gsap.utils.toArray(".story-hero-text");
+        if (heroText.length > 0) {
+          gsap.from(heroText, { y: 60, opacity: 0, stagger: 0.1, duration: 1, ease: "power3.out" });
+        }
+        
+        const heroPolaroid = gsap.utils.toArray(".hero-polaroid");
+        if (heroPolaroid.length > 0) {
+          gsap.from(heroPolaroid, { x: 100, rotation: 5, opacity: 0, duration: 1.5, ease: "back.out(1.2)" });
+        }
+
+        if (philosophyRef.current) {
+          const cards = gsap.utils.toArray(".philosophy-card", philosophyRef.current);
+          if (cards.length > 0) {
+            gsap.from(cards, { y: 50, opacity: 0, stagger: 0.2, duration: 1, ease: "power2.out", scrollTrigger: { trigger: philosophyRef.current, start: "top 75%" } });
+          }
+        }
+        
+        if (galleryRef.current) {
+          const gallery = gsap.utils.toArray(".gallery-item", galleryRef.current);
+          if (gallery.length > 0) {
+            gsap.from(gallery, { scale: 0.9, opacity: 0, stagger: 0.15, duration: 1, ease: "power2.out", scrollTrigger: { trigger: galleryRef.current, start: "top 70%" } });
+          }
+        }
+        ScrollTrigger.refresh();
+      });
+    };
+
+    const timer = setTimeout(runAnimations, 50);
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
   }, [mounted]);
 
   if (!mounted) return null;
