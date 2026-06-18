@@ -146,13 +146,13 @@ export const createInvoice = async (req, res) => {
         quantity: item.quantity,
         price: item.price,
       })),
-      successRedirectUrl: 'http://localhost:3000/retail/success',
-      failureRedirectUrl: 'http://localhost:3000/retail/failure',
+      successRedirectUrl: '${process.env.FRONTEND_URL}/retail/success',
+      failureRedirectUrl: '${process.env.FRONTEND_URL}/retail/failure',
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
 
-    res.status(200).json({ 
+    res.status(200).json({
       invoiceUrl: response.invoiceUrl,
       externalId: response.externalId,
       orderId: orderId
@@ -168,7 +168,7 @@ export const createSubscription = async (req, res) => {
 
   try {
     const referenceId = `sub-${uuidv4()}`;
-    
+
     // 1. Create Order record with type 'subscription'
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
@@ -202,7 +202,7 @@ export const createSubscription = async (req, res) => {
           status: 'active'
         }
       ]);
-    
+
     if (subError) throw subError;
 
     const data = {
@@ -210,13 +210,13 @@ export const createSubscription = async (req, res) => {
       amount: amount,
       payerEmail: customerDetails?.email || 'subscriber@example.com',
       description: `Fermion Subscription: ${planName} (Auto-renews)`,
-      successRedirectUrl: 'http://localhost:3000/subscription/success',
-      failureRedirectUrl: 'http://localhost:3000/subscription/failure',
+      successRedirectUrl: '${process.env.FRONTEND_URL}/subscription/success',
+      failureRedirectUrl: '${process.env.FRONTEND_URL}/subscription/failure',
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
 
-    res.status(200).json({ 
+    res.status(200).json({
       invoiceUrl: response.invoiceUrl,
       subscriptionId: referenceId,
       message: "Subscription initial charge created"
@@ -239,18 +239,18 @@ export const handleNotification = async (req, res) => {
       .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
       .eq('xendit_invoice_id', external_id)
       .maybeSingle();
-    
+
     if (!orderData) {
       console.log(`🔍 Invoice ID not found, trying fallback to Order ID: ${external_id}`);
       // Clean ID from # if present
       const cleanId = external_id.replace('#', '').toLowerCase();
-      
+
       const { data: fallbackData } = await supabase
         .from('orders')
         .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
         .eq('id', cleanId)
         .maybeSingle();
-      
+
       orderData = fallbackData;
     }
 
@@ -287,13 +287,13 @@ export const handleNotification = async (req, res) => {
           .select('product_id, variant_weight, quantity')
           .eq('order_id', orderData.id)
           .not('product_id', 'is', null);
-        
+
         if (itemsError) throw itemsError;
 
         for (const item of items) {
           let deductionUnits = 0;
           const weightLower = (item.variant_weight || "250g").toLowerCase();
-          
+
           if (weightLower.includes('250g')) {
             deductionUnits = item.quantity * 1;
           } else if (weightLower.includes('500g')) {
@@ -301,23 +301,23 @@ export const handleNotification = async (req, res) => {
           } else if (weightLower.includes('1kg') || weightLower.includes('1000g')) {
             deductionUnits = item.quantity * 4;
           } else {
-             // Fallback dynamic parser
-             const match = weightLower.match(/(\d+)(g|kg)/);
-             if (match) {
-               const val = parseInt(match[1]);
-               const unit = match[2];
-               const grams = unit === 'kg' ? val * 1000 : val;
-               deductionUnits = item.quantity * (grams / 250);
-             }
+            // Fallback dynamic parser
+            const match = weightLower.match(/(\d+)(g|kg)/);
+            if (match) {
+              const val = parseInt(match[1]);
+              const unit = match[2];
+              const grams = unit === 'kg' ? val * 1000 : val;
+              deductionUnits = item.quantity * (grams / 250);
+            }
           }
-          
+
           if (deductionUnits > 0) {
             const { data: product } = await supabase
               .from('products')
               .select('stock_quantity')
               .eq('id', item.product_id)
               .single();
-            
+
             if (product) {
               await supabase
                 .from('products')
@@ -338,14 +338,14 @@ export const handleNotification = async (req, res) => {
           console.log(`🔔 Confirming Biteship Draft: ${orderData.biteship_order_id}`);
           const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${orderData.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
           console.log('📦 Biteship Confirm Response:', JSON.stringify(confirmRes.data, null, 2));
-          
+
           const finalOrderId = confirmRes.data.id;
           const waybillId = confirmRes.data.courier.waybill_id;
-          
+
           // Biteship dashboard provides the functional label route
-          const labelUrl = confirmRes.data.label_url || 
-                           confirmRes.data.courier?.label_url || 
-                           `https://dashboard.biteship.com/labels/${finalOrderId}`;
+          const labelUrl = confirmRes.data.label_url ||
+            confirmRes.data.courier?.label_url ||
+            `https://dashboard.biteship.com/labels/${finalOrderId}`;
 
           await supabase
             .from('orders')
