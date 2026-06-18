@@ -233,14 +233,14 @@ export default function ProductFormPage() {
                  <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Harga Retail (IDR)</label>
                     <div className="relative">
-                        <Input type="number" required value={formData.price_retail} onChange={e => setFormData({...formData, price_retail: parseFloat(e.target.value)})} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                        <Input type="number" required value={isNaN(formData.price_retail) ? '' : formData.price_retail} onChange={e => setFormData({...formData, price_retail: parseFloat(e.target.value)})} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
                         <span className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-tighter italic">PER_UNIT</span>
                     </div>
                  </div>
                  <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Stok Inventaris (Unit)</label>
                     <div className="relative">
-                        <Input type="number" required value={formData.stock_quantity} onChange={e => setFormData({...formData, stock_quantity: parseInt(e.target.value)})} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                        <Input type="number" required value={isNaN(formData.stock_quantity) ? '' : formData.stock_quantity} onChange={e => setFormData({...formData, stock_quantity: parseInt(e.target.value)})} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
                         <Boxes className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20" size={24} />
                     </div>
                  </div>

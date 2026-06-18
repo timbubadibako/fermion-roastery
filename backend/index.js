@@ -45,13 +45,20 @@ app.use('/api/b2b', b2bRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 // Base route for health check
 app.get('/', (req, res) => {
-  res.json({
-    status: 'online',
+  res.json({ 
+    status: 'online', 
     engine: 'Fermion Business Engine v1.0',
     services: ['ProductAPI', 'AuthSync', 'PaymentGateway', 'AdminPortal', 'CartSync']
   });
 });
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
-});
+
+// Start server for local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel Serverless
+export default app;
