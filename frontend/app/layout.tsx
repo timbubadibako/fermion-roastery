@@ -33,6 +33,15 @@ export default function RootLayout({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    console.log("LAYOUT DEBUG:", {
+      pathname,
+      userRole: user?.role,
+      user,
+      mounted
+    });
+  }, [user, mounted, pathname]);
+
+  useEffect(() => {
     setMounted(true);
     // Hydrate auth state from localStorage
     const savedAuth = localStorage.getItem('fermion-auth-storage');
