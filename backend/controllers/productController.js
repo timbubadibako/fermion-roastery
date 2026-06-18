@@ -135,18 +135,40 @@ export const createProduct = async (req, res) => {
     stock_quantity, linked_journal_id, category, sub_category
   } = req.body;
   
+  // Sanitize fields: empty strings to null
+  const sanitize = (val) => (val === "" ? null : val);
+
   try {
     const { data, error } = await supabase
       .from('products')
       .insert([{
-        name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
-        description, farm, image_url, fermentation, sweetness, acidity, body, 
-        stock_quantity, linked_journal_id: linked_journal_id || null, category, sub_category
+        name,
+        slug,
+        notes: sanitize(notes),
+        origin: sanitize(origin),
+        process: sanitize(process),
+        altitude: sanitize(altitude),
+        price_retail,
+        roast_profile,
+        description: sanitize(description),
+        farm: sanitize(farm),
+        image_url: sanitize(image_url),
+        fermentation: sanitize(fermentation),
+        sweetness,
+        acidity,
+        body,
+        stock_quantity,
+        linked_journal_id: sanitize(linked_journal_id),
+        category,
+        sub_category
       }])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("DEBUG: Supabase error:", error);
+      throw error;
+    }
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ message: "Failed to create product", error: error.message });
