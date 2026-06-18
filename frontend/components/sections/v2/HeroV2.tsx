@@ -30,84 +30,81 @@ export function HeroV2() {
     const video = videoRef.current;
     if (!video) return;
 
-    const onMetadataLoaded = () => {
-      let ctx = gsap.context(() => {
-        // 1. Main GSAP Timeline
+    let ctx: gsap.Context;
+
+    const initGSAP = () => {
+      ctx = gsap.context(() => {
+        // 1. Main GSAP Timeline - Time-based, not scroll-based
         const mainTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "+=4500",
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1
-          }
+          defaults: { ease: "none" }
         });
 
-        // 2. Video Scrubbing - Mapped to the first 65% of scroll
+        // 2. Video Playback - Play video automatically
+        // Set video to play, but don't bind it strictly to a duration in the timeline for the curtain
         mainTl.to(video, {
           currentTime: video.duration || 1,
-          ease: "none"
+          duration: 10, // Let video play for longer
+          ease: "none",
+          force3D: true
         }, 0);
 
         // 3. Persistent Typewriter Logic
         words.forEach((word, wordIdx) => {
           const charSelector = `.word-${wordIdx} .char`;
           const chars = gsap.utils.toArray(charSelector);
+          const segmentStart = 0.2 + (wordIdx * 0.8); // Slower stagger between words
 
-          // We distribute the word appearances along the timeline
-          const segmentStart = wordIdx * 0.22; // Appear earlier and closer together
-
-          // Type in - they stay visible (no type out)
           mainTl.to(chars, {
             opacity: 1,
-            display: "inline-block",
-            stagger: 0.03,
-            duration: 0.12,
-            ease: "none"
+            stagger: 0.08, // Slower stagger within words
+            duration: 0.1,
+            force3D: true
           }, segmentStart);
         });
 
-        // 4. THE PAPER CURTAIN RISE
+        // 4. THE PAPER CURTAIN RISE - Fixed delay, independent of video progress
         mainTl.to(curtainRef.current, {
           y: "0%",
-          duration: 0.3,
-          ease: "power2.inOut"
-        }, 0.7);
+          duration: 0.6,
+          ease: "power2.inOut",
+          force3D: true
+        }, 2.5); // Slightly later rise
 
-        // 5. Final Reveal on top of the Curtain
+        // 5. Final Reveal
         mainTl.from(".hero-final-reveal", {
           opacity: 0,
-          y: 30,
-          duration: 0.2,
-          ease: "back.out(1.2)"
-        }, 0.88);
-
-      }, containerRef);
-
-      return () => ctx.revert();
+          y: 20,
+          duration: 0.5,
+          ease: "power2.out",
+          force3D: true
+        }, "<+=0.1"); // Trigger almost immediately after curtain starts rising
+      }, containerRef.current || undefined);
     };
 
     if (video.readyState >= 1) {
-      onMetadataLoaded();
+      initGSAP();
     } else {
-      video.addEventListener('loadedmetadata', onMetadataLoaded);
+      video.addEventListener('loadedmetadata', initGSAP);
     }
 
-    return () => video.removeEventListener('loadedmetadata', onMetadataLoaded);
+    return () => {
+      video.removeEventListener('loadedmetadata', initGSAP);
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (
     <div ref={containerRef} className="relative w-full overflow-hidden bg-black h-screen">
       
       {/* Background Cinematic Video Area */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <video
           ref={videoRef}
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-110"
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          style={{ willChange: "contents" }}
         >
           <source src="/watermarked_preview.mp4" type="video/mp4" />
         </video>
@@ -118,7 +115,10 @@ export function HeroV2() {
       <div 
         ref={curtainRef}
         className="absolute inset-0 bg-[#111827] z-[15] translate-y-[100%]"
-        style={{ boxShadow: "0 -20px 50px rgba(0,0,0,0.4)" }}
+        style={{ 
+          boxShadow: "0 -20px 50px rgba(0,0,0,0.4)",
+          willChange: "transform"
+        }}
       >
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
