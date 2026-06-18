@@ -24,6 +24,10 @@
             "dest": "frontend/static/$1"
         },
         {
+            "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|json))$",
+            "dest": "frontend/public/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "frontend/$1"
         }
