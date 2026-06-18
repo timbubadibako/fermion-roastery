@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    // Jika di Vercel (production), biarkan vercel.json yang mengatur routing-nya.
+    // Jika di lokal (development), belokkan ke localhost:3001.
+    if (process.env.NODE_ENV === 'production') {
+      return [];
+    }
+
     return [
       {
         source: '/api/:path*',

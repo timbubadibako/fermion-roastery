@@ -2,22 +2,30 @@
     "version": 2,
     "builds": [
         {
-            "src": "frontend/package.json",
-            "use": "@vercel/next"
-        },
-        {
             "src": "backend/index.js",
             "use": "@vercel/node"
-        }
-    ],
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/backend/index.js"
         },
         {
-            "source": "/(.*)",
-            "destination": "/frontend/$1"
+            "src": "frontend/package.json",
+            "use": "@vercel/next"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "backend/index.js"
+        },
+        {
+            "src": "/_next/(.*)",
+            "dest": "frontend/_next/$1"
+        },
+        {
+            "src": "/static/(.*)",
+            "dest": "frontend/static/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "frontend/$1"
         }
     ]
 }
