@@ -29,6 +29,12 @@ startMonthlyEvaluation();
 app.use(cors());
 app.use(express.json());
 
+// Simple logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
@@ -43,6 +49,16 @@ app.use('/api/shipping', shippingRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/b2b', b2bRoutes);
 app.use('/api/subscription', subscriptionRoutes);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(`${new Date().toISOString()} - ERROR:`, err.stack);
+  res.status(500).json({ 
+    message: "Internal Server Error", 
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
 // Base route for health check
 app.get('/', (req, res) => {
   res.json({ 

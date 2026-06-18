@@ -128,7 +128,7 @@ export const getProductById = async (req, res) => {
   }
 };
 
-export const createProduct = async (req, res) => {
+export const createProduct = async (req, res, next) => {
   const { 
     name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
     description, farm, image_url, fermentation, sweetness, acidity, body, 
@@ -165,13 +165,10 @@ export const createProduct = async (req, res) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("DEBUG: Supabase error:", error);
-      throw error;
-    }
+    if (error) throw error;
     res.status(201).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Failed to create product", error: error.message });
+    next(error);
   }
 };
 
