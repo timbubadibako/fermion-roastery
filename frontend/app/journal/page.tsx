@@ -28,21 +28,39 @@ export default function JournalPageV2() {
 
   useEffect(() => {
     if (!mounted) return;
-    let ctx = gsap.context(() => {
-      gsap.from(".journal-hero-text", { y: 60, opacity: 0, stagger: 0.1, duration: 1, ease: "power3.out" });
-      
-      const cards = gsap.utils.toArray<HTMLElement>('.article-scrap');
-      gsap.from(cards, {
-        y: 100,
-        rotation: (i) => i % 2 === 0 ? -3 : 3,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1.2,
-        ease: "back.out(1.2)",
-        scrollTrigger: { trigger: gridRef.current, start: "top 80%" }
+    
+    let ctx: gsap.Context;
+
+    const runAnimations = () => {
+      ctx = gsap.context(() => {
+        const heroText = gsap.utils.toArray(".journal-hero-text");
+        if (heroText.length > 0) {
+          gsap.from(heroText, { y: 60, opacity: 0, stagger: 0.1, duration: 1, ease: "power3.out" });
+        }
+        
+        if (gridRef.current) {
+          const cards = gsap.utils.toArray<HTMLElement>('.article-scrap', gridRef.current);
+          if (cards.length > 0) {
+            gsap.from(cards, {
+              y: 100,
+              rotation: (i) => i % 2 === 0 ? -3 : 3,
+              opacity: 0,
+              stagger: 0.2,
+              duration: 1.2,
+              ease: "back.out(1.2)",
+              scrollTrigger: { trigger: gridRef.current, start: "top 80%" }
+            });
+          }
+        }
+        ScrollTrigger.refresh();
       });
-    }, [heroRef, gridRef]);
-    return () => ctx.revert();
+    };
+
+    const timer = setTimeout(runAnimations, 50);
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
   }, [mounted]);
 
   if (!mounted) return null;
