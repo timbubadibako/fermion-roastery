@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
     }
 
     try {
-      const res = await fetch(`http://localhost:3001/api/auth/verify-admin?id=${profileId}`);
+      const res = await fetch(`${request.nextUrl.origin}/api/auth/verify-admin?id=${profileId}`);
       if (res.ok) {
         const data = await res.json();
 
