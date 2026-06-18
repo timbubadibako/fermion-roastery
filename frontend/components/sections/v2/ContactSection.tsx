@@ -21,6 +21,7 @@ export function ContactSection() {
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!sectionRef.current) return;
     let ctx = gsap.context(() => {
       gsap.from(textRef.current, {
         x: -50,
@@ -84,7 +85,7 @@ export function ContactSection() {
                 Direct Access
               </div>
               
-              <h2 className="text-7xl md:text-9xl font-cloude tracking-tighter text-black leading-[0.8] relative">
+              <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-black leading-[0.8] relative">
                 Get in<br />
                 <span className="font-display italic text-[#367F4D]">touch.</span>
               </h2>
