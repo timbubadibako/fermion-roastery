@@ -84,7 +84,7 @@ useEffect(() => {
           });
         }
       });
-    }, sectionRef.current);
+    }, sectionRef.current || undefined);
   };
 
   // Small delay to ensure DOM is ready
