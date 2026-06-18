@@ -292,6 +292,8 @@ export function SpotlightFAB() {
     setMounted(true);
   }, []);
 
+  console.log("SpotlightFAB Debug:", { mounted, isTourActive, isMobile, pathname });
+
   if (!mounted || isTourActive || isMobile) return null;
 
   // Show FAB on landing page and Our Coffee page
