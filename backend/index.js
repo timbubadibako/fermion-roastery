@@ -35,6 +35,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// FIX UNTUK VERCEL SERVERLESS: Mengembalikan awalan /api yang dipangkas Vercel
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && !req.url.startsWith('/api')) {
+    req.url = '/api' + req.url;
+  }
+  next();
+});
+
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
