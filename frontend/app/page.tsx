@@ -1,15 +1,18 @@
 "use client";
 
 import React from "react";
+import dynamic from "next/dynamic";
 import { HeroV2 } from "@/components/sections/v2/HeroV2";
 import { PartnerRibbonV2 } from "@/components/sections/v2/PartnerRibbonV2";
-import { SeriesV2 } from "@/components/sections/v2/SeriesV2";
-import { TheWayV2 } from "@/components/sections/v2/TheWayV2";
-import { NewReleasesV2 } from "@/components/sections/v2/RecordsAndShopV2";
-import { JournalSectionV2 } from "@/components/sections/v2/JournalSectionV2";
-import { FAQSection } from "@/components/sections/v2/FAQSection";
-import { ContactSection } from "@/components/sections/v2/ContactSection";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+
+// Dynamic imports for below-the-fold sections
+const SeriesV2 = dynamic(() => import("@/components/sections/v2/SeriesV2").then(mod => mod.SeriesV2), { ssr: false });
+const TheWayV2 = dynamic(() => import("@/components/sections/v2/TheWayV2").then(mod => mod.TheWayV2), { ssr: false });
+const NewReleasesV2 = dynamic(() => import("@/components/sections/v2/RecordsAndShopV2").then(mod => mod.NewReleasesV2), { ssr: false });
+const JournalSectionV2 = dynamic(() => import("@/components/sections/v2/JournalSectionV2").then(mod => mod.JournalSectionV2), { ssr: false });
+const FAQSection = dynamic(() => import("@/components/sections/v2/FAQSection").then(mod => mod.FAQSection), { ssr: false });
+const ContactSection = dynamic(() => import("@/components/sections/v2/ContactSection").then(mod => mod.ContactSection), { ssr: false });
+const FooterV2 = dynamic(() => import("@/components/sections/v2/FooterV2").then(mod => mod.FooterV2), { ssr: false });
 
 export default function LandingPageV2() {
   return (

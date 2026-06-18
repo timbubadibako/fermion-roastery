@@ -251,7 +251,7 @@ export default function CartPage() {
             <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="space-y-4 mb-12 text-left">
                 <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none uppercase">Daftar Produk<span className="text-[#367F4D]">.</span></h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Specimen selection for your next ritual</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Specimen selection for your next order</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">

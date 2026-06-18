@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { LoadingCover } from "@/components/loading-cover";
 import { ChatFloating } from "@/components/chat-floating";
 import { CartSync } from "@/components/cart-sync";
+import { SpotlightGuide, SpotlightFAB } from "@/components/ui/spotlight-guide";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
 import './globals.css';
@@ -67,7 +68,11 @@ export default function RootLayout({
           </div>
         </main>
 
-        {!hideMainLayout && <ChatFloating />}
+        {/* Temporarily hidden chat feature */}
+        {/* {!hideMainLayout && <ChatFloating />} */}
+        
+        {!hideMainLayout && <SpotlightGuide />}
+        {!hideMainLayout && <SpotlightFAB />}
 
         <Toaster position="bottom-right" expand={false} richColors />
         <Analytics />

@@ -5,6 +5,7 @@ import { siteContent } from "@/lib/content";
 import { Sticker } from "@/components/ui/sticker";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,8 +13,14 @@ gsap.registerPlugin(ScrollTrigger);
  * SECTION 7: ARTISAN FOOTER (Dark Scrapbook)
  */
 export function FooterV2() {
+  const isMobile = useIsMobile();
   const content = siteContent.footer;
   const footerRef = useRef<HTMLElement>(null);
+
+  // Smooth zigzag on mobile
+  const footerClip = isMobile
+    ? "polygon(0 1%, 100% 0%, 100% 100%, 0 100%)"
+    : "polygon(0 3%, 5% 0%, 15% 2%, 25% 0%, 35% 3%, 45% 0%, 55% 2%, 65% 0%, 75% 3%, 85% 0%, 95% 2%, 100% 0%, 100% 100%, 0 100%)";
   
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -38,7 +45,7 @@ export function FooterV2() {
       className="w-full bg-[#1A202C] text-[#E2DACB] pt-32 pb-16 px-6 font-sans relative z-60 -mt-20 overflow-hidden"
       style={{
         // Torn paper edge effect for the top border
-        clipPath: "polygon(0 3%, 5% 0%, 15% 2%, 25% 0%, 35% 3%, 45% 0%, 55% 2%, 65% 0%, 75% 3%, 85% 0%, 95% 2%, 100% 0%, 100% 100%, 0 100%)"
+        clipPath: footerClip
       }}
     >
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>

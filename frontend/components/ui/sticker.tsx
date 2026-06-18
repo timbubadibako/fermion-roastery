@@ -9,6 +9,7 @@ interface StickerProps {
   rotate?: number;
   color?: string;
   variant?: "dashed" | "solid";
+  flat?: boolean;
 }
 
 export function Sticker({ 
@@ -16,23 +17,26 @@ export function Sticker({
   className = "", 
   rotate = 0, 
   color = "white",
-  variant = "dashed" 
+  variant = "dashed",
+  flat = false
 }: StickerProps) {
   return (
     <motion.div
       whileHover={{ 
-        scale: 1.1, 
-        rotate: rotate > 0 ? rotate + 5 : rotate - 5,
-        y: -5
+        scale: 1.05, 
+        rotate: rotate > 0 ? rotate + 2 : rotate - 2,
+        y: flat ? 0 : -2
       }}
       initial={{ rotate }}
       className={`
-        absolute z-50 p-1.5 shadow-lg cursor-pointer
+        absolute z-50 p-1 shadow-lg cursor-pointer
         ${className}
       `}
       style={{ 
         backgroundColor: color,
-        boxShadow: "4px 4px 0px rgba(0,0,0,0.15)"
+        boxShadow: flat 
+          ? "2px 2px 5px rgba(0,0,0,0.05)" 
+          : "0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)"
       }}
     >
       <div className={`

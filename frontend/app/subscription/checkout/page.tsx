@@ -204,7 +204,7 @@ export default function SubscriptionCheckoutPage() {
           
           <div className="space-y-2">
             <h1 className="text-6xl md:text-6xl font-display italic tracking-tighter text-[#2A1619] leading-none uppercase font-bold">Info Pengiriman.</h1>
-            <p className="text-xs text-stone-500 font-black uppercase tracking-widest italic">Where should we dispatch your ritual?</p>
+            <p className="text-xs text-stone-500 font-black uppercase tracking-widest italic">Where should we deliver your order?</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">

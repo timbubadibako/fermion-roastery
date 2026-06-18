@@ -85,6 +85,24 @@
     @apply bg-background text-foreground;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+
+  /* Allow selection in inputs and textareas */
+  input, textarea {
+    user-select: text !important;
   }
   
   html::-webkit-scrollbar,

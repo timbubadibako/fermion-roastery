@@ -68,7 +68,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                     </div>
                     <div>
                         <h3 className="font-bold uppercase tracking-widest text-xs text-slate-900">Identitas Penerima</h3>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">Who is receiving this ritual?</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">Who is receiving this order?</p>
                     </div>
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

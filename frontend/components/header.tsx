@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -28,7 +28,7 @@ interface BrandConfig {
   subTagline: string;
 }
 
-export function Header() {
+function HeaderComponent() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
@@ -117,7 +117,8 @@ export function Header() {
 
     const handleScroll = () => {
       const offset = window.scrollY;
-      const threshold = pathname === "/" ? 4500 : 20;
+      const isMobileDevice = window.innerWidth < 768;
+      const threshold = (pathname === "/" && !isMobileDevice) ? 4500 : 20;
       setIsScrolled(offset > threshold);
     };
 
@@ -156,6 +157,9 @@ export function Header() {
     { label: "OUR STORY", href: "/our-story" },
   ];
 
+  // Logic for light/dark text contrast based on page and scroll position
+  const isDarkHero = pathname === "/" && !isScrolled;
+
   return (
     <>
       {/* Floating Announcement (Scrapbook Taped Note - Bottom Left) */}
@@ -187,6 +191,7 @@ export function Header() {
         {/* The Simplified Clean Navbar */}
         <motion.div
           initial={false}
+          style={{ willChange: "margin-top, width, background-color, backdrop-filter, border-radius, height" }}
           animate={{
             marginTop: isScrolled ? 16 : 0,
             width: isScrolled ? "94%" : "100%",
@@ -213,7 +218,7 @@ export function Header() {
                   alt={brand?.name || "Fermion Roastery"}
                   width={88}
                   height={35}
-                  className="object-contain"
+                  className={`object-contain transition-all duration-300 ${isDarkHero ? '' : ''}`}
                   priority
                 />
               </Link>
@@ -226,7 +231,7 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`group relative text-[10px] font-black tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? "text-stone-900" : "text-stone-400 hover:text-[#367F4D]"}`}
+                    className={`group relative text-[10px] font-black tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? "text-[#367F4D]" : (isDarkHero ? "text-stone-400" : "text-stone-500")} hover:text-[#367F4D]`}
                   >
                     {link.label}
                     <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-[#367F4D] transition-all duration-500 ${isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"}`} />
@@ -236,9 +241,9 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
-              <div className="relative">
+              <div className="relative hidden lg:block">
                 <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-white border border-black/5 rounded-full px-4 shadow-sm" : "w-9"}`}>
-                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="text-stone-900 hover:text-[#367F4D] transition-colors flex-shrink-0 focus:outline-none">
+                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${isDarkHero ? 'text-white' : 'text-stone-900'} hover:text-[#367F4D] transition-colors flex-shrink-0 focus:outline-none`}>
                     <Search size={18} strokeWidth={2.2} />
                   </button>
                   <input
@@ -350,22 +355,22 @@ export function Header() {
 
               <div className="flex items-center gap-4">
                 {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account" title="My Account" className="text-stone-900 hover:text-[#367F4D] transition-all flex items-center gap-2">
-                    <PackageSearch size={20} strokeWidth={2} />
+                  <Link href="/account" title="My Account" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
+                    <PackageSearch size={20} strokeWidth={1.7} />
                   </Link>
                 )}
                 {mounted && user?.role === 'B2B' && (
-                  <Link href="/b2b" title="Partner Hub" className="text-stone-900 hover:text-[#367F4D] transition-all flex items-center gap-2">
+                  <Link href="/b2b" title="Partner Hub" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
                     <LayoutGrid size={20} strokeWidth={2} />
                   </Link>
                 )}
                 {mounted && user?.role === 'ADMIN' && (
-                  <Link href="/admin" title="Admin Portal" className="text-stone-900 hover:text-[#367F4D] transition-all flex items-center gap-2">
+                  <Link href="/admin" title="Admin Portal" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
                     <LayoutDashboard size={20} strokeWidth={2} />
                   </Link>
                 )}
                 {mounted && !user && (
-                  <Link href="/auth" title="Login" className="text-stone-900 hover:text-[#367F4D] transition-all flex items-center gap-2">
+                  <Link href="/auth" title="Login" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
                     <User size={20} strokeWidth={2} />
                   </Link>
                 )}
@@ -376,11 +381,11 @@ export function Header() {
 
               {mounted && (
                 <div className="relative border-l border-black/10 pl-4 ml-1">
-                  <CartSheet />
+                  <CartSheet isScrolled={isScrolled} />
                 </div>
               )}
 
-              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden text-stone-900 ${isSearchOpen ? "hidden" : "block"}`}>
+              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden ${isScrolled ? 'text-stone-900' : 'text-stone-400'}`}>
                 {isMenuOpen ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
               </button>
             </div>
@@ -390,6 +395,56 @@ export function Header() {
         {isMenuOpen && (
           <div className="absolute top-24 left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-2xl border border-black/5 p-12 lg:hidden animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-3xl">
             <nav className="flex flex-col gap-8 text-center">
+              {/* Mobile Search Bar - Scrapbook Note Style */}
+              <div className="relative mb-8 scrapbook-note px-2">
+                <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/60 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
+                <div className="bg-[#FFFDF9] border border-black/10 rounded-sm px-5 py-4 flex items-center gap-3 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] rotate-[0.5deg]">
+                  <Search size={18} className="text-stone-500" />
+                  <input
+                    type="text"
+                    placeholder="Search Specimen..."
+                    className="bg-transparent border-none outline-none text-[12px] font-black uppercase tracking-widest w-full text-stone-900 placeholder:text-stone-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        router.push(`/our-coffee?search=${encodeURIComponent(searchQuery)}`);
+                        setIsMenuOpen(false);
+                      }
+                    }}
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery("")}>
+                      <X size={16} className="text-stone-400" />
+                    </button>
+                  )}
+                </div>
+                
+                {/* Quick Results for Mobile Search */}
+                {searchQuery.trim().length > 0 && filteredResults.length > 0 && (
+                  <div className="mt-4 space-y-2 text-left bg-white/50 p-2 rounded-lg border border-black/5 shadow-inner">
+                    {filteredResults.map((result) => (
+                      <Link
+                        key={result.id}
+                        href={`/our-coffee/${result.id}`}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center justify-between p-3 bg-white border border-black/5 rounded shadow-sm hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="text-[11px] font-black uppercase tracking-tight text-stone-900">{result.name}</span>
+                        <ArrowRight size={12} className="text-stone-400" />
+                      </Link>
+                    ))}
+                    <Link
+                      href={`/our-coffee?search=${encodeURIComponent(searchQuery)}`}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-center text-[10px] font-black text-[#367F4D] uppercase tracking-widest pt-2 hover:underline"
+                    >
+                      Examine All Results →
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               {displayLinks.map((link) => (
                 <Link key={link.label} href={link.href} className="text-sm font-black tracking-[0.4em] transition-colors uppercase italic text-stone-900" onClick={() => setIsMenuOpen(false)}>
                   {link.label}
@@ -419,3 +474,5 @@ export function Header() {
     </>
   );
 }
+
+export const Header = memo(HeaderComponent);

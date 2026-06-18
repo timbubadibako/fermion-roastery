@@ -73,7 +73,7 @@ export function JournalSectionV2() {
     <section 
       ref={sectionRef}
       // Light side of the zig-zag (Pale Beige / Old Paper)
-      className="py-40 relative z-30 -mt-20 overflow-hidden bg-[#F4F0E6]"
+      className="py-40 relative z-10 -mt-32 overflow-hidden bg-[#F4F0E6]"
     >
       {/* Paper Grain Overlay */}
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
@@ -83,10 +83,10 @@ export function JournalSectionV2() {
          Chronicle
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20 journal-header">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 my-20 journal-header">
           <div className="space-y-4 relative">
              <Sticker rotate={15} className="-top-12 -left-8 hidden md:block border border-black/10 shadow-sm" color="#8CADD8" variant="dashed">
                Read Me
@@ -98,7 +98,7 @@ export function JournalSectionV2() {
                   Roastery Journal
                 </span>
              </div>
-             <h2 className="text-7xl md:text-8xl font-cloude tracking-tighter text-slate-900 leading-[0.85] pt-4">
+             <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-[0.85] pt-4">
                 Stories from <br/>
                 <span className="font-display italic text-[#367F4D]">the Field.</span>
              </h2>

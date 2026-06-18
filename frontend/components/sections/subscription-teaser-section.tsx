@@ -38,7 +38,7 @@ export function SubscriptionTeaserSection() {
               </div>
 
               <p className="text-lg font-medium leading-relaxed text-muted-foreground">
-                Automate your morning ritual with our subscription service. Choose your frequency and let us curate the finest micro-batches for your home or office.
+                Automate your coffee supply with our subscription service. Choose your frequency and let us curate the finest micro-batches for your home or office.
               </p>
 
               <div className="space-y-3">

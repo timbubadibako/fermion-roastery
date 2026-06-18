@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Sticker } from "@/components/ui/sticker";
@@ -13,14 +13,35 @@ import { siteContent } from "@/lib/content";
  */
 export function SeriesV2() {
   const content = siteContent.series;
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150); // Delay before re-enabling hover
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
-    <section className="flex flex-col lg:flex-row min-h-[700px] relative group/section z-40 border-y border-black/5 overflow-hidden">
+    <section 
+      className={`flex flex-col lg:flex-row min-h-[700px] relative group/section z-40 border-y border-black/5 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
+    >
       
       {/* Espresso Panel */}
       <motion.div 
         whileHover={{ flex: 1.4 }}
-        className="flex-1 bg-[#1A1A1A] flex items-center justify-center p-20 relative overflow-hidden group transition-all duration-700 ease-out border-r border-black"
+        style={{ willChange: "flex, transform" }}
+        className="flex-1 bg-[#1A1A1A] flex items-center justify-center p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black"
       >
         {/* Subtle texture instead of placehold.co */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent z-0"></div>
@@ -47,7 +68,8 @@ export function SeriesV2() {
       {/* Filter Panel */}
       <motion.div 
         whileHover={{ flex: 1.4 }}
-        className="flex-1 bg-[#FDFBF7] flex items-center justify-center p-20 relative overflow-hidden group transition-all duration-700 ease-out"
+        style={{ willChange: "flex, transform" }}
+        className="flex-1 bg-[#FDFBF7] flex items-center justify-center p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out"
       >
         {/* Subtle texture instead of placehold.co */}
         <div className="absolute inset-0 bg-gradient-to-tl from-black/5 to-transparent z-0"></div>

@@ -73,7 +73,7 @@ export const siteContent = {
     productTitle: "Sumedang Anaerob",
     productPrice: "Rp 165k",
     productNotes: "🍓 Strawberry • Winey",
-    cta: "Add to Ritual"
+    cta: "Add to Cart"
   },
   
   footer: {

@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export function CartSheet() {
+export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
   const router = useRouter();
   const { items, isOpen, setIsOpen, updateQuantity, removeItem, toggleSelection, getTotal, ensureIds } = useCartStore();
   const { user } = useAuthStore();
@@ -46,7 +46,7 @@ export function CartSheet() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <button className="text-stone-900 hover:text-[#367F4D] transition-all duration-300 relative group z-[200]">
+        <button className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all duration-300 relative group z-[200]`}>
           <ShoppingCart size={18} strokeWidth={2.2} />
           {items.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
@@ -63,7 +63,7 @@ export function CartSheet() {
         <div className="absolute top-[-10px] left-[-10px] w-12 h-4 bg-white/60 border border-black/5 rotate-[-15deg] z-50 backdrop-blur-sm shadow-sm"></div>
 
         <SheetHeader className="p-8 border-b border-black/5">
-          <SheetTitle className="text-[10px] font-black tracking-[0.4em] uppercase text-stone-400 italic">Current Ritual</SheetTitle>
+          <SheetTitle className="text-[10px] font-black tracking-[0.4em] uppercase text-stone-400 italic">Current Selection</SheetTitle>
         </SheetHeader>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
