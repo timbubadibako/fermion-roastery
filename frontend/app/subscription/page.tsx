@@ -205,7 +205,6 @@ export default function SubscriptionPageV2() {
         style={{ clipPath: "polygon(0 3%, 10% 0%, 20% 3%, 30% 0%, 40% 3%, 50% 0%, 60% 3%, 70% 0%, 80% 3%, 90% 0%, 100% 3%, 100% 100%, 0 100%)" }}
       >
         <div className="max-w-7xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 min-h-[400px]">
-          {console.log("Rendering plans.map, length:", plans.length)}
           {plans.map((plan, i) => {
             // Robust lookup with fallback
             const visual = planVisuals[plan.name] || { 
