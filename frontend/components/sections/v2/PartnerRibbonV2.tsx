@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, memo } from "react";
 import { siteContent } from "@/lib/content";
-import { PartnerCard } from "./PartnerCard";
+import { PartnerCard, PartnerCardProps } from "./PartnerCard";
 
 /**
  * SECTION 2: PARTNER RIBBON
