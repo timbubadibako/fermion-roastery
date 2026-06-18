@@ -72,8 +72,16 @@ export function SpotlightGuide() {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isReady, setIsReady] = useState(false);
   const pathname = usePathname();
-
   const TOUR_STEPS = STEPS_CONFIG[pathname] || [];
+
+  console.log("SpotlightGuide Rendering Check:", {
+    isReady,
+    isTourActive,
+    isMobile,
+    pathname,
+    stepsLength: TOUR_STEPS.length,
+    TOUR_STEPS
+  });
 
   // Only run on client, and only on the landing page for the initial auto-trigger
   useEffect(() => {
