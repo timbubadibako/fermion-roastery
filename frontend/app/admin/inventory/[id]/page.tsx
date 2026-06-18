@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { 
   ArrowLeft, 
@@ -36,7 +36,9 @@ export default function ProductFormPage() {
   const isEdit = !!params.id;
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [journalPosts, setJournalPosts] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -55,9 +57,37 @@ export default function ProductFormPage() {
     acidity: 4.0,
     body: 4.0,
     stock_quantity: 0,
+    category: "filter",
+    sub_category: "specialty",
     is_active: true,
     linked_journal_id: ""
   });
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    const uploadData = new FormData();
+    uploadData.append("image", file);
+
+    setUploading(true);
+    try {
+      const res = await fetch("/api/products/upload", {
+        method: "POST",
+        body: uploadData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFormData({ ...formData, image_url: data.url });
+        toast.success("Gambar berhasil diunggah.");
+      } else {
+        toast.error("Gagal mengunggah gambar.");
+      }
+    } catch (err) {
+      toast.error("Kesalahan mengunggah gambar.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,6 +186,54 @@ export default function ProductFormPage() {
                 <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Slug URL</label>
                     <Input required value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} placeholder="e.g. sumedang-anaerob" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kategori Utama</label>
+                    <Select 
+                        value={formData.category} 
+                        onValueChange={(val) => {
+                          setFormData({
+                            ...formData, 
+                            category: val, 
+                            sub_category: val === "filter" ? "specialty" : "commercial"
+                          })
+                        }}
+                    >
+                        <SelectTrigger className="w-full h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus:ring-[#367F4D]">
+                            <SelectValue placeholder="Pilih Kategori" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
+                            <SelectItem value="filter" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Coffee</SelectItem>
+                            <SelectItem value="espresso" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Sub Kategori</label>
+                    <Select 
+                        value={formData.sub_category} 
+                        onValueChange={(val) => setFormData({...formData, sub_category: val})}
+                    >
+                        <SelectTrigger className="w-full h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus:ring-[#367F4D]">
+                            <SelectValue placeholder="Pilih Sub Kategori" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
+                            {formData.category === "filter" ? (
+                              <>
+                                <SelectItem value="specialty" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Specialty</SelectItem>
+                                <SelectItem value="exotic" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Exotic</SelectItem>
+                              </>
+                            ) : (
+                              <>
+                                <SelectItem value="commodity" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso Komoditi</SelectItem>
+                                <SelectItem value="commercial" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso Aja</SelectItem>
+                              </>
+                            )}
+                        </SelectContent>
+                    </Select>
                 </div>
               </div>
 
@@ -269,12 +347,30 @@ export default function ProductFormPage() {
            <div className="bg-white border border-black/5 rounded-sm p-10 space-y-8 shadow-sm text-left">
               <div className="space-y-4">
                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Media Produk (URL)</label>
-                 <div className="aspect-[4/5] bg-stone-50 rounded-sm border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative">
-                    {formData.image_url ? (
+                 <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-[4/5] bg-stone-50 rounded-sm border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative"
+                 >
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange} 
+                        accept="image/*" 
+                        className="hidden" 
+                    />
+                    {uploading ? (
+                      <div className="flex flex-col items-center gap-3">
+                         <Loader2 size={30} className="animate-spin text-[#367F4D]" />
+                         <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Uploading...</p>
+                      </div>
+                    ) : formData.image_url ? (
                       <>
                         <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
                         <button 
-                            onClick={() => setFormData({...formData, image_url: ""})}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFormData({...formData, image_url: ""});
+                            }}
                             className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-sm text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                             <X size={16} />

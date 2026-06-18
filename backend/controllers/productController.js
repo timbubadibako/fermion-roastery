@@ -132,7 +132,7 @@ export const createProduct = async (req, res) => {
   const { 
     name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
     description, farm, image_url, fermentation, sweetness, acidity, body, 
-    stock_quantity, linked_journal_id
+    stock_quantity, linked_journal_id, category, sub_category
   } = req.body;
   
   try {
@@ -141,7 +141,7 @@ export const createProduct = async (req, res) => {
       .insert([{
         name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
         description, farm, image_url, fermentation, sweetness, acidity, body, 
-        stock_quantity, linked_journal_id: linked_journal_id || null
+        stock_quantity, linked_journal_id: linked_journal_id || null, category, sub_category
       }])
       .select()
       .single();
@@ -161,7 +161,7 @@ export const updateProduct = async (req, res) => {
     'name', 'slug', 'notes', 'origin', 'process', 'altitude', 
     'price_retail', 'discount_percent', 'roast_profile', 'description', 
     'farm', 'image_url', 'fermentation', 'sweetness', 'acidity', 
-    'body', 'stock_quantity', 'is_active', 'linked_journal_id'
+    'body', 'stock_quantity', 'is_active', 'linked_journal_id', 'category', 'sub_category'
   ];
 
   const filteredFields = Object.keys(bodyFields)
@@ -202,5 +202,52 @@ export const deleteProduct = async (req, res) => {
     res.status(200).json({ message: "Product deleted", id });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete product", error: error.message });
+  }
+};
+
+export const uploadProductImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const file = req.file;
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+    const filePath = `products/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('images') // Assumes 'images' bucket exists
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true
+      });
+
+    if (error) {
+        // Fallback: If 'images' bucket doesn't exist, try 'products'
+        const { data: dataAlt, error: errorAlt } = await supabase.storage
+            .from('products')
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: true
+            });
+        
+        if (errorAlt) throw errorAlt;
+        
+        const { data: { publicUrl } } = supabase.storage
+            .from('products')
+            .getPublicUrl(filePath);
+            
+        return res.status(200).json({ url: publicUrl });
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('images')
+      .getPublicUrl(filePath);
+
+    res.status(200).json({ url: publicUrl });
+  } catch (error) {
+    console.error('Upload Error:', error);
+    res.status(500).json({ message: "Upload failed", error: error.message });
   }
 };

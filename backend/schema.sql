@@ -87,6 +87,8 @@ CREATE TABLE IF NOT EXISTS products (
     fermentation TEXT, -- Optional description
     
     stock_quantity INTEGER DEFAULT 0,
+    category TEXT DEFAULT 'filter', -- 'espresso', 'filter'
+    sub_category TEXT, -- 'specialty', 'exotic' (for filter), 'commodity', 'commercial' (for espresso)
     is_active BOOLEAN DEFAULT true,
     linked_journal_id UUID REFERENCES journal_posts(id) ON DELETE SET NULL,
     
