@@ -43,7 +43,6 @@ app.use('/api/shipping', shippingRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/b2b', b2bRoutes);
 app.use('/api/subscription', subscriptionRoutes);
-
 // Base route for health check
 app.get('/', (req, res) => {
   res.json({ 
@@ -53,4 +52,11 @@ app.get('/', (req, res) => {
   });
 });
 
-module.exports = app;
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
+});
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Fermion Business Engine running on port ${PORT}`);
+});
