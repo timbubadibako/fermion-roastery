@@ -181,3 +181,34 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+// --- Spotlight Store ---
+interface SpotlightStore {
+  hasSeenTour: boolean;
+  isTourActive: boolean;
+  currentStep: number;
+  setHasSeenTour: (seen: boolean) => void;
+  startTour: () => void;
+  endTour: () => void;
+  setStep: (step: number) => void;
+  nextStep: () => void;
+}
+
+export const useSpotlightStore = create<SpotlightStore>()(
+  persist(
+    (set, get) => ({
+      hasSeenTour: false,
+      isTourActive: false,
+      currentStep: 0,
+      setHasSeenTour: (seen) => set({ hasSeenTour: seen }),
+      startTour: () => set({ isTourActive: true, currentStep: 0 }),
+      endTour: () => set({ isTourActive: false, hasSeenTour: true }),
+      setStep: (step) => set({ currentStep: step }),
+      nextStep: () => set({ currentStep: get().currentStep + 1 }),
+    }),
+    {
+      name: 'fermion-spotlight-storage',
+      partialize: (state) => ({ hasSeenTour: state.hasSeenTour }),
+    }
+  )
+);
