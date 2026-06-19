@@ -146,8 +146,8 @@ export const createInvoice = async (req, res) => {
         quantity: item.quantity,
         price: item.price,
       })),
-      successRedirectUrl: 'www.fermionroastery.com/retail/success',
-      failureRedirectUrl: 'www.fermionroastery.com/retail/failure',
+      successRedirectUrl: 'https://fermionroastery.com/retail/success',
+      failureRedirectUrl: 'https://fermionroastery.com/retail/failure',
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
@@ -210,8 +210,8 @@ export const createSubscription = async (req, res) => {
       amount: amount,
       payerEmail: customerDetails?.email || 'subscriber@example.com',
       description: `Fermion Subscription: ${planName} (Auto-renews)`,
-      successRedirectUrl: 'www.fermionroastery.com/subscription/success',
-      failureRedirectUrl: 'www.fermionroastery.com/subscription/failure',
+      successRedirectUrl: 'https://fermionroastery.com/subscription/success',
+      failureRedirectUrl: 'https://fermionroastery.com/subscription/failure',
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
