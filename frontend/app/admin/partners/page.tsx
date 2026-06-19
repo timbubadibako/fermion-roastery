@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Users, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  FileText, 
-  ShieldAlert, 
+import {
+  Users,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  FileText,
+  ShieldAlert,
   Loader2,
   ExternalLink,
   MoreVertical,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,7 +24,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
-  DropdownMenuSubContent
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,8 +90,8 @@ export default function PartnerManagement() {
     }
   };
 
-  const filteredPartners = partners.filter(p => 
-    p.company_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredPartners = partners.filter(p =>
+    p.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -149,25 +150,25 @@ export default function PartnerManagement() {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/5 pb-10">
         <div className="space-y-3 text-left">
-          <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">Manajemen <br/> Kemitraan.</h1>
+          <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">Manajemen <br /> Kemitraan.</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Verifikasi kontrak dan kendali siklus bisnis B2B.</p>
         </div>
       </div>
 
       <div className="bg-white border border-black/5 rounded-sm overflow-hidden shadow-sm">
         <div className="p-8 border-b border-black/5 flex items-center justify-between bg-stone-50/50">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Database Mitra</h3>
-            <div className="flex gap-4">
-               <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
-                  <Input 
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="Cari Nama Cafe atau Email..." 
-                    className="pl-12 h-10 w-64 bg-white border-black/10 rounded-sm text-xs font-bold focus:ring-[#367F4D]" 
-                  />
-               </div>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Database Mitra</h3>
+          <div className="flex gap-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
+              <Input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Cari Nama Cafe atau Email..."
+                className="pl-12 h-10 w-64 bg-white border-black/10 rounded-sm text-xs font-bold focus:ring-[#367F4D]"
+              />
             </div>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -186,11 +187,11 @@ export default function PartnerManagement() {
                 <tr><td colSpan={5} className="p-24 text-center text-stone-300 font-bold uppercase tracking-widest text-xs italic">Belum ada catatan kemitraan terdeteksi.</td></tr>
               ) : (
                 filteredPartners.map((partner, i) => (
-                  <motion.tr 
+                  <motion.tr
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    key={partner.id} 
+                    key={partner.id}
                     className="hover:bg-stone-50/50 transition-colors group"
                   >
                     <td className="p-8">
@@ -201,8 +202,8 @@ export default function PartnerManagement() {
                     </td>
                     <td className="p-8">
                       <button className="flex items-center gap-2 text-slate-400 hover:text-[#367F4D] transition-colors group/link">
-                         <FileText size={16} />
-                         <span className="text-[10px] font-black uppercase tracking-widest border-b border-transparent group-hover/link:border-[#367F4D]">Perjanjian_B2B.pdf</span>
+                        <FileText size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-widest border-b border-transparent group-hover/link:border-[#367F4D]">Perjanjian_B2B.pdf</span>
                       </button>
                     </td>
                     <td className="p-8 font-mono font-bold text-xs text-slate-600">
@@ -212,7 +213,7 @@ export default function PartnerManagement() {
                       <div className="flex flex-col gap-2 items-start">
                         {getStatusBadge(partner.status)}
                         {partner.status === 'approved' && (
-                           <p className="text-[8px] font-black text-[#367F4D] uppercase tracking-[0.2em] ml-3 opacity-60">{partner.tier_name} Level</p>
+                          <p className="text-[8px] font-black text-[#367F4D] uppercase tracking-[0.2em] ml-3 opacity-60">{partner.tier_name} Level</p>
                         )}
                       </div>
                     </td>
@@ -223,42 +224,70 @@ export default function PartnerManagement() {
                             <MoreVertical size={18} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 rounded-sm border-black/5 shadow-2xl p-1 bg-white">
-                          <DropdownMenuItem 
-                            className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-[#367F4D] focus:bg-[#367F4D]/5 focus:text-[#367F4D] outline-none"
-                            onClick={() => window.open(`https://wa.me/${partner.customer_phone?.replace(/\D/g, '')}`, '_blank')}
+
+                        {/* Ganti bagian DropdownMenuContent lu dengan versi yang sudah di-refactor ini: */}
+                        <DropdownMenuContent align="end" className="w-56 rounded-sm border border-black/10 shadow-2xl p-1 bg-white">
+                          <DropdownMenuItem
+                            className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-[#367F4D] focus:bg-[#367F4D]/5 focus:text-[#367F4D] outline-none"
+                            onClick={() => {
+                              // Normalisasi otomatis nomor hp 08xxx -> 628xxx
+                              let phone = partner.customer_phone?.replace(/\D/g, '') || '';
+                              if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+                              window.open(`https://wa.me/${phone}`, '_blank');
+                            }}
                           >
                             Hubungi WhatsApp
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-black/5" />
-                          
+
+                          {/* Mengganti fokus ungu bawaan menjadi slate minimalis sesuai tema */}
                           <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-50 outline-none">
+                            <DropdownMenuSubTrigger className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-slate-900 focus:text-white data-[state=open]:bg-slate-900 data-[state=open]:text-white outline-none">
                               Ubah Level (Tier)
                             </DropdownMenuSubTrigger>
-                            <DropdownMenuSubContent className="rounded-sm border-black/5 shadow-xl p-1 bg-white">
-                              <DropdownMenuItem className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D]" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Bronze')}>Bronze</DropdownMenuItem>
-                              <DropdownMenuItem className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D]" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Silver')}>Silver</DropdownMenuItem>
-                              <DropdownMenuItem className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D]" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Gold')}>Gold</DropdownMenuItem>
-                            </DropdownMenuSubContent>
+
+                            {/* 🟢 WAJIB tambahkan DropdownMenuPortal di sini agar sub-menu bisa merembes keluar */}
+                            <DropdownMenuPortal>
+                              <DropdownMenuSubContent className="rounded-sm border border-black/10 shadow-xl p-1 bg-white min-w-[8rem] z-[60]">
+                                <DropdownMenuItem
+                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
+                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Bronze')}
+                                >
+                                  Bronze
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
+                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Silver')}
+                                >
+                                  Silver
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
+                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Gold')}
+                                >
+                                  Gold
+                                </DropdownMenuItem>
+                              </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
                           </DropdownMenuSub>
 
-                          <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-50 outline-none" onClick={() => handleUpdateStatus(partner.id, 'flagged')}>
+                          {/* Memperbaiki teks invisible dengan menambahkan focus:text-slate-950 */}
+                          <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-100 focus:text-slate-950 outline-none" onClick={() => handleUpdateStatus(partner.id, 'flagged')}>
                             Perlu Perhatian
                           </DropdownMenuItem>
 
                           {partner.status !== 'suspended' ? (
-                            <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-50 outline-none" onClick={() => handleUpdateStatus(partner.id, 'suspended')}>
+                            <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-100 focus:text-slate-950 outline-none" onClick={() => handleUpdateStatus(partner.id, 'suspended')}>
                               Tangguhkan Mitra
                             </DropdownMenuItem>
                           ) : (
-                            <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700 outline-none" onClick={() => handleUpdateStatus(partner.id, 'approved')}>
+                            <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700 outline-none" onClick={() => handleUpdateStatus(partner.id, 'approved')}>
                               Aktifkan Kembali
                             </DropdownMenuItem>
                           )}
 
                           <DropdownMenuSeparator className="bg-black/5" />
-                          <DropdownMenuItem className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-red-500 focus:bg-red-50 focus:text-red-600 outline-none" onClick={() => {
+                          <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 outline-none" onClick={() => {
                             setPartnerToReject(partner.id);
                             setIsRejectModalOpen(true);
                           }}>
@@ -275,7 +304,7 @@ export default function PartnerManagement() {
         </div>
       </div>
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         onConfirm={confirmReject}
