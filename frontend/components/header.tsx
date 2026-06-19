@@ -17,9 +17,11 @@ import { siteContent } from "@/lib/content";
 import { Sticker } from "./ui/sticker";
 import { toast } from "sonner";
 
-interface NavLink {
+// 🟢 Perbarui interface agar mendukung kustomisasi warna active per link
+interface CustomNavLink {
   label: string;
   href: string;
+  activeColor: string;
 }
 
 interface BrandConfig {
@@ -40,7 +42,6 @@ function HeaderComponent() {
   }, []);
 
   // --- States ---
-  const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [promotedProducts, setPromotedProducts] = useState<any[]>([]);
   const [filteredResults, setFilteredResults] = useState<any[]>([]);
@@ -53,16 +54,6 @@ function HeaderComponent() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-
-  // Content from Library
-  const announcementText = siteContent.announcement;
-
-  // --- Handlers ---
-  const handleLogout = () => {
-    logout();
-    window.location.href = "/auth";
-    setIsMenuOpen(false);
-  };
 
   const handleQuickAdd = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
@@ -110,16 +101,15 @@ function HeaderComponent() {
     }
   }, [searchQuery, allProducts]);
 
+  // 🟢 PERBAIKAN 1: HILANGKAN DELAY SCROLL DENGAN THRESHOLD YANG REALISTIS DAN SINKRON
   useEffect(() => {
-    setIsScrolled(false);
     setIsMenuOpen(false);
     setIsSearchOpen(false);
 
     const handleScroll = () => {
       const offset = window.scrollY;
-      const isMobileDevice = window.innerWidth < 768;
-      const threshold = (pathname === "/" && !isMobileDevice) ? 4500 : 20;
-      setIsScrolled(offset > threshold);
+      // Threshold diturunkan ke 20px biar pas di-scroll 1 jentikan jari, navbar langsung beradaptasi secara instan!
+      setIsScrolled(offset > 20);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") setIsSearchOpen(false); };
@@ -147,22 +137,30 @@ function HeaderComponent() {
     }
   }, [isSearchOpen]);
 
-  // V2 UI CONSTANTS: Smoother Pill Transition
-  const isB2B = mounted && user?.role === 'B2B';
-  const displayLinks = [
-    { label: "OUR COFFEE", href: "/our-coffee" },
-    ...(!isB2B ? [{ label: "WHOLESALE", href: "/wholesale" }] : []),
-    ...(!isB2B ? [{ label: "SUBSCRIPTION", href: "/subscription" }] : []),
-    { label: "JOURNAL", href: "/journal" },
-    { label: "OUR STORY", href: "/our-story" },
-  ];
-
   // Logic for light/dark text contrast based on page and scroll position
-  const isDarkHero = pathname === "/" && !isScrolled;
+  const isLandingPage = pathname === "/";
+  const isDarkHero = isLandingPage && !isScrolled;
+
+  // 🟢 PERBAIKAN 2: SINKRONISASI WARNA DINAMIS UTK ELEMEN NON-LINKS (Icon / Text / Search Icon)
+  // Menjaga agar tombol search dan icon teman-temannya sewarna dengan layout aslinya
+  const currentTextColor = isDarkHero ? "text-white/80 hover:text-white" : "text-stone-500 hover:text-stone-900";
+
+  // 🟢 REQUEST KEDUA: STRUKTUR DATA NAVLINKS DENGAN KUSTOMISASI WARNA ACTIVE MASING-MASING
+  const isB2B = mounted && user?.role === 'B2B';
+  const displayLinks: CustomNavLink[] = [
+    { label: "OUR COFFEE", href: "/our-coffee", activeColor: "text-[#e6b13f]" }, // Ijo lab khas lu
+    { label: "WHOLESALE", href: "/wholesale", activeColor: "text-stone-900" },   // Cokelat kopi wholesale
+    { label: "SUBSCRIPTION", href: "/subscription", activeColor: "text-[#772c13]" }, // Ijo terang sub
+    { label: "JOURNAL", href: "/journal", activeColor: "text-[#a152ec]" },
+    { label: "OUR STORY", href: "/our-story", activeColor: "text-[#1f70da]" },
+  ].filter(link => {
+    if (isB2B && (link.href === "/wholesale" || link.href === "/subscription")) return false;
+    return true;
+  });
 
   return (
     <>
-      {/* Floating Announcement (Scrapbook Taped Note - Bottom Left) */}
+      {/* Floating Announcement */}
       {mounted && (
         <div className="fixed bottom-0 left-0 z-[80] w-80 h-40 pointer-events-none overflow-hidden hidden lg:block">
           <motion.div
@@ -171,15 +169,11 @@ function HeaderComponent() {
             className="absolute bottom-4 left-[-48px] w-64 bg-[#FDFBF7] border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] py-4 pointer-events-auto flex flex-col items-center justify-center rotate-[15deg]"
             style={{ borderRadius: "2px 8px 3px 6px" }}
           >
-            {/* Masking Tape */}
             <div className="absolute top-[-12px] right-10 w-12 h-4 bg-white/40 border border-black/5 rotate-[20deg] backdrop-blur-sm shadow-sm"></div>
-            
             <div className="w-full py-1 flex flex-col items-center justify-center gap-1">
               <p className="text-[14px] font-cloude uppercase tracking-widest text-[#367F4D] leading-none">Free Shipping</p>
               <p className="text-[9px] font-display italic font-black text-stone-400 leading-none">Above Rp 500.000</p>
             </div>
-
-            {/* Squiggly line */}
             <svg className="w-16 opacity-10 mt-2" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
               <path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="2" strokeLinecap="round" />
             </svg>
@@ -188,14 +182,13 @@ function HeaderComponent() {
       )}
 
       <header className="fixed top-0 left-0 right-0 z-[100] pointer-events-none flex flex-col items-center">
-        {/* The Simplified Clean Navbar */}
         <motion.div
           initial={false}
           style={{ willChange: "margin-top, width, background-color, backdrop-filter, border-radius, height" }}
           animate={{
             marginTop: isScrolled ? 16 : 0,
             width: isScrolled ? "94%" : "100%",
-            backgroundColor: isScrolled ? "rgba(253, 251, 247, 0.9)" : "rgba(255, 255, 255, 0)",
+            backgroundColor: isScrolled ? "rgba(253, 251, 247, 0.95)" : "rgba(255, 255, 255, 0)",
             backdropFilter: isScrolled ? "blur(16px)" : "blur(0px)",
             borderColor: isScrolled ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0)",
             borderRadius: isScrolled ? "16px" : "0px",
@@ -213,12 +206,13 @@ function HeaderComponent() {
 
             <div className={`flex-shrink-0 transition-opacity duration-300 ${isSearchOpen ? "opacity-0 md:opacity-100" : "opacity-100"}`}>
               <Link href="/" className="block hover:opacity-70 transition-opacity duration-300">
+                {/* 🟢 FIXED: Filter invert agar logo menyesuaikan dengan kondisi background hero */}
                 <Image
                   src="/fermion-logo.png"
                   alt={brand?.name || "Fermion Roastery"}
                   width={88}
                   height={35}
-                  className={`object-contain transition-all duration-300 ${isDarkHero ? '' : ''}`}
+                  className={`object-contain transition-all duration-300 ${isDarkHero ? 'invert opacity-90' : ''}`}
                   priority
                 />
               </Link>
@@ -231,10 +225,19 @@ function HeaderComponent() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className={`group relative text-[10px] font-black tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? "text-[#367F4D]" : (isDarkHero ? "text-stone-400" : "text-stone-500")} hover:text-[#367F4D]`}
+                    className={`group relative text-[10px] font-black tracking-[0.2em] transition-all duration-300 uppercase ${isActive
+                      ? link.activeColor // Menggunakan warna active custom masing-masing
+                      : isDarkHero
+                        ? "text-white/60 hover:text-white" // 🟢 FIXED: Pas di-hover di latar gelap, teks berubah jadi putih terang, gak hitam meredup lagi
+                        : "text-stone-500 hover:text-stone-950"
+                      }`}
                   >
                     {link.label}
-                    <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-[#367F4D] transition-all duration-500 ${isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"}`} />
+                    {/* 🟢 FIXED UNDERLINE: Lepas kelas bg-[#367F4D] kaku, ganti jadi dinamis sesuai kondisi isDarkHero */}
+                    <span className={`absolute -bottom-1 left-0 h-[1.5px] transition-all duration-500 ${isActive
+                      ? `w-full opacity-100 ${isDarkHero ? 'bg-white' : 'bg-[#000000]'}`
+                      : `w-0 opacity-0 group-hover:w-full group-hover:opacity-60 ${isDarkHero ? 'bg-white' : 'bg-[#000000]'}`
+                      }`} />
                   </Link>
                 );
               })}
@@ -242,29 +245,31 @@ function HeaderComponent() {
 
             <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
               <div className="relative hidden lg:block">
-                <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-white border border-black/5 rounded-full px-4 shadow-sm" : "w-9"}`}>
-                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${isDarkHero ? 'text-white' : 'text-stone-900'} hover:text-[#367F4D] transition-colors flex-shrink-0 focus:outline-none`}>
-                    <Search size={18} strokeWidth={2.2} />
+                {/* 🟢 FIXED: Memperbaiki background wrapper search button agar sewarna teman-temannya */}
+                <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-[#FDFBF7] border border-black/5 rounded-full px-4 shadow-sm" : "w-9"}`}>
+                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none`}>
+                    <Search size={18} strokeWidth={2} />
                   </button>
                   <input
                     ref={searchInputRef}
                     type="text"
                     placeholder="Search archives..."
-                    className={`bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-2 placeholder:text-stone-300 text-stone-900 ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible width-0"}`}
+                    className="bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-2 placeholder:text-stone-300 text-stone-900"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ display: isSearchOpen ? 'block' : 'none' }}
                   />
                   {isSearchOpen && (
                     <button
                       onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
-                      className="text-stone-300 hover:text-stone-900 transition-colors ml-2"
+                      className="text-stone-400 hover:text-stone-900 transition-colors ml-2"
                     >
                       <X size={16} strokeWidth={2} />
                     </button>
                   )}
                 </div>
 
-                {/* Search Results Dropdown - Scrapbook Style */}
+                {/* Search Dropdown - Scrapbook Style */}
                 <AnimatePresence>
                   {isSearchOpen && (
                     <motion.div
@@ -273,7 +278,6 @@ function HeaderComponent() {
                       exit={{ opacity: 0, y: 15, rotate: -1 }}
                       className="absolute top-14 right-0 w-64 md:w-[360px] bg-[#FDFBF7] border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.05)] rounded-xl p-8 overflow-hidden z-[110]"
                     >
-                      {/* Decorative Tape */}
                       <div className="absolute top-[-5px] left-1/2 -translate-x-1/2 w-20 h-4 bg-white/40 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
 
                       {!searchQuery ? (
@@ -310,8 +314,8 @@ function HeaderComponent() {
                       ) : (
                         <div className="space-y-6">
                           <div className="flex items-center justify-between border-b border-black/5 pb-2">
-                             <h4 className="text-[10px] font-black tracking-[0.3em] text-stone-400 uppercase italic">Matches Found</h4>
-                             <p className="text-[9px] font-bold text-stone-300 tabular-nums">{filteredResults.length} Result(s)</p>
+                            <h4 className="text-[10px] font-black tracking-[0.3em] text-stone-400 uppercase italic">Matches Found</h4>
+                            <p className="text-[9px] font-bold text-stone-300 tabular-nums">{filteredResults.length} Result(s)</p>
                           </div>
                           <div className="space-y-2">
                             {filteredResults.length > 0 ? (
@@ -353,25 +357,26 @@ function HeaderComponent() {
                 </AnimatePresence>
               </div>
 
+              {/* 🟢 FIXED: Menerapkan currentTextColor dinamis ke semua icon pendukung agar sewarna */}
               <div className="flex items-center gap-4">
                 {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account" title="My Account" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
-                    <PackageSearch size={20} strokeWidth={1.7} />
+                  <Link href="/account" title="My Account" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+                    <PackageSearch size={20} strokeWidth={1.8} />
                   </Link>
                 )}
                 {mounted && user?.role === 'B2B' && (
-                  <Link href="/b2b" title="Partner Hub" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
-                    <LayoutGrid size={20} strokeWidth={2} />
+                  <Link href="/b2b" title="Partner Hub" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+                    <LayoutGrid size={20} strokeWidth={1.8} />
                   </Link>
                 )}
                 {mounted && user?.role === 'ADMIN' && (
-                  <Link href="/admin" title="Admin Portal" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
-                    <LayoutDashboard size={20} strokeWidth={2} />
+                  <Link href="/admin" title="Admin Portal" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+                    <LayoutDashboard size={20} strokeWidth={1.8} />
                   </Link>
                 )}
                 {mounted && !user && (
-                  <Link href="/auth" title="Login" className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all flex items-center gap-2`}>
-                    <User size={20} strokeWidth={2} />
+                  <Link href="/auth" title="Login" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+                    <User size={20} strokeWidth={1.8} />
                   </Link>
                 )}
                 {!mounted && (
@@ -385,17 +390,17 @@ function HeaderComponent() {
                 </div>
               )}
 
-              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden ${isScrolled ? 'text-stone-900' : 'text-stone-400'}`}>
+              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden ${currentTextColor}`}>
                 {isMenuOpen ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
               </button>
             </div>
           </div>
         </motion.div>
 
+        {/* Mobile Navigation Dropdown */}
         {isMenuOpen && (
           <div className="absolute top-24 left-4 right-4 bg-[#FDFBF7]/95 backdrop-blur-2xl border border-black/5 p-12 lg:hidden animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-auto shadow-2xl rounded-3xl">
             <nav className="flex flex-col gap-8 text-center">
-              {/* Mobile Search Bar - Scrapbook Note Style */}
               <div className="relative mb-8 scrapbook-note px-2">
                 <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/60 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
                 <div className="bg-[#FFFDF9] border border-black/10 rounded-sm px-5 py-4 flex items-center gap-3 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] rotate-[0.5deg]">
@@ -419,7 +424,7 @@ function HeaderComponent() {
                     </button>
                   )}
                 </div>
-                
+
                 {/* Quick Results for Mobile Search */}
                 {searchQuery.trim().length > 0 && filteredResults.length > 0 && (
                   <div className="mt-4 space-y-2 text-left bg-white/50 p-2 rounded-lg border border-black/5 shadow-inner">
