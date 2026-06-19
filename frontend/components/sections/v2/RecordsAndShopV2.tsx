@@ -20,12 +20,12 @@ export function NewReleasesV2() {
   const cardsRef = useRef<HTMLDivElement>(null);
 
   // Smooth/Remove zigzag on mobile
-  const sectionClip = isMobile 
-    ? "polygon(0 0, 100% 0, 100% 99%, 0 100%)" 
+  const sectionClip = isMobile
+    ? "polygon(0 0, 100% 0, 100% 99%, 0 100%)"
     : "polygon(0 0, 100% 0, 100% 98%, 90% 100%, 80% 98%, 70% 100%, 60% 98%, 50% 100%, 40% 98%, 30% 100%, 20% 98%, 10% 100%, 0 98%)";
 
   const cardClip = isMobile
-    ? "none" 
+    ? "none"
     : "polygon(0 -20%, 100% -20%, 100% 98%, 95% 100%, 90% 98%, 85% 100%, 80% 98%, 75% 100%, 70% 98%, 65% 100%, 60% 98%, 55% 100%, 50% 98%, 45% 100%, 40% 98%, 35% 100%, 30% 98%, 25% 100%, 20% 98%, 15% 100%, 10% 98%, 5% 100%, 0 98%)";
 
   useEffect(() => {
@@ -34,7 +34,18 @@ export function NewReleasesV2() {
         const res = await fetch("/api/products");
         if (res.ok) {
           const data = await res.json();
-          setProducts(data.slice(0, 3));
+
+          // 🟢 1. Filter produk yang emang dicentang is_new_release === true
+          let filtered = data.filter((p: any) => p.is_new_release === true);
+
+          // 🟢 2. FALLBACK: Kalau admin lupa nyentang, otomatis ambil 3 teratas biar etalase gak kosong
+          if (filtered.length === 0) {
+            filtered = data.slice(0, 3);
+          } else {
+            filtered = filtered.slice(0, 3);
+          }
+
+          setProducts(filtered);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -44,57 +55,58 @@ export function NewReleasesV2() {
     };
     fetchNewReleases();
   }, []);
-useEffect(() => {
-  if (!sectionRef.current || loading) return;
 
-  let ctx: gsap.Context;
+  useEffect(() => {
+    if (!sectionRef.current || loading) return;
 
-  const runAnimations = () => {
-    ctx = gsap.context(() => {
-      const title = gsap.utils.toArray(".release-title");
-      if (title.length > 0) {
-        gsap.from(title, {
-          y: 60,
-          opacity: 0,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 75%",
-          }
-        });
-      }
+    let ctx: gsap.Context;
 
-      const cards = gsap.utils.toArray<HTMLElement>('.product-card');
-
-      let mm = gsap.matchMedia();
-
-      mm.add("(min-width: 1024px)", () => {
-        if (cards.length > 0) {
-          gsap.from(cards, {
-            y: 100,
-            rotation: (i) => i % 2 === 0 ? -2 : 3,
-            stagger: 0.2,
-            duration: 1.2,
-            ease: "back.out(1.2)",
+    const runAnimations = () => {
+      ctx = gsap.context(() => {
+        const title = gsap.utils.toArray(".release-title");
+        if (title.length > 0) {
+          gsap.from(title, {
+            y: 60,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
             scrollTrigger: {
-              trigger: cardsRef.current,
-              start: "top 80%",
+              trigger: sectionRef.current,
+              start: "top 75%",
             }
           });
         }
-      });
-    }, sectionRef.current || undefined);
-  };
 
-  // Small delay to ensure DOM is ready
-  const timer = setTimeout(runAnimations, 100);
+        const cards = gsap.utils.toArray<HTMLElement>('.product-card');
 
-  return () => {
-    clearTimeout(timer);
-    if (ctx) ctx.revert();
-  };
-}, [loading]);
+        let mm = gsap.matchMedia();
+
+        mm.add("(min-width: 1024px)", () => {
+          if (cards.length > 0) {
+            gsap.from(cards, {
+              y: 100,
+              rotation: (i) => i % 2 === 0 ? -2 : 3,
+              stagger: 0.2,
+              duration: 1.2,
+              ease: "back.out(1.2)",
+              scrollTrigger: {
+                trigger: cardsRef.current,
+                start: "top 80%",
+              }
+            });
+          }
+        });
+      }, sectionRef.current || undefined);
+    };
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(runAnimations, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
+  }, [loading]);
 
   return (
     <section
@@ -169,7 +181,7 @@ useEffect(() => {
                 {/* Image Container */}
                 <div className="aspect-[4/3] bg-stone-200 relative overflow-hidden mb-0 border-b border-dashed border-black/10">
                   {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
+                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">Specimen</div>
                   )}
