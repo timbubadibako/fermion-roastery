@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// 🟢 Tambahkan properti pecahan opsional di interface agar TypeScript aman
 export interface AddressValue {
   address: string;
   city: string;
@@ -14,19 +15,31 @@ export interface AddressValue {
   province?: string;
   regency?: string;
   patokan?: string;
+  houseRtRw?: string;
+  street?: string;
+  village?: string;
 }
 
 export interface AddressInputProps {
   value: AddressValue;
   onChange: (value: AddressValue) => void;
-  label?: string;
+  label?: string; // Tetap dipertahankan untuk kompatibilitas prop
 }
 
-export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: AddressInputProps) {
+export function AddressInput({ value, onChange }: AddressInputProps) {
   const [areas, setAreas] = useState<any[]>([]);
   const [showAreas, setShowAreas] = useState(false);
   const [areaSearchLoading, setAreaSearchLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Local state for search
+  const [searchQuery, setSearchQuery] = useState(""); 
+
+  // 🟢 Sinkronisasi search query local ketika user memilih alamat tersimpan
+  useEffect(() => {
+    if (value.city) {
+      setSearchQuery(value.city);
+    } else {
+      setSearchQuery("");
+    }
+  }, [value.city]);
 
   const fetchAreas = async (input: string) => {
     setSearchQuery(input);
@@ -51,30 +64,8 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
 
   return (
     <div className="space-y-8">
-      {/* Detailed Address */}
-      <div className="space-y-3">
-         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">Alamat Lengkap</label>
-         <div className="relative group">
-            <textarea 
-               required
-               value={value.address}
-               onChange={(e) => onChange({ ...value, address: e.target.value })}
-               placeholder="Nama jalan, No Rumah, RT/RW, dsb..."
-               className="w-full h-28 bg-stone-50/50 border border-black/5 rounded-sm p-5 text-sm font-bold resize-none placeholder:text-stone-300 transition-all focus:bg-white focus:border-stone-200 focus:ring-0 shadow-inner"
-            />
-         </div>
-      </div>
-
-      {/* Patokan Field */}
-      <div className="space-y-3">
-         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">Patokan (Opsional)</label>
-         <Input 
-            value={value.patokan || ""}
-            onChange={(e) => onChange({ ...value, patokan: e.target.value })}
-            placeholder="Contoh: Depan Indomaret, Cat Rumah Warna Biru"
-            className="w-full h-14 bg-stone-50/50 border border-black/5 rounded-sm px-5 text-sm font-bold placeholder:text-stone-300 transition-all focus:bg-white focus:border-stone-200 focus:ring-0 shadow-inner"
-         />
-      </div>
+      {/* 🟢 SEKTOR CLEANUP: Textarea alamat lama & input patokan internal dicopot dari sini, 
+          karena penanganannya sudah naik tingkat ke form layout utama halaman masing-masing */}
 
       {/* City/Area Search */}
       <div className="relative">
@@ -83,7 +74,7 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
           <Input 
             placeholder="Ketik minimal 3 huruf..." 
             className="h-14 bg-white border border-black/10 font-bold rounded-sm pl-14 shadow-sm focus:border-stone-400 transition-all" 
-            value={searchQuery} // Use local state
+            value={searchQuery} 
             onChange={(e) => fetchAreas(e.target.value)}
           />
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-stone-400" size={20} />
@@ -98,7 +89,7 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
               exit={{ opacity: 0, y: -10 }}
               className="absolute z-[100] w-full mt-2 bg-white border border-black/10 rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden max-h-72 overflow-y-auto"
             >
-              {areas.map((area, idx) => (
+              {areas.map((area) => (
                 <button 
                   key={area.id}
                   type="button"
@@ -114,9 +105,9 @@ export function AddressInput({ value, onChange, label = "Alamat Pengiriman" }: A
                     });
                     setAreas([]);
                     setShowAreas(false);
-                    setSearchQuery(area.name); // Optionally update input with selected
+                    setSearchQuery(area.name); 
                   }}
-                  className="w-full p-5 text-left hover:bg-stone-50 border-b border-black/5 last:border-none transition-colors group"
+                  className="w-full p-5 text-left hover:bg-stone-50 border-b border-b-black/5 last:border-none transition-colors group"
                 >
                   <div className="flex justify-between items-center">
                     <div>

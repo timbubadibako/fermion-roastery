@@ -99,21 +99,35 @@ export default function CartPage() {
         } catch (e) { console.error("Failed to fetch addresses", e); }
       };
       fetchAddresses();
-      }
-      }, [user]);
+    }
+  }, [user]);
 
-      const selectAddress = (addr: any) => {
-        setActiveAddressId(addr.id || null);
-        setShippingData(prev => ({
-          ...prev,
-          name: addr.name || prev.name,
-          phone: addr.phone || prev.phone,
-          address: addr.address || "",
-          city: addr.city || "",
-          postal_code: addr.postalCode || addr.postal_code || "",
-          area_id: addr.area_id || addr.areaId || ""
-        }));
-      };
+  const selectAddress = (addr: any) => {
+    setActiveAddressId(addr.id); // Menandai kartu yang aktif
+
+    // Pastikan seluruh pecahan alamat ikut dioper ke state pengiriman checkout
+    setShippingData(prev => ({
+      ...prev,
+      // 🟢 SINKRONISASI: Menggunakan user?.full_name langsung agar tidak memicu error di image_56c88a.png
+      name: addr.name || user?.full_name || '',
+      phone: addr.phone || user?.phone || '',
+
+      // Kolom flat standar
+      address: addr.address || '',
+      city: addr.city || '',
+      postal_code: addr.postalCode || addr.postal_code || '',
+      area_id: addr.area_id || '',
+      district: addr.district || '',
+      regency: addr.regency || '',
+      province: addr.province || '',
+      patokan: addr.patokan || '',
+
+      // Angkut pecahan agar form input di AddressSelection bisa membaca nilainya
+      houseRtRw: addr.houseRtRw || '',
+      street: addr.street || '',
+      village: addr.village || ''
+    }));
+  };
 
   // Fetch rates when area_id changes
   useEffect(() => {
@@ -194,11 +208,11 @@ export default function CartPage() {
       if (res.ok) {
         const data = await res.json();
         toast.success("Pesanan dibuat! Mengalihkan ke pembayaran...");
-        
+
         // Save only the lineItemIds of selected items to localStorage
         const lineItemIdsToRemove = items.map(item => item.lineItemId);
         localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
-        
+
         window.location.href = data.invoiceUrl;
       } else {
         const errorRes = await res.json();
@@ -357,97 +371,115 @@ export default function CartPage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
                 <div className="lg:col-span-8 space-y-12">
-                  <AddressSelection 
-                      address={{
-                          address: shippingData.address,
-                          city: shippingData.city,
-                          postalCode: shippingData.postal_code,
-                          area_id: shippingData.area_id
-                      }}
-                      setAddress={(v) => setShippingData(prev => ({
-                          ...prev,
-                          address: v.address,
-                          city: v.city,
-                          postal_code: v.postalCode,
-                          area_id: v.area_id
-                      }))}
-                      shippingData={{
-                          name: shippingData.name,
-                          phone: shippingData.phone
-                      }}
-                      setShippingData={(data) => setShippingData(prev => ({
-                          ...prev,
-                          name: data.name,
-                          phone: data.phone
-                      }))}
-                      savedAddresses={addresses}
-                      onSelectSaved={selectAddress}
-                      activeAddressId={activeAddressId || undefined}
-                      contextType='retail'
+                  <AddressSelection
+                    address={{
+                      address: shippingData.address || '',
+                      city: shippingData.city || '',
+                      postalCode: shippingData.postal_code || '',
+                      area_id: shippingData.area_id || '',
+                      district: (shippingData as any).district || '',
+                      regency: (shippingData as any).regency || '',
+                      province: (shippingData as any).province || '',
+                      patokan: (shippingData as any).patokan || '',
+
+                      // 🟢 EKSTRAK SEARA OTOMATIS: Ambil pecahan langsung dari item aktif di list addresses_json
+                      houseRtRw: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.houseRtRw || '',
+                      street: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.street || '',
+                      village: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.village || ''
+                    }}
+                    setAddress={(v) => setShippingData(prev => ({
+                      ...prev,
+                      address: v.address,
+                      city: v.city,
+                      postal_code: v.postalCode,
+                      area_id: v.area_id,
+                      district: v.district || '',
+                      regency: v.regency || '',
+                      province: v.province || '',
+                      patokan: v.patokan || '',
+
+                      // 🟢 Ikut sinkronisasikan ketikan live pecahan ke dalam objek shippingData jika user mengedit di checkout
+                      houseRtRw: (v as any).houseRtRw || '',
+                      street: (v as any).street || '',
+                      village: (v as any).village || ''
+                    }))}
+                    shippingData={{
+                      name: shippingData.name,
+                      phone: shippingData.phone
+                    }}
+                    setShippingData={(data) => setShippingData(prev => ({
+                      ...prev,
+                      name: data.name,
+                      phone: data.phone
+                    }))}
+                    savedAddresses={addresses}
+                    onSelectSaved={selectAddress}
+                    activeAddressId={activeAddressId || undefined}
+                    contextType='retail'
                   />
 
                   {/* Courier Section (Kept from CartPage logic) */}
                   <div className="space-y-10 pt-6 border-t border-dashed border-black/10 bg-white p-10 border border-black/10 rounded-sm">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center shadow-inner border border-black/5">
-                            <Truck size={18} />
-                          </div>
-                          <div>
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Metode Pengiriman</h3>
-                            <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">Select your logistics partner</p>
-                          </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center shadow-inner border border-black/5">
+                          <Truck size={18} />
                         </div>
-                        {ratesLoading && <Loader2 className="animate-spin text-[#367F4D]" size={16} />}
+                        <div>
+                          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Metode Pengiriman</h3>
+                          <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">Select your logistics partner</p>
+                        </div>
                       </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {couriers.length === 0 && !ratesLoading ? (
-                          <div className="col-span-full py-12 px-6 bg-stone-50/50 border border-dashed border-black/10 rounded-sm text-center">
-                            <Truck size={32} className="mx-auto text-stone-200 mb-4" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 italic">
-                              {shippingData.area_id ? "Mencari kurir terbaik..." : "Tentukan alamat untuk menghitung ongkos kirim"}
-                            </p>
-                          </div>
-                        ) : (
-                          couriers.map((courier, idx) => {
-                            const isSelected = selectedCourier?.courier_code === courier.courier_code &&
-                              selectedCourier?.courier_service_code === courier.courier_service_code;
-                            return (
-                              <button
-                                key={`${courier.courier_code}-${courier.courier_service_code}`}
-                                type="button"
-                                onClick={() => setSelectedCourier(courier)}
-                                className={`p-6 rounded-sm border transition-all text-left relative group overflow-hidden ${isSelected ? 'border-[#367F4D] bg-[#367F4D]/[0.02] shadow-md -translate-y-1' : 'border-black/5 hover:border-stone-200 bg-white shadow-sm'}`}
-                              >
-                                {/* Selection Indicator */}
-                                <div className={`absolute top-0 right-0 w-12 h-12 transition-transform duration-300 ${isSelected ? 'translate-x-0 translate-y-0' : 'translate-x-full -translate-y-full'}`}>
-                                  <div className="absolute top-0 right-0 w-full h-full bg-[#367F4D] rotate-45 translate-x-1/2 -translate-y-1/2" />
-                                  <CheckCircle2 size={12} className="absolute top-2 right-2 text-white z-10" />
-                                </div>
-
-                                <div className="space-y-4">
-                                  <div>
-                                    <h4 className="font-black uppercase italic text-xs text-slate-900 group-hover:text-[#367F4D] transition-colors">{courier.courier_name}</h4>
-                                    <p className="text-[8px] font-black text-[#367F4D] uppercase tracking-widest mt-0.5">{courier.courier_service_name}</p>
-                                  </div>
-
-                                  <div className="flex justify-between items-end">
-                                    <div>
-                                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest italic">{courier.duration}</p>
-                                      <p className="text-lg font-bold text-slate-900 mt-1 font-sans">Rp {courier.price.toLocaleString('id-ID')}</p>
-                                    </div>
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <ArrowRight size={14} className="text-[#367F4D]" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })
-                        )}
-                      </div>
+                      {ratesLoading && <Loader2 className="animate-spin text-[#367F4D]" size={16} />}
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {couriers.length === 0 && !ratesLoading ? (
+                        <div className="col-span-full py-12 px-6 bg-stone-50/50 border border-dashed border-black/10 rounded-sm text-center">
+                          <Truck size={32} className="mx-auto text-stone-200 mb-4" />
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 italic">
+                            {shippingData.area_id ? "Mencari kurir terbaik..." : "Tentukan alamat untuk menghitung ongkos kirim"}
+                          </p>
+                        </div>
+                      ) : (
+                        couriers.map((courier, idx) => {
+                          const isSelected = selectedCourier?.courier_code === courier.courier_code &&
+                            selectedCourier?.courier_service_code === courier.courier_service_code;
+                          return (
+                            <button
+                              key={`${courier.courier_code}-${courier.courier_service_code}`}
+                              type="button"
+                              onClick={() => setSelectedCourier(courier)}
+                              className={`p-6 rounded-sm border transition-all text-left relative group overflow-hidden ${isSelected ? 'border-[#367F4D] bg-[#367F4D]/[0.02] shadow-md -translate-y-1' : 'border-black/5 hover:border-stone-200 bg-white shadow-sm'}`}
+                            >
+                              {/* Selection Indicator */}
+                              <div className={`absolute top-0 right-0 w-12 h-12 transition-transform duration-300 ${isSelected ? 'translate-x-0 translate-y-0' : 'translate-x-full -translate-y-full'}`}>
+                                <div className="absolute top-0 right-0 w-full h-full bg-[#367F4D] rotate-45 translate-x-1/2 -translate-y-1/2" />
+                                <CheckCircle2 size={12} className="absolute top-2 right-2 text-white z-10" />
+                              </div>
+
+                              <div className="space-y-4">
+                                <div>
+                                  <h4 className="font-black uppercase italic text-xs text-slate-900 group-hover:text-[#367F4D] transition-colors">{courier.courier_name}</h4>
+                                  <p className="text-[8px] font-black text-[#367F4D] uppercase tracking-widest mt-0.5">{courier.courier_service_name}</p>
+                                </div>
+
+                                <div className="flex justify-between items-end">
+                                  <div>
+                                    <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest italic">{courier.duration}</p>
+                                    <p className="text-lg font-bold text-slate-900 mt-1 font-sans">Rp {courier.price.toLocaleString('id-ID')}</p>
+                                  </div>
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <ArrowRight size={14} className="text-[#367F4D]" />
+                                  </div>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
 
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-dashed border-black/10">
                     <button onClick={() => setStep(1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 hover:text-slate-900 flex items-center gap-3 transition-colors group">
@@ -483,10 +515,10 @@ export default function CartPage() {
                           <span className="text-sm font-black uppercase tracking-[0.3em] text-slate-900 italic">Total</span>
                           <span className="font-bold italic text-slate-900 tracking-tighter font-sans text-3xl">Rp {total.toLocaleString('id-ID')}</span>
                         </div>
-                        
-                        <Button 
-                          onClick={handleCheckout} 
-                          disabled={loading || !selectedCourier} 
+
+                        <Button
+                          onClick={handleCheckout}
+                          disabled={loading || !selectedCourier}
                           className="w-full h-16 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0"
                         >
                           {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Bayar Sekarang <ArrowRight size={20} /></span>}

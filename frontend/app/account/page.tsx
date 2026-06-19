@@ -126,13 +126,13 @@ function AccountContent() {
   const cancelSubscription = async () => {
     if (!subscription) return;
     try {
-        const res = await fetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
-        if (res.ok) {
-            toast.success("Langganan berhasil dihentikan.");
-            fetchSubscription();
-        } else {
-            toast.error("Gagal menghentikan langganan.");
-        }
+      const res = await fetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
+      if (res.ok) {
+        toast.success("Langganan berhasil dihentikan.");
+        fetchSubscription();
+      } else {
+        toast.error("Gagal menghentikan langganan.");
+      }
     } catch (e) { toast.error("Terjadi kesalahan jaringan."); }
   };
 
@@ -151,9 +151,9 @@ function AccountContent() {
       setActiveTrackingId(null);
       return;
     }
-    
+
     setActiveTrackingId(order.id);
-    
+
     if (order.shipping_awb) {
       setIsTrackingLoading(true);
       setTimeout(() => setIsTrackingLoading(false), 800);
@@ -163,23 +163,80 @@ function AccountContent() {
   const handleLogout = () => { logout(); window.location.href = "/auth"; };
 
   const saveAllSettings = async () => {
+    // 1. Ambil data alamat utama dari state ketikan user
+    const primaryAddress = addresses.find(a => a.isPrimary) || addresses[0];
+
+    // 2. 🟢 GABUNGKAN PECAHAN MENJADI SATU STRING UTUH UNTUK BITESHIP & KOLOM FLAT
+    // Ambil data pecahan dengan safe-casting
+    const houseRtRw = (primaryAddress as any)?.houseRtRw || '';
+    const street = (primaryAddress as any)?.street || '';
+    const village = (primaryAddress as any)?.village || '';
+
+    // Gabungkan komponen alamat yang ada menggunakan koma. Jika kosong, fallback ke string address bawaan
+    const combinedAddress = [houseRtRw, street, village]
+      .map(str => str.trim())
+      .filter(Boolean)
+      .join(', ') || primaryAddress?.address || '';
+
+    // 3. Amankan string patokan (maksimal 100 karakter)
+    const safePatokan = (primaryAddress as any)?.patokan?.substring(0, 100) || '';
+
+    // 4. Bersihkan seluruh list alamat di dalam array JSON book agar sinkron
+    const sanitizedAddresses = addresses.map(addr => {
+      const addrHouse = (addr as any)?.houseRtRw || '';
+      const addrStreet = (addr as any)?.street || '';
+      const addrVillage = (addr as any)?.village || '';
+
+      return {
+        ...addr,
+        // Pastikan di dalam JSON Book, properti 'address' juga ikut ter-update hasil gabungannya
+        address: [addrHouse, addrStreet, addrVillage].map(str => str.trim()).filter(Boolean).join(', ') || addr.address || '',
+        patokan: (addr as any)?.patokan?.substring(0, 100) || ''
+      };
+    });
+
+    // 5. Susun payload untuk dialirkan ke backend
+    const updatedPayload = {
+      ...profileData,
+      fullName: profileData.fullName,
+      phone: profileData.phone,
+
+      // 🟢 Kolom flat address sekarang berisi alamat lengkap pecahan, bukan lagi string "Jalan raya"
+      address: combinedAddress,
+      city: primaryAddress?.city || '',
+      postalCode: primaryAddress?.postalCode || '',
+      areaId: primaryAddress?.area_id || '',
+      district: primaryAddress?.district || '',
+      regency: primaryAddress?.regency || '',
+      province: primaryAddress?.province || '',
+      patokan: safePatokan,
+
+      // Kirim state JSON book yang sudah rapi
+      addresses: sanitizedAddresses
+    };
+
     try {
       const res = await fetch(`/api/auth/profile/${user?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...profileData,
-          addresses: addresses
-        })
+        body: JSON.stringify(updatedPayload)
       });
+
       const data = await res.json();
       if (res.ok) {
         toast.success("Pengaturan profil dan alamat tersimpan.");
         setUser(data.profile);
+
+        // Opsional: Refresh profile data local state agar sinkron pasca-save
+        if (data.profile?.addresses_json) {
+          setAddresses(data.profile.addresses_json);
+        }
       } else {
         toast.error("Gagal menyimpan perubahan.");
       }
-    } catch (e) { toast.error("Gagal terhubung ke server."); }
+    } catch (e) {
+      toast.error("Gagal terhubung ke server.");
+    }
   };
 
   const useCurrentLocation = () => {
@@ -187,23 +244,56 @@ function AccountContent() {
       toast.error("Geolocation tidak didukung browser.");
       return;
     }
-    toast.loading("Mendeteksi lokasi...");
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setTimeout(() => {
+
+    toast.loading("Mendeteksi lokasi asli anda...");
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        const { latitude, longitude } = pos.coords;
+
+        // 1. Tembak API OpenStreetMap gratis buat nerjemahin koordinat GPS ke Alamat Manusiawi
+        const resGeo = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+          { headers: { "User-Agent": "FermionRoasteryApp" } } // Syarat wajib OSM
+        );
+        const geoData = await resGeo.json();
+
         toast.dismiss();
-        setProfileData(prev => ({
-          ...prev,
-          address: `Sekitar Lat: ${pos.coords.latitude.toFixed(4)}, Lng: ${pos.coords.longitude.toFixed(4)}`,
-          city: "Cirebon",
-          district: "Kesambi",
-          province: "Jawa Barat",
-          postalCode: "45131"
-        }));
-        toast.success("Lokasi terdeteksi! Silakan lengkapi detailnya.");
-      }, 1000);
+
+        // Susun alamat lengkap dari data jalan, RT/RW, desa/kelurahan yang didapat
+        const details = geoData.address;
+        const alamatManusiawi = [
+          details.road || details.suburb || '',                      // Nama Jalan / Gang
+          details.neighbourhood ? `RT/RW: ${details.neighbourhood}` : '', // RT/RW jika ada
+          details.village || details.city_district || '',            // Desa / Kelurahan
+        ].filter(Boolean).join(", ");
+
+        const activeId = editingAddressId || addresses.find(a => a.isPrimary)?.id || addresses[0]?.id;
+
+        if (activeId) {
+          setAddresses(prev => prev.map(addr => addr.id === activeId ? {
+            ...addr,
+            // 🟢 Sekarang isinya nama jalan, desa, dll, plus koordinat di ujungnya buat akurasi kurir
+            address: `${alamatManusiawi} [GPS: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}]`,
+
+            // Kolom flat lainnya biarkan kosong/lama agar user tetep milih di search selector demi area_id Biteship
+            city: addr.city || '',
+            district: addr.district || '',
+            province: addr.province || '',
+            regency: addr.regency || '',
+            postalCode: details.postcode || addr.postalCode || '',
+            area_id: addr.area_id || ''
+          } : addr));
+
+          toast.success("Alamat terdeteksi otomatis! Silakan lengkapi detail nomor rumah dan cari kota/kecamatan.");
+        }
+      } catch (err) {
+        toast.dismiss();
+        toast.error("Gagal menerjemahkan lokasi. Silakan isi manual.");
+      }
     }, () => {
       toast.dismiss();
-      toast.error("Akses lokasi ditolak.");
+      toast.error("Akses lokasi ditolak browser.");
     });
   };
 
@@ -311,23 +401,23 @@ function AccountContent() {
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
                     <h3 className="text-3xl font-cloude italic tracking-tighter text-slate-900">Lab Subscription<span className="text-[#367F4D]">.</span></h3>
                     {subscription ? (
-                        <div className="p-8 bg-stone-50 border border-black/5 rounded-sm space-y-6">
-                            <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 italic">Paket Aktif</span>
-                                <span className="px-3 py-1 bg-[#367F4D] text-white text-[9px] font-black uppercase rounded-full">Aktif</span>
-                            </div>
-                            <div className="text-4xl font-display font-black italic text-slate-900">{subscription.plan_name}</div>
-                            <Button onClick={cancelSubscription} variant="destructive" className="bg-red-900 text-white font-black uppercase tracking-widest text-[9px] rounded-sm h-12 px-8">
-                                <Ban size={14} className="mr-2" /> Hentikan Langganan
-                            </Button>
+                      <div className="p-8 bg-stone-50 border border-black/5 rounded-sm space-y-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 italic">Paket Aktif</span>
+                          <span className="px-3 py-1 bg-[#367F4D] text-white text-[9px] font-black uppercase rounded-full">Aktif</span>
                         </div>
+                        <div className="text-4xl font-display font-black italic text-slate-900">{subscription.plan_name}</div>
+                        <Button onClick={cancelSubscription} variant="destructive" className="bg-red-900 text-white font-black uppercase tracking-widest text-[9px] rounded-sm h-12 px-8">
+                          <Ban size={14} className="mr-2" /> Hentikan Langganan
+                        </Button>
+                      </div>
                     ) : (
-                        <div className="py-20 text-center bg-stone-50 border border-dashed border-black/10 rounded-sm">
-                            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest italic mb-6">Belum ada paket langganan aktif.</p>
-                            <Link href="/subscription">
-                                <Button className="bg-slate-900 text-white font-black uppercase tracking-widest italic rounded-sm h-12 px-8">Mulai Langganan</Button>
-                            </Link>
-                        </div>
+                      <div className="py-20 text-center bg-stone-50 border border-dashed border-black/10 rounded-sm">
+                        <p className="text-xs font-bold text-stone-400 uppercase tracking-widest italic mb-6">Belum ada paket langganan aktif.</p>
+                        <Link href="/subscription">
+                          <Button className="bg-slate-900 text-white font-black uppercase tracking-widest italic rounded-sm h-12 px-8">Mulai Langganan</Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -436,7 +526,7 @@ function AccountContent() {
               )}
 
               {activeTab === "settings" && (
-                 <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-12">
                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
                       <h3 className="text-3xl font-bold tracking-tight text-slate-900">Lab Settings</h3>
@@ -475,9 +565,9 @@ function AccountContent() {
                           </div>
                           <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Buku Alamat Pengiriman</h4>
                         </div>
-                        <Button onClick={useCurrentLocation} variant="outline" className="h-10 text-[9px] font-black uppercase tracking-widest border-black/10 hover:bg-stone-50 gap-2 shadow-sm rounded-sm">
+                        {/* <Button onClick={useCurrentLocation} variant="outline" className="h-10 text-[9px] font-black uppercase tracking-widest border-black/10 hover:bg-stone-50 gap-2 shadow-sm rounded-sm">
                           <Crosshair size={12} /> Gunakan Lokasi Saat Ini
-                        </Button>
+                        </Button> */}
                       </div>
 
                       <div className="flex gap-2 p-1 bg-stone-50 rounded-sm border border-black/5">
@@ -497,18 +587,93 @@ function AccountContent() {
 
                       {addresses.filter(a => editingAddressId ? a.id === editingAddressId : a.isPrimary).map(addr => (
                         <motion.div key={addr.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-8 border border-dashed border-black/10 rounded-sm">
+
+                          {/* 1. GRID IDENTITAS PENERIMA */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* INPUT NAMA PENERIMA */}
                             <div className="space-y-2">
                               <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Nama Penerima</label>
-                              <Input value={addr.name || profileData.fullName} onChange={e => updateAddressField(addr.id, 'name', e.target.value)} className="h-12 bg-white border border-black/10 font-bold rounded-sm" />
+                              <Input
+                                value={addr.name ?? ""}
+                                placeholder={profileData.fullName}
+                                onChange={e => updateAddressField(addr.id, 'name', e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
                             </div>
+
+                            {/* INPUT NOMOR TELPON PENERIMA */}
                             <div className="space-y-2">
                               <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Nomor Telpon Penerima</label>
-                              <Input value={addr.phone || profileData.phone} onChange={e => updateAddressField(addr.id, 'phone', e.target.value)} className="h-12 bg-white border border-black/10 font-bold rounded-sm" />
+                              <Input
+                                value={addr.phone ?? ""}
+                                placeholder={profileData.phone}
+                                onChange={e => updateAddressField(addr.id, 'phone', e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
                             </div>
                           </div>
 
-                          <div className="pt-4">
+                          {/* 🟢 2. SEKTOR BARU: GRID INPUT PECAHAN ALAMAT LENGKAP */}
+                          {/* 🟢 SEKTOR PECAHAN ALAMAT YANG SUDAH DISESUAIKAN LOKAL */}
+                          <div className="space-y-6 pt-6 border-t border-dashed border-black/5">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                              {/* Input 1: RT / RW */}
+                              <div className="space-y-2">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">RT / RW</label>
+                                <Input
+                                  value={(addr as any).houseRtRw || ""}
+                                  placeholder="Misal: RT 03 / RW 01"
+                                  onChange={e => updateAddressField(addr.id, 'houseRtRw' as any, e.target.value)}
+                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                                />
+                              </div>
+
+                              {/* Input 2: Blok / Dusun / Jalan */}
+                              <div className="space-y-2 col-span-1 md:col-span-2">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Blok / Dusun / Kampung / Jalan</label>
+                                <Input
+                                  value={(addr as any).street || ""}
+                                  placeholder="Misal: Dusun Manis / Blok Pahing / Jl. Elang"
+                                  onChange={e => updateAddressField(addr.id, 'street' as any, e.target.value)}
+                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Input 3: Desa / Kelurahan */}
+                              <div className="space-y-2">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Desa / Kelurahan</label>
+                                <Input
+                                  value={(addr as any).village || ""}
+                                  placeholder="Misal: Desa Waled Kota"
+                                  onChange={e => updateAddressField(addr.id, 'village' as any, e.target.value)}
+                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                                />
+                              </div>
+
+                              {/* Input 4: Patokan */}
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-center ml-1">
+                                  <label className="text-[9px] font-black uppercase tracking-widest text-stone-400">Patokan (Opsional)</label>
+                                  <span className={`text-[9px] font-bold ${(((addr as any).patokan || '').length >= 100) ? 'text-red-500' : 'text-stone-400'}`}>
+                                    {((addr as any).patokan || '').length}/100
+                                  </span>
+                                </div>
+                                <Input
+                                  maxLength={100}
+                                  value={(addr as any).patokan || ""}
+                                  placeholder="Misal: Samping Mushola Al-Ikhlas"
+                                  onChange={e => updateAddressField(addr.id, 'patokan', e.target.value)}
+                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 3. KOMPONEN PENCARIAN WILAYAH ADMISTRASI (CITY & POSTAL CODE) */}
+                          <div className="pt-6 border-t border-dashed border-black/5">
                             <AddressInput
                               label="Cari Kecamatan / Kota"
                               value={{
@@ -535,15 +700,15 @@ function AccountContent() {
                           </div>
                         </motion.div>
                       ))}
-                    </div>
 
-                    <div className="pt-10 flex justify-center">
-                      <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
-                        Konfirmasi & Simpan Semua Perubahan
-                      </Button>
-                    </div>
-                  </div>
-                 </motion.div>
+                      <div className="pt-10 flex justify-center">
+                        <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
+                          Konfirmasi & Simpan Semua Perubahan
+                        </Button>
+                      </div>
+                    </div> {/* Penutup space-y-8 di bawah judul */}
+                  </div> {/* Penutup bg-white p-10 */}
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
