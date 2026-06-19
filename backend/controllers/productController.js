@@ -1,15 +1,16 @@
 import { supabase } from '../lib/supabase.js';
 
 /**
- * Get all products with dynamic tiered pricing
+ * Get all products with dynamic tiered pricing & marketing flags
  */
 export const getAllProducts = async (req, res) => {
-  const profileId = req.query.profileId; 
+  const profileId = req.query.profileId;
 
   try {
+    // 🟢 SUNTIKAN BARU: Masukkan flag komersial baru ke select query
     const { data: products, error: productError } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_variants(*)') // Otomatis menghela seluruh data varian beratnya sekaligus
       .eq('is_active', true)
       .order('created_at', { ascending: false });
 
@@ -23,7 +24,7 @@ export const getAllProducts = async (req, res) => {
         .select('status, tier_name')
         .eq('profile_id', profileId)
         .single();
-      
+
       if (!partnerError) {
         partner = partnerData;
       }
@@ -36,7 +37,6 @@ export const getAllProducts = async (req, res) => {
       let discountAmount = 0;
 
       if (partner) {
-        // Tiered logic from Spec V2
         if (partner.tier_name === 'Silver') {
           discountAmount = 15000;
           priceType = 'tier_silver';
@@ -44,11 +44,10 @@ export const getAllProducts = async (req, res) => {
           discountAmount = 10000;
           priceType = 'tier_bronze';
         } else if (partner.status === 'pending' || partner.status === 'onboarding') {
-          // Introductory discount for applicants
-          discountAmount = 5000; 
+          discountAmount = 5000;
           priceType = 'introductory';
         }
-        
+
         finalPrice = Math.max(0, retailPrice - discountAmount);
       }
 
@@ -70,19 +69,20 @@ export const getAllProducts = async (req, res) => {
 };
 
 /**
- * Get single product detail
+ * Get single product detail with variants
  */
 export const getProductById = async (req, res) => {
   const { id } = req.params;
   const profileId = req.query.profileId;
 
   try {
+    // 🟢 SUNTIKAN BARU: Tarik relasi tabel anak product_variants
     const { data: product, error: productError } = await supabase
       .from('products')
-      .select('*')
+      .select('*, product_variants(*)')
       .eq('id', id)
       .single();
-    
+
     if (productError || !product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -113,7 +113,7 @@ export const getProductById = async (req, res) => {
         finalPrice = Math.max(0, retailPrice - discountAmount);
       }
     }
-    
+
     res.status(200).json({
       ...product,
       image: product.image_url || "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+COFFEE",
@@ -128,18 +128,22 @@ export const getProductById = async (req, res) => {
   }
 };
 
+/**
+ * Create Product with Nested Dynamic Variants & Marketing Flags
+ */
 export const createProduct = async (req, res, next) => {
-  const { 
-    name, slug, notes, origin, process, altitude, price_retail, roast_profile, 
-    description, farm, image_url, fermentation, sweetness, acidity, body, 
-    stock_quantity, linked_journal_id, category, sub_category
+  const {
+    name, slug, notes, origin, process, altitude, price_retail, roast_profile,
+    description, farm, image_url, fermentation, sweetness, acidity, body,
+    stock_quantity, linked_journal_id, category, sub_category,
+    is_new_release, is_promoted, search_upsell_headline, variants // 🟢 Tangkap payload baru dari frontend
   } = req.body;
-  
-  // Sanitize fields: empty strings to null
+
   const sanitize = (val) => (val === "" ? null : val);
 
   try {
-    const { data, error } = await supabase
+    // LANGKAH 1: Masukkan data induk ke tabel products
+    const { data: product, error: productError } = await supabase
       .from('products')
       .insert([{
         name,
@@ -160,27 +164,60 @@ export const createProduct = async (req, res, next) => {
         stock_quantity,
         linked_journal_id: sanitize(linked_journal_id),
         category,
-        sub_category
+        sub_category,
+        is_new_release: is_new_release || false,
+        is_promoted: is_promoted || false,
+        search_upsell_headline: sanitize(search_upsell_headline)
       }])
       .select()
       .single();
 
-    if (error) throw error;
-    res.status(201).json(data);
+    if (productError) throw productError;
+
+    // LANGKAH 2: Logika Interseptor Fallback Otomatis Varian Berat
+    let finalVariants = [];
+    if (variants && variants.length > 0) {
+      finalVariants = variants.map(v => ({
+        product_id: product.id,
+        weight: v.weight.endsWith('g') ? v.weight : `${v.weight}g`, // Garansi string format '150g'
+        price: Number(v.price),
+        stock_quantity: Number(v.stock_quantity)
+      }));
+    } else {
+      // 🟢 Mendorong otomatis varian 150g & 250g jika dikosongkan admin
+      finalVariants = [
+        { product_id: product.id, weight: "150g", price: price_retail, stock_quantity: stock_quantity || 0 },
+        { product_id: product.id, weight: "250g", price: Math.round(price_retail * 1.6), stock_quantity: stock_quantity || 0 }
+      ];
+    }
+
+    // LANGKAH 3: Tembak massal array varian ke tabel anak product_variants
+    const { error: variantError } = await supabase
+      .from('product_variants')
+      .insert(finalVariants);
+
+    if (variantError) throw variantError;
+
+    res.status(201).json({ ...product, product_variants: finalVariants });
   } catch (error) {
     next(error);
   }
 };
 
+/**
+ * Update Product with Variants sync
+ */
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
   const bodyFields = req.body;
-  
+
+  // 🟢 Tambahkan kolom validasi baru agar diizinkan lolos filtrasi update
   const validColumns = [
-    'name', 'slug', 'notes', 'origin', 'process', 'altitude', 
-    'price_retail', 'discount_percent', 'roast_profile', 'description', 
-    'farm', 'image_url', 'fermentation', 'sweetness', 'acidity', 
-    'body', 'stock_quantity', 'is_active', 'linked_journal_id', 'category', 'sub_category'
+    'name', 'slug', 'notes', 'origin', 'process', 'altitude',
+    'price_retail', 'discount_percent', 'roast_profile', 'description',
+    'farm', 'image_url', 'fermentation', 'sweetness', 'acidity',
+    'body', 'stock_quantity', 'is_active', 'linked_journal_id', 'category', 'sub_category',
+    'is_new_release', 'is_promoted', 'search_upsell_headline'
   ];
 
   const filteredFields = Object.keys(bodyFields)
@@ -190,20 +227,34 @@ export const updateProduct = async (req, res) => {
       return obj;
     }, {});
 
-  if (Object.keys(filteredFields).length === 0) {
-    return res.status(400).json({ message: "No valid fields to update" });
-  }
-
   try {
-    const { data, error } = await supabase
+    // Update data produk utama
+    const { data: product, error: productError } = await supabase
       .from('products')
       .update(filteredFields)
       .eq('id', id)
       .select()
       .single();
 
-    if (error) throw error;
-    res.status(200).json(data);
+    if (productError) throw productError;
+
+    // Jika di body payload update membawa set array variants baru, sinkronisasikan ulang
+    if (bodyFields.variants) {
+      // Hapus varian lama biar tidak menumpuk duplikat
+      await supabase.from('product_variants').delete().eq('product_id', id);
+
+      const finalVariants = bodyFields.variants.map(v => ({
+        product_id: id,
+        weight: v.weight.endsWith('g') ? v.weight : `${v.weight}g`,
+        price: Number(v.price),
+        stock_quantity: Number(v.stock_quantity)
+      }));
+
+      const { error: variantError } = await supabase.from('product_variants').insert(finalVariants);
+      if (variantError) throw variantError;
+    }
+
+    res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: "Failed to update product", error: error.message });
   }
@@ -212,6 +263,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
+    // Karena foreign key disetel ON DELETE CASCADE, menghapus produk otomatis membabat habis variannya
     const { error } = await supabase
       .from('products')
       .delete()
@@ -236,28 +288,27 @@ export const uploadProductImage = async (req, res) => {
     const filePath = `products/${fileName}`;
 
     const { data, error } = await supabase.storage
-      .from('images') // Assumes 'images' bucket exists
+      .from('images')
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
         upsert: true
       });
 
     if (error) {
-        // Fallback: If 'images' bucket doesn't exist, try 'products'
-        const { data: dataAlt, error: errorAlt } = await supabase.storage
-            .from('products')
-            .upload(filePath, file.buffer, {
-                contentType: file.mimetype,
-                upsert: true
-            });
-        
-        if (errorAlt) throw errorAlt;
-        
-        const { data: { publicUrl } } = supabase.storage
-            .from('products')
-            .getPublicUrl(filePath);
-            
-        return res.status(200).json({ url: publicUrl });
+      const { data: dataAlt, error: errorAlt } = await supabase.storage
+        .from('products')
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true
+        });
+
+      if (errorAlt) throw errorAlt;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      return res.status(200).json({ url: publicUrl });
     }
 
     const { data: { publicUrl } } = supabase.storage
