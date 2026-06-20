@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, Lock, Loader2, User } from "lucide-react";
+import { Mail, Lock, Loader2, User, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 
 interface AuthFormProps {
   onSuccess: (profile: any) => void;
@@ -16,6 +17,7 @@ interface AuthFormProps {
 export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "login" }: AuthFormProps) {
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,6 +29,14 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
     if (!formData.email || !formData.password || (mode === "register" && !formData.fullName)) {
       toast.error("Please fill in all fields.");
       return;
+    }
+
+    if (mode === "register") {
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      if (!passwordRegex.test(formData.password)) {
+        toast.error("Password must be at least 8 characters long and contain both letters and numbers.");
+        return;
+      }
     }
 
     setLoading(true);
@@ -70,6 +80,20 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       toast.error(`${error.message || 'Please try again later.'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOAuth = async (provider: 'google' | 'facebook') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || `Failed to login with ${provider}`);
     }
   };
 
@@ -125,12 +149,19 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
                 <Input 
                   required
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="h-14 pl-14 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
+                  className="h-14 pl-14 pr-12 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 focus:outline-none"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
 
@@ -151,10 +182,10 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       </div>
 
       <div className="flex gap-4">
-        <Button variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
+        <Button onClick={() => handleOAuth('google')} type="button" variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
           Google
         </Button>
-        <Button variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
+        <Button onClick={() => handleOAuth('facebook')} type="button" variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
           Facebook
         </Button>
       </div>
