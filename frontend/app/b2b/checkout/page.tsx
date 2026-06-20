@@ -19,8 +19,10 @@ import { toast } from "sonner";
 import { useAuthStore, useCartStore } from "@/lib/store";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function B2BCheckoutPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const { items: allItems, removeItem, getTotal } = useCartStore();
   
