@@ -12,6 +12,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -62,6 +63,8 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const t = useI18n();
+  const tDetail = t.productDetail;
 
   const [quantity, setQuantity] = useState(1);
   const [weight, setWeight] = useState("250g");
@@ -142,7 +145,7 @@ export default function ProductPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
       <div className="flex flex-col items-center gap-6">
         <Loader2 className="w-12 h-12 text-[#367F4D] animate-spin" />
-        <p className="text-[10px] font-black tracking-[0.5em] text-stone-400 uppercase italic">Analyzing Batch Record...</p>
+        <p className="text-[10px] font-black tracking-[0.5em] text-stone-400 uppercase italic">{tDetail.analyzingBatch}</p>
       </div>
     </div>
   );
@@ -150,8 +153,8 @@ export default function ProductPage() {
   if (error || !product) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
       <div className="bg-white p-12 border border-red-100 shadow-xl rotate-[-1deg] text-center">
-         <p className="text-red-500 font-black uppercase tracking-widest text-xs">Error: {error || 'Product not found'}</p>
-         <Link href="/our-coffee" className="inline-block mt-8 text-[10px] font-black uppercase tracking-widest border-b-2 border-slate-900 pb-1">Return to Archive</Link>
+         <p className="text-red-500 font-black uppercase tracking-widest text-xs">Error: {error || tDetail.productNotFound}</p>
+         <Link href="/our-coffee" className="inline-block mt-8 text-[10px] font-black uppercase tracking-widest border-b-2 border-slate-900 pb-1">{tDetail.returnToArchive}</Link>
       </div>
     </div>
   );
@@ -168,7 +171,7 @@ export default function ProductPage() {
         
         {/* Navigation */}
         <Link href="/our-coffee" className="inline-flex items-center gap-3 text-[10px] font-black tracking-[0.3em] text-stone-400 hover:text-slate-900 transition-colors duration-300 mb-16 uppercase product-reveal will-change-transform">
-          <ArrowLeft size={14} strokeWidth={3} /> Return to Catalogue
+          <ArrowLeft size={14} strokeWidth={3} /> {tDetail.returnToCatalogue}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-start relative">
@@ -186,10 +189,10 @@ export default function ProductPage() {
                   <div className="absolute bottom-6 left-8 right-8 flex justify-between items-end">
                      <div className="space-y-1">
                         <p className="font-cloude text-[#367F4D] text-3xl opacity-30 italic">#EST-2026</p>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-stone-300">Specimen Record v.01</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-stone-300">{tDetail.specimenRecord}</p>
                      </div>
                      <div className="w-16 h-16 bg-[#2A1619] rounded-full flex flex-col items-center justify-center text-white border-4 border-white shadow-xl rotate-12">
-                        <span className="text-[8px] font-black tracking-tighter opacity-70 uppercase">Score</span>
+                        <span className="text-[8px] font-black tracking-tighter opacity-70 uppercase">{tDetail.score}</span>
                         <span className="text-sm font-black italic">86.5</span>
                      </div>
                   </div>
@@ -210,32 +213,32 @@ export default function ProductPage() {
                     <Microscope size={28} className="text-[#367F4D]" />
                   </div>
                   <div>
-                     <h3 className="text-[10px] font-black tracking-[0.4em] uppercase text-[#367F4D]">Extraction Protocol</h3>
-                     <p className="text-2xl font-display font-black italic tracking-tighter text-slate-900 uppercase">Brewing Guide</p>
+                     <h3 className="text-[10px] font-black tracking-[0.4em] uppercase text-[#367F4D]">{tDetail.extractionProtocol}</h3>
+                     <p className="text-2xl font-display font-black italic tracking-tighter text-slate-900 uppercase">{tDetail.brewingGuide}</p>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-black/5 pt-10">
                   <div className="space-y-6">
                     <p className="text-[10px] font-black text-slate-900 tracking-[0.3em] uppercase flex items-center gap-3">
-                       <span className="w-2 h-2 bg-[#EBA294] rotate-45" /> FOR ESPRESSO
+                       <span className="w-2 h-2 bg-[#EBA294] rotate-45" /> {tDetail.forEspresso}
                     </p>
                     <div className="space-y-3 text-[11px] font-black text-stone-500 uppercase tracking-widest">
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>DOSE</span> <span className="text-slate-900">18 - 20g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>YIELD</span> <span className="text-slate-900">32 - 36g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>TIME</span> <span className="text-slate-900">22 - 26s</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>RATIO</span> <span className="text-slate-900">1 : 1.8</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.dose}</span> <span className="text-slate-900">18 - 20g</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.yield}</span> <span className="text-slate-900">32 - 36g</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.time}</span> <span className="text-slate-900">22 - 26s</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.ratio}</span> <span className="text-slate-900">1 : 1.8</span></div>
                     </div>
                   </div>
                   <div className="space-y-6">
                     <p className="text-[10px] font-black text-slate-900 tracking-[0.3em] uppercase flex items-center gap-3">
-                       <span className="w-2 h-2 bg-[#8CADD8] rotate-45" /> WITH MILK
+                       <span className="w-2 h-2 bg-[#8CADD8] rotate-45" /> {tDetail.withMilk}
                     </p>
                     <div className="space-y-3 text-[11px] font-black text-stone-500 uppercase tracking-widest">
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>DOSE</span> <span className="text-slate-900">18 - 20g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>YIELD</span> <span className="text-slate-900">27 - 30g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>TIME</span> <span className="text-slate-900">20 - 24s</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>RATIO</span> <span className="text-slate-900">1 : 1.5</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.dose}</span> <span className="text-slate-900">18 - 20g</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.yield}</span> <span className="text-slate-900">27 - 30g</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.time}</span> <span className="text-slate-900">20 - 24s</span></div>
+                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.ratio}</span> <span className="text-slate-900">1 : 1.5</span></div>
                     </div>
                   </div>
                 </div>
@@ -247,7 +250,7 @@ export default function ProductPage() {
           <div className="flex flex-col space-y-16">
             <div className="space-y-6 product-reveal">
               <div className="inline-block px-4 py-1.5 bg-white border border-black/5 rotate-[-1deg] text-[9px] font-black tracking-[0.4em] text-[#367F4D] uppercase shadow-sm">
-                 Authentic Record / {product.origin}
+                 {tDetail.authenticRecord} / {product.origin}
               </div>
               <h1 className="text-7xl md:text-8xl lg:text-9xl font-cloude tracking-tighter text-slate-900 leading-[0.8] italic uppercase">
                 {product.name}
@@ -262,7 +265,7 @@ export default function ProductPage() {
                 <span className="text-5xl font-sans font-bold text-slate-900 tracking-tighter">
                   Rp {product.price.toLocaleString('id-ID')}
                 </span>
-                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-4">Valuation / {weight}</span>
+                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-4">{tDetail.valuation} / {weight}</span>
               </div>
             </div>
 
@@ -271,7 +274,7 @@ export default function ProductPage() {
               {/* Description */}
               <div className="space-y-6">
                 <button onClick={() => toggleTab('description')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
-                   <span className="group-hover:text-[#367F4D] transition-colors">Specimen Analysis</span> 
+                   <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.specimenAnalysis}</span> 
                    {activeTab === 'description' ? <ChevronUp size={18}/> : <ChevronDown size={18}/>}
                 </button>
                 {activeTab === 'description' && (
@@ -280,10 +283,10 @@ export default function ProductPage() {
                        "{product.description}"
                     </p>
                     <div className="grid grid-cols-1 gap-6 bg-white p-10 border border-black/5 shadow-inner rounded-sm rotate-[0.5deg]">
-                       <CharacterLevel label="Fermentation" level={product.fermentation} />
-                       <CharacterLevel label="Sweetness" level={product.sweetness} />
-                       <CharacterLevel label="Acidity" level={product.acidity} />
-                       <CharacterLevel label="Body" level={product.body} />
+                       <CharacterLevel label={tDetail.fermentation} level={product.fermentation} />
+                       <CharacterLevel label={tDetail.sweetness} level={product.sweetness} />
+                       <CharacterLevel label={tDetail.acidity} level={product.acidity} />
+                       <CharacterLevel label={tDetail.body} level={product.body} />
                     </div>
                   </motion.div>
                 )}
@@ -294,24 +297,24 @@ export default function ProductPage() {
               {/* Coffee & Process */}
               <div className="space-y-6">
                 <button onClick={() => toggleTab('process')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
-                  <span className="group-hover:text-[#367F4D] transition-colors">Origins & Processing</span> 
+                  <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.originsProcessing}</span> 
                   {activeTab === 'process' ? <ChevronUp size={18}/> : <ChevronDown size={18}/>}
                 </button>
                 {activeTab === 'process' && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-3 gap-8 overflow-hidden pb-4">
                     <div className="space-y-2">
                        <Globe2 size={24} className="text-stone-300 mb-2" />
-                       <p className="text-[9px] font-black text-stone-400 uppercase">Origin</p>
+                       <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.origin}</p>
                        <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.origin}</p>
                     </div>
                     <div className="space-y-2">
                        <FlaskConical size={24} className="text-stone-300 mb-2" />
-                       <p className="text-[9px] font-black text-stone-400 uppercase">Process</p>
+                       <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.process}</p>
                        <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.process}</p>
                     </div>
                     <div className="space-y-2">
                        <MapPin size={24} className="text-stone-300 mb-2" />
-                       <p className="text-[9px] font-black text-stone-400 uppercase">Altitude</p>
+                       <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.altitude}</p>
                        <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.altitude}</p>
                     </div>
                   </motion.div>
@@ -327,12 +330,12 @@ export default function ProductPage() {
                   <span className="w-12 text-center text-sm font-black tabular-nums">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 flex items-center justify-center hover:bg-[#FAF9F6] transition-all"><Plus size={16} strokeWidth={3}/></button>
                 </div>
-                <div className="text-[10px] font-black text-stone-300 uppercase tracking-widest">Select Quantity</div>
+                <div className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{tDetail.selectQuantity}</div>
               </div>
 
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-stone-400 tracking-[0.3em] uppercase flex items-center gap-3">
-                   <Archive size={14} /> Packaging | <span className="text-slate-900">{weight}</span>
+                   <Archive size={14} /> {tDetail.packaging} | <span className="text-slate-900">{weight}</span>
                 </p>
                 <div className="flex gap-4">
                   {["250g", "500g"].map(w => (
@@ -352,7 +355,7 @@ export default function ProductPage() {
 
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-stone-400 tracking-[0.3em] uppercase flex items-center gap-3">
-                   <Coffee size={14} /> Preparation | <span className="text-slate-900">{grind}</span>
+                   <Coffee size={14} /> {tDetail.preparation} | <span className="text-slate-900">{grind}</span>
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {["Whole Beans", "Espresso Grind", "Filter Grind"].map(g => (
@@ -377,14 +380,14 @@ export default function ProductPage() {
                onClick={() => handleAddToCart(false)}
                className="w-full h-20 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.4em] hover:bg-slate-900 hover:text-white transition-all duration-700 active:scale-[0.98] rounded-sm flex items-center justify-center gap-4 uppercase"
               >
-                Add to Order • Rp {(product.price * quantity).toLocaleString('id-ID')}
+                {tDetail.addToOrder} • Rp {(product.price * quantity).toLocaleString('id-ID')}
               </button>
               <button 
                onClick={handleBuyNow}
                className="w-full h-20 bg-[#2A1619] text-white font-black tracking-[0.5em] hover:bg-[#367F4D] transition-all duration-700 active:scale-[0.98] rounded-sm shadow-2xl uppercase italic flex items-center justify-center gap-4 group"
               >
                 <ShoppingBag size={20} strokeWidth={3} className="group-hover:rotate-12 transition-transform" />
-                Initiate Checkout
+                {tDetail.initiateCheckout}
               </button>
             </div>
           </div>
@@ -397,12 +400,12 @@ export default function ProductPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-[#367F4D]">
                    <Star size={20} fill="currentColor" />
-                   <p className="text-[10px] font-black tracking-[0.4em] uppercase">Laboratory Suggestions</p>
+                   <p className="text-[10px] font-black tracking-[0.4em] uppercase">{tDetail.labSuggestions}</p>
                 </div>
-                <h2 className="text-6xl font-cloude tracking-tighter text-slate-900 italic leading-none">Complete the Archive.</h2>
+                <h2 className="text-6xl font-cloude tracking-tighter text-slate-900 italic leading-none">{tDetail.completeArchive}</h2>
               </div>
               <Link href="/our-coffee" className="inline-block text-[11px] font-black tracking-[0.4em] text-stone-400 hover:text-slate-900 border-b-2 border-black/5 pb-2 transition-all uppercase">
-                Browse Full Collection
+                {tDetail.browseFullCollection}
               </Link>
             </div>
             

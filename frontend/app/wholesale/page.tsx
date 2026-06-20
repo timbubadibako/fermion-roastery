@@ -9,25 +9,31 @@ import {
 } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const benefits = [
-  { icon: <ShieldCheck size={20} />, title: "Quality Guarantee", desc: "Setiap batch dipanggang dengan standar kontrol kualitas yang ketat." },
-  { icon: <Settings size={20} />, title: "Custom Roast", desc: "Sesuaikan profil sangrai untuk mencocokkan karakter unik brand cafe Anda." },
-  { icon: <BarChart3 size={20} />, title: "Tiered Pricing", desc: "Dapatkan harga yang semakin kompetitif seiring bertambahnya volume Anda." },
-  { icon: <Truck size={20} />, title: "Reliable Logistics", desc: "Pengiriman terjadwal untuk memastikan stok Anda tidak pernah kosong." },
-  { icon: <Globe size={20} />, title: "Direct Sourcing", desc: "Akses langsung ke kebun kopi terbaik di seluruh nusantara." },
-  { icon: <Award size={20} />, title: "Partner Support", desc: "Konsultasi menu dan kalibrasi rutin dari tim roaster ahli kami." }
-];
+// moved to component body so it can use i18n
 
 export default function WholesalePageV2() {
   const [volume, setVolume] = useState<number>(15);
   const [tier, setTier] = useState("Bronze");
   const [discountPerKg, setDiscountPerKg] = useState(10000);
   const [savings, setSavings] = useState(0);
+
+  const t = useI18n();
+  const tWholesale = t.wholesale;
+
+  const benefits = [
+    { icon: <ShieldCheck size={20} />, title: tWholesale.benefits.qualityTitle, desc: tWholesale.benefits.qualityDesc },
+    { icon: <Settings size={20} />, title: tWholesale.benefits.customTitle, desc: tWholesale.benefits.customDesc },
+    { icon: <BarChart3 size={20} />, title: tWholesale.benefits.tieredTitle, desc: tWholesale.benefits.tieredDesc },
+    { icon: <Truck size={20} />, title: tWholesale.benefits.logisticsTitle, desc: tWholesale.benefits.logisticsDesc },
+    { icon: <Globe size={20} />, title: tWholesale.benefits.sourcingTitle, desc: tWholesale.benefits.sourcingDesc },
+    { icon: <Award size={20} />, title: tWholesale.benefits.supportTitle, desc: tWholesale.benefits.supportDesc }
+  ];
 
   const heroRef = useRef<HTMLElement>(null);
   const calcRef = useRef<HTMLElement>(null);
@@ -45,16 +51,16 @@ export default function WholesalePageV2() {
 
   useEffect(() => {
     let currentDiscount = 10000;
-    let currentTier = "Bronze Partner";
+    let currentTier = tWholesale.bronze;
 
     if (volume >= 50) {
-      currentTier = "Gold Partner";
+      currentTier = tWholesale.gold;
       currentDiscount = 20000;
     } else if (volume >= 15) {
-      currentTier = "Silver Partner";
+      currentTier = tWholesale.silver;
       currentDiscount = 15000;
     } else {
-      currentTier = "Bronze Partner";
+      currentTier = tWholesale.bronze;
       currentDiscount = 10000;
     }
 
@@ -136,19 +142,19 @@ export default function WholesalePageV2() {
         <div className="max-w-7xl mx-auto flex flex-col gap-12 items-center text-center lg:text-left lg:flex-row">
           <div className="w-full space-y-6">
             <div className="inline-block px-4 py-1.5 bg-white border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.02)] rotate-[-1deg] text-[9px] font-black tracking-[0.3em] text-[#367F4D] uppercase wholesale-hero-text">
-               B2B Partnership Lab
+               {tWholesale.heroBadge}
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-9xl font-cloude tracking-tighter leading-[0.9] text-slate-900 wholesale-hero-text">
-              Scale Your <br/>
-              <span className="font-display italic text-[#367F4D]">Business.</span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-cloude tracking-tighter leading-[0.9] text-slate-900 wholesale-hero-text">
+              {tWholesale.heroTitle1} <br/>
+              <span className="font-display italic text-[#367F4D]">{tWholesale.heroTitle2}</span>
             </h1>
             <p className="max-w-lg mx-auto lg:mx-0 text-stone-600 font-medium text-base leading-relaxed bg-white/40 p-4 border-l-4 border-[#367F4D]/20 backdrop-blur-sm shadow-sm wholesale-hero-text">
-              Solusi kopi hulu-ke-hilir untuk bisnis yang mengutamakan kualitas, konsistensi, dan cerita di balik setiap biji.
+              {tWholesale.heroDesc}
             </p>
             <div className="pt-2 wholesale-hero-text">
               <Link href="/b2b/register">
                 <button className="w-full lg:w-auto bg-[#367F4D] text-white px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-sm hover:bg-[#2B4031] transition-all flex items-center justify-center gap-3">
-                  Join the Partner Hub <ArrowRight size={14} strokeWidth={3} />
+                  {tWholesale.joinHub} <ArrowRight size={14} strokeWidth={3} />
                 </button>
               </Link>
             </div>
@@ -162,14 +168,14 @@ export default function WholesalePageV2() {
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="bento-item bg-[#FDFBF7] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.02)] flex flex-col justify-center gap-2">
-                 <h3 className="text-xl font-display font-black uppercase tracking-tighter leading-none text-slate-900">Dedicated<br/><span className="text-[#367F4D] italic">Facility.</span></h3>
-                 <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest italic border-t border-black/5 pt-2">Centralized Roastery Ops</p>
+                 <h3 className="text-xl font-display font-black uppercase tracking-tighter leading-none text-slate-900">{tWholesale.dedicated}<br/><span className="text-[#367F4D] italic">{tWholesale.facility}</span></h3>
+                 <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest italic border-t border-black/5 pt-2">{tWholesale.centralizedOps}</p>
               </div>
               <div className="bento-item bg-[#1A2B20] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.1)] flex flex-col justify-center gap-2 text-white">
-                 <h3 className="text-xl font-cloude tracking-widest leading-none text-[#EBA294]">Trusted<br/>Partner.</h3>
+                 <h3 className="text-xl font-cloude tracking-widest leading-none text-[#EBA294]">{tWholesale.trusted}<br/>{tWholesale.partner}</h3>
                  <div className="flex items-center gap-2 mt-1">
                     <Handshake size={12} className="text-[#EBA294]" />
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Est. 2026</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">{tWholesale.est}</span>
                  </div>
               </div>
             </div>
@@ -187,17 +193,17 @@ export default function WholesalePageV2() {
           <div className="text-center space-y-6">
             <div className="inline-flex items-center gap-3 text-stone-400">
                <Microscope size={20} />
-               <span className="text-[10px] font-black uppercase tracking-[0.4em]">Economic Feasibility Test</span>
+               <span className="text-[10px] font-black uppercase tracking-[0.4em]">{tWholesale.ecoTest}</span>
             </div>
-            <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-none">Your Growth Engine.</h2>
+            <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-none">{tWholesale.growthEngine}</h2>
           </div>
           <div className="bg-white border border-black/10 rounded-2xl p-10 md:p-20 shadow-[15px_15px_0px_rgba(0,0,0,0.02)] flex flex-col md:flex-row gap-16 relative overflow-hidden">
             <div className="absolute inset-0 opacity-[0.15] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-            <div className="flex-1 space-y-12 z-10">
+            <div className="flex-1 space-y-12 z-10" id="tour-wholesale-slider">
                <div className="space-y-6">
                  <div className="flex items-center gap-2">
                     <FileText size={16} className="text-[#367F4D]" />
-                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Monthly Specimen Volume</label>
+                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">{tWholesale.monthlyVol}</label>
                  </div>
                  <div className="flex items-end gap-3">
                     <span className="text-8xl font-display font-black italic text-slate-900 leading-none">{volume}</span>
@@ -206,31 +212,31 @@ export default function WholesalePageV2() {
                  <div className="relative pt-6">
                     <input type="range" min="10" max="200" step="5" value={volume} onChange={(e) => setVolume(Number(e.target.value))} className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-[#367F4D]"/>
                     <div className="flex justify-between mt-4 text-[10px] font-bold text-stone-400 tracking-tighter">
-                        <span>MIN 10 KG</span>
-                        <span>SCALE 200+ KG</span>
+                        <span>{tWholesale.min}</span>
+                        <span>{tWholesale.scale}</span>
                     </div>
                  </div>
                </div>
             </div>
-            <div className="flex-1 bg-[#2B4031] rounded-xl p-10 text-white flex flex-col justify-center relative overflow-hidden shadow-sm z-10 rotate-1">
+            <div className="flex-1 bg-[#2B4031] rounded-xl p-10 text-white flex flex-col justify-center relative overflow-hidden shadow-sm z-10 rotate-1" id="tour-wholesale-tier">
                <div className="absolute top-[-10px] left-10 w-16 h-4 bg-white/20 border border-white/5 rotate-[-5deg] backdrop-blur-sm z-50"></div>
                <div className="space-y-10 relative z-10">
                   <div className="space-y-2">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-[#8CADD8]">Current Allocation Tier</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest text-[#8CADD8]">{tWholesale.currentTier}</p>
                      <h3 className="text-4xl font-display font-black italic text-[#F1B941] leading-none underline decoration-double">{tier}</h3>
                   </div>
                   <div className="space-y-8 py-8 border-y border-white/10 border-dashed">
                      <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Lab Discount</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-40">{tWholesale.labDiscount}</span>
                         <p className="text-2xl font-cloude text-[#EBA294]">
                            Rp {(discountPerKg / 1000).toFixed(0)}K<span className="text-[10px] opacity-40 ml-1">/KG</span>
                         </p>
                      </div>
                      <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#8CADD8]">Projected Savings</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#8CADD8]">{tWholesale.projectedSavings}</span>
                         <div className="text-right leading-none">
                            <span className="text-5xl font-cloude text-white">{formattedSavings.value}</span>
-                           <span className="text-[12px] font-black block mt-2 opacity-50 tracking-[0.2em]">{formattedSavings.unit} / MO</span>
+                           <span className="text-[12px] font-black block mt-2 opacity-50 tracking-[0.2em]">{formattedSavings.unit} / {tWholesale.perMo}</span>
                         </div>
                      </div>
                   </div>
@@ -240,10 +246,10 @@ export default function WholesalePageV2() {
         </div>
       </section>
 
-      <section ref={benefitsRef} className="py-40 px-6 relative z-10 bg-[#E2DACB]/20">
+      <section ref={benefitsRef} className="py-40 px-6 relative z-10 bg-[#E2DACB]/20" id="tour-wholesale-benefits">
         <div className="max-w-7xl mx-auto space-y-24">
            <div className="text-center space-y-6">
-              <h2 className="text-7xl md:text-8xl font-cloude tracking-tighter text-slate-900 leading-none italic">Why Partner?</h2>
+              <h2 className="text-7xl md:text-8xl font-cloude tracking-tighter text-slate-900 leading-none italic">{tWholesale.whyPartner}</h2>
               <div className="w-24 h-1 bg-[#EBA294] mx-auto rotate-1"></div>
            </div>
 
@@ -251,6 +257,7 @@ export default function WholesalePageV2() {
               {benefits.map((benefit, i) => (
                 <div 
                   key={i}
+                  id={i === 0 ? "tour-wholesale-benefit-card" : undefined}
                   className="benefit-card bg-white p-10 border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.02)] hover:-translate-y-2 hover:shadow-[12px_12px_0px_rgba(0,0,0,0.04)] transition-all duration-500 group relative flex flex-col"
                   style={{ 
                     transform: `rotate(${i % 2 === 0 ? -1 : 1.5}deg)`,
@@ -281,20 +288,20 @@ export default function WholesalePageV2() {
             <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
             
             <Sticker rotate={-10} className="top-10 left-10 border border-white/10 shadow-sm" color="#F1B941" variant="solid">
-              <span className="p-2 text-slate-900 uppercase font-black tracking-widest text-[9px]">Confidential</span>
+              <span className="p-2 text-slate-900 uppercase font-black tracking-widest text-[9px]">{tWholesale.confidential}</span>
             </Sticker>
 
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16 text-center lg:text-left mt-16 lg:mt-0">
               <div className="space-y-6 flex-1">
-                <h2 className="text-5xl md:text-7xl font-cloude text-white leading-none tracking-tighter">Initialize <br/> <span className="text-[#EBA294] italic font-display">Onboarding.</span></h2>
+                <h2 className="text-5xl md:text-7xl font-cloude text-white leading-none tracking-tighter">{tWholesale.initialize} <br/> <span className="text-[#EBA294] italic font-display">{tWholesale.onboarding}</span></h2>
                 <p className="text-white/60 font-medium text-lg max-w-xl">
-                  Automate your partnership. Fill the form, download your lab contract, and activate your wholesale access instantly.
+                  {tWholesale.ctaDesc}
                 </p>
               </div>
               
-              <Link href="/b2b/register" className="w-full lg:w-auto shrink-0">
+              <Link href="/b2b/register" className="w-full lg:w-auto shrink-0" id="tour-wholesale-join">
                 <button className="w-full lg:w-auto h-20 px-12 bg-white text-slate-900 font-black tracking-[0.3em] rounded-xl hover:bg-[#EBA294] transition-all duration-500 uppercase text-xs shadow-sm hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4">
-                  Begin Registration <ArrowRight size={18} strokeWidth={3} />
+                  {tWholesale.beginRegistration} <ArrowRight size={18} strokeWidth={3} />
                 </button>
               </Link>
             </div>

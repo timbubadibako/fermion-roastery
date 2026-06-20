@@ -209,7 +209,7 @@ export default function SubscriptionCheckoutPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             
-            <div className="lg:col-span-8 space-y-10">
+            <div id="tour-subcheck-address" className="lg:col-span-8 space-y-10">
                <AddressSelection 
                   address={address} 
                   setAddress={setAddress}
@@ -221,7 +221,7 @@ export default function SubscriptionCheckoutPage() {
                   contextType='subscription'
                />
 
-               <div className="bg-stone-50 border border-black/5 p-8 rounded-sm flex gap-4 items-start shadow-inner">
+               <div id="tour-subcheck-priority" className="bg-stone-50 border border-black/5 p-8 rounded-sm flex gap-4 items-start shadow-inner">
                   <CheckCircle2 className="text-[#367F4D] shrink-0 mt-0.5" size={20} />
                   <div className="space-y-1">
                      <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-900">Pengiriman Prioritas</p>
@@ -230,7 +230,7 @@ export default function SubscriptionCheckoutPage() {
                </div>
             </div>
 
-            <div className="lg:col-span-4 sticky top-32">
+            <div id="tour-subcheck-summary" className="lg:col-span-4 sticky top-32">
                   <div className="bg-white p-10 border border-black/10 shadow-[12px_12px_0_rgba(0,0,0,0.03)] rounded-sm space-y-10 relative overflow-hidden">
                     {/* Paper Tear Effect Mockup */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-[radial-gradient(circle,transparent_70%,#FAF9F6_72%)] bg-[length:12px_12px]" />
@@ -265,6 +265,7 @@ export default function SubscriptionCheckoutPage() {
                       </div>
 
                       <Button 
+                        id="tour-subcheck-pay"
                         onClick={handleCheckout} 
                         disabled={processing || !address.area_id}
                         className="w-full h-16 bg-stone-900 text-white rounded-sm font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0"

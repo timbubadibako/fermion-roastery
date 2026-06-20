@@ -34,7 +34,10 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 
+import { useI18n } from "@/lib/i18n";
+
 export default function AdminOverview() {
+  const t = useI18n();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [churnAlerts, setChurnAlerts] = useState<any[]>([]);
@@ -83,14 +86,14 @@ export default function AdminOverview() {
     if (dateRange?.from && dateRange?.to) {
         fetchVitals();
     } else {
-        toast.error("Pilih rentang tanggal lengkap.");
+        toast.error(t.admin.selectFullRange);
     }
   };
 
   if (loading && !stats) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
       <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Mengakses Pusat Kendali...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.3em]">{t.admin.loading}</p>
     </div>
   );
 
@@ -99,8 +102,8 @@ export default function AdminOverview() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black/5 pb-10">
         <div className="space-y-3 text-left">
-          <h1 className="text-5xl md:text-7xl font-display italic tracking-tighter text-slate-900 leading-none">Ringkasan <br/> Operasional.</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Intelijen real-time untuk operasional Fermion Roastery.</p>
+          <h1 className="text-5xl md:text-7xl font-display italic tracking-tighter text-slate-900 leading-none" dangerouslySetInnerHTML={{ __html: t.admin.overviewTitle.replace(' ', ' <br/> ') }}></h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">{t.admin.overviewDesc}</p>
         </div>
 
         {/* Timeframe Picker UI */}
@@ -109,13 +112,13 @@ export default function AdminOverview() {
             onClick={() => setTimeframe("7d")}
             className={`px-6 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${timeframe === "7d" ? 'bg-white text-[#367F4D] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
            >
-             7 Hari
+             {t.admin.days7}
            </button>
            <button 
             onClick={() => setTimeframe("30d")}
             className={`px-6 py-2 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${timeframe === "30d" ? 'bg-white text-[#367F4D] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
            >
-             30 Hari
+             {t.admin.days30}
            </button>
            
            <Popover>
@@ -125,13 +128,13 @@ export default function AdminOverview() {
                 >
                   {timeframe === "custom" && dateRange?.from ? (
                     `${format(dateRange.from, "dd MMM")} - ${dateRange.to ? format(dateRange.to, "dd MMM") : '...'}`
-                  ) : "Kustom"}
+                  ) : t.admin.custom}
                   <CalendarIcon size={12} />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 rounded-sm shadow-2xl border-black/5" align="end">
                 <div className="p-4 bg-stone-50 border-b border-black/5">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pilih Rentang Laporan</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.admin.reportRange}</p>
                 </div>
                 <Calendar
                   initialFocus
@@ -151,7 +154,7 @@ export default function AdminOverview() {
                         }}
                         className="bg-[#367F4D] text-white rounded-sm text-[9px] font-black uppercase tracking-widest h-10 px-6"
                     >
-                        Terapkan Filter
+                        {t.admin.applyFilter}
                     </Button>
                 </div>
               </PopoverContent>
@@ -173,12 +176,12 @@ export default function AdminOverview() {
                   <AlertTriangle size={24} />
               </div>
               <div className="space-y-1">
-                  <span className="text-[8px] font-black uppercase tracking-widest bg-red-500 text-white px-3 py-0.5 rounded-full">PERINGATAN_KRITIS</span>
-                  <h3 className="text-xl font-bold tracking-tight text-slate-900">{churnAlerts[0].company_name} Tidak Aktif.</h3>
+                  <span className="text-[8px] font-black uppercase tracking-widest bg-red-500 text-white px-3 py-0.5 rounded-full">{t.admin.criticalAlert}</span>
+                  <h3 className="text-xl font-bold tracking-tight text-slate-900">{churnAlerts[0].company_name} {t.admin.inactiveCompany}</h3>
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
                     {churnAlerts[0].last_order_date 
-                      ? `${Math.floor((new Date().getTime() - new Date(churnAlerts[0].last_order_date).getTime()) / (1000 * 3600 * 24))} Hari sejak pesanan terakhir.`
-                      : "Belum ada riwayat pesanan terdeteksi."}
+                      ? `${Math.floor((new Date().getTime() - new Date(churnAlerts[0].last_order_date).getTime()) / (1000 * 3600 * 24))} ${t.admin.daysSinceLastOrder}`
+                      : t.admin.noOrderHistory}
                   </p>
               </div>
             </div>
@@ -186,7 +189,7 @@ export default function AdminOverview() {
               className="bg-slate-900 text-white px-8 py-4 rounded-sm text-[9px] font-black uppercase tracking-widest hover:bg-red-600 transition-all relative z-10 shadow-lg border-none"
               onClick={() => window.open(`https://wa.me/${churnAlerts[0].phone?.replace(/\D/g, '')}`, '_blank')}
             >
-              Hubungi via WA
+              {t.admin.contactWa}
             </button>
           </motion.div>
         )}
@@ -195,10 +198,10 @@ export default function AdminOverview() {
       {/* BENTO STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
-          { label: "Total Pendapatan", val: `Rp ${((stats?.revenue || 0) / 1000000).toFixed(2)}jt`, icon: TrendingUp, color: "text-blue-500", trend: "Periode Ini", link: "/admin/orders" },
-          { label: "Arus Volume", val: `${(stats?.volume || 0).toFixed(1)} Kg`, icon: Package, color: "text-[#367F4D]", trend: "Logistik", link: "/admin/inventory" },
-          { label: "Partner Aktif", val: stats?.activeSubs || 0, icon: Users, color: "text-emerald-500", trend: "Stabilitas", link: "/admin/partners" },
-          { label: "Butuh Review", val: stats?.pendingB2B || 0, icon: Zap, color: "text-amber-500", trend: "Urgen", link: "/admin/partners" },
+          { label: t.admin.totalRevenue, val: `Rp ${((stats?.revenue || 0) / 1000000).toFixed(2)}jt`, icon: TrendingUp, color: "text-blue-500", trend: t.admin.thisPeriod, link: "/admin/orders" },
+          { label: t.admin.volumeFlow, val: `${(stats?.volume || 0).toFixed(1)} Kg`, icon: Package, color: "text-[#367F4D]", trend: t.admin.logistics, link: "/admin/inventory" },
+          { label: t.admin.activePartner, val: stats?.activeSubs || 0, icon: Users, color: "text-emerald-500", trend: t.admin.stability, link: "/admin/partners" },
+          { label: t.admin.needsReview, val: stats?.pendingB2B || 0, icon: Zap, color: "text-amber-500", trend: t.admin.urgent, link: "/admin/partners" },
         ].map((s, i) => (
           <Link href={s.link} key={s.label}>
             <motion.div 
@@ -227,8 +230,8 @@ export default function AdminOverview() {
           <div className="lg:col-span-8 bg-white border border-black/5 rounded-sm p-10 shadow-sm space-y-10">
              <div className="flex items-center justify-between">
                 <div>
-                   <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Analisa Arus Pendapatan</h3>
-                   <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest mt-1">Performa Keuangan Berdasarkan Rentang Waktu</p>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">{t.admin.revenueAnalysis}</h3>
+                   <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest mt-1">{t.admin.financialPerformance}</p>
                 </div>
                 <CalendarIcon size={14} className="text-slate-200" />
              </div>
@@ -248,7 +251,7 @@ export default function AdminOverview() {
                     <Tooltip 
                       cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                       contentStyle={{ borderRadius: '2px', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', fontSize: '10px', fontWeight: 'bold' }}
-                      formatter={(val: number) => [`Rp ${val.toLocaleString('id-ID')}`, 'Pendapatan']}
+                      formatter={(val: number) => [`Rp ${val.toLocaleString('id-ID')}`, t.admin.revenue]}
                     />
                     <Bar 
                       dataKey="revenue" 
@@ -267,14 +270,14 @@ export default function AdminOverview() {
              <div className="space-y-6 relative z-10">
                 <div className="flex items-center gap-3">
                    <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-white"><Coffee size={18} /></div>
-                   <h3 className="text-xl font-bold tracking-tighter leading-tight uppercase italic font-display text-white">Analisa <br/> Laboratorium.</h3>
+                   <h3 className="text-xl font-bold tracking-tighter leading-tight uppercase italic font-display text-white" dangerouslySetInnerHTML={{ __html: t.admin.labAnalysis.replace(' ', ' <br/> ') }}></h3>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed font-medium uppercase tracking-wider">Produk terlaris saat ini adalah <span className="text-white font-bold italic">Sumedang Anaerob</span>. Pertimbangkan untuk memprioritaskan batch pemanggangan berikutnya untuk partner Tier Silver.</p>
+                <p className="text-[11px] text-slate-400 leading-relaxed font-medium uppercase tracking-wider">{t.admin.labDescPart1} <span className="text-white font-bold italic">Sumedang Anaerob</span>{t.admin.labDescPart2}</p>
              </div>
              
              <div className="space-y-4 relative z-10">
                 <div className="space-y-2">
-                   <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-slate-500"><span>Akurasi Pemanggangan</span><span>98.2%</span></div>
+                   <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-slate-500"><span>{t.admin.roastAccuracy}</span><span>98.2%</span></div>
                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                       <div className={`w-[98%] h-full bg-[#367F4D]`} />
                    </div>
@@ -283,7 +286,7 @@ export default function AdminOverview() {
                   onClick={() => setIsComingSoonOpen(true)}
                   className="w-full py-4 bg-white text-slate-950 rounded-sm font-black uppercase tracking-widest italic text-[9px] shadow-xl hover:bg-[#367F4D] hover:text-white transition-all border-none"
                 >
-                  Buat Strategi AI
+                  {t.admin.aiStrategyBtn}
                 </button>
              </div>
           </div>
@@ -298,11 +301,11 @@ export default function AdminOverview() {
               className="bg-white rounded-sm w-full max-w-md p-10 space-y-8 shadow-2xl text-left border border-black/5"
              >
                 <div className="flex justify-between items-start">
-                   <h2 className="font-display text-3xl italic font-bold text-slate-950 leading-none">Coming Soon.</h2>
+                   <h2 className="font-display text-3xl italic font-bold text-slate-950 leading-none">{t.admin.comingSoonTitle}</h2>
                    <button onClick={() => setIsComingSoonOpen(false)}><X size={20} /></button>
                 </div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Fitur Strategi AI sedang dikalibrasi di laboratorium kami. Nantikan kehadirannya!</p>
-                <Button onClick={() => setIsComingSoonOpen(false)} className="w-full h-14 bg-slate-950 text-white rounded-sm font-black uppercase italic text-[10px] border-none">Oke, Mengerti</Button>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">{t.admin.comingSoonDesc}</p>
+                <Button onClick={() => setIsComingSoonOpen(false)} className="w-full h-14 bg-slate-950 text-white rounded-sm font-black uppercase italic text-[10px] border-none">{t.admin.okUnderstand}</Button>
              </motion.div>
           </div>
         )}

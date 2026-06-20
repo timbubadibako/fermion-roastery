@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, ArrowRight, Activity, Globe2, Coffee, Quote, Microscope, PenTool, Archive } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function StoryPageV2() {
+  const t = useI18n();
   const [mounted, setMounted] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const philosophyRef = useRef<HTMLElement>(null);
@@ -76,18 +78,14 @@ export default function StoryPageV2() {
            
            <div className="flex-1 space-y-10 order-2 lg:order-1">
               <div className="inline-block px-4 py-1.5 bg-white border border-[#8CADD8]/30 shadow-[4px_4px_0_rgba(140,173,216,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#0F3A8D] uppercase story-hero-text">
-                 <Archive size={12} className="inline mr-2" /> The Roastery Manifesto
+                 <Archive size={12} className="inline mr-2" /> {t.ourStory.badge}
               </div>
-              <h1 className="text-7xl md:text-9xl font-cloude tracking-tighter text-slate-900 leading-[0.8] story-hero-text">
-                 The Flavor <br/> <span className="font-display italic text-[#8CADD8]">Bridge.</span>
+              <h1 className="text-5xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-[0.8] story-hero-text">
+                 {t.ourStory.title1} <br/> <span className="font-display italic text-[#8CADD8]">{t.ourStory.title2}</span>
               </h1>
               <div className="space-y-6 text-stone-600 font-medium text-lg md:text-xl leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
-                 <p>
-                    We exist to connect the hands that grow the coffee to the hands that brew it. Our role is simple but critical: to serve as the flavor bridge between the producer and the coffee drinker.
-                 </p>
-                 <p className="italic">
-                    There are good intentions, unique character, and intrinsic values within every single bean. It is our sworn duty to ensure those values remain unbroken from farm to cup.
-                 </p>
+                 <p>{t.ourStory.desc1}</p>
+                 <p className="italic">{t.ourStory.desc2}</p>
               </div>
            </div>
 
@@ -102,10 +100,10 @@ export default function StoryPageV2() {
                     />
                  </div>
                  <div className="absolute bottom-4 right-6 text-right">
-                    <p className="font-cloude text-[#0F3A8D] text-4xl opacity-20 italic">#EST-2018</p>
+                    <p className="font-cloude text-[#0F3A8D] text-4xl opacity-20 italic">{t.ourStory.est}</p>
                  </div>
               </div>
-              <Sticker rotate={-12} className="absolute -top-6 -left-6 z-40 border border-black/10 shadow-sm" color="#F1B941">GARAGE DAYS</Sticker>
+              <Sticker rotate={-12} className="absolute -top-6 -left-6 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
            </div>
         </div>
       </section>
@@ -117,12 +115,12 @@ export default function StoryPageV2() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 pt-12">
            {[
               { 
-                idx: "01", category: "THE PRODUCER", title: "Honoring the Origin.", icon: <Globe2 size={24} />,
-                desc: "We source directly from dedicated farmers. Every cherry carries their hard work and a unique terroir that we are sworn to protect and highlight through careful profiling."
+                idx: "01", category: t.ourStory.philCategory1, title: t.ourStory.philTitle1, icon: <Globe2 size={24} />,
+                desc: t.ourStory.philDesc1
               },
               { 
-                idx: "02", category: "THE DRINKER", title: "Delivering the Value.", icon: <Activity size={24} />,
-                desc: "Through scientific precision and sensory calibration, we ensure that the original goodness and unique flavor profile reach your morning ritual intact and unbroken."
+                idx: "02", category: t.ourStory.philCategory2, title: t.ourStory.philTitle2, icon: <Activity size={24} />,
+                desc: t.ourStory.philDesc2
               }
            ].map((p, i) => (
              <div key={i} className="philosophy-card bg-[#233854] p-12 border border-white/5 shadow-2xl rounded-xl relative overflow-hidden group">
@@ -149,16 +147,16 @@ export default function StoryPageV2() {
            <div className="text-center space-y-6">
               <div className="inline-flex items-center gap-3 text-stone-400">
                  <Microscope size={20} />
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">Visual Evidence</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.ourStory.galleryBadge}</span>
               </div>
-              <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-slate-900 leading-none italic">Where the magic happens.</h2>
+              <h2 className="text-4xl md:text-5xl font-cloude tracking-tighter text-slate-900 leading-none italic">{t.ourStory.galleryTitle}</h2>
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 pt-10">
               {[
-                { title: "Machine", text: "The Probat", color: "#F1B941", img: "https://placehold.co/600x800/0f3a8d/e8f1f8?text=THE+PROBAT" },
-                { title: "QC Pass", text: "Quality Check", color: "#8CADD8", img: "https://placehold.co/600x800/1a2b20/ffffff?text=CALIBRATION" },
-                { title: "Hand Packed", text: "Final Record", color: "#EBA294", img: "https://placehold.co/600x800/0f3a8d/ffffff?text=PACKAGING" }
+                { title: t.ourStory.galleryItem1Title, text: t.ourStory.galleryItem1Text, color: "#F1B941", img: "https://placehold.co/600x800/0f3a8d/e8f1f8?text=THE+PROBAT" },
+                { title: t.ourStory.galleryItem2Title, text: t.ourStory.galleryItem2Text, color: "#8CADD8", img: "https://placehold.co/600x800/1a2b20/ffffff?text=CALIBRATION" },
+                { title: t.ourStory.galleryItem3Title, text: t.ourStory.galleryItem3Text, color: "#EBA294", img: "https://placehold.co/600x800/0f3a8d/ffffff?text=PACKAGING" }
               ].map((item, i) => (
                 <div key={i} className={`gallery-item relative bg-white p-4 pb-12 border border-black/10 shadow-lg group
                   ${i === 1 ? 'md:-translate-y-12' : ''}
@@ -182,11 +180,11 @@ export default function StoryPageV2() {
          <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10 pt-10">
             <Quote size={60} className="text-[#367F4D] opacity-10 mx-auto" />
             <h2 className="text-4xl md:text-6xl font-display font-black italic tracking-tighter leading-tight text-balance">
-               "Tugas kami adalah sebagai jembatan rasa antara producer dan coffee drinker. Ada hal baik, rasa yang unik dan value yang tidak boleh putus."
+               {t.ourStory.manifestoQuote}
             </h2>
             <div className="w-24 h-1 bg-[#8CADD8]/50 mx-auto rotate-1"></div>
             <p className="font-cloude text-[#0F3A8D] text-2xl tracking-widest uppercase">
-               — The Fermion Manifesto
+               {t.ourStory.manifestoSign}
             </p>
          </div>
       </section>
