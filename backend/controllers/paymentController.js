@@ -33,7 +33,54 @@ export const createInvoice = async (req, res) => {
   const shippingFee = metadata?.shippingFee || 0;
   const courier = metadata?.courier || null;
 
+  let calculatedAmount = Number(amount);
+  let calculatedShippingFee = Number(shippingFee);
+  let isB2bOrder = false;
+
   try {
+    // 0. B2B Pricing Verification & Enforcement
+    if (profileId) {
+       const { data: partner } = await supabase
+         .from('b2b_partners')
+         .select('status, tier_name')
+         .eq('profile_id', profileId)
+         .maybeSingle();
+         
+       if (partner && partner.status === 'approved') {
+          isB2bOrder = true;
+          // Enforce free shipping
+          calculatedShippingFee = 0;
+          if (metadata) metadata.shippingFee = 0;
+          if (courier) courier.price = 0;
+
+          // Calculate total volume
+          let totalVolumeKg = 0;
+          let baseTotal = 0;
+
+          items.forEach(item => {
+             baseTotal += Number(item.price) * Number(item.quantity);
+             const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
+             let itemWeightKg = 0.25; // default 250g
+             if (weightMatch) {
+               const val = parseFloat(weightMatch[1]);
+               const unit = weightMatch[2].toLowerCase();
+               itemWeightKg = unit === 'kg' ? val : val / 1000;
+             }
+             totalVolumeKg += itemWeightKg * Number(item.quantity);
+          });
+
+          // Apply Tier Discount
+          let discountPerKg = 10000; // Default Bronze
+          if (partner.tier_name === 'Silver') discountPerKg = 15000;
+          else if (partner.tier_name === 'Gold') discountPerKg = 20000;
+
+          const totalDiscount = totalVolumeKg * discountPerKg;
+          calculatedAmount = Math.max(0, baseTotal - totalDiscount);
+          
+          console.log(`🔒 B2B Enforcement - Profile: ${profileId}, Tier: ${partner.tier_name}, Volume: ${totalVolumeKg}kg, RawTotal: ${baseTotal}, Discount: ${totalDiscount}, EnforcedTotal: ${calculatedAmount}`);
+       }
+    }
+
     const referenceId = `invoice-${uuidv4()}`;
 
     // 1. Create Biteship Draft Order First
@@ -94,8 +141,8 @@ export const createInvoice = async (req, res) => {
           xendit_invoice_id: referenceId,
           biteship_order_id: biteshipDraftId,
           status: 'UNPAID',
-          total_amount: amount,
-          shipping_fee: shippingFee,
+          total_amount: calculatedAmount,
+          shipping_fee: calculatedShippingFee,
           shipping_courier: courier?.courier_name || null,
           customer_name: customerDetails?.name || 'Guest',
           customer_email: customerDetails?.email || 'guest@example.com',
@@ -138,7 +185,7 @@ export const createInvoice = async (req, res) => {
     // 3. Generate Xendit Invoice
     const data = {
       externalId: referenceId,
-      amount: amount,
+      amount: calculatedAmount,
       payerEmail: customerDetails?.email || 'guest@example.com',
       description: 'Fermion Roastery Coffee Order',
       items: items.map(item => ({
@@ -368,6 +415,71 @@ export const handleNotification = async (req, res) => {
       // 2. Generate PDF Invoice automatically
       await generateInvoicePDF(orderData.id);
 
+      // --- 3. AUTO-EVALUATE B2B TIER ---
+      try {
+        const { data: orderProfile } = await supabase
+          .from('orders')
+          .select('profile_id')
+          .eq('id', orderData.id)
+          .single();
+        
+        if (orderProfile && orderProfile.profile_id) {
+           const { data: partner } = await supabase
+             .from('b2b_partners')
+             .select('tier_name, status')
+             .eq('profile_id', orderProfile.profile_id)
+             .maybeSingle();
+
+           if (partner && partner.status === 'approved') {
+              // Sum total volume in last 30 days
+              const thirtyDaysAgo = new Date();
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+              const { data: recentOrders } = await supabase
+                .from('orders')
+                .select('id')
+                .eq('profile_id', orderProfile.profile_id)
+                .gte('created_at', thirtyDaysAgo.toISOString())
+                .in('status', ['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED']);
+
+              if (recentOrders && recentOrders.length > 0) {
+                 const orderIds = recentOrders.map(o => o.id);
+                 const { data: recentItems } = await supabase
+                   .from('order_items')
+                   .select('variant_weight, quantity')
+                   .in('order_id', orderIds);
+                 
+                 let totalVolumeKg = 0;
+                 recentItems?.forEach(item => {
+                   const weightStr = (item.variant_weight || "250g").toLowerCase();
+                   const match = weightStr.match(/(\d+)(g|kg)/);
+                   if (match) {
+                     const val = parseInt(match[1]);
+                     totalVolumeKg += (match[2] === 'kg' ? val : val / 1000) * item.quantity;
+                   }
+                 });
+
+                 console.log(`📊 B2B Partner Evaluation: Profile ${orderProfile.profile_id} has ${totalVolumeKg}kg in last 30 days.`);
+
+                 // Upgrade Rules: Silver (50kg+), Gold (100kg+)
+                 let newTier = partner.tier_name;
+                 if (totalVolumeKg >= 100 && partner.tier_name !== 'Gold') {
+                    newTier = 'Gold';
+                 } else if (totalVolumeKg >= 50 && totalVolumeKg < 100 && partner.tier_name === 'Bronze') {
+                    newTier = 'Silver';
+                 }
+
+                 if (newTier !== partner.tier_name) {
+                    await supabase.from('b2b_partners').update({ tier_name: newTier }).eq('profile_id', orderProfile.profile_id);
+                    console.log(`🚀 AUTO UPGRADE: Partner ${orderProfile.profile_id} upgraded from ${partner.tier_name} to ${newTier}!`);
+                 }
+              }
+           }
+        }
+      } catch (tierError) {
+        console.error('❌ Tier Auto-Upgrade Error:', tierError);
+      }
+
     } else if (status === 'EXPIRED') {
       await supabase
         .from('orders')
@@ -383,3 +495,175 @@ export const handleNotification = async (req, res) => {
   }
 };
 
+export const createManualInvoice = async (req, res) => {
+  const { amount, items, customerDetails, metadata, paymentType } = req.body;
+  const shipping = metadata?.shipping || {};
+  const profileId = metadata?.profileId || null;
+  
+  let calculatedAmount = Number(amount);
+  let isB2bOrder = false;
+
+  try {
+    if (profileId) {
+       const { data: partner } = await supabase
+         .from('b2b_partners')
+         .select('status, tier_name')
+         .eq('profile_id', profileId)
+         .maybeSingle();
+         
+       if (partner && partner.status === 'approved') {
+          isB2bOrder = true;
+          let totalVolumeKg = 0;
+          let baseTotal = 0;
+
+          items.forEach(item => {
+             baseTotal += Number(item.price) * Number(item.quantity);
+             const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
+             let itemWeightKg = 0.25;
+             if (weightMatch) {
+               const val = parseFloat(weightMatch[1]);
+               const unit = weightMatch[2].toLowerCase();
+               itemWeightKg = unit === 'kg' ? val : val / 1000;
+             }
+             totalVolumeKg += itemWeightKg * Number(item.quantity);
+          });
+
+          let discountPerKg = 10000;
+          if (partner.tier_name === 'Silver') discountPerKg = 15000;
+          else if (partner.tier_name === 'Gold') discountPerKg = 20000;
+
+          const totalDiscount = totalVolumeKg * discountPerKg;
+          calculatedAmount = Math.max(0, baseTotal - totalDiscount);
+       }
+    }
+
+    const referenceId = `manual-${uuidv4()}`;
+
+    // Biteship Draft
+    let biteshipDraftId = null;
+    if (shipping.area_id || shipping.postal_code) {
+      try {
+        const draftPayload = {
+          origin_contact_name: "Fermion Roastery",
+          origin_contact_phone: "081234567890",
+          origin_address: "Jl. Kesambi No. 202, Cirebon",
+          origin_area_id: ORIGIN_DETAILS.area_id,
+          origin_postal_code: ORIGIN_DETAILS.postal_code,
+          destination_contact_name: customerDetails?.name || "Customer",
+          destination_contact_phone: customerDetails?.phone || "08123456789",
+          destination_address: shipping.address || "",
+          destination_area_id: shipping.area_id,
+          destination_postal_code: Number(shipping.postal_code),
+          courier_company: "jnt",
+          courier_type: "ez",
+          delivery_type: "later",
+          items: items.map(item => ({
+            name: item.name,
+            description: `Grind: ${item.grind || 'Whole Bean'}`,
+            value: item.price,
+            quantity: item.quantity,
+            weight: 250
+          }))
+        };
+        const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
+        biteshipDraftId = draftRes.data.id;
+      } catch (bsError) {
+        console.error('Manual Biteship Draft Error:', bsError.response?.data || bsError.message);
+      }
+    }
+
+    const internalOrderId = `ORD-${Date.now()}`;
+
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert([
+        {
+          id: internalOrderId,
+          profile_id: profileId,
+          xendit_invoice_id: referenceId,
+          biteship_order_id: biteshipDraftId,
+          total_amount: calculatedAmount,
+          status: 'PAID', // Directly PAID for B2B Tempo/Offline
+          customer_name: customerDetails?.name,
+          customer_email: customerDetails?.email,
+          customer_phone: customerDetails?.phone,
+          shipping_address: shipping.address,
+          shipping_city: shipping.city || 'Cirebon',
+          payment_method: paymentType === 'tempo' ? 'TEMPO' : 'OFFLINE_CASH',
+          type: 'b2b'
+        }
+      ])
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+
+    // Insert Order Items
+    const orderItems = items.map(item => ({
+      order_id: orderData.id,
+      product_id: item.id,
+      product_name: item.name,
+      variant_weight: item.name.match(/\((.*?)\)/)?.[1] || '1KG',
+      variant_grind: item.grind || 'Whole Bean',
+      quantity: item.quantity,
+      unit_price: item.price
+    }));
+
+    const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+    if (itemsError) throw itemsError;
+
+    // IMMEDIATELY PROCESS IT LIKE WEBHOOK
+    // Inventory Sync
+    for (const item of items) {
+       let deductionUnits = 0;
+       const weightMatch = item.name.match(/\((.*?)\)/);
+       const weightLower = weightMatch ? weightMatch[1].toLowerCase() : "1kg";
+       const match = weightLower.match(/(\d+)(g|kg)/);
+       if (match) {
+          const val = parseInt(match[1]);
+          const unit = match[2];
+          const grams = unit === 'kg' ? val * 1000 : val;
+          deductionUnits = item.quantity * (grams / 250);
+       }
+       if (deductionUnits > 0) {
+          const { data: product } = await supabase.from('products').select('stock_quantity').eq('id', item.id).single();
+          if (product) {
+             await supabase.from('products').update({ stock_quantity: product.stock_quantity - deductionUnits }).eq('id', item.id);
+          }
+       }
+    }
+
+    // Biteship Confirmation
+    if (biteshipDraftId) {
+      try {
+        const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${biteshipDraftId}/confirm`, {}, { headers: biteshipHeaders });
+        const finalOrderId = confirmRes.data.id;
+        const waybillId = confirmRes.data.courier.waybill_id;
+        const labelUrl = confirmRes.data.label_url || confirmRes.data.courier?.label_url || `https://dashboard.biteship.com/labels/${finalOrderId}`;
+
+        await supabase.from('orders').update({
+           biteship_order_id: finalOrderId,
+           shipping_awb: waybillId,
+           shipping_label_url: labelUrl,
+           status: 'READY_TO_SHIP'
+        }).eq('id', orderData.id);
+        publishEvent('orders', 'order_updated', { id: orderData.id, status: 'READY_TO_SHIP', awb: waybillId });
+      } catch (bsConfErr) {
+        console.error('Manual Biteship Confirm Error:', bsConfErr);
+      }
+    }
+
+    // PDF Generation
+    await generateInvoicePDF(orderData.id);
+
+    res.status(200).json({
+      invoiceUrl: `/b2b/ledger`, // Redirect them straight to ledger
+      orderId: orderData.id,
+      message: "Manual order created successfully"
+    });
+
+  } catch (error) {
+    console.error('Manual Payment Error:', error);
+    res.status(500).json({ message: "Failed to create manual invoice", error: error.message });
+  }
+};

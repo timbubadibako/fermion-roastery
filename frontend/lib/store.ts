@@ -20,6 +20,7 @@ export interface CartItem {
   selected?: boolean; 
   priceType?: string;
   original_price?: number;
+  isB2B?: boolean;
 }
 
 interface CartStore {
@@ -70,9 +71,9 @@ export const useCartStore = create<CartStore>()(
           ? currentItems.map(item => ({ ...item, selected: false }))
           : currentItems;
 
-        // Try to merge if item is exactly same (product + options)
+        // Try to merge if item is exactly same (product + options + isB2B)
         const existingItemIndex = baseItems.findIndex(
-          (item) => item.id === newItem.id && item.weight === newItem.weight && item.grind === newItem.grind
+          (item) => item.id === newItem.id && item.weight === newItem.weight && item.grind === newItem.grind && item.isB2B === newItem.isB2B
         );
 
         let updatedItems;
@@ -163,13 +164,29 @@ interface AuthStore {
   user: any | null;
   setUser: (user: any) => void;
   logout: () => void;
+  refreshSession: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       setUser: (user) => set({ user }),
+      refreshSession: async () => {
+        const { user } = get();
+        if (!user || !user.id) return;
+        try {
+          // Use our next.js proxy routing
+          const res = await fetch(`/api/auth/profile/${user.id}`);
+          if (res.ok) {
+            const freshUser = await res.json();
+            // preserve any local auth tokens if necessary, or just merge
+            set({ user: { ...user, ...freshUser } });
+          }
+        } catch (e) {
+          console.error("Failed to refresh session", e);
+        }
+      },
       logout: () => {
         document.cookie = "fermion_profile_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         set({ user: null });
