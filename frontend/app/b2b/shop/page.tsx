@@ -62,7 +62,7 @@ export default function WholesaleShopPage() {
       price: finalPrice,
       quantity: 1,
       image: "https://placehold.co/800x1000/367f4d/ffffff?text=FERMION+COFFEE",
-      weight: "250g", // Default or you can adjust
+      weight: "1000g", // B2B Default is 1KG
       grind: "Whole Bean",
       priceType: product.priceType || 'tier',
       original_price: Number(product.price_retail)
@@ -107,48 +107,130 @@ export default function WholesaleShopPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {products.map((product, i) => {
-          const wholesalePrice = product.price || product.price_retail;
-          const isDiscounted = wholesalePrice < product.price_retail;
+      {/* VOLUME DISCOUNT BANNER */}
+      <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 flex items-start gap-4 shadow-sm mb-8">
+         <div className="p-3 bg-emerald-500 text-white rounded-full shrink-0">
+            <TrendingDown size={20} />
+         </div>
+         <div className="space-y-1">
+            <h3 className="font-black uppercase tracking-widest text-emerald-900 text-sm">Volume Discount Aktif</h3>
+            <p className="text-emerald-700 text-xs font-medium leading-relaxed">
+               Harga yang ditampilkan adalah harga dasar Tier {currentTier}. <br className="hidden md:block"/>
+               Dapatkan tambahan diskon <strong className="font-black">5%</strong> untuk total pemesanan di atas 5 KG, dan <strong className="font-black">10%</strong> untuk di atas 10 KG. (Diterapkan otomatis di keranjang).
+            </p>
+         </div>
+      </div>
 
-          return (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              key={product.id} 
-              className="bg-white p-8 rounded-sm border border-black/5 flex flex-col justify-between group hover:border-[#367F4D]/30 transition-all shadow-sm hover:shadow-xl"
-            >
-              <div className="space-y-6">
-                 <div className="space-y-2">
-                    <span className="text-[8px] font-black bg-stone-100 px-3 py-1 rounded-sm border border-black/5 uppercase tracking-widest text-slate-500">{product.origin}</span>
-                    <h3 className="font-display text-3xl font-bold text-slate-900 uppercase italic tracking-tighter leading-tight">{product.name}</h3>
-                 </div>
-                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest line-clamp-3">"{product.notes}"</p>
-              </div>
-              
-              <div className="pt-8 mt-8 border-t border-black/5 flex items-end justify-between">
-                 <div className="space-y-1">
-                    {isDiscounted && (
-                      <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest line-through">Retail: Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
-                    )}
-                    <p className="text-2xl font-bold text-slate-900 tracking-tight">
-                      Rp {Number(wholesalePrice).toLocaleString('id-ID')}
-                      <span className="text-[9px] text-slate-400 ml-1 font-black tracking-widest uppercase">/ Unit</span>
-                    </p>
-                 </div>
-                 <Button 
-                   onClick={() => handleAddToCart(product)}
-                   size="icon"
-                   className="w-12 h-12 bg-stone-50 hover:bg-[#367F4D] text-slate-400 hover:text-white rounded-sm transition-all border-none shadow-none"
-                 >
-                    <Plus size={20} />
-                 </Button>
-              </div>
-            </motion.div>
-          );
-        })}
+      {/* PRODUCT CATALOG GROUPS */}
+      <div className="space-y-20">
+         {['Espresso', 'Filter'].map((mainCat) => {
+            // Group by subcategory
+            const getSubCat = (p: Product) => {
+               const n = p.name.toLowerCase();
+               if (mainCat === 'Espresso') {
+                  if (n.includes('komoditi') || n.includes('komersil')) return 'Espresso Komodity';
+                  if (n.includes('specialty')) return 'Espresso Specialty';
+                  // if not specified, default to Komodity
+                  return 'Espresso Komodity'; 
+               } else {
+                  if (n.includes('exotic')) return 'Filter Exotic';
+                  return 'Filter Specialty';
+               }
+            };
+
+            const catProducts = products.filter(p => {
+               const n = p.name.toLowerCase();
+               if (mainCat === 'Filter') return n.includes('filter') || n.includes('exotic') || n.includes('v60');
+               // Espresso is default if not filter
+               return !(n.includes('filter') || n.includes('exotic') || n.includes('v60'));
+            });
+
+            if (catProducts.length === 0) return null;
+
+            // Grouping subcategories
+            const subs = mainCat === 'Espresso' 
+               ? ['Espresso Komodity', 'Espresso Specialty'] 
+               : ['Filter Specialty', 'Filter Exotic'];
+
+            return (
+               <div key={mainCat} className="space-y-12">
+                  <div className="border-b-2 border-slate-900 pb-4">
+                     <h2 className="text-4xl font-display font-black italic tracking-tighter text-slate-900 uppercase">Kategori: {mainCat}.</h2>
+                  </div>
+                  
+                  {subs.map(subCat => {
+                     const subProducts = catProducts.filter(p => getSubCat(p) === subCat);
+                     if (subProducts.length === 0) return null;
+
+                     return (
+                        <div key={subCat} className="space-y-6">
+                           <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.3em]">{subCat}</h3>
+                           
+                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                             {subProducts.map((product, i) => {
+                               const wholesalePrice = product.price || product.price_retail;
+                               const isDiscounted = wholesalePrice < product.price_retail;
+                               // Placeholder image logic based on category
+                               const imgUrl = mainCat === 'Espresso' 
+                                 ? "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=800&q=80"
+                                 : "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=800&q=80";
+
+                               return (
+                                 <motion.div 
+                                   initial={{ opacity: 0, y: 20 }}
+                                   animate={{ opacity: 1, y: 0 }}
+                                   transition={{ delay: i * 0.05 }}
+                                   key={product.id} 
+                                   className="bg-white rounded-2xl border border-black/5 flex flex-col group hover:border-[#367F4D]/30 transition-all shadow-sm hover:shadow-xl overflow-hidden"
+                                 >
+                                   <div className="h-48 bg-stone-100 relative overflow-hidden">
+                                      <img 
+                                         src={imgUrl} 
+                                         alt={product.name}
+                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                      />
+                                      <div className="absolute top-4 left-4">
+                                         <span className="text-[8px] font-black bg-white px-3 py-1 rounded-sm border border-black/5 uppercase tracking-widest text-slate-500 shadow-sm">{product.origin || "Blend"}</span>
+                                      </div>
+                                   </div>
+
+                                   <div className="p-8 flex-1 flex flex-col justify-between">
+                                      <div className="space-y-6">
+                                         <div className="space-y-2">
+                                            <h3 className="font-display text-3xl font-bold text-slate-900 uppercase italic tracking-tighter leading-tight">{product.name}</h3>
+                                         </div>
+                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest line-clamp-3 leading-relaxed">"{product.notes}"</p>
+                                      </div>
+                                      
+                                      <div className="pt-8 mt-8 border-t border-black/5 flex items-end justify-between">
+                                         <div className="space-y-1">
+                                            {isDiscounted && (
+                                              <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest line-through">Retail: Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
+                                            )}
+                                            <p className="text-2xl font-bold text-slate-900 tracking-tight">
+                                              Rp {Number(wholesalePrice).toLocaleString('id-ID')}
+                                              <span className="text-[9px] text-slate-400 ml-1 font-black tracking-widest uppercase">/ 1 KG</span>
+                                            </p>
+                                         </div>
+                                         <Button 
+                                           onClick={() => handleAddToCart(product)}
+                                           size="icon"
+                                           className="w-12 h-12 bg-slate-900 hover:bg-[#367F4D] text-white rounded-lg transition-all border-none shadow-md hover:shadow-xl shrink-0"
+                                         >
+                                            <Plus size={20} />
+                                         </Button>
+                                      </div>
+                                   </div>
+                                 </motion.div>
+                               );
+                             })}
+                           </div>
+                        </div>
+                     );
+                  })}
+               </div>
+            );
+         })}
       </div>
 
       <div className="bg-slate-900 rounded-sm p-12 text-white flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl relative overflow-hidden group">

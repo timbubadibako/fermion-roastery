@@ -42,6 +42,7 @@ export default function B2BCheckoutPage() {
   const [couriers, setCouriers] = useState<any[]>([]);
   const [selectedCourier, setSelectedCourier] = useState<any>(null);
   const [ratesLoading, setRatesLoading] = useState(false);
+  const [paymentType, setPaymentType] = useState<'cash' | 'tempo' | 'cash_offline'>('tempo');
 
   useEffect(() => {
     if (user) {
@@ -75,6 +76,31 @@ export default function B2BCheckoutPage() {
 
     setProcessing(true);
     try {
+      // TEMPO / NET 30 LOGIC
+      if (paymentType === 'tempo') {
+        setTimeout(() => {
+           setProcessing(false);
+           const lineItemIdsToRemove = items.map(item => item.lineItemId);
+           localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
+           toast.success("Invoice Net-30 Berhasil Dibuat.");
+           router.push('/b2b/invoice/INV-TEMPO-102');
+        }, 1500);
+        return;
+      }
+
+      // OFFLINE PAYMENT LOGIC
+      if (paymentType === 'cash_offline') {
+        setTimeout(() => {
+           setProcessing(false);
+           const lineItemIdsToRemove = items.map(item => item.lineItemId);
+           localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
+           toast.success("Pesanan offline berhasil dicatat.");
+           router.push('/b2b/invoice/INV-OFFLINE-103');
+        }, 1500);
+        return;
+      }
+
+      // FULL PAYMENT LOGIC
       const res = await fetch("/api/payments/invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +149,7 @@ export default function B2BCheckoutPage() {
     } catch (e) {
       toast.error("Communication failure with Payment Gateway.");
     } finally {
-      setProcessing(false);
+      if (paymentType === 'cash') setProcessing(false);
     }
   };
 
@@ -134,9 +160,7 @@ export default function B2BCheckoutPage() {
     </div>
   );
 
-  const subtotal = getTotal(true);
-  const shippingFee = selectedCourier?.price || 0;
-  const grandTotal = subtotal + shippingFee;
+  const baseSubtotal = getTotal(true);
   
   const totalVolumeKg = items.reduce((acc, item) => {
     let weight = 0.25; 
@@ -146,6 +170,15 @@ export default function B2BCheckoutPage() {
     }
     return acc + (weight * item.quantity);
   }, 0);
+
+  let discountPercentage = 0;
+  if (totalVolumeKg >= 10) discountPercentage = 0.10;
+  else if (totalVolumeKg >= 5) discountPercentage = 0.05;
+
+  const volumeDiscount = baseSubtotal * discountPercentage;
+  const subtotal = baseSubtotal - volumeDiscount;
+  const shippingFee = selectedCourier?.price || 0;
+  const grandTotal = subtotal + shippingFee;
 
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-slate-400">
@@ -263,6 +296,27 @@ export default function B2BCheckoutPage() {
               <div className="space-y-8 relative z-10">
                  <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500 mb-6">Ringkasan Pesanan</h3>
                  
+                 <div className="flex gap-2 mb-6 p-1 bg-white/5 rounded-xl border border-white/10">
+                    <button 
+                       onClick={() => setPaymentType('tempo')}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'tempo' ? 'bg-periwinkle text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                       Net 30
+                    </button>
+                    <button 
+                       onClick={() => setPaymentType('cash_offline')}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'cash_offline' ? 'bg-periwinkle text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                       Tunai (Offline)
+                    </button>
+                    <button 
+                       onClick={() => setPaymentType('cash')}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'cash' ? 'bg-periwinkle text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                    >
+                       Gateway
+                    </button>
+                 </div>
+
                  <div className="space-y-4">
                     {items.map(item => (
                        <div key={item.id} className="flex justify-between items-start border-b border-white/10 pb-4">
@@ -285,8 +339,14 @@ export default function B2BCheckoutPage() {
                  <div className="space-y-4 pt-4">
                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                        <span>Subtotal Produk</span>
-                       <span className="font-mono text-slate-300">Rp {subtotal.toLocaleString('id-ID')}</span>
+                       <span className="font-mono text-slate-300">Rp {baseSubtotal.toLocaleString('id-ID')}</span>
                     </div>
+                    {volumeDiscount > 0 && (
+                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                         <span>Volume Discount ({discountPercentage * 100}%)</span>
+                         <span className="font-mono">-Rp {volumeDiscount.toLocaleString('id-ID')}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-lg font-black uppercase italic text-white pt-4 border-t border-white/20">
                        <span>Total Pembayaran</span>
                        <span className="font-mono text-periwinkle">Rp {grandTotal.toLocaleString('id-ID')}</span>
@@ -298,7 +358,7 @@ export default function B2BCheckoutPage() {
                    disabled={processing || !selectedCourier}
                    className="w-full h-16 bg-white text-slate-950 font-black uppercase tracking-[0.2em] italic text-[10px] rounded-2xl hover:bg-periwinkle hover:text-white transition-all shadow-xl"
                  >
-                    {processing ? <Loader2 className="animate-spin" /> : "Bayar Invoice Sekarang"}
+                    {processing ? <Loader2 className="animate-spin" /> : (paymentType === 'tempo' ? "Cetak Invoice Tempo" : paymentType === 'cash_offline' ? "Catat Pesanan Tunai" : "Bayar Sekarang")}
                  </Button>
               </div>
            </div>

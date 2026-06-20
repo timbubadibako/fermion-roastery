@@ -371,8 +371,9 @@ export default function CartPage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
                 <div className="lg:col-span-8 space-y-12">
-                  <AddressSelection
-                    address={{
+                  <div id="tour-address-selection">
+                    <AddressSelection
+                      address={{
                       address: shippingData.address || '',
                       city: shippingData.city || '',
                       postalCode: shippingData.postal_code || '',
@@ -414,9 +415,10 @@ export default function CartPage() {
                     }))}
                     savedAddresses={addresses}
                     onSelectSaved={selectAddress}
-                    activeAddressId={activeAddressId || undefined}
-                    contextType='retail'
-                  />
+                      activeAddressId={activeAddressId || undefined}
+                      contextType='retail'
+                    />
+                  </div>
 
                   {/* Courier Section (Kept from CartPage logic) */}
                   <div className="space-y-10 pt-6 border-t border-dashed border-black/10 bg-white p-10 border border-black/10 rounded-sm">

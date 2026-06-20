@@ -25,7 +25,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
     return (
         <div className="space-y-10">
             {/* Opsi Alamat Tersimpan */}
-            <div className="space-y-6">
+            <div id="tour-subcheck-saved" className="space-y-6">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pilih Alamat Tersimpan</h3>
 
                 {savedAddresses.length > 0 ? (
@@ -58,7 +58,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
             </div>
 
             {/* Main Form Container */}
-            <div className="bg-white p-8 md:p-12 border border-black/5 shadow-sm relative rounded-sm">
+            <div id="tour-subcheck-form" className="bg-white p-8 md:p-12 border border-black/5 shadow-sm relative rounded-sm">
                 <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/60 border border-black/5 rotate-[-2deg] backdrop-blur-sm shadow-sm z-10" />
 
                 <div className="space-y-10 relative z-0">

@@ -130,6 +130,7 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
             </div>
             
             <Button 
+              id="tour-checkout-btn"
               onClick={handleCheckout}
               disabled={selectedCount === 0}
               className="w-full h-14 bg-stone-900 text-white font-black uppercase tracking-widest text-[10px] rounded-sm transition-all hover:bg-[#367F4D] hover:-translate-y-1 active:scale-95"
