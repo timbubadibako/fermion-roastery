@@ -25,3 +25,4 @@ Thumbs.db
 # Superpowers Brainstorming
 .superpowers/
 backend/invoices/
+\n# Secrets\nbackend/seed*.js\n
