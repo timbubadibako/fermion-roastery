@@ -80,6 +80,8 @@ export const translations = {
       },
     },
     admin: {
+      loading: "Loading Systems...",
+      selectFullRange: "Select full date range.",
       kanban: {
         title: "Order Kanban",
         columns: {
@@ -608,6 +610,8 @@ export const translations = {
       },
     },
     admin: {
+      loading: "Memuat Sistem...",
+      selectFullRange: "Pilih rentang tanggal lengkap.",
       kanban: {
         title: "Papan Pesanan",
         columns: {
