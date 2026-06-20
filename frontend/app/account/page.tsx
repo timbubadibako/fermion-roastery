@@ -12,7 +12,8 @@ import {
   User, LogOut, Package, Settings,
   Clock, Truck, CheckCircle2, ChevronRight,
   Coffee, ArrowRight, Loader2, Receipt,
-  LayoutDashboard, Ban, MapPin, Phone, Crosshair, Sparkles
+  LayoutDashboard, Ban, MapPin, Phone, Crosshair, Sparkles,
+  Download, Upload
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
 
@@ -333,20 +334,27 @@ function AccountContent() {
               { id: "overview", label: "Overview", icon: LayoutDashboard },
               { id: "orders", label: "Order Records", icon: Package },
               { id: "subscription", label: "Subscription", icon: Sparkles },
-              { id: "settings", label: "Lab Settings", icon: Settings }
+              { id: "settings", label: "Lab Settings", icon: Settings },
+              // Hanya tampilkan tab ini jika mereka sudah mendaftar B2B (pending atau approved)
+              ...(user?.b2b_status === 'PENDING' || user?.role === 'B2B' 
+                  ? [{ id: "b2b_registration", label: "Registrasi B2B", icon: Coffee }] 
+                  : [])
             ].map(tab => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-4 px-6 py-4 rounded-sm text-[11px] font-black uppercase tracking-[0.2em] transition-colors ${isActive
+                  className={`relative w-full flex items-center gap-4 px-6 py-4 rounded-sm text-[11px] font-black uppercase tracking-[0.2em] transition-colors ${isActive
                     ? "bg-slate-900 text-white shadow-lg"
                     : "bg-transparent text-stone-400 hover:text-slate-600"
                     }`}
                 >
                   <tab.icon size={16} />
                   {tab.label}
+                  {tab.id === "b2b_registration" && user?.b2b_status === 'PENDING' && (
+                     <span className="absolute top-4 right-4 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                  )}
                 </button>
               )
             })}
@@ -708,6 +716,66 @@ function AccountContent() {
                       </div>
                     </div> {/* Penutup space-y-8 di bawah judul */}
                   </div> {/* Penutup bg-white p-10 */}
+                </motion.div>
+              )}
+              {activeTab === "b2b_registration" && (user?.b2b_status === 'PENDING' || user?.role === 'B2B') && (
+                <motion.div key="b2b_registration" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                  <div className="bg-white p-10 border border-black/5 shadow-sm rounded-sm">
+                    {/* Status Badge */}
+                    {user?.b2b_status === 'PENDING' && (
+                       <div className="flex items-center gap-4 bg-amber-50 border border-amber-100 p-4 rounded-xl mb-8">
+                          <Clock className="text-amber-500" size={24} />
+                          <div>
+                             <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest">Status: Menunggu Persetujuan</h4>
+                             <p className="text-xs font-medium text-amber-700">Mohon lengkapi dokumen kontrak di bawah ini agar tim kami dapat segera menyetujui akun B2B Anda.</p>
+                          </div>
+                       </div>
+                    )}
+
+                    {/* Documents - Scrapbook Style from /b2b/contract */}
+                    <div className="bg-[#FDFBF7] p-8 md:p-12 border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.02)] rounded-none relative text-center overflow-visible mt-4">
+                            {/* Grid Pattern */}
+                            <div className="absolute inset-0 opacity-[0.1] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                            
+                            {/* Tape */}
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
+                            
+                            <div className="space-y-6 relative z-10">
+                              <h2 className="text-4xl font-cloude italic tracking-tighter text-slate-900 leading-none">Contract Protocol.</h2>
+                              <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Legal Finalization</p>
+                              <p className="text-sm text-stone-600 font-medium leading-relaxed italic">
+                                "Your partnership agreement is ready. Please download, sign, and upload to finalize your lab access."
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
+                              <Button 
+                                onClick={() => window.open(`/api/b2b/contract?profileId=${user.id}`, '_blank')}
+                                className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
+                              >
+                                 <Download size={14} className="mr-3" /> Download Contract PDF
+                              </Button>
+                              
+                              <div className="relative group">
+                                 <label className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
+                                    <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />
+                                    <div className="text-center">
+                                       <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">Drop or Click to Upload</p>
+                                       <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">Accepted Format: PDF Only (Max 5MB)</p>
+                                    </div>
+                                    <input type="file" className="hidden" accept="application/pdf" onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      toast.loading("Uploading contract...", { id: "upload-contract" });
+                                      setTimeout(() => {
+                                        toast.success("Contract uploaded successfully!", { id: "upload-contract" });
+                                      }, 2000);
+                                    }} />
+                                 </label>
+                              </div>
+                            </div>
+                         </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
