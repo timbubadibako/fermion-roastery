@@ -7,11 +7,12 @@ import { usePathname } from "next/navigation";
 import {
   Menu, X, User, Search, ShoppingBag,
   LayoutDashboard, LayoutGrid, PackageSearch,
-  Loader2, Coffee, Sparkles, ArrowRight
+  Loader2, Coffee, Sparkles, ArrowRight, Languages
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartSheet } from "./cart-sheet";
-import { useAuthStore, useCartStore } from "@/lib/store";
+import { useAuthStore, useCartStore, useLangStore } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 import { siteContent } from "@/lib/content";
 import { Sticker } from "./ui/sticker";
@@ -35,6 +36,8 @@ function HeaderComponent() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { addItem } = useCartStore();
+  const { language, toggleLanguage } = useLangStore();
+  const t = useI18n();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -69,6 +72,16 @@ function HeaderComponent() {
     });
     toast.success(`${product.name} added to cart!`);
     setIsSearchOpen(false);
+  };
+
+  const handleLanguageToggle = () => {
+    const newLang = language === 'id' ? 'en' : 'id';
+    toggleLanguage();
+    if (newLang === 'en') {
+      toast.success('Language switched to English', { description: 'All contents have been translated.' });
+    } else {
+      toast.success('Berhasil ganti bahasa', { description: 'Bahasa diubah ke Indonesia.' });
+    }
   };
 
   // --- Effects ---
@@ -136,6 +149,38 @@ function HeaderComponent() {
       searchInputRef.current.focus();
     }
   }, [isSearchOpen]);
+
+  // Daily B2B Pending Hint
+  useEffect(() => {
+    if (!mounted || !user) return;
+    
+    // Check if they are pending B2B (either role B2B with pending status, or retail with pending status)
+    if (user.b2b_status === 'PENDING') {
+      const today = new Date().toISOString().split('T')[0];
+      const lastShown = localStorage.getItem('b2b_pending_hint_date');
+      
+      if (lastShown !== today) {
+        setTimeout(() => {
+          toast.custom((t) => (
+            <div 
+              onClick={() => { toast.dismiss(t); router.push('/account'); }}
+              className="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] cursor-pointer hover:bg-amber-100 transition-all transform hover:scale-105"
+            >
+              <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest flex items-center gap-2">
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" /> 
+                Aksi Diperlukan
+              </h4>
+              <p className="text-xs font-medium text-amber-800 mt-1">
+                Akun Grosir B2B Anda menunggu persetujuan. Klik di sini untuk mengunggah dokumen!
+              </p>
+            </div>
+          ), { duration: 8000, position: 'top-center' });
+          
+          localStorage.setItem('b2b_pending_hint_date', today);
+        }, 1500); // slight delay so it doesn't pop instantly on fast loads
+      }
+    }
+  }, [user, mounted, router]);
 
   // Logic for light/dark text contrast based on page and scroll position
   const isLandingPage = pathname === "/";
@@ -243,11 +288,11 @@ function HeaderComponent() {
               })}
             </nav>
 
-            <div className="flex items-center gap-6 flex-shrink-0" ref={searchContainerRef}>
+            <div className="flex items-center gap-3 md:gap-4 flex-shrink-0" ref={searchContainerRef}>
               <div className="relative hidden lg:block">
                 {/* 🟢 FIXED: Memperbaiki background wrapper search button agar sewarna teman-temannya */}
                 <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-[#FDFBF7] border border-black/5 rounded-full px-4 shadow-sm" : "w-9"}`}>
-                  <button onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none`}>
+                  <button id="tour-search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none`}>
                     <Search size={18} strokeWidth={2} />
                   </button>
                   <input
@@ -357,14 +402,27 @@ function HeaderComponent() {
                 </AnimatePresence>
               </div>
 
+              <div className={`hidden lg:block h-5 w-[1px] ${isDarkHero ? "bg-white/20" : "bg-black/10"}`} />
+
               {/* 🟢 FIXED: Menerapkan currentTextColor dinamis ke semua icon pendukung agar sewarna */}
-              <div className="flex items-center gap-4">
-                {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account" title="My Account" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+              <div className="flex items-center gap-3 md:gap-4">
+                <button 
+                  id="tour-lang-btn"
+                  onClick={handleLanguageToggle} 
+                  title={language === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'}
+                  className={`${currentTextColor} transition-all flex items-center justify-center hover:scale-110`}
+                >
+                  <Languages size={20} strokeWidth={1.8} />
+                </button>
+                {mounted && (user?.role === 'RETAIL' || (user?.role === 'B2B' && user?.b2b_status === 'PENDING')) && (
+                  <Link id="tour-account-btn" href="/account" title="My Account" className={`${currentTextColor} transition-all flex items-center gap-2 relative`}>
                     <PackageSearch size={20} strokeWidth={1.8} />
+                    {user?.b2b_status === 'PENDING' && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border border-white animate-pulse" />
+                    )}
                   </Link>
                 )}
-                {mounted && user?.role === 'B2B' && (
+                {mounted && user?.role === 'B2B' && user?.b2b_status !== 'PENDING' && (
                   <Link href="/b2b" title="Partner Hub" className={`${currentTextColor} transition-all flex items-center gap-2`}>
                     <LayoutGrid size={20} strokeWidth={1.8} />
                   </Link>
@@ -375,7 +433,7 @@ function HeaderComponent() {
                   </Link>
                 )}
                 {mounted && !user && (
-                  <Link href="/auth" title="Login" className={`${currentTextColor} transition-all flex items-center gap-2`}>
+                  <Link id="tour-account-btn-login" href="/auth" title="Login" className={`${currentTextColor} transition-all flex items-center gap-2`}>
                     <User size={20} strokeWidth={1.8} />
                   </Link>
                 )}
@@ -385,7 +443,7 @@ function HeaderComponent() {
               </div>
 
               {mounted && (
-                <div className="relative border-l border-black/10 pl-4 ml-1">
+                <div id="tour-cart-wrapper" className={`relative border-l ${isDarkHero ? "border-white/20" : "border-black/10"} pl-3 md:pl-4`}>
                   <CartSheet isScrolled={isScrolled} />
                 </div>
               )}

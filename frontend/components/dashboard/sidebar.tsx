@@ -117,8 +117,8 @@ export function UnifiedSidebar({ role }: SidebarProps) {
             <div className="space-y-1">
               {group.items.map((item) => {
                 // Presisi deteksi active state
-                const isActive = item.href === "/admin"
-                  ? pathname === "/admin"
+                const isActive = (item.href === "/admin" || item.href === "/b2b")
+                  ? pathname === item.href
                   : pathname.startsWith(item.href);
 
                 return (

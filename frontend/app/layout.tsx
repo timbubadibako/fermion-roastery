@@ -55,8 +55,8 @@ export default function RootLayout({
   
   // Portal detection
   const isAdmin = pathname.startsWith('/admin');
-  const isB2BPortal = pathname.startsWith('/b2b') && !pathname.startsWith('/b2b/register');
-  const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || isAdmin || isB2BPortal;
+  const isB2BPortal = pathname.startsWith('/b2b') && !pathname.startsWith('/b2b/register') && !pathname.startsWith('/b2b/contract');
+  const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || pathname === '/b2b/contract' || isAdmin || isB2BPortal;
 
   // Final role determination for sidebar
   const activeRole = isAdmin ? "ADMIN" : (isB2BPortal ? "B2B" : null);
@@ -80,8 +80,8 @@ export default function RootLayout({
         {/* Temporarily hidden chat feature */}
         {/* {!hideMainLayout && <ChatFloating />} */}
         
-        {!hideMainLayout && <SpotlightGuide />}
-        {!hideMainLayout && <SpotlightFAB />}
+        <SpotlightGuide />
+        <SpotlightFAB />
 
         <Toaster position="bottom-right" expand={false} richColors />
         <Analytics />
