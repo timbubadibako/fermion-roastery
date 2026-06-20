@@ -212,3 +212,23 @@ export const useSpotlightStore = create<SpotlightStore>()(
     }
   )
 );
+
+// --- Language Store ---
+interface LangStore {
+  language: 'id' | 'en';
+  setLanguage: (lang: 'id' | 'en') => void;
+  toggleLanguage: () => void;
+}
+
+export const useLangStore = create<LangStore>()(
+  persist(
+    (set, get) => ({
+      language: 'en', // Default to English given the scrapbook vibes
+      setLanguage: (language) => set({ language }),
+      toggleLanguage: () => set({ language: get().language === 'id' ? 'en' : 'id' }),
+    }),
+    {
+      name: 'fermion-lang-storage',
+    }
+  )
+);
