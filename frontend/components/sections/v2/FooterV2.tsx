@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { siteContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,7 +14,8 @@ gsap.registerPlugin(ScrollTrigger);
  */
 export function FooterV2() {
   const isMobile = useIsMobile();
-  const content = siteContent.footer;
+  const t = useI18n();
+  const content = t.landing.footer;
   const footerRef = useRef<HTMLElement>(null);
 
   // Smooth zigzag on mobile

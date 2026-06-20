@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, memo } from "react";
 import { motion } from "framer-motion";
-import { siteContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Sticker } from "@/components/ui/sticker";
@@ -24,7 +24,8 @@ const layout = [
  * SECTION 4: THE FERMION WAY (SCRAPBOOK AESTHETIC)
  */
 function TheWayV2Component() {
-  const content = siteContent.theWay;
+  const t = useI18n();
+  const content = t.landing.theWay;
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);

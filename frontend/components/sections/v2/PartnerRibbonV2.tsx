@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, memo } from "react";
-import { siteContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { PartnerCard, PartnerCardProps } from "./PartnerCard";
 
 /**
@@ -28,6 +28,8 @@ const staticPartners = [
 
 function PartnerRibbonV2Component() {
   const [isScrolling, setIsScrolling] = useState(false);
+  const t = useI18n();
+  const content = t.landing.partnerRibbon;
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -63,7 +65,7 @@ function PartnerRibbonV2Component() {
       {/* Label for the ribbon */}
       <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40">
          <div className="bg-white px-3 py-1 border border-black/10 shadow-sm rounded-sm text-[6px] font-black uppercase tracking-[0.3em] text-stone-400 rotate-[-1deg]">
-           Trusted Laboratory Partners
+           {content.placeholder}
          </div>
       </div>
 

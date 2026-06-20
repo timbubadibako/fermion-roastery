@@ -5,7 +5,8 @@ import axios from "axios";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Plus, Minus } from "lucide-react";
-import { strings } from "@/lib/strings";
+import { useI18n } from "@/lib/i18n";
+import { useLangStore } from "@/lib/store";
 import { Sticker } from "@/components/ui/sticker";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,7 +20,8 @@ interface FAQ {
 }
 
 function FAQSectionComponent() {
-  const lang = 'id';
+  const { language: lang } = useLangStore();
+  const t = useI18n();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -117,7 +119,7 @@ function FAQSectionComponent() {
             </Sticker>
             
             <h2 className="text-5xl md:text-7xl font-cloude leading-[0.9] text-[#E2DACB] relative">
-              {strings[lang].faq.title}
+              {t.landing.faq.title}
               <svg className="absolute -bottom-4 left-0 w-3/4 h-6 text-[#F1B941]/60 -z-10" viewBox="0 0 100 20" preserveAspectRatio="none">
                 <path d="M0 10 Q 50 20 100 0" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>

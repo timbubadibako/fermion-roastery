@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCartStore, useAuthStore } from "@/lib/store";
+import { useCartStore, useAuthStore, useSpotlightStore } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -27,6 +28,10 @@ interface CoffeeProduct {
   image_url: string;
   notes: string;
   is_active: boolean;
+  category?: string;
+  sub_category?: string;
+  discount_percent?: number;
+  created_at?: string;
 }
 
 export function RetailCatalog() {
@@ -41,12 +46,16 @@ export function RetailCatalog() {
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("FEATURED");
   const [currentPage, setCurrentPage] = useState(1);
+  const t = useI18n();
+  const tCat = t.catalog;
 
   const headerRef = useRef<HTMLDivElement>(null);
   const catalogRef = useRef<HTMLDivElement>(null);
   const sortContainerRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore((state) => state.addItem);
+  const openCart = useCartStore((state) => state.openCart);
   const { user } = useAuthStore();
+  const { isTourActive, currentStep, nextStep } = useSpotlightStore();
 
   useEffect(() => {
     setMounted(true);
@@ -131,6 +140,13 @@ export function RetailCatalog() {
 
   useEffect(() => {
     let result = [...products];
+    if (activeFilter !== "ALL") {
+      if (activeFilter === "ESPRESSO" || activeFilter === "FILTER") {
+        result = result.filter(p => p.category && p.category.toUpperCase() === activeFilter);
+      } else {
+        result = result.filter(p => p.process && p.process.toUpperCase() === activeFilter);
+      }
+    }
     if (sortBy === "PRICE_HIGH") {
       result.sort((a, b) => Number(b.price_retail) - Number(a.price_retail));
     } else if (sortBy === "PRICE_LOW") {
@@ -146,6 +162,26 @@ export function RetailCatalog() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const getSticker = (product: CoffeeProduct, index: number) => {
+    if (product.discount_percent && product.discount_percent > 0) {
+      return { text: `SALE ${product.discount_percent}%`, color: "#E05A47" };
+    }
+    
+    if (product.created_at) {
+      const createdDate = new Date(product.created_at);
+      const daysOld = (new Date().getTime() - createdDate.getTime()) / (1000 * 3600 * 24);
+      if (daysOld <= 30) {
+        return { text: "NEW RELEASE", color: "#367F4D" };
+      }
+    }
+    
+    if (product.sub_category === 'best_seller' || (index === 0 && currentPage === 1 && activeFilter === "ALL" && sortBy === "FEATURED" && displayProducts.length > 0)) {
+      return { text: tCat.bestSeller, color: "#F1B941" };
+    }
+    
+    return null;
+  };
 
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault(); e.stopPropagation();
@@ -187,20 +223,20 @@ export function RetailCatalog() {
           <div className="relative inline-block catalog-hero-text will-change-transform">
             {/* Paper Badge */}
             <div className="px-5 py-2.5 bg-[#2e1b1d] text-[#FFFFFF] rotate-[0.5deg] text-[10px] font-sans font-black tracking-[0.4em] uppercase flex items-center gap-3 relative shadow-sm">
-              <Archive size={12} /> Retail Catalogue
+              <Archive size={12} /> {tCat.badge}
             </div>
             {/* Tape - Explicitly on top (z-20) */}
             <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/20 border border-white/10 rotate-[-4deg] z-25"></div>
           </div>
 
           <h1 className="text-5xl md:text-8xl font-cloude tracking-tighter text-stone-900 leading-[0.8] relative catalog-hero-text will-change-transform">
-            Our Coffee <br />
-            <span className="font-display italic text-[#e5b13f]">Specimens.</span>
+            {tCat.titleMain} <br />
+            <span className="font-display italic text-[#e5b13f]">{tCat.titleSub}</span>
           </h1>
 
           {/* 🟢 DISKUSI WARNA: Diubah ke text-stone-700/80 agar menyatu dengan serat kertas purba #e9e8e2 */}
           <p className="max-w-xl text-stone-700 font-medium text-lg leading-relaxed italic catalog-hero-text will-change-transform">
-            Explore our collection of precision-roasted beans, curated from the finest altitudes.
+            {tCat.description}
           </p>
         </div>
       </div>
@@ -211,15 +247,38 @@ export function RetailCatalog() {
           {/* Tape on top */}
           <div className="absolute top-[-10px] left-[15%] w-20 h-5 bg-[#367F4D]/10 border border-white/20 rotate-[-2deg] z-50 transition-transform duration-300 group-hover:rotate-0"></div>
 
-          <motion.div className="bg-white border border-black/5 rounded-sm h-14 md:h-16 flex items-center justify-between px-6 md:px-8 shadow-lg shadow-black/[0.02] relative overflow-hidden">
+          <motion.div className="bg-white border border-black/5 rounded-sm h-14 md:h-16 flex items-center justify-between px-6 md:px-8 shadow-lg shadow-black/[0.02] relative">
             <div className="flex items-center gap-6 md:gap-10 relative z-10">
-              <button
-                onClick={() => setShowFilter(!showFilter)}
-                className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.2em] text-slate-900 hover:text-[#367F4D] transition-all uppercase"
-              >
-                <SlidersHorizontal size={14} strokeWidth={2.5} />
-                <span className="hidden sm:inline">Catalogue Tools</span>
-              </button>
+              <div className="relative">
+                <button
+                  id="catalog-tools-btn"
+                  onClick={() => setShowFilter(!showFilter)}
+                  className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.2em] text-slate-900 hover:text-[#367F4D] transition-all uppercase"
+                >
+                  <SlidersHorizontal size={14} strokeWidth={2.5} />
+                  <span className="hidden sm:inline">{tCat.tools}</span>
+                </button>
+                <AnimatePresence>
+                  {showFilter && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full left-0 mt-4 w-48 bg-white shadow-xl border border-black/5 rounded-sm p-4 z-50 origin-top-left"
+                    >
+                      <div className="space-y-4">
+                        {["ALL", "ESPRESSO", "FILTER", ...Array.from(new Set(products.map(p => p.process ? p.process.toUpperCase() : ""))).filter(Boolean)].map((opt) => (
+                          <p
+                            key={opt}
+                            onClick={() => { setActiveFilter(opt); setShowFilter(false); }}
+                            className={`text-[9px] font-black cursor-pointer uppercase tracking-[0.2em] transition-all ${activeFilter === opt ? 'text-[#367F4D]' : 'text-stone-400 hover:text-stone-900'}`}
+                          >
+                            {opt}
+                          </p>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               <div className="h-6 w-[1px] bg-black/5 hidden md:block" />
 
@@ -241,6 +300,7 @@ export function RetailCatalog() {
             <div className="flex items-center gap-6 relative z-10">
               <div className="relative" ref={sortContainerRef}>
                 <button
+                  id="catalog-sort-btn"
                   onClick={() => setShowSort(!showSort)}
                   className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.2em] text-slate-900 uppercase"
                 >
@@ -285,6 +345,22 @@ export function RetailCatalog() {
               <div key={i} className="aspect-[4/5] bg-stone-100 animate-pulse rounded-sm border border-black/[0.03]"></div>
             ))}
           </div>
+        ) : displayProducts.length === 0 ? (
+          <div className="py-32 flex flex-col items-center justify-center text-center px-4 border border-dashed border-black/10 rounded-sm bg-stone-50/50">
+            <Search size={48} className="text-stone-300 mb-6" strokeWidth={1} />
+            <h3 className="text-3xl font-cloude text-stone-900 mb-3 tracking-wide">
+              {tCat.emptyStateTitle}
+            </h3>
+            <p className="text-sm font-sans font-medium text-stone-500 max-w-md">
+              {tCat.emptyStateDesc}
+            </p>
+            <button 
+              onClick={() => { setActiveFilter("ALL"); setSortBy("FEATURED"); }}
+              className="mt-8 px-6 py-3 bg-stone-900 text-white text-[10px] font-black tracking-[0.2em] uppercase hover:bg-[#367F4D] transition-all shadow-md hover:shadow-xl rounded-sm"
+            >
+              {tCat.emptyStateReset}
+            </button>
+          </div>
         ) : (
           <div className={`grid transition-all duration-500 gap-8 md:gap-10 ${cols === 2 ? "grid-cols-1 md:grid-cols-2" :
             cols === 3 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
@@ -295,24 +371,28 @@ export function RetailCatalog() {
                 <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow] duration-500 shadow-md shadow-black/[0.02] hover:shadow-xl hover:shadow-black/5 border border-black/[0.03] h-full rounded-sm relative">
 
                   <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/[0.03]">
-                    {index === 0 && currentPage === 1 && (
-                      <Sticker rotate={6} className="absolute top-3 right-3 z-10 border border-black/5 shadow-sm" color="#F1B941">
-                        BEST SELLER
-                      </Sticker>
-                    )}
+                    {(() => {
+                      const sticker = getSticker(product, index);
+                      if (!sticker) return null;
+                      return (
+                        <Sticker rotate={6} className="absolute top-3 right-3 z-10 border border-black/5 shadow-sm" color={sticker.color}>
+                          {sticker.text}
+                        </Sticker>
+                      );
+                    })()}
 
                     <Image
                       src={product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE"}
                       alt={product.name}
                       fill
-                      className="object-cover transition-[transform,filter] duration-700 grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-105"
+                      className="object-cover transition-[transform,filter] duration-700 grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-[1.02]"
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
 
                     <div className="absolute bottom-3 left-3 right-3">
                       <div className="bg-white/90 px-3 py-2 border border-black/5 shadow-sm flex items-center justify-between">
                         <p className="text-[8px] font-black uppercase tracking-widest text-slate-900 truncate pr-2">
-                          {product.notes || 'Batch Record'}
+                          {product.notes || tCat.batchRecord}
                         </p>
                         <Microscope size={12} className="text-[#367F4D]" strokeWidth={3} />
                       </div>
@@ -331,7 +411,7 @@ export function RetailCatalog() {
 
                     <div className="flex flex-col items-center pt-2 mt-auto gap-6">
                       <div className="text-center">
-                        <span className="text-[8px] font-black text-stone-300 uppercase tracking-[0.2em] block mb-1">Rp / 250G</span>
+                        <span className="text-[8px] font-black text-stone-300 uppercase tracking-[0.2em] block mb-1">{tCat.perWeight}</span>
                         <span className="text-xl font-sans font-bold text-slate-900 tabular-nums">
                           Rp {Number(product.price_retail).toLocaleString('id-ID')}
                         </span>
@@ -341,7 +421,7 @@ export function RetailCatalog() {
                         onClick={(e) => handleAddToCart(e, product)}
                         className="w-full bg-slate-900 text-white px-4 py-3.5 rounded-sm text-[9px] font-black uppercase tracking-[0.3em] hover:bg-[#367F4D] transition-colors duration-300 active:scale-95 shadow-lg shadow-black/10 flex justify-center items-center gap-2"
                       >
-                        <span>Add to Cart</span>
+                        <span>{tCat.addToCart}</span>
                         <Plus size={14} strokeWidth={3} />
                       </button>
                     </div>

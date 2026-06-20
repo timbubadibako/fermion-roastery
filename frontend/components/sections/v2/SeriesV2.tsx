@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Sticker } from "@/components/ui/sticker";
-import { siteContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 
 /**
  * SECTION 3: SERIES SELECTION
@@ -12,7 +12,8 @@ import { siteContent } from "@/lib/content";
  * and cleaner background textures instead of generic placeholder images.
  */
 export function SeriesV2() {
-  const content = siteContent.series;
+  const t = useI18n();
+  const content = t.landing.series;
   const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {

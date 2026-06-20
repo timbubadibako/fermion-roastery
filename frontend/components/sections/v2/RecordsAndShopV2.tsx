@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Sticker } from "@/components/ui/sticker";
-import { siteContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,7 +12,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function NewReleasesV2() {
   const isMobile = useIsMobile();
-  const content = siteContent.newReleases;
+  const t = useI18n();
+  const content = t.landing.newReleases;
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

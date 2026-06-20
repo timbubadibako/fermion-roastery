@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { strings } from "@/lib/strings";
+import { useI18n } from "@/lib/i18n";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,8 +14,8 @@ export function HeroV2() {
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
   
-  const lang = 'id';
-  const fallbackContent = strings[lang].hero;
+  const t = useI18n();
+  const fallbackContent = t.landing.hero;
 
   const words = ["CURATED", "ROASTED", "REVERED"];
 

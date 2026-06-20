@@ -5,14 +5,14 @@ import axios from "axios";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Send, Loader2, Mail, MessageSquare } from "lucide-react";
-import { strings } from "@/lib/strings";
+import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function ContactSection() {
-  const lang = 'id';
-  const content = strings[lang].contact;
+  const t = useI18n();
+  const content = t.landing.contact;
   const [formData, setFormData] = useState({ full_name: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   
@@ -131,7 +131,7 @@ export function ContactSection() {
               <div className="space-y-10 relative z-10">
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-2 relative">
-                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[-2deg]">Full Name</label>
+                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[-2deg]">{content.name}</label>
                     <input 
                       type="text" required
                       placeholder="John Doe"
@@ -140,7 +140,7 @@ export function ContactSection() {
                     />
                   </div>
                   <div className="space-y-2 relative">
-                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[2deg]">Email Address</label>
+                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[2deg]">{content.email}</label>
                     <input 
                       type="email" required
                       placeholder="john@example.com"
@@ -151,7 +151,7 @@ export function ContactSection() {
                 </div>
 
                 <div className="space-y-2 relative pt-6">
-                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute top-2 left-2 z-10 border border-black/10 rotate-[-1deg]">Message</label>
+                    <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute top-2 left-2 z-10 border border-black/10 rotate-[-1deg]">{content.message}</label>
                     <textarea 
                       required rows={5}
                       placeholder="Tell us about your roasting needs..."
@@ -164,7 +164,7 @@ export function ContactSection() {
                   type="submit" disabled={status === 'loading'}
                   className="group flex items-center gap-4 px-10 py-5 bg-[#367F4D] text-white transition-all uppercase text-sm font-black tracking-[0.2em] w-full justify-center border border-black/5 shadow-[6px_6px_0px_rgba(0,0,0,0.05)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_rgba(0,0,0,0.03)] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none"
                 >
-                  {status === 'loading' ? <Loader2 className="animate-spin" size={18} /> : "Send Message"}
+                  {status === 'loading' ? <Loader2 className="animate-spin" size={18} /> : content.submit}
                   {!status || status === 'loading' ? null : <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
                 </button>
               </div>
