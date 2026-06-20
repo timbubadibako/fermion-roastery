@@ -181,6 +181,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
         </AnimatePresence>
       </div>
 
+      {/* OAUTH BUTTONS TEMPORARILY DISABLED 
       <div className="flex gap-4">
         <Button onClick={() => handleOAuth('google')} type="button" variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
           Google
@@ -189,6 +190,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
           Facebook
         </Button>
       </div>
+      */}
 
       {/* Squiggly line */}
       <svg className="w-16 mx-auto opacity-10" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
