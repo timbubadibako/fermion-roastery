@@ -61,7 +61,7 @@ export default function KanbanBoard() {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isAWBModalOpen, setIsAWBModalOpen] = useState(false);
-  const [awbData, setAwbData] = useState({ courier: '', resi: '' });
+  const [awbData, setAwbData] = useState({ type: 'ekspedisi', courier: '', resi: '' });
   
   // Batch Mode State
   const [isBatchMode, setIsBatchMode] = useState(false);
@@ -473,36 +473,70 @@ export default function KanbanBoard() {
 
           <div className="space-y-8">
              <div className="space-y-2 text-left">
-                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nama Kurir</label>
-                <Input 
-                  value={awbData.courier}
-                  onChange={(e) => setAwbData({...awbData, courier: e.target.value})}
-                  placeholder="e.g. JNE Trucking" 
-                  className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus-visible:ring-[#367F4D]" 
-                />
+                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Metode Pengiriman</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'mandiri', label: 'Mandiri / Ambil' },
+                    { id: 'staff', label: 'Kurir Staff' },
+                    { id: 'ekspedisi', label: 'Ekspedisi Luar' }
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => setAwbData({ ...awbData, type: t.id })}
+                      className={`h-12 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all ${awbData.type === t.id ? 'bg-[#367F4D] text-white' : 'bg-stone-50 text-slate-400 border border-black/5 hover:bg-stone-100'}`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
              </div>
-             <div className="space-y-2 text-left">
-                <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nomor Resi (AWB)</label>
-                <Input 
-                  value={awbData.resi}
-                  onChange={(e) => setAwbData({...awbData, resi: e.target.value})}
-                  placeholder="AWB123456789" 
-                  className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 font-mono focus-visible:ring-[#367F4D]" 
-                />
-             </div>
+
+             {awbData.type === 'ekspedisi' && (
+               <>
+                 <div className="space-y-2 text-left animate-in fade-in slide-in-from-top-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nama Kurir</label>
+                    <Input 
+                      value={awbData.courier}
+                      onChange={(e) => setAwbData({...awbData, courier: e.target.value})}
+                      placeholder="e.g. JNE Trucking" 
+                      className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus-visible:ring-[#367F4D]" 
+                    />
+                 </div>
+                 <div className="space-y-2 text-left animate-in fade-in slide-in-from-top-2">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2">Nomor Resi (AWB)</label>
+                    <Input 
+                      value={awbData.resi}
+                      onChange={(e) => setAwbData({...awbData, resi: e.target.value})}
+                      placeholder="AWB123456789" 
+                      className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 font-mono focus-visible:ring-[#367F4D]" 
+                    />
+                 </div>
+               </>
+             )}
           </div>
 
           <div className="absolute bottom-10 left-10 right-10">
             <Button 
                 onClick={() => {
-                    handleUpdateStatus(selectedOrder!.id, 'SHIPPED', { shipping_courier: awbData.courier, shipping_awb: awbData.resi });
+                    let finalCourier = awbData.courier;
+                    let finalAwb = awbData.resi;
+                    
+                    if (awbData.type === 'mandiri') { finalCourier = 'AMBIL_MANDIRI'; finalAwb = 'INTERNAL'; }
+                    if (awbData.type === 'staff') { finalCourier = 'KURIR_STAFF'; finalAwb = 'INTERNAL'; }
+
+                    if (awbData.type === 'ekspedisi' && !finalCourier) {
+                      toast.error("Nama kurir ekspedisi wajib diisi.");
+                      return;
+                    }
+
+                    handleUpdateStatus(selectedOrder!.id, 'SHIPPED', { shipping_courier: finalCourier, shipping_awb: finalAwb });
                     setIsAWBModalOpen(false);
-                    setAwbData({ courier: '', resi: '' });
+                    setAwbData({ type: 'ekspedisi', courier: '', resi: '' });
+                    toast.success("Pesanan dalam pengiriman!");
                 }}
-                disabled={!awbData.courier || !awbData.resi}
-                className="w-full h-16 bg-[#367F4D] text-white rounded-sm font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-emerald-600 transition-all border-none"
+                className="w-full h-16 bg-emerald-500 text-white rounded-sm font-black uppercase tracking-[0.3em] italic text-[10px] shadow-2xl hover:bg-emerald-600 transition-all border-none"
             >
-                Konfirmasi Kirim <Truck size={18} className="ml-2" />
+                Kirim Pesanan <Navigation size={18} className="ml-2" />
             </Button>
           </div>
         </SheetContent>

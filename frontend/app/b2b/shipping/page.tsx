@@ -134,34 +134,44 @@ export default function ShippingTracker() {
                    {/* Timeline */}
                    <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-gradient-to-b before:from-[#367F4D] before:via-white/10 before:to-transparent">
                       
-                      <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                         <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-[#367F4D] text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                            <Truck size={14} />
-                         </div>
-                         <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-sm bg-white/5 border border-white/10 shadow">
-                            <div className="flex items-center justify-between mb-2">
-                               <div className="text-[10px] font-black uppercase tracking-widest text-[#367F4D]">Transit</div>
-                               <div className="text-[9px] font-bold text-slate-400">10:42 WIB</div>
-                            </div>
-                            <div className="text-xs text-slate-300 font-medium leading-relaxed">Berangkat dari pusat penyortiran (Jakarta)</div>
-                         </div>
-                      </div>
+                      {isShipped || isDelivered ? (
+                        <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                           <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-[#367F4D] text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                              <Truck size={14} />
+                           </div>
+                           <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-sm bg-white/5 border border-white/10 shadow">
+                              <div className="flex items-center justify-between mb-2">
+                                 <div className="text-[10px] font-black uppercase tracking-widest text-[#367F4D]">Transit</div>
+                                 <div className="text-[9px] font-bold text-slate-400">Hari ini</div>
+                              </div>
+                              <div className="text-xs text-slate-300 font-medium leading-relaxed">
+                                {selectedOrder?.shipping_awb === 'INTERNAL' 
+                                  ? 'Dikirim menggunakan kurir internal Fermion atau mandiri.' 
+                                  : 'Berangkat dari pusat penyortiran menuju lokasi Anda.'}
+                              </div>
+                           </div>
+                        </div>
+                      ) : null}
 
                       <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                         <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-white/10 text-slate-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                         <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 ${isShipped || isDelivered ? 'bg-white/10 text-slate-400' : 'bg-[#367F4D] text-white'} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
                             <MapPin size={14} />
                          </div>
                          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-sm bg-transparent border border-white/5 shadow">
                             <div className="flex items-center justify-between mb-2">
-                               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Diambil Kurir</div>
-                               <div className="text-[9px] font-bold text-slate-500">08:15 WIB</div>
+                               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Disiapkan</div>
+                               <div className="text-[9px] font-bold text-slate-500">{new Date(selectedOrder?.created_at).toLocaleDateString('id-ID')}</div>
                             </div>
-                            <div className="text-xs text-slate-400 font-medium leading-relaxed">Paket telah diserahkan ke pihak ekspedisi</div>
+                            <div className="text-xs text-slate-400 font-medium leading-relaxed">
+                              {selectedOrder?.shipping_awb === 'INTERNAL' 
+                                ? 'Paket sedang disiapkan untuk pengiriman internal/mandiri.'
+                                : 'Paket telah diserahkan ke pihak ekspedisi.'}
+                            </div>
                          </div>
                       </div>
 
-                      <div className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group ${isProcessing ? 'is-active' : ''}`}>
-                         <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 ${isProcessing ? 'bg-[#367F4D] text-white' : 'bg-white/10 text-slate-400'} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
+                      <div className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group ${isProcessing && !isShipped ? 'is-active' : ''}`}>
+                         <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 ${isProcessing && !isShipped ? 'bg-[#367F4D] text-white' : 'bg-white/10 text-slate-400'} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
                             <CheckCircle2 size={14} />
                          </div>
                          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-sm bg-transparent border border-white/5 shadow">
@@ -175,9 +185,15 @@ export default function ShippingTracker() {
 
                    </div>
 
-                   <Button className="w-full bg-white/5 border border-white/10 hover:bg-[#367F4D] text-white hover:text-white rounded-sm h-14 uppercase text-[10px] font-black tracking-widest transition-all shadow-none mt-8">
-                      Lacak via Portal Biteship <ExternalLink size={14} className="ml-2" />
-                   </Button>
+                   {selectedOrder?.shipping_awb !== 'INTERNAL' && selectedOrder?.shipping_awb ? (
+                     <Button className="w-full bg-white/5 border border-white/10 hover:bg-[#367F4D] text-white hover:text-white rounded-sm h-14 uppercase text-[10px] font-black tracking-widest transition-all shadow-none mt-8">
+                        Lacak via Portal Biteship <ExternalLink size={14} className="ml-2" />
+                     </Button>
+                   ) : (
+                     <div className="w-full bg-white/5 border border-white/10 text-white rounded-sm h-14 uppercase text-[10px] font-black tracking-widest flex items-center justify-center shadow-none mt-8 opacity-70">
+                        Pengiriman Mandiri / Internal
+                     </div>
+                   )}
                 </div>
                )})() : (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4 opacity-50">
