@@ -18,8 +18,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
+  const t = useI18n();
   const router = useRouter();
   const { items, isOpen, setIsOpen, updateQuantity, removeItem, toggleSelection, getTotal, ensureIds } = useCartStore();
   const { user } = useAuthStore();
@@ -35,7 +37,7 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
 
   const handleCheckout = () => {
     if (selectedCount === 0) {
-      toast.error("Please select at least one item to checkout.");
+      toast.error(t.cartSheet.messages.selectItemWarning);
       return;
     }
     setIsOpen(false);
@@ -43,10 +45,29 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
     router.push(checkoutPath);
   };
 
+  const handleTriggerClick = (e: React.MouseEvent) => {
+    if (user?.role === 'B2B' || user?.b2b_status === 'APPROVED') {
+      e.preventDefault();
+      router.push("/b2b/checkout");
+    }
+  };
+
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet 
+      open={isOpen} 
+      onOpenChange={(val) => {
+        if ((user?.role === 'B2B' || user?.b2b_status === 'APPROVED') && val) {
+          router.push("/b2b/checkout");
+          return;
+        }
+        setIsOpen(val);
+      }}
+    >
       <SheetTrigger asChild>
-        <button className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all duration-300 relative group z-[200]`}>
+        <button 
+          onClick={handleTriggerClick}
+          className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all duration-300 relative group z-[200]`}
+        >
           <ShoppingCart size={18} strokeWidth={2.2} />
           {items.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
@@ -63,7 +84,7 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
         <div className="absolute top-[-10px] left-[-10px] w-12 h-4 bg-white/60 border border-black/5 rotate-[-15deg] z-50 backdrop-blur-sm shadow-sm"></div>
 
         <SheetHeader className="p-8 border-b border-black/5">
-          <SheetTitle className="text-[10px] font-black tracking-[0.4em] uppercase text-stone-400 italic">Current Selection</SheetTitle>
+          <SheetTitle className="text-[10px] font-black tracking-[0.4em] uppercase text-stone-400 italic">{t.cartSheet.header.title}</SheetTitle>
         </SheetHeader>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
@@ -72,10 +93,10 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
               <div className="w-16 h-16 border border-black/5 rounded-sm flex items-center justify-center">
                 <ShoppingCart size={24} className="text-stone-300" />
               </div>
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest italic">Cart is empty.</p>
+              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest italic">{t.cartSheet.emptyState.title}</p>
               <SheetClose asChild>
                 <Link href="/our-coffee">
-                  <Button variant="ghost" className="rounded-sm border border-black/10 uppercase text-[9px] font-black tracking-widest">Explore Specimens</Button>
+                  <Button variant="ghost" className="rounded-sm border border-black/10 uppercase text-[9px] font-black tracking-widest">{t.cartSheet.emptyState.exploreButton}</Button>
                 </Link>
               </SheetClose>
             </div>
@@ -125,7 +146,7 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
         {items.length > 0 && (
           <SheetFooter className="p-8 bg-white border-t border-black/5 flex-col gap-4">
             <div className="flex justify-between items-center w-full">
-               <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">Subtotal ({selectedCount})</span>
+               <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">{t.cartSheet.footer.subtotalLabel} ({selectedCount})</span>
                <span className="text-xl font-bold text-slate-900">Rp {selectedTotal.toLocaleString('id-ID')}</span>
             </div>
             
@@ -135,7 +156,7 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
               disabled={selectedCount === 0}
               className="w-full h-14 bg-stone-900 text-white font-black uppercase tracking-widest text-[10px] rounded-sm transition-all hover:bg-[#367F4D] hover:-translate-y-1 active:scale-95"
             >
-              Confirm Checkout
+              {t.cartSheet.footer.confirmCheckoutButton}
             </Button>
           </SheetFooter>
         )}

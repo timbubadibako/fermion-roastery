@@ -19,7 +19,8 @@ import {
   ChevronRight,
   Globe,
   Truck,
-  Layers
+  Layers,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/store";
@@ -81,6 +82,12 @@ const b2bMenu = [
       { id: "contract", label: "Kontrak Kerjasama", href: "/b2b/contract", icon: FileText },
       { id: "ledger", label: "Riwayat Pesanan", href: "/b2b/ledger", icon: History },
       { id: "shipping", label: "Pantau Kiriman", href: "/b2b/shipping", icon: Package },
+    ]
+  },
+  {
+    group: "Pengaturan",
+    items: [
+      { id: "settings", label: "Profil & Alamat", href: "/b2b/settings", icon: Settings },
     ]
   }
 ];

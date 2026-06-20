@@ -130,6 +130,7 @@ export const getB2bPartners = async (req, res) => {
       .from('b2b_partners')
       .select(`
         id, 
+        profile_id,
         company_name, 
         address, 
         estimated_volume_kg, 

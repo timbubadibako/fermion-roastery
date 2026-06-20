@@ -2,24 +2,43 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Download, Upload, Loader2, ArrowLeft } from "lucide-react";
+import { Download, Upload, Loader2, FileText, Calendar, TrendingUp, Award, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuthStore } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
+import { motion } from "framer-motion";
 
 export default function B2BContractPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const t = useI18n();
   const [mounted, setMounted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [partner, setPartner] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
     if (!user) {
       router.push('/b2b/register');
+    } else {
+      fetchPartnerData();
     }
   }, [user, router]);
+
+  const fetchPartnerData = async () => {
+    if (!user?.id) return;
+    try {
+      const pRes = await fetch(`/api/admin/partners?profileId=${user.id}`);
+      if (pRes.ok) {
+        const pData = await pRes.json();
+        const p = pData.find((p: any) => p.profile_id === user.id);
+        setPartner(p);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleDownloadContract = () => {
     if (!user) return;
@@ -40,11 +59,11 @@ export default function B2BContractPage() {
           body: JSON.stringify({ profileId: user?.id })
         });
         if (res.ok) {
-          toast.success("Contract uploaded successfully");
-          router.push('/account'); // or wherever the portal is
+          toast.success(t.b2bContract.toasts.success);
+          router.push('/account');
         }
       } catch (e) {
-        toast.error("Upload failed");
+        toast.error(t.b2bContract.toasts.error);
       } finally {
         setUploading(false);
       }
@@ -53,87 +72,144 @@ export default function B2BContractPage() {
 
   if (!mounted || !user) return null;
 
+  const isApproved = user.b2b_status === 'APPROVED' || user.role === 'B2B';
+  const tier = partner?.tier_name || 'Bronze';
+  const volume = partner?.total_volume_kg || 0;
+  // Calculate remaining days roughly
+  const expiryDate = partner?.created_at ? new Date(new Date(partner.created_at).setFullYear(new Date(partner.created_at).getFullYear() + 1)) : new Date();
+  const daysLeft = Math.max(0, Math.floor((expiryDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
+
   return (
-    <div className="min-h-screen bg-[#F4F0E6] flex items-center justify-center p-6 relative overflow-hidden font-sans">
-      
-      {/* Background Polish */}
-      <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.04]" 
-           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
-      />
+    <div className="space-y-12 pb-20 relative text-left">
+      <div className="space-y-3">
+        <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">
+           Kontrak<span className="text-[#367F4D]">.</span>
+        </h1>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pusat Legalitas Kemitraan</p>
+      </div>
 
-      {/* Main Container: Stacked Paper Effect */}
-      <div className="relative w-full max-w-5xl">
-        
-        {/* Main Card */}
-        <div className="relative bg-white border border-black/10 shadow-[10px_10px_0px_rgba(0,0,0,0.05)] rotate-[-1deg] p-10 md:p-16 flex flex-col lg:flex-row gap-16 rounded-sm">
-           
-           {/* Left Panel - Visual Narrative */}
-           <div className="lg:w-1/3 space-y-10" id="tour-contract-header">
-              <div className="flex items-center justify-between z-10 relative">
-                <h1 className="text-xl font-black italic tracking-tighter text-slate-900">FERMION.</h1>
-                <Link href="/b2b/register">
-                  <button className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest hover:text-[#367F4D] transition-all">
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
-                  </button>
-                </Link>
-              </div>
+      {isApproved ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Active Contract Info */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white border border-black/5 rounded-2xl p-10 shadow-sm relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50 transition-opacity" />
+              <div className="relative z-10 space-y-8">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <FileText className="text-[#367F4D]" size={24} />
+                      <h2 className="text-2xl font-bold tracking-tight text-slate-900">Perjanjian Aktif</h2>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">Nomor Kontrak: B2B/FRM/{new Date().getFullYear()}/{user.id.slice(0,6).toUpperCase()}</p>
+                  </div>
+                  <div className="px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full flex items-center gap-2">
+                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                     <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Signed & Verified</span>
+                  </div>
+                </div>
 
-              <div className="space-y-4">
-                 <h2 className="text-5xl font-cloude italic leading-none tracking-tighter text-slate-900">
-                    Contract Protocol.
-                 </h2>
-                 <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.2em]">
-                    Legal finalization.
-                 </p>
-              </div>
-           </div>
-
-           {/* Right Panel - Content */}
-           <div className="lg:w-2/3">
-             <div className="space-y-8">
-                <div className="bg-[#FDFBF7] p-12 border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.02)] rounded-none relative text-center overflow-visible">
-                   {/* Grid Pattern */}
-                   <div className="absolute inset-0 opacity-[0.1] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-                   
-                   {/* Tape - fixed positioning to overlap */}
-                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
-                   
-                   <div className="space-y-6 relative z-10">
-                     <h2 className="text-4xl font-cloude italic tracking-tighter text-slate-900 leading-none">Contract Protocol.</h2>
-                     <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">Legal Finalization</p>
-                     <p className="text-sm text-stone-600 font-medium leading-relaxed italic">
-                       "Your partnership agreement is ready. Please download, sign, and upload to finalize your lab access."
-                     </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-black/5">
+                   <div className="space-y-1">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><Clock size={12}/> Sisa Waktu</p>
+                      <p className="text-xl font-bold text-slate-900">{daysLeft} <span className="text-xs text-slate-500 font-medium">Hari</span></p>
                    </div>
-
-                   <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
-                     <Button 
-                       id="tour-contract-download"
-                       onClick={handleDownloadContract}
-                       className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
-                     >
-                        <Download size={14} className="mr-3" /> Download Contract PDF
-                     </Button>
-                     
-                     <div className="relative group" id="tour-contract-upload">
-                        <label className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
-                           {uploading ? <Loader2 className="animate-spin text-[#367F4D]" size={24} /> : <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />}
-                           <div className="text-center">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{uploading ? "Uploading..." : "Drop or Click to Upload"}</p>
-                              <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">Accepted Format: PDF Only (Max 5MB)</p>
-                           </div>
-                           <input type="file" className="hidden" accept="application/pdf" onChange={handleUploadContract} />
-                        </label>
-                     </div>
+                   <div className="space-y-1">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><Award size={12}/> Tier Saat Ini</p>
+                      <p className="text-xl font-bold text-[#367F4D]">{tier}</p>
+                   </div>
+                   <div className="space-y-1">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><TrendingUp size={12}/> Vol. Bulan Ini</p>
+                      <p className="text-xl font-bold text-slate-900">{volume} <span className="text-xs text-slate-500 font-medium">Kg</span></p>
+                   </div>
+                   <div className="space-y-1">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><Calendar size={12}/> Diperbarui</p>
+                      <p className="text-sm font-bold text-slate-900 mt-1">{new Date().toLocaleDateString('id-ID')}</p>
                    </div>
                 </div>
-             </div>
-           </div>
+              </div>
+            </div>
 
-           {/* Tape Accent */}
-           <div className="absolute -top-4 -right-4 w-20 h-6 bg-white/60 border border-black/5 rotate-[15deg] backdrop-blur-sm z-20 shadow-sm"></div>
+            <div className="bg-stone-50 border border-black/5 rounded-2xl p-8 shadow-sm">
+               <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-4">Aksi Kontrak</h3>
+               <div className="flex flex-col md:flex-row gap-4">
+                  <Button 
+                    onClick={handleDownloadContract}
+                    className="h-12 px-6 bg-white text-slate-900 border border-black/10 hover:bg-slate-100 rounded-lg font-black uppercase tracking-widest text-[10px] shadow-sm transition-all"
+                  >
+                     <Download size={14} className="mr-2" /> Unduh Salinan Kontrak
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="h-12 px-6 bg-transparent text-slate-500 border-dashed border-black/20 hover:border-black/40 rounded-lg font-black uppercase tracking-widest text-[10px] transition-all"
+                  >
+                     <Upload size={14} className="mr-2" /> Perbarui Dokumen Legal
+                  </Button>
+               </div>
+            </div>
+          </div>
+
+          {/* Guidelines / Help */}
+          <div className="bg-slate-900 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+             <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mb-16" />
+             <div className="relative z-10 space-y-6">
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                   <FileText size={20} className="text-[#367F4D]" />
+                </div>
+                <div className="space-y-2">
+                   <h3 className="font-display text-2xl font-bold italic tracking-tighter">Ketentuan Tier</h3>
+                   <p className="text-slate-400 text-xs leading-relaxed">
+                     Volume belanja Anda dihitung setiap bulan kalender. Tingkatkan volume pesanan Anda untuk mendapatkan benefit dan potongan harga yang lebih besar.
+                   </p>
+                </div>
+                <ul className="space-y-4 pt-4 border-t border-white/10">
+                   <li className="flex items-center justify-between text-sm">
+                      <span className="text-stone-300">Bronze</span>
+                      <span className="font-bold">Rp 10.000 / kg</span>
+                   </li>
+                   <li className="flex items-center justify-between text-sm">
+                      <span className="text-stone-300">Silver</span>
+                      <span className="font-bold">Rp 15.000 / kg</span>
+                   </li>
+                   <li className="flex items-center justify-between text-sm">
+                      <span className="text-[#367F4D] font-bold">Gold</span>
+                      <span className="font-bold text-[#367F4D]">Rp 20.000 / kg</span>
+                   </li>
+                </ul>
+             </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* PENDING UPLOAD VIEW (Simplified for Dashboard) */
+        <div className="bg-white border border-black/10 shadow-sm p-10 md:p-16 flex flex-col gap-10 rounded-2xl text-center items-center justify-center min-h-[50vh]">
+          <div className="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center border border-black/5">
+             <FileText className="text-stone-300" size={32} />
+          </div>
+          <div className="space-y-4 max-w-lg">
+             <h2 className="text-3xl font-display font-bold italic tracking-tighter text-slate-900 leading-none">
+                {t.b2bContract.card.heading}
+             </h2>
+             <p className="text-sm text-stone-500 font-medium leading-relaxed">
+               {t.b2bContract.card.description}
+             </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+            <Button 
+              onClick={handleDownloadContract}
+              className="w-full h-16 bg-white text-stone-900 border border-black/10 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-sm"
+            >
+               <Download size={18} className="mr-3 text-[#367F4D]" /> {t.b2bContract.card.downloadButton}
+            </Button>
+            
+            <label className="w-full h-16 bg-slate-900 text-white rounded-xl flex items-center justify-center gap-3 cursor-pointer hover:bg-[#367F4D] transition-all shadow-xl font-black uppercase tracking-widest text-[10px]">
+               {uploading ? <Loader2 className="animate-spin" size={18} /> : <Upload size={18} />}
+               <span>{uploading ? t.b2bContract.card.upload.uploading : t.b2bContract.card.upload.idle}</span>
+               <input type="file" className="hidden" accept="application/pdf" onChange={handleUploadContract} />
+            </label>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

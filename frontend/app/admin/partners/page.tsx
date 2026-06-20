@@ -33,6 +33,7 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface Partner {
   id: string;
+  profile_id: string;
   company_name: string;
   address: string;
   estimated_volume_kg: string;
@@ -201,10 +202,15 @@ export default function PartnerManagement() {
                       </div>
                     </td>
                     <td className="p-8">
-                      <button className="flex items-center gap-2 text-slate-400 hover:text-[#367F4D] transition-colors group/link">
+                      <a 
+                        href={`/api/b2b/contract?profileId=${partner.profile_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-slate-400 hover:text-[#367F4D] transition-colors group/link"
+                      >
                         <FileText size={16} />
                         <span className="text-[10px] font-black uppercase tracking-widest border-b border-transparent group-hover/link:border-[#367F4D]">Perjanjian_B2B.pdf</span>
-                      </button>
+                      </a>
                     </td>
                     <td className="p-8 font-mono font-bold text-xs text-slate-600">
                       {partner.estimated_volume_kg} <span className="text-slate-300 font-medium">KG / BLN</span>

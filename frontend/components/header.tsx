@@ -257,7 +257,7 @@ function HeaderComponent() {
                   alt={brand?.name || "Fermion Roastery"}
                   width={88}
                   height={35}
-                  className={`object-contain transition-all duration-300 ${isDarkHero ? 'invert opacity-90' : ''}`}
+                  className={`object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}
                   priority
                 />
               </Link>

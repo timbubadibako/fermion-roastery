@@ -33,9 +33,74 @@ export const translations = {
       empty: "Your cart is empty",
       checkout: "Checkout",
       subtotal: "Subtotal",
-      shipping: "Shipping",
       free_shipping_info: "Free shipping above Rp 500.000",
       buy_now: "Buy It Now",
+      emptyState: {
+        title: "Empty Cart",
+        viewProductsButton: "View Products"
+      },
+      steps: {
+        review: "01 Review",
+        shipping: "02 Shipping"
+      },
+      review: {
+        title: "Product List",
+        subtitle: "Specimen selection for your next order",
+        itemSubtotalLabel: "Item Subtotal",
+        backToShopLink: "Continue Shopping",
+        proceedToShippingButton: "Proceed to Shipping"
+      },
+      summary: {
+        title: "Order Summary",
+        totalItemsLabel: "Total Products",
+        pcsLabel: "Pcs",
+        subtotalLabel: "Subtotal",
+        totalLabel: "Total",
+        shippingExcludedNote: "*Excluding shipping fees",
+        validationHint: "Please verify your order details before proceeding to shipping."
+      },
+      shipping: {
+        title: "Shipping Info",
+        subtitle: "Where should we dispatch your specimens?",
+        courierTitle: "Shipping Method",
+        courierSubtitle: "Select your logistics partner",
+        searchingCouriers: "Searching for best couriers...",
+        setAddressPrompt: "Set your address to calculate shipping costs",
+        backToReviewButton: "Back to Review"
+      },
+      payment: {
+        title: "Total Payment",
+        productSubtotalLabel: "Product Subtotal",
+        shippingFeeLabel: "Shipping Fee",
+        awaitingShippingFee: "AWAITING",
+        totalLabel: "Total",
+        payNowButton: "Pay Now",
+        processorNotePrefix: "Payment will be securely processed through",
+        processorName: "Xendit Payment Gateway"
+      },
+      messages: {
+        shippingRatesLoadFailure: "Failed to load shipping rates.",
+        selectCourierWarning: "Please select a shipping method first.",
+        orderCreatedRedirecting: "Order created! Redirecting to payment...",
+        invoiceGenerationFailure: "Failed to generate invoice.",
+        paymentGatewayError: "Failed to connect to Payment Gateway."
+      }
+    },
+    cartSheet: {
+      messages: {
+        selectItemWarning: "Please select at least one item to checkout."
+      },
+      header: {
+        title: "Current Selection"
+      },
+      emptyState: {
+        title: "Your cart is empty.",
+        exploreButton: "Explore Specimens"
+      },
+      footer: {
+        subtotalLabel: "Subtotal",
+        confirmCheckoutButton: "Confirm Checkout"
+      }
     },
     checkout: {
       steps: {
@@ -61,6 +126,10 @@ export const translations = {
         overview: "Overview",
         orders: "Order History",
         settings: "Profile & Address",
+        orderRecords: "Order Records",
+        subscription: "Subscription",
+        labSettings: "Lab Settings",
+        b2bRegistration: "B2B Registration"
       },
       latest_order: "Latest Order Status",
       tracking: {
@@ -68,6 +137,27 @@ export const translations = {
         collapse: "Close Details",
         history: "Package Journey",
         no_data: "No data available from courier yet.",
+        courierAndAwb: "Courier & AWB",
+        pending: "Pending",
+        awaitingAwb: "Awaiting AWB",
+        status: {
+          confirmed: {
+            title: "Confirmed",
+            desc: "Order verified and paid."
+          },
+          roasting: {
+            title: "Roasting",
+            desc: "Beans are being precision roasted."
+          },
+          shipped: {
+            title: "Shipped",
+            desc: "On the way to your laboratory."
+          },
+          delivered: {
+            title: "Delivered",
+            desc: "Successfully dispatched."
+          }
+        }
       },
       order_status: {
         unpaid: "Awaiting Payment",
@@ -78,6 +168,93 @@ export const translations = {
         delivered: "Delivered",
         cancelled: "Cancelled",
       },
+      loading: {
+        accessingHub: "Accessing Laboratory Hub...",
+        initializing: "Initializing Laboratory..."
+      },
+      header: {
+        title: "Account Hub",
+        scientistLabel: "Scientist:",
+        logoutButton: "Exit System"
+      },
+      overview: {
+        latestOrderStatus: "Latest Order Status",
+        orderLabel: "Order #",
+        viewDetailsButton: "View Details",
+        noActiveOrders: "No active orders found.",
+        totalPurchaseTitle: "Total Purchases",
+        ordersCountLabel: "Orders",
+        subscriptionTitle: "Subscription",
+        noActivePlan: "No Active Plan",
+        activeSince: "Active since",
+        notSubscribed: "Not subscribed"
+      },
+      subscription: {
+        title: "Lab Subscription",
+        activePlanLabel: "Active Plan",
+        activeBadge: "Active",
+        cancelButton: "Cancel Subscription",
+        noSubscription: "No active subscription plan found.",
+        startSubscriptionButton: "Start Subscription"
+      },
+      orders: {
+        title: "Lab Records",
+        countLabel: "Orders",
+        emptyHistory: "Order archive not found.",
+        totalHeader: "Total"
+      },
+      settings: {
+        title: "Lab Settings",
+        researcherIdentity: "Researcher Identity",
+        fullNameLabel: "Full Name",
+        whatsappNumberLabel: "WhatsApp Contact Number",
+        whatsappPlaceholder: "08...",
+        addressBookTitle: "Shipping Address Book",
+        useCurrentLocation: "Use Current Location",
+        recipientNameLabel: "Recipient Name",
+        recipientPhoneLabel: "Recipient Phone Number",
+        rtRwLabel: "RT / RW",
+        rtRwPlaceholder: "e.g. RT 03 / RW 01",
+        streetAddressLabel: "Block / Hamlet / Village / Street",
+        streetAddressPlaceholder: "e.g. Dusun Manis / Blok Pahing / Jl. Elang",
+        villageLabel: "Subdistrict / Village",
+        villagePlaceholder: "e.g. Desa Waled Kota",
+        landmarkLabel: "Landmark (Optional)",
+        landmarkPlaceholder: "e.g. Next to Al-Ikhlas Mosque",
+        districtCitySearchLabel: "Search District / City",
+        saveButton: "Confirm & Save All Changes",
+        addresses: {
+          primaryLabel: "Primary Address",
+          address2Label: "Address 2",
+          address3Label: "Address 3"
+        }
+      },
+      b2b: {
+        pendingStatusTitle: "Status: Awaiting Approval",
+        pendingStatusDesc: "Please complete the contract documents below so our team can approve your B2B account.",
+        contractProtocolTitle: "Contract Protocol.",
+        legalFinalizationLabel: "Legal Finalization",
+        partnershipAgreementText: "Your partnership agreement is ready. Please download, sign, and upload to finalize your partner dashboard access.",
+        downloadButton: "Download Contract PDF",
+        uploadDropzoneTitle: "Drop or Click to Upload",
+        uploadDropzoneFormat: "Accepted Format: PDF Only (Max 5MB)"
+      },
+      messages: {
+        subscriptionCancelSuccess: "Subscription successfully cancelled.",
+        subscriptionCancelFailure: "Failed to cancel subscription.",
+        ordersLoadFailure: "Failed to load order history.",
+        profileSaveSuccess: "Profile and address settings saved.",
+        profileSaveFailure: "Failed to save changes.",
+        geolocationUnsupported: "Geolocation is not supported by your browser.",
+        detectingLocation: "Detecting your current location...",
+        locationDetected: "Address automatically detected! Please complete the house number details and search for city/district.",
+        locationGeocodeFailure: "Failed to resolve location. Please fill in manually.",
+        locationAccessDenied: "Location access denied by browser.",
+        uploadingContract: "Uploading contract...",
+        contractUploadSuccess: "Contract uploaded successfully!",
+        networkError: "A network error occurred.",
+        serverConnectionFailure: "Failed to connect to server."
+      }
     },
     admin: {
       loading: "Accessing Control Center...",
@@ -528,6 +705,159 @@ export const translations = {
       galleryItem3Text: "Final Record",
       manifestoQuote: "\"Our job is to be the flavor bridge between the producer and the coffee drinker. There are good things, unique flavors, and values that must not be broken.\"",
       manifestoSign: "— The Fermion Manifesto"
+    },
+    b2bRegister: {
+      logo: "FERMION.",
+      back: "BACK",
+      step1Heading: "Partner Access.",
+      step2Heading: "Roastery Profile.",
+      step1Subheading: "Secure your credentials.",
+      step2Subheading: "Define your needs.",
+      form: {
+        cafeNameLabel: "Cafe / Company Name",
+        cafeNamePlaceholder: "e.g. Lab Kopi",
+        phoneLabel: "WhatsApp Number",
+        phonePlaceholder: "08...",
+        addressLabel: "Full Address",
+        addressPlaceholder: "Street, City...",
+        options: {
+          artisanTitle: "Artisan",
+          growthTitle: "Growth",
+          scaleTitle: "Scale"
+        },
+        submitButton: "Prepare Partnership"
+      },
+      toasts: {
+        success: "Partnership details saved.",
+        error: "Registration failed",
+        networkError: "Network error"
+      }
+    },
+    b2bContract: {
+      logo: "FERMION.",
+      back: "BACK",
+      heading: "Contract Protocol.",
+      subheading: "Legal finalization.",
+      card: {
+        heading: "Contract Protocol.",
+        subheading: "Legal Finalization",
+        description: "Your partnership agreement is ready. Please download, sign, and upload to finalize your lab access.",
+        downloadButton: "Download Contract PDF",
+        upload: {
+          idle: "Drop or Click to Upload",
+          uploading: "Uploading...",
+          hint: "Accepted Format: PDF Only (Max 5MB)"
+        }
+      },
+      toasts: {
+        success: "Contract uploaded successfully",
+        error: "Upload failed"
+      }
+    },
+    b2bShop: {
+      toast: {
+        loadFailed: "Failed to load wholesale catalog.",
+        addedToCart: "{{name}} added to wholesale cart"
+      },
+      loading: "Loading Wholesale Catalog...",
+      floatingCart: "Cart ({{count}})",
+      activeTierPrice: "Active Tier {{tier}} Pricing",
+      title: "Wholesale <br/> Shop.",
+      subtitle: "Exclusive product catalog with active partnership pricing.",
+      volumeDiscount: {
+        title: "Volume Discount Active",
+        description: "Prices shown are Tier {{tier}} base prices. <br class=\"hidden md:block\"/> Get an additional <strong class=\"font-black\">5%</strong> discount for total orders above 5 KG, and <strong class=\"font-black\">10%</strong> for above 10 KG. (Applied automatically in cart)."
+      },
+      categoryTitle: "Category: {{category}}.",
+      originBlend: "Blend",
+      retailLabel: "Retail: Rp",
+      unitLabel: "/ 1 KG",
+      checkoutPrompt: {
+        title: "Done Selecting?",
+        description: "Review your order and proceed to delivery to secure this week's roastery batch.",
+        button: "Process Order"
+      }
+    },
+    b2bCheckout: {
+      toast: {
+        selectCargo: "Please select a cargo method.",
+        tempoSuccess: "Net-30 Invoice Created Successfully.",
+        offlineSuccess: "Offline order logged successfully.",
+        gatewaySuccess: "Procurement protocol initiated! Redirecting to payment...",
+        invoiceFailed: "Failed to generate procurement invoice.",
+        gatewayError: "Communication failure with Payment Gateway."
+      },
+      loading: "Preparing Wholesale Order...",
+      emptyState: {
+        title: "Wholesale Cart is Empty.",
+        subtitle: "Please select wholesale products first before proceeding.",
+        button: "Back to Catalog"
+      },
+      badge: "Payment_Protocol",
+      stepLabel: "Step 2 of 2",
+      title: "Order <br/> Completion.",
+      shipping: {
+        sectionTitle: "Shipping Destination",
+        defaultAddressLabel: "Default Cafe Address",
+        fallbackAddress: "Jl. Sudirman No. 1, South Jakarta",
+        customAddressLabel: "Custom Branch / WH",
+        customAddressSubtitle: "Deliver this specific batch to a different location.",
+        customAddressInputLabel: "Custom Delivery Address",
+        customAddressPlaceholder: "Full street address..."
+      },
+      cargo: {
+        sectionTitle: "Cargo Selection",
+        estDuration: "Est. {{duration}}",
+        days: "Days"
+      },
+      summary: {
+        sectionTitle: "Order Summary",
+        itemCalculation: "{{quantity}} UNIT x Rp {{price}}",
+        monthlyAccumulationAlert: "This purchase of {{weight}}KG will be added to your monthly accumulation.",
+        subtotal: "Product Subtotal",
+        volumeDiscount: "Volume Discount ({{percent}}%)",
+        total: "Total Payment"
+      },
+      payment: {
+        net30: "Net 30",
+        cashOffline: "Cash (Offline)",
+        gateway: "Gateway",
+        btnTempo: "Generate Net-30 Invoice",
+        btnOffline: "Log Cash Order",
+        btnGateway: "Pay Now"
+      }
+    },
+    subscriptionCheckout: {
+      toast: {
+        noPlanSelected: "No subscription plan selected.",
+        savedAddressLoaded: "Saved address loaded.",
+        completeAddressAndIdentity: "Please complete the delivery address and recipient identity.",
+        invoiceFailed: "Failed to generate payment invoice.",
+        networkError: "A network error occurred."
+      },
+      loading: "Preparing Checkout...",
+      title: "Shipping Info.",
+      subtitle: "Where should we deliver your order?",
+      priorityShipping: {
+        title: "Priority Shipping",
+        description: "Your subscription package will always be processed on the first roasting day of each month to guarantee maximum freshness."
+      },
+      summary: {
+        sectionTitle: "Total Payment",
+        planLabel: "Plan",
+        shippingLabel: "Shipping Fee",
+        freeShipping: "FREE",
+        total: "Total"
+      },
+      payment: {
+        processing: "Processing...",
+        confirmAndPay: "Confirm & Pay",
+        termsAlert: {
+          prefix: "Payment will be securely processed through ",
+          processor: "Xendit Payment Gateway",
+          suffix: ". You agree to the subscription terms & conditions."
+        }
+      }
     }
   },
   id: {
@@ -560,9 +890,74 @@ export const translations = {
       empty: "Keranjang masih kosong",
       checkout: "Checkout",
       subtotal: "Subtotal",
-      shipping: "Ongkos Kirim",
       free_shipping_info: "Gratis ongkir di atas Rp 500.000",
       buy_now: "Beli Sekarang",
+      emptyState: {
+        title: "Keranjang Kosong",
+        viewProductsButton: "Lihat Produk"
+      },
+      steps: {
+        review: "01 Peninjauan",
+        shipping: "02 Pengiriman"
+      },
+      review: {
+        title: "Daftar Produk",
+        subtitle: "Seleksi spesimen untuk pesanan Anda berikutnya",
+        itemSubtotalLabel: "Subtotal Item",
+        backToShopLink: "Kembali Belanja",
+        proceedToShippingButton: "Lanjut ke Pengiriman"
+      },
+      summary: {
+        title: "Ringkasan Pesanan",
+        totalItemsLabel: "Total Produk",
+        pcsLabel: "Pcs",
+        subtotalLabel: "Subtotal",
+        totalLabel: "Total",
+        shippingExcludedNote: "*Belum termasuk biaya pengiriman",
+        validationHint: "Pastikan pesanan Anda sudah sesuai sebelum melanjutkan ke pengiriman."
+      },
+      shipping: {
+        title: "Info Pengiriman",
+        subtitle: "Ke mana kami harus mengirimkan spesimen Anda?",
+        courierTitle: "Metode Pengiriman",
+        courierSubtitle: "Pilih mitra logistik Anda",
+        searchingCouriers: "Mencari kurir terbaik...",
+        setAddressPrompt: "Tentukan alamat untuk menghitung ongkos kirim",
+        backToReviewButton: "Kembali ke Review"
+      },
+      payment: {
+        title: "Total Pembayaran",
+        productSubtotalLabel: "Subtotal Produk",
+        shippingFeeLabel: "Ongkos Kirim",
+        awaitingShippingFee: "MENUNGGU",
+        totalLabel: "Total",
+        payNowButton: "Bayar Sekarang",
+        processorNotePrefix: "Pembayaran akan diproses aman melalui",
+        processorName: "Xendit Payment Gateway"
+      },
+      messages: {
+        shippingRatesLoadFailure: "Gagal mengambil tarif pengiriman.",
+        selectCourierWarning: "Pilih metode pengiriman terlebih dahulu.",
+        orderCreatedRedirecting: "Pesanan dibuat! Mengalihkan ke pembayaran...",
+        invoiceGenerationFailure: "Gagal membuat invoice.",
+        paymentGatewayError: "Gagal terhubung ke Payment Gateway."
+      }
+    },
+    cartSheet: {
+      messages: {
+        selectItemWarning: "Silakan pilih setidaknya satu produk untuk checkout."
+      },
+      header: {
+        title: "Pilihan Saat Ini"
+      },
+      emptyState: {
+        title: "Keranjang kosong.",
+        exploreButton: "Jelajahi Produk"
+      },
+      footer: {
+        subtotalLabel: "Subtotal",
+        confirmCheckoutButton: "Konfirmasi Checkout"
+      }
     },
     checkout: {
       steps: {
@@ -588,6 +983,10 @@ export const translations = {
         overview: "Ringkasan",
         orders: "Riwayat Pesanan",
         settings: "Profil & Alamat",
+        orderRecords: "Catatan Pesanan",
+        subscription: "Berlangganan",
+        labSettings: "Pengaturan Lab",
+        b2bRegistration: "Registrasi B2B"
       },
       latest_order: "Status Pesanan Terbaru",
       tracking: {
@@ -595,6 +994,27 @@ export const translations = {
         collapse: "Tutup Detail",
         history: "Riwayat Perjalanan",
         no_data: "Data belum tersedia di sistem kurir.",
+        courierAndAwb: "Kurir & Resi",
+        pending: "Tertunda",
+        awaitingAwb: "Menunggu Resi",
+        status: {
+          confirmed: {
+            title: "Dikonfirmasi",
+            desc: "Pesanan diverifikasi dan dibayar."
+          },
+          roasting: {
+            title: "Roasting",
+            desc: "Biji kopi sedang dipanggang secara presisi."
+          },
+          shipped: {
+            title: "Dikirim",
+            desc: "Dalam perjalanan menuju laboratorium Anda."
+          },
+          delivered: {
+            title: "Diterima",
+            desc: "Berhasil dikirimkan."
+          }
+        }
       },
       order_status: {
         unpaid: "Menunggu Bayar",
@@ -605,6 +1025,93 @@ export const translations = {
         delivered: "Diterima",
         cancelled: "Dibatalkan",
       },
+      loading: {
+        accessingHub: "Mengakses Pusat Laboratorium...",
+        initializing: "Menginisialisasi Laboratorium..."
+      },
+      header: {
+        title: "Pusat Akun",
+        scientistLabel: "Peneliti:",
+        logoutButton: "Keluar dari Sistem"
+      },
+      overview: {
+        latestOrderStatus: "Status Pesanan Terakhir",
+        orderLabel: "Pesanan #",
+        viewDetailsButton: "Lihat Detail",
+        noActiveOrders: "Belum ada pesanan aktif.",
+        totalPurchaseTitle: "Total Pembelian",
+        ordersCountLabel: "Pesanan",
+        subscriptionTitle: "Berlangganan",
+        noActivePlan: "Belum Ada Paket Aktif",
+        activeSince: "Aktif sejak",
+        notSubscribed: "Belum berlangganan"
+      },
+      subscription: {
+        title: "Langganan Lab",
+        activePlanLabel: "Paket Aktif",
+        activeBadge: "Aktif",
+        cancelButton: "Hentikan Langganan",
+        noSubscription: "Belum ada paket langganan aktif.",
+        startSubscriptionButton: "Mulai Langganan"
+      },
+      orders: {
+        title: "Arsip Lab",
+        countLabel: "Pesanan",
+        emptyHistory: "Arsip pesanan tidak ditemukan.",
+        totalHeader: "Total"
+      },
+      settings: {
+        title: "Pengaturan Lab",
+        researcherIdentity: "Identitas Peneliti",
+        fullNameLabel: "Nama Lengkap",
+        whatsappNumberLabel: "Nomor Kontak WhatsApp",
+        whatsappPlaceholder: "08...",
+        addressBookTitle: "Buku Alamat Pengiriman",
+        useCurrentLocation: "Gunakan Lokasi Saat Ini",
+        recipientNameLabel: "Nama Penerima",
+        recipientPhoneLabel: "Nomor Telpon Penerima",
+        rtRwLabel: "RT / RW",
+        rtRwPlaceholder: "Misal: RT 03 / RW 01",
+        streetAddressLabel: "Blok / Dusun / Kampung / Jalan",
+        streetAddressPlaceholder: "Misal: Dusun Manis / Blok Pahing / Jl. Elang",
+        villageLabel: "Desa / Kelurahan",
+        villagePlaceholder: "Misal: Desa Waled Kota",
+        landmarkLabel: "Patokan (Opsional)",
+        landmarkPlaceholder: "Misal: Samping Mushola Al-Ikhlas",
+        districtCitySearchLabel: "Cari Kecamatan / Kota",
+        saveButton: "Konfirmasi & Simpan Semua Perubahan",
+        addresses: {
+          primaryLabel: "Alamat Utama",
+          address2Label: "Alamat 2",
+          address3Label: "Alamat 3"
+        }
+      },
+      b2b: {
+        pendingStatusTitle: "Status: Menunggu Persetujuan",
+        pendingStatusDesc: "Mohon lengkapi dokumen kontrak di bawah ini agar tim kami dapat segera menyetujui akun B2B Anda.",
+        contractProtocolTitle: "Protokol Kontrak.",
+        legalFinalizationLabel: "Finalisasi Hukum",
+        partnershipAgreementText: "Perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses dashboard mitra Anda.",
+        downloadButton: "Unduh Kontrak PDF",
+        uploadDropzoneTitle: "Letakkan File atau Klik untuk Mengunggah",
+        uploadDropzoneFormat: "Format yang Diterima: PDF Saja (Maks. 5MB)"
+      },
+      messages: {
+        subscriptionCancelSuccess: "Langganan berhasil dihentikan.",
+        subscriptionCancelFailure: "Gagal menghentikan langganan.",
+        ordersLoadFailure: "Gagal memuat daftar pesanan.",
+        profileSaveSuccess: "Pengaturan profil dan alamat tersimpan.",
+        profileSaveFailure: "Gagal menyimpan perubahan.",
+        geolocationUnsupported: "Geolocation tidak didukung browser.",
+        detectingLocation: "Mendeteksi lokasi asli anda...",
+        locationDetected: "Alamat terdeteksi otomatis! Silakan lengkapi detail nomor rumah dan cari kota/kecamatan.",
+        locationGeocodeFailure: "Gagal menerjemahkan lokasi. Silakan isi manual.",
+        locationAccessDenied: "Akses lokasi ditolak browser.",
+        uploadingContract: "Mengunggah kontrak...",
+        contractUploadSuccess: "Kontrak berhasil diunggah!",
+        networkError: "Terjadi kesalahan jaringan.",
+        serverConnectionFailure: "Gagal terhubung ke server."
+      }
     },
     admin: {
       loading: "Mengakses Pusat Kendali...",
@@ -1055,7 +1562,159 @@ export const translations = {
       manifestoQuote: "\"Tugas kami adalah sebagai jembatan rasa antara producer dan coffee drinker. Ada hal baik, rasa yang unik dan value yang tidak boleh putus.\"",
       manifestoSign: "— The Fermion Manifesto"
     },
-
+    b2bRegister: {
+      logo: "FERMION.",
+      back: "KEMBALI",
+      step1Heading: "Akses Mitra.",
+      step2Heading: "Profil Roastery.",
+      step1Subheading: "Amankan kredensial Anda.",
+      step2Subheading: "Tentukan kebutuhan Anda.",
+      form: {
+        cafeNameLabel: "Nama Kafe / Perusahaan",
+        cafeNamePlaceholder: "c.b. Lab Kopi",
+        phoneLabel: "Nomor WhatsApp",
+        phonePlaceholder: "08...",
+        addressLabel: "Alamat Lengkap",
+        addressPlaceholder: "Jalan, Kota...",
+        options: {
+          artisanTitle: "Artisan",
+          growthTitle: "Growth",
+          scaleTitle: "Scale"
+        },
+        submitButton: "Siapkan Kemitraan"
+      },
+      toasts: {
+        success: "Detail kemitraan berhasil disimpan.",
+        error: "Pendaftaran gagal",
+        networkError: "Kesalahan jaringan"
+      }
+    },
+    b2bContract: {
+      logo: "FERMION.",
+      back: "KEMBALI",
+      heading: "Protokol Kontrak.",
+      subheading: "Finalisasi hukum.",
+      card: {
+        heading: "Protokol Kontrak.",
+        subheading: "Finalisasi Hukum",
+        description: "Dokumen perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses lab Anda.",
+        downloadButton: "Unduh PDF Kontrak",
+        upload: {
+          idle: "Seret atau Klik untuk Mengunggah",
+          uploading: "Mengunggah...",
+          hint: "Format yang Diterima: Hanya PDF (Maks 5MB)"
+        }
+      },
+      toasts: {
+        success: "Kontrak berhasil diunggah",
+        error: "Gagal mengunggah"
+      }
+    },
+    b2bShop: {
+      toast: {
+        loadFailed: "Gagal memuat katalog grosir.",
+        addedToCart: "{{name}} dimasukkan ke keranjang grosir"
+      },
+      loading: "Memuat Katalog Grosir...",
+      floatingCart: "Keranjang ({{count}})",
+      activeTierPrice: "Harga Level {{tier}} Aktif",
+      title: "Belanja <br/> Grosir.",
+      subtitle: "Katalog produk khusus dengan harga kemitraan aktif.",
+      volumeDiscount: {
+        title: "Volume Discount Aktif",
+        description: "Harga yang ditampilkan adalah harga dasar Tier {{tier}}. <br class=\"hidden md:block\"/> Dapatkan tambahan diskon <strong class=\"font-black\">5%</strong> untuk total pemesanan di atas 5 KG, dan <strong class=\"font-black\">10%</strong> untuk di atas 10 KG. (Diterapkan otomatis di keranjang)."
+      },
+      categoryTitle: "Kategori: {{category}}.",
+      originBlend: "Blend",
+      retailLabel: "Retail: Rp",
+      unitLabel: "/ 1 KG",
+      checkoutPrompt: {
+        title: "Selesai Memilih?",
+        description: "Tinjau kembali pesanan Anda dan lanjutkan ke proses pengiriman untuk mengamankan batch roastery minggu ini.",
+        button: "Proses Pesanan"
+      }
+    },
+    b2bCheckout: {
+      toast: {
+        selectCargo: "Silakan pilih metode kargo terlebih dahulu.",
+        tempoSuccess: "Invoice Net-30 Berhasil Dibuat.",
+        offlineSuccess: "Pesanan offline berhasil dicatat.",
+        gatewaySuccess: "Protokol pengadaan dimulai! Mengalihkan ke pembayaran...",
+        invoiceFailed: "Gagal membuat tagihan pengadaan.",
+        gatewayError: "Kegagalan komunikasi dengan Gerbang Pembayaran."
+      },
+      loading: "Mempersiapkan Pesanan Grosir...",
+      emptyState: {
+        title: "Keranjang Grosir Kosong.",
+        subtitle: "Silakan pilih produk grosir terlebih dahulu sebelum melanjutkan.",
+        button: "Kembali ke Katalog"
+      },
+      badge: "Protokol_Bayar",
+      stepLabel: "Tahap 2 dari 2",
+      title: "Penyelesaian <br/> Pesanan.",
+      shipping: {
+        sectionTitle: "Tujuan Pengiriman",
+        defaultAddressLabel: "Alamat Cafe Default",
+        fallbackAddress: "Jl. Sudirman No. 1, Jakarta Selatan",
+        customAddressLabel: "Custom Branch / WH",
+        customAddressSubtitle: "Kirim batch khusus ini ke lokasi yang berbeda.",
+        customAddressInputLabel: "Alamat Pengiriman Kustom",
+        customAddressPlaceholder: "Alamat jalan lengkap..."
+      },
+      cargo: {
+        sectionTitle: "Pilihan Kargo",
+        estDuration: "Estimasi {{duration}}",
+        days: "Hari"
+      },
+      summary: {
+        sectionTitle: "Ringkasan Pesanan",
+        itemCalculation: "{{quantity}} UNIT x Rp {{price}}",
+        monthlyAccumulationAlert: "Pembelian sebesar {{weight}}KG ini akan ditambahkan ke akumulasi bulanan Anda.",
+        subtotal: "Subtotal Produk",
+        volumeDiscount: "Volume Discount ({{percent}}%)",
+        total: "Total Pembayaran"
+      },
+      payment: {
+        net30: "Net 30",
+        cashOffline: "Tunai (Offline)",
+        gateway: "Gateway",
+        btnTempo: "Cetak Invoice Tempo",
+        btnOffline: "Catat Pesanan Tunai",
+        btnGateway: "Bayar Sekarang"
+      }
+    },
+    subscriptionCheckout: {
+      toast: {
+        noPlanSelected: "Tidak ada paket langganan yang dipilih.",
+        savedAddressLoaded: "Alamat tersimpan dimuat.",
+        completeAddressAndIdentity: "Mohon lengkapi alamat dan identitas penerima.",
+        invoiceFailed: "Gagal membuat tagihan pembayaran.",
+        networkError: "Terjadi kesalahan jaringan."
+      },
+      loading: "Mempersiapkan Checkout...",
+      title: "Info Pengiriman.",
+      subtitle: "Ke mana kami harus mengirimkan pesanan Anda?",
+      priorityShipping: {
+        title: "Pengiriman Prioritas",
+        description: "Paket langganan Anda akan selalu diproses pada hari pertama roasting setiap bulannya untuk menjamin kesegaran maksimal."
+      },
+      summary: {
+        sectionTitle: "Total Pembayaran",
+        planLabel: "Paket",
+        shippingLabel: "Ongkos Kirim",
+        freeShipping: "GRATIS",
+        total: "Total"
+      },
+      payment: {
+        processing: "Memproses...",
+        confirmAndPay: "Konfirmasi & Bayar",
+        termsAlert: {
+          prefix: "Pembayaran akan diproses aman melalui ",
+          processor: "Xendit Payment Gateway",
+          suffix: ". Anda menyetujui syarat & ketentuan berlangganan."
+        }
+      }
+    }
   }
 };
 

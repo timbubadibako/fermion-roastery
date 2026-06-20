@@ -105,7 +105,7 @@ export function FooterV2() {
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto mt-24 pt-8 border-t-2 border-[#2D3748] border-dashed flex flex-col md:flex-row justify-between items-center gap-6 relative footer-reveal">
           <div className="relative bg-white/10 p-2 backdrop-blur-sm rotate-6 border border-white/20">
-            <img src="/fermion-logo.png" alt="Fermion Logo" className="h-8 invert" />
+            <img src="/fermion-logo.png" alt="Fermion Logo" className="h-8" />
           </div>
           
           <div className="relative text-center md:text-right">

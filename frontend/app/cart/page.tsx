@@ -16,8 +16,10 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { AddressInput } from "@/components/address-input";
 import { AddressSelection } from "@/components/address-selection";
+import { useI18n } from "@/lib/i18n";
 
 export default function CartPage() {
+  const t = useI18n();
   const { items: allItems, updateQuantity, removeItem, getTotal, clearCart, ensureIds } = useCartStore();
   const { user } = useAuthStore();
   const [step, setStep] = useState(1);
@@ -29,7 +31,7 @@ export default function CartPage() {
     ensureIds();
   }, [ensureIds]);
 
-  const items = allItems.filter(i => i.selected !== false);
+  const items = allItems.filter(i => i.selected !== false && !i.isB2B);
 
   const [shippingData, setShippingData] = useState({
     name: user?.full_name || "",
@@ -159,7 +161,7 @@ export default function CartPage() {
         if (data.length > 0) setSelectedCourier(data[0]);
       }
     } catch (e) {
-      toast.error("Gagal mengambil tarif pengiriman.");
+      toast.error(t.cart.messages.shippingRatesLoadFailure);
     } finally {
       setRatesLoading(false);
     }
@@ -167,7 +169,7 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (!selectedCourier) {
-      toast.error("Pilih metode pengiriman terlebih dahulu.");
+      toast.error(t.cart.messages.selectCourierWarning);
       return;
     }
 
@@ -207,7 +209,7 @@ export default function CartPage() {
 
       if (res.ok) {
         const data = await res.json();
-        toast.success("Pesanan dibuat! Mengalihkan ke pembayaran...");
+        toast.success(t.cart.messages.orderCreatedRedirecting);
 
         // Save only the lineItemIds of selected items to localStorage
         const lineItemIdsToRemove = items.map(item => item.lineItemId);
@@ -216,10 +218,10 @@ export default function CartPage() {
         window.location.href = data.invoiceUrl;
       } else {
         const errorRes = await res.json();
-        toast.error(errorRes.message || "Gagal membuat invoice.");
+        toast.error(errorRes.message || t.cart.messages.invoiceGenerationFailure);
       }
     } catch (e) {
-      toast.error("Gagal terhubung ke Payment Gateway.");
+      toast.error(t.cart.messages.paymentGatewayError);
     } finally {
       setLoading(false);
     }
@@ -237,9 +239,9 @@ export default function CartPage() {
         <div className="w-24 h-24 bg-white border border-black/5 flex items-center justify-center mb-8 shadow-sm">
           <ShoppingBag size={32} className="text-stone-300" />
         </div>
-        <h1 className="text-3xl font-cloude tracking-tighter text-slate-900 uppercase italic mb-4">Keranjang Kosong</h1>
+        <h1 className="text-3xl font-sans font-bold tracking-tighter text-slate-900 uppercase italic mb-4">{t.cart.emptyState.title}</h1>
         <Link href="/our-coffee">
-          <Button className="bg-stone-900 text-white font-black tracking-widest px-10 h-16 rounded-sm uppercase italic hover:bg-[#367F4D]">Lihat Produk</Button>
+          <Button className="bg-stone-900 text-white font-black tracking-widest px-10 h-16 rounded-sm uppercase italic hover:bg-[#367F4D]">{t.cart.emptyState.viewProductsButton}</Button>
         </Link>
       </div>
     );
@@ -255,17 +257,17 @@ export default function CartPage() {
 
       <div className="max-w-6xl mx-auto md:px-12 relative z-10">
         <div className="flex items-center justify-center gap-4 mb-20">
-          <span className={`text-[10px] font-black uppercase tracking-widest ${step === 1 ? "text-slate-900" : "text-stone-400"}`}>01 Review</span>
+          <span className={`text-[10px] font-black uppercase tracking-widest ${step === 1 ? "text-slate-900" : "text-stone-400"}`}>{t.cart.steps.review}</span>
           <div className="w-12 h-px bg-black/10" />
-          <span className={`text-[10px] font-black uppercase tracking-widest ${step === 2 ? "text-slate-900" : "text-stone-400"}`}>02 Shipping</span>
+          <span className={`text-[10px] font-black uppercase tracking-widest ${step === 2 ? "text-slate-900" : "text-stone-400"}`}>{t.cart.steps.shipping}</span>
         </div>
 
         <AnimatePresence mode="wait">
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div className="space-y-4 mb-12 text-left">
-                <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none uppercase">Daftar Produk<span className="text-[#367F4D]">.</span></h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Specimen selection for your next order</p>
+                <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none uppercase">{t.cart.review.title}<span className="text-[#367F4D]">.</span></h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">{t.cart.review.subtitle}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -304,7 +306,7 @@ export default function CartPage() {
                               <button onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all"><Plus size={12} /></button>
                             </div>
                             <div className="text-right">
-                              <p className="text-[9px] font-black text-stone-300 uppercase tracking-widest mb-1 italic">Subtotal Item</p>
+                              <p className="text-[9px] font-black text-stone-300 uppercase tracking-widest mb-1 italic">{t.cart.review.itemSubtotalLabel}</p>
                               <p className="text-xl font-bold italic tracking-tighter text-slate-900 font-sans">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
                             </div>
                           </div>
@@ -315,10 +317,10 @@ export default function CartPage() {
 
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-dashed border-black/10">
                     <Link href="/our-coffee" className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 hover:text-slate-900 flex items-center gap-3 transition-colors group">
-                      <div className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-white transition-all"><ArrowLeft size={14} /></div> Kembali Belanja
+                      <div className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-white transition-all"><ArrowLeft size={14} /></div> {t.cart.review.backToShopLink}
                     </Link>
                     <Button onClick={() => setStep(2)} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95">
-                      Lanjut ke Pengiriman <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
+                      {t.cart.review.proceedToShippingButton} <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
                     </Button>
                   </div>
                 </div>
@@ -329,32 +331,32 @@ export default function CartPage() {
                     <div className="absolute top-0 left-0 w-full h-1 bg-[radial-gradient(circle,transparent_70%,#FAF9F6_72%)] bg-[length:12px_12px]" />
 
                     <div className="space-y-2">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 italic">Ringkasan Pesanan</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 italic">{t.cart.summary.title}</h3>
                       <div className="w-10 h-1 bg-[#367F4D]" />
                     </div>
 
                     <div className="space-y-6">
                       <div className="flex justify-between items-end">
-                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">Total Produk</span>
-                        <span className="text-slate-400 font-bold text-xs">{items.reduce((acc, i) => acc + i.quantity, 0)} Pcs</span>
+                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">{t.cart.summary.totalItemsLabel}</span>
+                        <span className="text-slate-400 font-bold text-xs">{items.reduce((acc, i) => acc + i.quantity, 0)} {t.cart.summary.pcsLabel}</span>
                       </div>
                       <div className="flex justify-between items-end">
-                        <span className="text-stone-500 font-black uppercase text-[10px] tracking-[0.2em]">Subtotal</span>
+                        <span className="text-stone-500 font-black uppercase text-[10px] tracking-[0.2em]">{t.cart.summary.subtotalLabel}</span>
                         <span className="text-slate-900 font-bold italic text-lg font-sans">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
 
                       <div className="pt-6 border-t border-dashed border-black/10">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-900 italic">Total</span>
+                          <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-900 italic">{t.cart.summary.totalLabel}</span>
                           <span className="font-bold italic text-slate-900 tracking-tighter font-sans text-2xl">Rp {subtotal.toLocaleString('id-ID')}</span>
                         </div>
-                        <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-4 text-center italic">*Belum termasuk biaya pengiriman</p>
+                        <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-4 text-center italic">{t.cart.summary.shippingExcludedNote}</p>
                       </div>
                     </div>
 
                     <div className="mt-8 p-4 bg-stone-50 border border-black/5 rounded-sm flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-[#367F4D] mt-1 shrink-0 animate-pulse" />
-                      <p className="text-[9px] font-bold text-stone-500 uppercase tracking-widest leading-relaxed">Pastikan pesanan Anda sudah sesuai sebelum melanjutkan ke pengiriman.</p>
+                      <p className="text-[9px] font-bold text-stone-500 uppercase tracking-widest leading-relaxed">{t.cart.summary.validationHint}</p>
                     </div>
                   </div>
                 </div>
@@ -365,8 +367,8 @@ export default function CartPage() {
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="space-y-2 mb-12">
-                <h2 className="text-5xl font-display italic font-bold tracking-tighter text-slate-900 uppercase leading-none">Info Pengiriman<span className="text-[#367F4D]">.</span></h2>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">Where should we dispatch your specimens?</p>
+                <h2 className="text-5xl font-display italic font-bold tracking-tighter text-slate-900 uppercase leading-none">{t.cart.shipping.title}<span className="text-[#367F4D]">.</span></h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">{t.cart.shipping.subtitle}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -428,8 +430,8 @@ export default function CartPage() {
                           <Truck size={18} />
                         </div>
                         <div>
-                          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">Metode Pengiriman</h3>
-                          <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">Select your logistics partner</p>
+                          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">{t.cart.shipping.courierTitle}</h3>
+                          <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1 italic">{t.cart.shipping.courierSubtitle}</p>
                         </div>
                       </div>
                       {ratesLoading && <Loader2 className="animate-spin text-[#367F4D]" size={16} />}
@@ -440,7 +442,7 @@ export default function CartPage() {
                         <div className="col-span-full py-12 px-6 bg-stone-50/50 border border-dashed border-black/10 rounded-sm text-center">
                           <Truck size={32} className="mx-auto text-stone-200 mb-4" />
                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 italic">
-                            {shippingData.area_id ? "Mencari kurir terbaik..." : "Tentukan alamat untuk menghitung ongkos kirim"}
+                            {shippingData.area_id ? t.cart.shipping.searchingCouriers : t.cart.shipping.setAddressPrompt}
                           </p>
                         </div>
                       ) : (
@@ -485,7 +487,7 @@ export default function CartPage() {
 
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-dashed border-black/10">
                     <button onClick={() => setStep(1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 hover:text-slate-900 flex items-center gap-3 transition-colors group">
-                      <div className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-white transition-all"><ArrowLeft size={14} /></div> Kembali ke Review
+                      <div className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-white transition-all"><ArrowLeft size={14} /></div> {t.cart.shipping.backToReviewButton}
                     </button>
                   </div>
                 </div>
@@ -496,25 +498,25 @@ export default function CartPage() {
                     <div className="absolute top-0 left-0 w-full h-1 bg-[radial-gradient(circle,transparent_70%,#FAF9F6_72%)] bg-[length:12px_12px]" />
 
                     <div className="space-y-2">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 italic">Total Pembayaran</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 italic">{t.cart.payment.title}</h3>
                       <div className="w-10 h-1 bg-[#367F4D]" />
                     </div>
 
                     <div className="space-y-6">
                       <div className="flex justify-between items-end">
-                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">Subtotal Produk</span>
+                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">{t.cart.payment.productSubtotalLabel}</span>
                         <span className="text-slate-900 font-bold italic font-sans text-sm">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
                       <div className="flex justify-between items-end">
-                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">Ongkos Kirim</span>
+                        <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">{t.cart.payment.shippingFeeLabel}</span>
                         <span className={`font-bold italic font-sans text-sm ${selectedCourier ? 'text-slate-900' : 'text-stone-300'}`}>
-                          {selectedCourier ? `Rp ${shippingFee.toLocaleString('id-ID')}` : 'MENUNGGU'}
+                          {selectedCourier ? `Rp ${shippingFee.toLocaleString('id-ID')}` : t.cart.payment.awaitingShippingFee}
                         </span>
                       </div>
 
                       <div className="pt-8 border-t border-dashed border-black/10 space-y-8">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-black uppercase tracking-[0.3em] text-slate-900 italic">Total</span>
+                          <span className="text-sm font-black uppercase tracking-[0.3em] text-slate-900 italic">{t.cart.payment.totalLabel}</span>
                           <span className="font-bold italic text-slate-900 tracking-tighter font-sans text-3xl">Rp {total.toLocaleString('id-ID')}</span>
                         </div>
 
@@ -523,14 +525,14 @@ export default function CartPage() {
                           disabled={loading || !selectedCourier}
                           className="w-full h-16 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0"
                         >
-                          {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">Bayar Sekarang <ArrowRight size={20} /></span>}
+                          {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-3">{t.cart.payment.payNowButton} <ArrowRight size={20} /></span>}
                         </Button>
                       </div>
                     </div>
 
                     <div className="mt-6 p-5 bg-[#367F4D]/[0.03] border border-[#367F4D]/10 rounded-sm">
                       <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest text-center italic leading-relaxed">
-                        Pembayaran akan diproses aman melalui <span className="text-slate-900">Xendit Payment Gateway</span>.
+                        {t.cart.payment.processorNotePrefix} <span className="text-slate-900">{t.cart.payment.processorName}</span>.
                       </p>
                     </div>
                   </div>

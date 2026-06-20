@@ -15,9 +15,10 @@ interface AddressSelectionProps {
     onSelectSaved?: (addr: any) => void;
     activeAddressId?: string;
     contextType?: 'subscription' | 'retail';
+    emptyStateHref?: string;
 }
 
-export const AddressSelection = ({ address, setAddress, shippingData, setShippingData, savedAddresses = [], onSelectSaved, activeAddressId, contextType = 'subscription' }: AddressSelectionProps) => {
+export const AddressSelection = ({ address, setAddress, shippingData, setShippingData, savedAddresses = [], onSelectSaved, activeAddressId, contextType = 'subscription', emptyStateHref = '/account' }: AddressSelectionProps) => {
 
     // Ambil panjang karakter patokan secara aman dengan coercion type
     const patokanLength = ((address as any)?.patokan || '').length;
@@ -46,7 +47,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                         })}
                     </div>
                 ) : (
-                    <Link href="/account" className="block p-4 border border-dashed border-black/10 bg-stone-50 rounded-sm hover:border-[#367F4D] transition-all">
+                    <Link href={emptyStateHref} className="block p-4 border border-dashed border-black/10 bg-stone-50 rounded-sm hover:border-[#367F4D] transition-all">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 text-center">
                             {contextType === 'subscription'
                                 ? "Lengkapi alamat pengiriman utama anda untuk kita kirimkan setiap bulannya."

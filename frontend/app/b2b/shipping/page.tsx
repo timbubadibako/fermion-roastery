@@ -19,14 +19,17 @@ export default function ShippingTracker() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       fetch(`/api/orders/my-orders?profileId=${user.id}`)
         .then(res => res.json())
         .then(data => {
-          // Only show shipped/delivered orders
-          setOrders(data.filter((o: any) => ['SHIPPED', 'DELIVERED'].includes(o.status)));
+          // Show active orders (PAID, PROCESSING, SHIPPED, DELIVERED)
+          const activeOrders = data.filter((o: any) => ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status?.toUpperCase()));
+          setOrders(activeOrders);
+          if (activeOrders.length > 0) setSelectedOrderId(activeOrders[0].id);
           setLoading(false);
         });
     }
@@ -72,26 +75,32 @@ export default function ShippingTracker() {
                     <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">Tidak ada pengiriman aktif</p>
                  </div>
               ) : (
-                filteredOrders.map((order, i) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    key={order.id} 
-                    className="bg-white p-6 rounded-sm border border-black/5 shadow-sm hover:border-[#367F4D]/30 transition-colors cursor-pointer group"
-                  >
-                     <div className="flex justify-between items-start mb-4">
-                        {order.status === 'DELIVERED' ? (
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Selesai</span>
-                        ) : (
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Dalam Perjalanan</span>
-                        )}
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString('id-ID')}</p>
-                     </div>
-                     <h4 className="font-bold italic text-sm uppercase tracking-tight text-slate-900 group-hover:text-[#367F4D] transition-colors">#{order.id.slice(0,8)}</h4>
-                     <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">{order.shipping_courier || 'Kurir Eksternal'} • <span className="font-mono">{order.shipping_awb || 'MENUNGGU RESI'}</span></p>
-                  </motion.div>
-                ))
+                filteredOrders.map((order, i) => {
+                  const isSelected = selectedOrderId === order.id;
+                  return (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      key={order.id} 
+                      onClick={() => setSelectedOrderId(order.id)}
+                      className={`p-6 rounded-2xl border transition-all cursor-pointer group ${isSelected ? 'bg-slate-900 border-slate-900 text-white shadow-xl' : 'bg-white border-black/5 hover:border-[#367F4D]/30 shadow-sm text-slate-900'}`}
+                    >
+                       <div className="flex justify-between items-start mb-4">
+                          {order.status === 'DELIVERED' ? (
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-emerald-500 text-white px-2 py-0.5 rounded-full">Selesai</span>
+                          ) : order.status === 'SHIPPED' ? (
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-blue-500 text-white px-2 py-0.5 rounded-full">Dalam Perjalanan</span>
+                          ) : (
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-amber-500 text-white px-2 py-0.5 rounded-full">Diproses</span>
+                          )}
+                          <p className={`text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-slate-400' : 'text-slate-400'}`}>{new Date(order.created_at).toLocaleDateString('id-ID')}</p>
+                       </div>
+                       <h4 className={`font-bold italic text-sm uppercase tracking-tight transition-colors ${isSelected ? 'text-white' : 'group-hover:text-[#367F4D]'}`}>#{order.id.slice(0,8)}</h4>
+                       <p className={`text-[10px] font-bold mt-1 uppercase tracking-widest ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>{order.shipping_courier || 'Kurir Internal'} • <span className="font-mono">{order.shipping_awb || 'MENUNGGU RESI'}</span></p>
+                    </motion.div>
+                  );
+                })
               )}
            </div>
         </div>
@@ -101,18 +110,26 @@ export default function ShippingTracker() {
            <div className="bg-slate-900 rounded-sm p-12 text-white shadow-2xl relative overflow-hidden h-full min-h-[500px] border border-black">
               <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 blur-3xl -mr-40 -mt-40" />
               
-              {orders.length > 0 ? (
-                <div className="space-y-12 relative z-10">
-                   <div className="flex justify-between items-center pb-8 border-b border-white/10">
-                      <div>
-                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status Live</p>
-                         <h3 className="font-display text-4xl font-bold italic tracking-tighter text-white">Dalam Perjalanan.</h3>
-                      </div>
-                      <div className="text-right">
-                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Estimasi Tiba</p>
-                         <h3 className="text-xl font-bold font-mono text-[#367F4D]">14 JUN 2026</h3>
-                      </div>
-                   </div>
+              {selectedOrderId ? (() => {
+                 const selectedOrder = orders.find(o => o.id === selectedOrderId);
+                 const isDelivered = selectedOrder?.status === 'DELIVERED';
+                 const isShipped = selectedOrder?.status === 'SHIPPED';
+                 const isProcessing = ['PAID', 'PROCESSING'].includes(selectedOrder?.status);
+                 
+                 return (
+                  <div className="space-y-12 relative z-10">
+                     <div className="flex justify-between items-center pb-8 border-b border-white/10">
+                        <div>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status Live: #{selectedOrderId.slice(0,8)}</p>
+                           <h3 className="font-display text-4xl font-bold italic tracking-tighter text-white">
+                             {isDelivered ? 'Selesai.' : isShipped ? 'Dalam Perjalanan.' : 'Sedang Diproses.'}
+                           </h3>
+                        </div>
+                        <div className="text-right">
+                           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Kurir</p>
+                           <h3 className="text-xl font-bold font-mono text-[#367F4D] uppercase">{selectedOrder?.shipping_courier || 'Kargo Internal'}</h3>
+                        </div>
+                     </div>
 
                    {/* Timeline */}
                    <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-px before:bg-gradient-to-b before:from-[#367F4D] before:via-white/10 before:to-transparent">
@@ -143,16 +160,16 @@ export default function ShippingTracker() {
                          </div>
                       </div>
 
-                      <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                         <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-white/10 text-slate-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                            <Package size={14} />
+                      <div className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group ${isProcessing ? 'is-active' : ''}`}>
+                         <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 ${isProcessing ? 'bg-[#367F4D] text-white' : 'bg-white/10 text-slate-400'} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
+                            <CheckCircle2 size={14} />
                          </div>
                          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-5 rounded-sm bg-transparent border border-white/5 shadow">
                             <div className="flex items-center justify-between mb-2">
-                               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dikemas</div>
-                               <div className="text-[9px] font-bold text-slate-500">Kemarin</div>
+                               <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pesanan Diterima</div>
+                               <div className="text-[9px] font-bold text-slate-500">{new Date(selectedOrder?.created_at).toLocaleDateString('id-ID')}</div>
                             </div>
-                            <div className="text-xs text-slate-400 font-medium leading-relaxed">Manifest dibuat di fasilitas Fermion Lab</div>
+                            <div className="text-xs text-slate-400 font-medium leading-relaxed">Pabrik mulai memproses dan menyangrai kopi pesanan Anda</div>
                          </div>
                       </div>
 
@@ -162,7 +179,7 @@ export default function ShippingTracker() {
                       Lacak via Portal Biteship <ExternalLink size={14} className="ml-2" />
                    </Button>
                 </div>
-              ) : (
+               )})() : (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4 opacity-50">
                    <Truck size={64} strokeWidth={1} />
                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pilih resi untuk melacak</p>

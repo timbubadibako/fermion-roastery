@@ -14,10 +14,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthForm } from "@/components/auth-form";
 import { useAuthStore } from "@/lib/store";
 import { Sticker } from "@/components/ui/sticker";
+import { useI18n } from "@/lib/i18n";
 
 export default function B2BRegisterPageV2() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
+  const t = useI18n();
   const [step, setStep] = useState(1); 
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -52,12 +54,12 @@ export default function B2BRegisterPageV2() {
       });
       if (res.ok) {
         setUser({ ...user, b2b_status: 'PENDING' });
-        toast.success("Partnership details saved.");
+        toast.success(t.b2bRegister.toasts.success);
         router.push('/account?tab=b2b_registration');
       } else {
-        toast.error("Registration failed");
+        toast.error(t.b2bRegister.toasts.error);
       }
-    } catch (error) { toast.error("Network error"); } finally { setLoading(false); }
+    } catch (error) { toast.error(t.b2bRegister.toasts.networkError); } finally { setLoading(false); }
   };
 
   if (!mounted) return null;
@@ -79,20 +81,20 @@ export default function B2BRegisterPageV2() {
            {/* Left Panel - Visual Narrative */}
            <div className="lg:w-1/3 space-y-10" id="tour-b2b-header">
               <div className="flex items-center justify-between z-10 relative">
-                <h1 className="text-xl font-black italic tracking-tighter text-slate-900">FERMION.</h1>
+                <h1 className="text-xl font-black italic tracking-tighter text-slate-900">{t.b2bRegister.logo}</h1>
                 <Link href="/wholesale">
                   <button className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest hover:text-[#367F4D] transition-all">
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                    <ArrowLeft size={12} strokeWidth={2.5} /> {t.b2bRegister.back}
                   </button>
                 </Link>
               </div>
 
               <div className="space-y-4">
-                 <h2 className="text-5xl font-cloude italic leading-none tracking-tighter text-slate-900">
-                    {step === 1 ? "Partner Access." : "Roastery Profile."}
+                 <h2 className="text-5xl italic leading-none tracking-tighter text-slate-900">
+                    {step === 1 ? t.b2bRegister.step1Heading : t.b2bRegister.step2Heading}
                  </h2>
                  <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.2em]">
-                    {step === 1 ? "Secure your credentials." : "Define your needs."}
+                    {step === 1 ? t.b2bRegister.step1Subheading : t.b2bRegister.step2Subheading}
                  </p>
               </div>
            </div>
@@ -116,24 +118,24 @@ export default function B2BRegisterPageV2() {
                   <form onSubmit={handleRegisterSubmit} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-stone-500 uppercase tracking-widest">Cafe / Company Name</label>
-                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder="e.g. Lab Kopi" className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
+                          <label className="text-[9px] font-black text-stone-500 uppercase tracking-widest">{t.b2bRegister.form.cafeNameLabel}</label>
+                          <Input required value={formData.cafeName} onChange={e => setFormData({...formData, cafeName: e.target.value})} placeholder={t.b2bRegister.form.cafeNamePlaceholder} className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">WhatsApp Number</label>
-                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="08..." className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
+                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">{t.b2bRegister.form.phoneLabel}</label>
+                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder={t.b2bRegister.form.phonePlaceholder} className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
                        <div className="md:col-span-2 space-y-1">
-                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Full Address</label>
-                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder="Street, City..." className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
+                          <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">{t.b2bRegister.form.addressLabel}</label>
+                          <Input required value={formData.cafeAddress} onChange={e => setFormData({...formData, cafeAddress: e.target.value})} placeholder={t.b2bRegister.form.addressPlaceholder} className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                        {[
-                         { val: "10-20KG", icon: Coffee, title: "Artisan" },
-                         { val: "20-50KG", icon: Zap, title: "Growth" },
-                         { val: "50KG+", icon: Star, title: "Scale" }
+                         { val: "10-20KG", icon: Coffee, title: t.b2bRegister.form.options.artisanTitle },
+                         { val: "20-50KG", icon: Zap, title: t.b2bRegister.form.options.growthTitle },
+                         { val: "50KG+", icon: Star, title: t.b2bRegister.form.options.scaleTitle }
                        ].map((option) => (
                          <div 
                            key={option.val}
@@ -152,7 +154,7 @@ export default function B2BRegisterPageV2() {
                     </div>
 
                     <Button disabled={loading} type="submit" className="w-full h-14 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic hover:bg-[#367F4D] transition-all">
-                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2">Prepare Partnership <ArrowRight size={14} /></span>}
+                       {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2">{t.b2bRegister.form.submitButton} <ArrowRight size={14} /></span>}
                     </Button>
                   </form>
                 </motion.div>

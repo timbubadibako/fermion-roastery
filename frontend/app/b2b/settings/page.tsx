@@ -48,7 +48,7 @@ function AccountContent() {
   const t = useI18n();
   const { user, logout, setUser } = useAuthStore();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
+  const [activeTab, setActiveTab] = useState("settings");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<any>(null);
@@ -331,38 +331,7 @@ function AccountContent() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-3 space-y-1">
-            {[
-              { id: "overview", label: t.account.tabs.overview, icon: LayoutDashboard },
-              { id: "orders", label: t.account.tabs.orderRecords, icon: Package },
-              { id: "subscription", label: t.account.tabs.subscription, icon: Sparkles },
-              { id: "settings", label: t.account.tabs.labSettings, icon: Settings },
-              // Hanya tampilkan tab ini jika mereka sudah mendaftar B2B (pending atau approved)
-              ...(user?.b2b_status === 'PENDING' || user?.role === 'B2B' 
-                  ? [{ id: "b2b_registration", label: t.account.tabs.b2bRegistration, icon: Coffee }] 
-                  : [])
-            ].map(tab => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative w-full flex items-center gap-4 px-6 py-4 rounded-sm text-[11px] font-black uppercase tracking-[0.2em] transition-colors ${isActive
-                    ? "bg-slate-900 text-white shadow-lg"
-                    : "bg-transparent text-stone-400 hover:text-slate-600"
-                    }`}
-                >
-                  <tab.icon size={16} />
-                  {tab.label}
-                  {tab.id === "b2b_registration" && user?.b2b_status === 'PENDING' && (
-                     <span className="absolute top-4 right-4 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                  )}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="lg:col-span-9">
+          <div className="lg:col-span-12">
             <AnimatePresence mode="wait">
               {activeTab === "overview" && (
                 <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
@@ -795,7 +764,7 @@ function AccountContent() {
   );
 }
 
-export default function RetailAccountPage() {
+export default function B2BSettingsPage() {
   const t = useI18n();
   return (
     <Suspense fallback={
