@@ -34,10 +34,21 @@ const generateInvoicePDF = async (orderId) => {
     doc.pipe(fs.createWriteStream(filePath));
 
     // --- Header ---
-    doc.fontSize(24).font('Helvetica-Bold').text('FERMION ROASTERY', { align: 'center' });
-    doc.fontSize(10).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', { align: 'center' });
-    doc.text('hello@fermion.com | +62 812 3456 7890', { align: 'center' });
-    doc.moveDown(2);
+    const logoPath = path.join(process.cwd(), '../frontend/public/fermion-logo.png');
+    if (fs.existsSync(logoPath)) {
+      // Draw Logo on the left
+      doc.image(logoPath, 50, 40, { width: 60 });
+      // Text on the right
+      doc.fontSize(24).font('Helvetica-Bold').text('FERMION ROASTERY', 120, 45);
+      doc.fontSize(10).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', 120, 70);
+      doc.text('hello@fermion.com | +62 812 3456 7890', 120, 85);
+      doc.y = 120; // reset y position after header
+    } else {
+      doc.fontSize(24).font('Helvetica-Bold').text('FERMION ROASTERY', { align: 'center' });
+      doc.fontSize(10).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', { align: 'center' });
+      doc.text('hello@fermion.com | +62 812 3456 7890', { align: 'center' });
+      doc.moveDown(2);
+    }
 
     // --- Invoice Info ---
     doc.fontSize(20).font('Helvetica-Bold').text('INVOICE');
