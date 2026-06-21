@@ -8,7 +8,7 @@ const manrope = Manrope({ subsets: ["latin"], variable: '--font-sans' });
 const marker = Permanent_Marker({ weight: '400', subsets: ["latin"], variable: '--font-cloude' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fermion-roastery.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fermionroastery.com'),
   title: {
     template: '%s | Fermion Roastery',
     default: 'Fermion Roastery | Specialty Coffee & Roasting',
