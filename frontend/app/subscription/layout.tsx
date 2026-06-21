@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Coffee Subscription (The Lab Loop)',
+  title: 'Coffee Subscription (The Roastery Loop)',
   description: 'Subscribe to our monthly curated specialty coffee boxes. Delivered fresh from our roastery to your door with exclusive experimental batches.',
   openGraph: {
     title: 'Fermion Coffee Subscription',

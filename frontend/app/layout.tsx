@@ -11,13 +11,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fermion-roastery.vercel.app'),
   title: {
     template: '%s | Fermion Roastery',
-    default: 'Fermion Roastery | Specialty Coffee & Roasting Lab',
+    default: 'Fermion Roastery | Specialty Coffee & Roasting',
   },
-  description: 'Premium coffee roaster serving high-quality specialty beans. Join our B2B partnership, subscribe to our coffee labs, or buy retail beans.',
-  keywords: 'coffee, roastery, specialty coffee, b2b coffee, coffee subscription, indonesian coffee',
+  description: 'Halo Brewers! Fermion Roastery adalah micro roastery curated in Babakan, Cirebon Timur. Kami menyediakan kebutuhan biji kopi grosir untuk B2B kafe maupun retail specialty, serta siap mengirimkannya ke seluruh dunia!',
+  keywords: 'Fermion Roastery, Roastery Kopi Cirebon Timur, Roastery Kopi Babakan, Roastery Kopi Ciayumajakuning, Supplier Biji Kopi Cirebon, Supplier Biji Kopi Cirebon Timur, Supplier Biji Kopi Babakan, Supplier Biji Kopi Ciayumajakuning, Jual Kopi Grosir Cirebon, Jual Kopi Grosir Cirebon Timur, Jual Kopi Grosir Babakan, Jual Kopi Grosir Ciayumajakuning, Supplier Kopi Kafe Cirebon, Supplier Kopi Kafe Indramayu, Supplier Kopi Kafe Majalengka, Supplier Kopi Kafe Kuningan, Specialty Coffee Roaster Cirebon, Specialty Coffee Roaster Indramayu, Specialty Coffee Roaster Majalengka, Specialty Coffee Roaster Kuningan, Review Fermion Roastery, Kopi Viral',
   openGraph: {
     title: 'Fermion Roastery',
-    description: 'Specialty coffee roastery and lab.',
+    description: 'Halo Brewers! Fermion Roastery adalah micro roastery curated in Babakan, Cirebon Timur. Menyediakan kebutuhan B2B kafe & retail, siap kirim ke seluruh dunia!',
     url: 'https://fermionroastery.com',
     siteName: 'Fermion Roastery',
     images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Fermion Roastery Cover Image' }],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Fermion Roastery',
-    description: 'Specialty coffee roastery and lab.',
+    description: 'Halo Brewers! Fermion Roastery adalah micro roastery curated in Babakan, Cirebon Timur. Menyediakan kebutuhan B2B kafe & retail, siap kirim ke seluruh dunia!',
     images: ['/og-image.jpg'],
   },
   robots: {

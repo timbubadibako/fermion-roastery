@@ -174,7 +174,7 @@ export default function JournalFormPage() {
                             <SelectValue placeholder="Pilih Kategori" />
                         </SelectTrigger>
                         <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                            <SelectItem value="Eksperimen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Eksperimen Lab</SelectItem>
+                            <SelectItem value="Eksperimen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Eksperimen Roastery</SelectItem>
                             <SelectItem value="Panen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Laporan Panen</SelectItem>
                             <SelectItem value="Edukasi" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Edukasi Kopi</SelectItem>
                             <SelectItem value="Berita" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Berita Roastery</SelectItem>

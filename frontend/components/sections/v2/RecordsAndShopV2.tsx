@@ -184,7 +184,7 @@ export function NewReleasesV2() {
                   {product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">Specimen</div>
+                    <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">Kopi</div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60"></div>
                 </div>
@@ -193,7 +193,7 @@ export function NewReleasesV2() {
                 <div className="p-8 space-y-6 flex-1 flex flex-col text-slate-800 font-mono">
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-[9px] font-bold text-stone-400 uppercase tracking-tighter">
-                      <span>{product.origin || 'Laboratory Grade'}</span>
+                      <span>{product.origin || 'Roastery Grade'}</span>
                       <span>#{idx + 1024}</span>
                     </div>
                     <h4 className="text-2xl font-display font-black uppercase tracking-tight leading-tight text-slate-900 border-b border-stone-200 pb-2">
@@ -213,7 +213,7 @@ export function NewReleasesV2() {
                   <div className="mt-auto pt-6">
                     <Link href={`/our-coffee/${product.id}`} className="block">
                       <button className="w-full bg-slate-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-fermion-coral transition-all duration-300 hover:tracking-[0.4em] active:scale-95 shadow-xl">
-                        Examine Specimen
+                        Examine Kopi
                       </button>
                     </Link>
                   </div>

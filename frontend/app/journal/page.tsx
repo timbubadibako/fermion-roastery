@@ -121,7 +121,7 @@ export default function JournalPageV2() {
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 journal-hero-text opacity-0">
                   {/* 🟢 UPDATE DESKRIPSI: Dibuat lebih gelap (text-stone-700) agar tajam dibaca */}
                   <p className="max-w-xl text-stone-700 font-medium text-lg leading-relaxed border-l-2 border-purple-300 pl-6">
-                     A repository of sourcing journals, sensory analysis, and technical records from the Fermion Laboratory.
+                     A repository of sourcing journals, sensory analysis, and technical records from the Fermion Roastery.
                   </p>
 
                   {/* 🟢 UPDATE SEARCH BAR: Disesuaikan menggunakan border gelap transparan agar stand out di background terang */}
@@ -202,7 +202,7 @@ export default function JournalPageV2() {
                <div className="article-scrap opacity-0 absolute top-[700px] left-[5%] w-full lg:w-[25%] rotate-[8deg] bg-[#EBA294]/10 p-8 border border-[#EBA294]/20 hidden lg:block">
                   <Quote size={32} className="text-[#EBA294] opacity-30 mb-4" />
                   <p className="text-[13px] font-medium text-[#2E2140] leading-relaxed italic">
-                     "The archive is not just a collection of past roasts, but a roadmap for future rituals."
+                     "The archive is not just a collection of past roasts, but a roadmap for future rutinitas."
                   </p>
                   <p className="text-[9px] font-black uppercase tracking-widest mt-6 text-[#2E2140]/40">— Curator's Note</p>
                </div>

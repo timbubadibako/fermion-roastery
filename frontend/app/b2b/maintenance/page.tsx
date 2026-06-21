@@ -46,7 +46,7 @@ export default function MaintenancePage() {
     <div className="space-y-12 text-left">
       <div className="space-y-3">
         <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">Layanan <br/> Premium.</h1>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pemeliharaan tingkat laboratorium dan kalibrasi mesin untuk mitra resmi.</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Pemeliharaan tingkat roastery dan kalibrasi mesin untuk mitra resmi.</p>
       </div>
 
       {isLocked ? (

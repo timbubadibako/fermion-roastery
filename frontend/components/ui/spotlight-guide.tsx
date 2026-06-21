@@ -86,7 +86,7 @@ const getStepsConfig = (t: any): Record<string, any[]> => ({
     },
     {
       id: "product-card",
-      selector: ".product-specimen-card",
+      selector: ".product-kopi-card",
       title: t.spotlight.card.title,
       content: t.spotlight.card.content,
       position: "right",
@@ -157,7 +157,7 @@ const getStepsConfig = (t: any): Record<string, any[]> => ({
       id: "wholesale-tier",
       selector: "#tour-wholesale-tier",
       title: t.spotlight.wholesaleTier?.title || "Partnership Tier",
-      content: t.spotlight.wholesaleTier?.content || "Your projected tier, lab discounts, and total savings will dynamically update here.",
+      content: t.spotlight.wholesaleTier?.content || "Your projected tier, roastery discounts, and total savings will dynamically update here.",
       position: "bottom",
     },
     {
@@ -218,7 +218,7 @@ const getStepsConfig = (t: any): Record<string, any[]> => ({
     {
       id: "subscription-header",
       selector: "#tour-sub-hero",
-      title: t.spotlight.subHero?.title || "The Lab Loop",
+      title: t.spotlight.subHero?.title || "The Roastery Loop",
       content: t.spotlight.subHero?.content || "Welcome to our exclusive subscription service. Let our Master Roaster curate your monthly delivery.",
       position: "bottom",
     },

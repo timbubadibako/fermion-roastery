@@ -13,7 +13,7 @@
 ### 1.1 Core Pages (Done)
 - [x] **Landing Page:** Hero (with GSAP video scrub), Partner Ribbon, Series, Fermion Way, New Releases, FAQ, Contact, Footer.
 - [x] **Wholesale Page:** Revamped B2B Hub, Calculator, and Partnership Logic.
-- [x] **Subscription Page:** Revamped Ritual Club with layered cards and Midnight Navy theme.
+- [x] **Subscription Page:** Revamped Rutinitas Club with layered cards and Midnight Navy theme.
 - [x] **Journal Page:** New staggered layout with Lilac/Lavender archives.
 - [x] **Our Story Page:** Rebranded 'Heritage Archive' layout with Horizon Blue theme.
 
@@ -32,7 +32,7 @@
 - [x] **Account Management:** Save full shipping address (City, Postal Code, Phone) in `/account`.
 - [x] **Auto-Fill:** Address is automatically injected into the checkout form from the profile.
 
-### 2.2 The "Ritual" Purchase Flow
+### 2.2 The "Rutinitas" Purchase Flow
 - [x] **Catalog:** Browse beans with dynamic weight and grind variants.
 - [x] **Selective Checkout:** Toggle specific items in the cart sidebar to purchase.
 - [x] **Biteship Area Search:** Real-time city/district lookup during checkout.

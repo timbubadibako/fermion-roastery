@@ -111,7 +111,7 @@ export function RetailCatalog() {
 
         // Scope grid animations to catalogRef
         if (catalogRef.current) {
-          const cards = gsap.utils.toArray(".product-specimen-card", catalogRef.current);
+          const cards = gsap.utils.toArray(".product-kopi-card", catalogRef.current);
           if (cards.length > 0) {
             gsap.from(cards, {
               y: 30,
@@ -367,7 +367,7 @@ export function RetailCatalog() {
               "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
             }`}>
             {currentItems.map((product, index) => (
-              <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-specimen-card will-change-transform">
+              <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-kopi-card will-change-transform">
                 <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow] duration-500 shadow-md shadow-black/[0.02] hover:shadow-xl hover:shadow-black/5 border border-black/[0.03] h-full rounded-sm relative">
 
                   <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/[0.03]">

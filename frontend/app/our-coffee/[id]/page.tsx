@@ -200,7 +200,7 @@ export default function ProductPage() {
                <Sticker rotate={-12} className="absolute -bottom-6 -left-6 z-40 border border-black/10 shadow-md" color="#F1B941">MICRO-LOT PASS</Sticker>
             </div>
 
-            {/* Brewing Guide - Irregular Lab Note */}
+            {/* Brewing Guide - Irregular Roastery Note */}
             <div className="bg-white p-10 border border-black/5 shadow-lg relative overflow-hidden product-reveal will-change-transform"
               style={{ clipPath: "polygon(2% 0%, 98% 1%, 100% 98%, 1% 100%)" }}
             >

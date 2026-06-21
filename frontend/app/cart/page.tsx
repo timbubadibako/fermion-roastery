@@ -239,7 +239,7 @@ export default function CartPage() {
         <div className="w-24 h-24 bg-white border border-black/5 flex items-center justify-center mb-8 shadow-sm">
           <ShoppingBag size={32} className="text-stone-300" />
         </div>
-        <h1 className="text-3xl font-sans font-bold tracking-tighter text-slate-900 uppercase italic mb-4">{t.cart.emptyState.title}</h1>
+        <h1 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900 uppercase mb-4">{t.cart.emptyState.title}</h1>
         <Link href="/our-coffee">
           <Button className="bg-stone-900 text-white font-black tracking-widest px-10 h-16 rounded-sm uppercase italic hover:bg-[#367F4D]">{t.cart.emptyState.viewProductsButton}</Button>
         </Link>

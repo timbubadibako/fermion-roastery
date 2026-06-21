@@ -65,7 +65,7 @@ export default function OrderSuccessPage() {
           
           {/* Heading */}
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-cloude italic tracking-tighter text-slate-900 leading-none">
+            <h1 className="text-4xl md:text-5xl font-sans font-bold italic tracking-tighter text-slate-900 leading-none">
               Pemesanan <br/> Berhasil<span className="text-[#367F4D]">!</span>
             </h1>
             <p className="text-stone-500 font-bold text-[10px] uppercase tracking-[0.3em] leading-relaxed max-w-sm mx-auto italic">

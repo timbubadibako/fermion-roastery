@@ -198,7 +198,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       </svg>
 
       <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">
-        {mode === "login" ? "New specimen? " : "Already here? "}
+        {mode === "login" ? "New kopi? " : "Already here? "}
         <button 
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}

@@ -108,7 +108,7 @@ export default function StoryPageV2() {
         </div>
       </section>
 
-      {/* SECTION 2: PHILOSOPHY (Lab Note Cards - Character: Dark Navy) */}
+      {/* SECTION 2: PHILOSOPHY (Roastery Note Cards - Character: Dark Navy) */}
       <section ref={philosophyRef} className="py-48 px-6 relative z-20 -mt-16 overflow-hidden bg-[#1A2B40] text-white"
         style={{ clipPath: "polygon(0 40px, 12% 0%, 25% 40px, 38% 0%, 50% 40px, 62% 0%, 75% 40px, 88% 0%, 100% 40px, 100% 100%, 0 100%)" }}
       >

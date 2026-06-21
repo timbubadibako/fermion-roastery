@@ -322,7 +322,7 @@ function AccountContent() {
       <div className="max-w-6xl mx-auto relative z-10 space-y-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/5 pb-10">
           <div className="space-y-3">
-            <h1 className="text-5xl md:text-7xl font-sans font-bold tracking-tight text-slate-900 leading-none">{t.account.header.title}<span className="text-[#367F4D]">.</span></h1>
+            <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">{t.account.header.title}<span className="text-[#367F4D]">.</span></h1>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400">{t.account.header.scientistLabel} {user?.full_name}</p>
           </div>
           <button onClick={handleLogout} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-red-500 transition-colors">
@@ -378,7 +378,7 @@ function AccountContent() {
               {activeTab === "subscription" && (
                 <motion.div key="subscription" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
-                    <h3 className="text-3xl font-sans font-bold tracking-tight text-slate-900">{t.account.subscription.title}<span className="text-[#367F4D]">.</span></h3>
+                    <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">{t.account.subscription.title}<span className="text-[#367F4D]">.</span></h3>
                     {subscription ? (
                       <div className="p-8 bg-stone-50 border border-black/5 rounded-sm space-y-6">
                         <div className="flex justify-between items-center">
@@ -407,7 +407,7 @@ function AccountContent() {
                 <motion.div key="orders" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-10">
                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
-                      <h3 className="text-3xl font-sans font-bold tracking-tight text-slate-900">{t.account.orders.title}<span className="text-[#367F4D]">.</span></h3>
+                      <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">{t.account.orders.title}<span className="text-[#367F4D]">.</span></h3>
                       <span className="text-[10px] font-black uppercase tracking-widest text-stone-300">{orders.length} {t.account.orders.countLabel}</span>
                     </div>
 
@@ -508,7 +508,7 @@ function AccountContent() {
                 <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-12">
                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
-                      <h3 className="text-3xl font-bold tracking-tight text-slate-900">{t.account.settings.title}</h3>
+                      <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">{t.account.settings.title}</h3>
                       <div className="w-10 h-10 rounded-full bg-stone-50 border border-black/5 flex items-center justify-center text-stone-300">
                         <Settings size={16} />
                       </div>
@@ -719,7 +719,7 @@ function AccountContent() {
                             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
                             
                             <div className="space-y-6 relative z-10">
-                              <h2 className="text-4xl font-sans font-bold tracking-tight text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
+                              <h2 className="text-4xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
                               <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">{t.account.b2b.legalFinalizationLabel}</p>
                               <p className="text-sm text-stone-600 font-medium leading-relaxed italic">
                                 "{t.account.b2b.partnershipAgreementText}"

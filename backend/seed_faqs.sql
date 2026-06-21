@@ -29,8 +29,8 @@ VALUES
 ),
 (
     'How often do you release new beans?', 
-    'We drop new "Specimens" (single origins and experimental lots) bi-weekly. Keep an eye on the "New Releases" section or subscribe to our newsletter for early access.', 
+    'We drop new "Produk" (single origins and experimental lots) bi-weekly. Keep an eye on the "New Releases" section or subscribe to our newsletter for early access.', 
     'Seberapa sering Anda merilis biji kopi baru?', 
-    'Kami merilis "Specimen" baru (single origin dan lot eksperimental) setiap dua minggu. Pantau terus bagian "New Releases" atau berlangganan newsletter kami untuk akses awal.'
+    'Kami merilis "Kopi" baru (single origin dan lot eksperimental) setiap dua minggu. Pantau terus bagian "New Releases" atau berlangganan newsletter kami untuk akses awal.'
 )
 ON CONFLICT DO NOTHING;

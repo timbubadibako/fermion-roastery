@@ -9,7 +9,7 @@ export const siteContent = {
     badge: "Exclusive Coffee Roastery",
     headlineMain: "Fermion",
     headlineJoy: "Roastery.",
-    description: "Precision roasting meets artisan passion. Built for the morning ritual.",
+    description: "Precision roasting meets artisan passion. Built for the morning rutinitas.",
     cta: "Explore Catalogue",
     backgroundText: "FERMION",
     stickers: {
@@ -50,15 +50,15 @@ export const siteContent = {
       { id: "06", title: "Tracking", desc: "Real-time roasting-to-door data." }
     ],
     stickers: {
-      lab: "Science Lab",
+      roastery: "Science Roastery",
       map: "Happiness Map"
     }
   },
   
   labRecords: {
-    title: "Lab Records.",
+    title: "Roastery Records.",
     subtitle: "Real-time QC Data",
-    ctaExplore: "Explore Laboratory",
+    ctaExplore: "Explore Roastery",
     cardTitle: "Sumedang Roast Curve",
     cardAnalysis: "Analysis: 92 Points →",
     ctaDiveTitle: "Dive deeper into our data.",

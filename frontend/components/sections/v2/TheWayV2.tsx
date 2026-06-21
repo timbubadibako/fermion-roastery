@@ -162,7 +162,7 @@ function TheWayV2Component() {
             </motion.div>
           ))}
 
-          <Sticker rotate={22} className="top-[300px] left-[25%] shadow-sm border border-black/10">{content.stickers.lab}</Sticker>
+          <Sticker rotate={22} className="top-[300px] left-[25%] shadow-sm border border-black/10">{content.stickers.roastery}</Sticker>
           <Sticker rotate={-15} color="#FFB6C1" className="bottom-[100px] right-[25%] shadow-sm border border-black/10">{content.stickers.map}</Sticker>
         </div>
 

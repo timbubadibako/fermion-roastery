@@ -193,7 +193,7 @@ function HeaderComponent() {
   // 🟢 REQUEST KEDUA: STRUKTUR DATA NAVLINKS DENGAN KUSTOMISASI WARNA ACTIVE MASING-MASING
   const isB2B = mounted && user?.role === 'B2B';
   const displayLinks: CustomNavLink[] = [
-    { label: "OUR COFFEE", href: "/our-coffee", activeColor: "text-[#e6b13f]" }, // Ijo lab khas lu
+    { label: "OUR COFFEE", href: "/our-coffee", activeColor: "text-[#e6b13f]" }, // Ijo roastery khas lu
     { label: "WHOLESALE", href: "/wholesale", activeColor: "text-stone-900" },   // Cokelat kopi wholesale
     { label: "SUBSCRIPTION", href: "/subscription", activeColor: "text-[#772c13]" }, // Ijo terang sub
     { label: "JOURNAL", href: "/journal", activeColor: "text-[#a152ec]" },
@@ -328,7 +328,7 @@ function HeaderComponent() {
                       {!searchQuery ? (
                         <div className="space-y-6">
                           <div className="flex items-center justify-between border-b border-black/5 pb-2">
-                            <h4 className="text-[10px] font-black tracking-[0.3em] text-stone-400 uppercase italic">Curated Specimen</h4>
+                            <h4 className="text-[10px] font-black tracking-[0.3em] text-stone-400 uppercase italic">Curated Kopi</h4>
                             <Sparkles size={14} className="text-fermion-gold" strokeWidth={1.5} />
                           </div>
                           <div className="space-y-4">
@@ -381,7 +381,7 @@ function HeaderComponent() {
                             ) : (
                               <div className="py-12 text-center space-y-3">
                                 <Search size={28} strokeWidth={2} className="mx-auto text-stone-100" />
-                                <p className="text-[11px] font-display italic text-stone-300">No specimen matches your query.</p>
+                                <p className="text-[11px] font-display italic text-stone-300">No kopi matches your query.</p>
                               </div>
                             )}
                           </div>
@@ -465,7 +465,7 @@ function HeaderComponent() {
                   <Search size={18} className="text-stone-500" />
                   <input
                     type="text"
-                    placeholder="Search Specimen..."
+                    placeholder="Search Kopi..."
                     className="bg-transparent border-none outline-none text-[12px] font-black uppercase tracking-widest w-full text-stone-900 placeholder:text-stone-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

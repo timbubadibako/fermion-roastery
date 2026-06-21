@@ -196,7 +196,7 @@ export function TechnologySection() {
             >
               <Image
                 src="https://placehold.co/1200x800/7a9cff/ffffff?text=FERMION+LAB"
-                alt="Aerial view of roasting lab"
+                alt="Aerial view of roasting roastery"
                 fill
                 className="object-cover"
               />

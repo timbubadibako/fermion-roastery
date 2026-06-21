@@ -184,7 +184,7 @@ export default function SubscriptionPageV2() {
                 <img src="https://placehold.co/800x1000/7c2d12/f1b941?text=MASTER+ROASTER" alt="Master" className="w-full h-full object-cover filter contrast-125 grayscale" />
               </div>
               <div className="absolute bottom-4 left-6">
-                <p className="font-cloude text-stone-300 text-2xl opacity-40 italic">{tSub.labAccess}</p>
+                <p className="font-cloude text-stone-300 text-2xl opacity-40 italic">{tSub.premiumAccess}</p>
               </div>
             </div>
             <Sticker rotate={12} className="absolute -bottom-6 -right-6 z-30 border border-white/10 shadow-sm" color="#F1B941">{tSub.sensoryExpert}</Sticker>

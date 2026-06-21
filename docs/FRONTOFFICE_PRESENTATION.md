@@ -16,7 +16,7 @@ The landing page is the first touchpoint, designed with a **"Modern Laboratory"*
 ### B. Navigation
 - **Role-Dynamic Header:** 
   - **Guest:** Sees "Login" and "Wholesale" application links.
-  - **Retail User:** Sees "My Account" (Personal Rituals).
+  - **Retail User:** Sees "My Account" (Personal Rutinitas).
   - **B2B Partner:** Sees "Partner Hub" and a specialized wholesale menu.
   - **Admin:** Sees "Command Center" access.
 
@@ -24,10 +24,10 @@ The landing page is the first touchpoint, designed with a **"Modern Laboratory"*
 
 ## 🛍️ 2. RETAIL SHOPPING JOURNEY (`/our-coffee`)
 
-A seamless, premium experience for retail customers to acquire laboratory-grade coffee specimens.
+A seamless, premium experience for retail customers to acquire premium coffee produk.
 
 ### A. Product Catalog
-- **Grid Layout:** Optimized for visual clarity with high-quality specimen photography.
+- **Grid Layout:** Optimized for visual clarity with high-quality kopi photography.
 - **Filtering & Sorting:** Ability to filter by Origin, Roast Profile, or Processing Method.
 - **Dynamic Pricing:** Automatically displays retail prices for guest/standard users.
 
@@ -42,7 +42,7 @@ A seamless, premium experience for retail customers to acquire laboratory-grade 
 
 A dedicated space for regular customers to track their relationship with Fermion.
 
-### A. Ritual Overview
+### A. Rutinitas Overview
 - **Visual Order Tracker:** A real-time timeline for the most recent order (Confirmed → Roasting → Shipped).
 - **Roasting Spinner:** A unique UI element that appears when a batch is currently being roasted for the customer.
 
@@ -51,7 +51,7 @@ A dedicated space for regular customers to track their relationship with Fermion
 - **Invoices:** Ability to view and download past transaction records.
 
 ### C. Profile & Settings
-- **Preferences:** Manage shipping addresses and contact information to expedite future rituals.
+- **Preferences:** Manage shipping addresses and contact information to expedite future rutinitas.
 - **B2B Fast-Track:** A persistent call-to-action for cafe owners to initialize their wholesale partnership directly from their account.
 
 ---

@@ -40,7 +40,7 @@ export default function SubscriptionSuccessPage() {
           
           {/* Heading */}
           <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-cloude italic tracking-tighter text-slate-900 leading-none">
+            <h1 className="text-4xl md:text-5xl font-sans font-bold italic tracking-tighter text-slate-900 leading-none">
               Welcome to <br/> the Club.
             </h1>
             <p className="text-stone-500 font-medium text-xs uppercase tracking-widest leading-relaxed max-w-sm mx-auto italic">

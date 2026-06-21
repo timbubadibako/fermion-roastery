@@ -45,7 +45,7 @@ export const translations = {
       },
       review: {
         title: "Product List",
-        subtitle: "Specimen selection for your next order",
+        subtitle: "Kopi selection for your next order",
         itemSubtotalLabel: "Item Subtotal",
         backToShopLink: "Continue Shopping",
         proceedToShippingButton: "Proceed to Shipping"
@@ -61,7 +61,7 @@ export const translations = {
       },
       shipping: {
         title: "Shipping Info",
-        subtitle: "Where should we dispatch your specimens?",
+        subtitle: "Where should we dispatch your produk?",
         courierTitle: "Shipping Method",
         courierSubtitle: "Select your logistics partner",
         searchingCouriers: "Searching for best couriers...",
@@ -95,7 +95,7 @@ export const translations = {
       },
       emptyState: {
         title: "Your cart is empty.",
-        exploreButton: "Explore Specimens"
+        exploreButton: "Explore Produk"
       },
       footer: {
         subtotalLabel: "Subtotal",
@@ -128,7 +128,7 @@ export const translations = {
         settings: "Profile & Address",
         orderRecords: "Order Records",
         subscription: "Subscription",
-        labSettings: "Lab Settings",
+        accountSettings: "Account Settings",
         b2bRegistration: "B2B Registration"
       },
       latest_order: "Latest Order Status",
@@ -151,7 +151,7 @@ export const translations = {
           },
           shipped: {
             title: "Shipped",
-            desc: "On the way to your laboratory."
+            desc: "On the way to your roastery."
           },
           delivered: {
             title: "Delivered",
@@ -169,12 +169,12 @@ export const translations = {
         cancelled: "Cancelled",
       },
       loading: {
-        accessingHub: "Accessing Laboratory Hub...",
-        initializing: "Initializing Laboratory..."
+        accessingHub: "Accessing Roastery Hub...",
+        initializing: "Initializing Roastery..."
       },
       header: {
         title: "Account Hub",
-        scientistLabel: "Scientist:",
+        scientistLabel: "Member:",
         logoutButton: "Exit System"
       },
       overview: {
@@ -190,7 +190,7 @@ export const translations = {
         notSubscribed: "Not subscribed"
       },
       subscription: {
-        title: "Lab Subscription",
+        title: "Roastery Subscription",
         activePlanLabel: "Active Plan",
         activeBadge: "Active",
         cancelButton: "Cancel Subscription",
@@ -198,14 +198,14 @@ export const translations = {
         startSubscriptionButton: "Start Subscription"
       },
       orders: {
-        title: "Lab Records",
+        title: "Roastery Records",
         countLabel: "Orders",
         emptyHistory: "Order archive not found.",
         totalHeader: "Total"
       },
       settings: {
-        title: "Lab Settings",
-        researcherIdentity: "Researcher Identity",
+        title: "Account Settings",
+        researcherIdentity: "User Profile",
         fullNameLabel: "Full Name",
         whatsappNumberLabel: "WhatsApp Contact Number",
         whatsappPlaceholder: "08...",
@@ -280,13 +280,13 @@ export const translations = {
       urgent: "Urgent",
       revenueAnalysis: "Revenue Flow Analysis",
       financialPerformance: "Financial Performance by Time Range",
-      labAnalysis: "Laboratory Analysis.",
+      labAnalysis: "Roastery Analysis.",
       labDescPart1: "Current best-selling product is",
       labDescPart2: ". Consider prioritizing the next roast batch for Silver Tier partners.",
       roastAccuracy: "Roast Accuracy",
       aiStrategyBtn: "Generate AI Strategy",
       comingSoonTitle: "Coming Soon.",
-      comingSoonDesc: "AI Strategy features are currently being calibrated in our lab. Stay tuned!",
+      comingSoonDesc: "AI Strategy features are currently being calibrated in our roastery. Stay tuned!",
       okUnderstand: "OK, Understood",
       revenue: "Revenue",
       selectFullRange: "Select full date range.",
@@ -316,10 +316,10 @@ export const translations = {
       },
       search: {
         placeholder: "Search archives...",
-        curated: "Curated Specimen",
+        curated: "Curated Kopi",
         matchesFound: "Matches Found",
         results: "Result(s)",
-        noMatch: "No specimen matches your query.",
+        noMatch: "No kopi matches your query.",
         examineAll: "Examine All Results"
       },
       navMobile: {
@@ -332,8 +332,8 @@ export const translations = {
     },
     spotlight: {
       ourCoffee: {
-        title: "The Specimens",
-        content: "Explore our latest roasts and laboratory-grade single origins. Each bean is treated like a unique specimen."
+        title: "The Produk",
+        content: "Explore our latest roasts and roastery-grade single origins. Each bean is treated like a unique kopi."
       },
       wholesale: {
         title: "B2B Partnership",
@@ -344,7 +344,7 @@ export const translations = {
         content: "Subscribe to our rotating experimental lots. Fresh roasts delivered on your schedule."
       },
       catalog: {
-        title: "The Laboratory",
+        title: "The Roastery",
         content: "This is our complete archives. Every bean here has been scientifically profiled for peak flavor."
       },
       tools: {
@@ -356,7 +356,7 @@ export const translations = {
         content: "Sort by price or featured lots to find exactly what you need."
       },
       card: {
-        title: "Specimen Data",
+        title: "Kopi Data",
         content: "Each card shows origin, price, and tasting notes. Click for full technical specifications."
       },
       buttons: {
@@ -366,7 +366,7 @@ export const translations = {
       },
       cartPage: {
         title: "Your Cart",
-        content: "Review your selected specimens before proceeding to checkout."
+        content: "Review your selected produk before proceeding to checkout."
       },
       addCart: {
         title: "Add to Cart",
@@ -374,7 +374,7 @@ export const translations = {
       },
       openCart: {
         title: "Your Cart",
-        content: "This is your shopping cart. You can find all your added specimens here."
+        content: "This is your shopping cart. You can find all your added produk here."
       },
       checkoutBtn: {
         title: "Checkout",
@@ -393,7 +393,7 @@ export const translations = {
       },
       wholesalePage: {
         title: "B2B Solutions & Partnerships",
-        content: "Partner with us and unlock exclusive benefits: tier-based wholesale pricing, dedicated lab support for custom roasting profiles, barista training, and priority access to our limited experimental lots."
+        content: "Partner with us and unlock exclusive benefits: tier-based wholesale pricing, dedicated roastery support for custom roasting profiles, barista training, and priority access to our limited experimental lots."
       },
       wholesaleJoin: {
         title: "Join the Network",
@@ -409,7 +409,7 @@ export const translations = {
       },
       wholesaleTier: {
         title: "Partnership Tier",
-        content: "Your projected tier, lab discounts, and total savings will dynamically update here."
+        content: "Your projected tier, roastery discounts, and total savings will dynamically update here."
       },
       wholesaleBenefits: {
         title: "Partner Benefits",
@@ -440,7 +440,7 @@ export const translations = {
         content: "Once signed, upload the document here to activate your partner dashboard access."
       },
       subHero: {
-        title: "The Lab Loop",
+        title: "The Roastery Loop",
         content: "Welcome to our exclusive subscription service. Let our Master Roaster curate your monthly delivery."
       },
       subMaster: {
@@ -538,10 +538,10 @@ export const translations = {
           { id: "05", title: "Artisan", desc: "Blended for complexity and joy." },
           { id: "06", title: "Tracking", desc: "Real-time roasting-to-door data." }
         ],
-        stickers: { lab: "Science Lab", map: "Happiness Map" }
+        stickers: { roastery: "Science Roastery", map: "Happiness Map" }
       },
       labRecords: {
-        title: "Lab Records.", subtitle: "Real-time QC Data", ctaExplore: "Explore Laboratory",
+        title: "Roastery Records.", subtitle: "Real-time QC Data", ctaExplore: "Explore Roastery",
         cardTitle: "Sumedang Roast Curve", cardAnalysis: "Analysis: 92 Points →",
         ctaDiveTitle: "Dive deeper into our data.", ctaDiveDesc: "Unlock technical specs for every single harvest.", ctaDiveBtn: "Explore All Records"
       },
@@ -568,20 +568,20 @@ export const translations = {
     catalog: {
       badge: "Retail Catalogue",
       titleMain: "Our Coffee",
-      titleSub: "Specimens.",
+      titleSub: "Produk.",
       description: "Explore our collection of precision-roasted beans, curated from the finest altitudes.",
       tools: "Catalogue Tools",
       bestSeller: "BEST SELLER",
       batchRecord: "Batch Record",
       perWeight: "Rp / 250G",
       addToCart: "Add to Cart",
-      emptyStateTitle: "No Specimens Found",
+      emptyStateTitle: "No Produk Found",
       emptyStateDesc: "We couldn't find any coffee that matches your current filters. Try selecting a different process or category.",
       emptyStateReset: "Reset Filters"
     },
     productDetail: {
       returnToCatalogue: "Return to Catalogue",
-      specimenRecord: "Specimen Record v.01",
+      specimenRecord: "Kopi Record v.01",
       score: "Score",
       extractionProtocol: "Extraction Protocol",
       brewingGuide: "Brewing Guide",
@@ -593,7 +593,7 @@ export const translations = {
       ratio: "RATIO",
       authenticRecord: "Authentic Record",
       valuation: "Valuation",
-      specimenAnalysis: "Specimen Analysis",
+      specimenAnalysis: "Kopi Analysis",
       originsProcessing: "Origins & Processing",
       origin: "Origin",
       process: "Process",
@@ -603,7 +603,7 @@ export const translations = {
       preparation: "Preparation",
       addToOrder: "Add to Order",
       initiateCheckout: "Initiate Checkout",
-      labSuggestions: "Laboratory Suggestions",
+      labSuggestions: "Roastery Suggestions",
       completeArchive: "Complete the Archive.",
       browseFullCollection: "Browse Full Collection",
       analyzingBatch: "Analyzing Batch Record...",
@@ -615,7 +615,7 @@ export const translations = {
       body: "Body"
     },
     wholesale: {
-      heroBadge: "B2B Partnership Lab",
+      heroBadge: "B2B Partnership Roastery",
       heroTitle1: "Scale Your",
       heroTitle2: "Business.",
       heroDesc: "End-to-end coffee solutions for businesses that prioritize quality, consistency, and the story behind every bean.",
@@ -628,21 +628,21 @@ export const translations = {
       est: "Est. 2026",
       ecoTest: "Economic Feasibility Test",
       growthEngine: "Your Growth Engine.",
-      monthlyVol: "Monthly Specimen Volume",
+      monthlyVol: "Monthly Kopi Volume",
       min: "MIN 10 KG",
       scale: "SCALE 200+ KG",
       currentTier: "Current Allocation Tier",
       bronze: "Bronze Partner",
       silver: "Silver Partner",
       gold: "Gold Partner",
-      labDiscount: "Lab Discount",
+      labDiscount: "Roastery Discount",
       projectedSavings: "Projected Savings",
       perMo: "MO",
       whyPartner: "Why Partner?",
       confidential: "Confidential",
       initialize: "Initialize",
       onboarding: "Onboarding.",
-      ctaDesc: "Automate your partnership. Fill the form, download your lab contract, and activate your wholesale access instantly.",
+      ctaDesc: "Automate your partnership. Fill the form, download your roastery contract, and activate your wholesale access instantly.",
       beginRegistration: "Begin Registration",
       benefits: {
         qualityTitle: "Quality Guarantee",
@@ -663,16 +663,16 @@ export const translations = {
       badge: "Exclusive Subscription Club",
       heroTitle1: "Don't choose.",
       heroTitle2: "Let the Master decide.",
-      heroDesc: "Unlock the absolute best of our laboratory. A curated selection delivered automatically, precisely when your soul needs it most.",
-      labAccess: "#LAB-ACCESS",
+      heroDesc: "Unlock the absolute best of our roastery. A curated selection delivered automatically, precisely when your soul needs it most.",
+      premiumAccess: "#LAB-ACCESS",
       sensoryExpert: "SENSORY EXPERT",
       quote: "\"I taste over 50 cups a day. The Subscription box is where I put the 2 cups that made me stop and smile.\"",
       headRoaster: "Head Roaster & Q-Grader",
       stepsBadge: "Subscription Steps",
-      stepsTitle: "The Laboratory Loop.",
+      stepsTitle: "The Roastery Loop.",
       step1Title: "Choose Vibe",
       step1Desc: "Select the plan that fits your caffeine needs. From discovery to collector.",
-      step2Title: "The Lab Curates",
+      step2Title: "The Roastery Curates",
       step2Desc: "We pick the best beans roasting that week specifically for you.",
       step3Title: "Doorstep Magic",
       step3Desc: "Freshly roasted. Rested precisely. Delivered when it tastes best.",
@@ -694,7 +694,7 @@ export const translations = {
       philDesc1: "We source directly from dedicated farmers. Every cherry carries their hard work and a unique terroir that we are sworn to protect and highlight through careful profiling.",
       philCategory2: "THE DRINKER",
       philTitle2: "Delivering the Value.",
-      philDesc2: "Through scientific precision and sensory calibration, we ensure that the original goodness and unique flavor profile reach your morning ritual intact and unbroken.",
+      philDesc2: "Through scientific precision and sensory calibration, we ensure that the original goodness and unique flavor profile reach your morning rutinitas intact and unbroken.",
       galleryBadge: "Visual Evidence",
       galleryTitle: "Where the magic happens.",
       galleryItem1Title: "Machine",
@@ -715,7 +715,7 @@ export const translations = {
       step2Subheading: "Define your needs.",
       form: {
         cafeNameLabel: "Cafe / Company Name",
-        cafeNamePlaceholder: "e.g. Lab Kopi",
+        cafeNamePlaceholder: "e.g. Roastery Kopi",
         phoneLabel: "WhatsApp Number",
         phonePlaceholder: "08...",
         addressLabel: "Full Address",
@@ -741,7 +741,7 @@ export const translations = {
       card: {
         heading: "Contract Protocol.",
         subheading: "Legal Finalization",
-        description: "Your partnership agreement is ready. Please download, sign, and upload to finalize your lab access.",
+        description: "Your partnership agreement is ready. Please download, sign, and upload to finalize your roastery access.",
         downloadButton: "Download Contract PDF",
         upload: {
           idle: "Drop or Click to Upload",
@@ -985,7 +985,7 @@ export const translations = {
         settings: "Profil & Alamat",
         orderRecords: "Catatan Pesanan",
         subscription: "Berlangganan",
-        labSettings: "Pengaturan Lab",
+        accountSettings: "Pengaturan Akun",
         b2bRegistration: "Registrasi B2B"
       },
       latest_order: "Status Pesanan Terbaru",
@@ -1008,7 +1008,7 @@ export const translations = {
           },
           shipped: {
             title: "Dikirim",
-            desc: "Dalam perjalanan menuju laboratorium Anda."
+            desc: "Dalam perjalanan menuju roastery Anda."
           },
           delivered: {
             title: "Diterima",
@@ -1026,12 +1026,12 @@ export const translations = {
         cancelled: "Dibatalkan",
       },
       loading: {
-        accessingHub: "Mengakses Pusat Laboratorium...",
-        initializing: "Menginisialisasi Laboratorium..."
+        accessingHub: "Mengakses Pusat Roastery...",
+        initializing: "Menginisialisasi Roastery..."
       },
       header: {
         title: "Pusat Akun",
-        scientistLabel: "Peneliti:",
+        scientistLabel: "Pengguna:",
         logoutButton: "Keluar dari Sistem"
       },
       overview: {
@@ -1047,7 +1047,7 @@ export const translations = {
         notSubscribed: "Belum berlangganan"
       },
       subscription: {
-        title: "Langganan Lab",
+        title: "Langganan Roastery",
         activePlanLabel: "Paket Aktif",
         activeBadge: "Aktif",
         cancelButton: "Hentikan Langganan",
@@ -1055,14 +1055,14 @@ export const translations = {
         startSubscriptionButton: "Mulai Langganan"
       },
       orders: {
-        title: "Arsip Lab",
+        title: "Arsip Roastery",
         countLabel: "Pesanan",
         emptyHistory: "Arsip pesanan tidak ditemukan.",
         totalHeader: "Total"
       },
       settings: {
-        title: "Pengaturan Lab",
-        researcherIdentity: "Identitas Peneliti",
+        title: "Pengaturan Akun",
+        researcherIdentity: "Profil Pengguna",
         fullNameLabel: "Nama Lengkap",
         whatsappNumberLabel: "Nomor Kontak WhatsApp",
         whatsappPlaceholder: "08...",
@@ -1137,13 +1137,13 @@ export const translations = {
       urgent: "Urgen",
       revenueAnalysis: "Analisa Arus Pendapatan",
       financialPerformance: "Performa Keuangan Berdasarkan Rentang Waktu",
-      labAnalysis: "Analisa Laboratorium.",
+      labAnalysis: "Analisa Roastery.",
       labDescPart1: "Produk terlaris saat ini adalah",
       labDescPart2: ". Pertimbangkan untuk memprioritaskan batch pemanggangan berikutnya untuk partner Tier Silver.",
       roastAccuracy: "Akurasi Pemanggangan",
       aiStrategyBtn: "Buat Strategi AI",
       comingSoonTitle: "Coming Soon.",
-      comingSoonDesc: "Fitur Strategi AI sedang dikalibrasi di laboratorium kami. Nantikan kehadirannya!",
+      comingSoonDesc: "Fitur Strategi AI sedang dikalibrasi di roastery kami. Nantikan kehadirannya!",
       okUnderstand: "Oke, Mengerti",
       revenue: "Pendapatan",
       selectFullRange: "Pilih rentang tanggal lengkap.",
@@ -1190,7 +1190,7 @@ export const translations = {
     spotlight: {
       ourCoffee: {
         title: "Koleksi Kopi",
-        content: "Jelajahi hasil roasting terbaru dan single origin berstandar laboratorium kami. Setiap biji kopi diperlakukan secara unik."
+        content: "Jelajahi hasil roasting terbaru dan single origin berstandar roastery kami. Setiap biji kopi diperlakukan secara unik."
       },
       wholesale: {
         title: "Kemitraan B2B",
@@ -1201,7 +1201,7 @@ export const translations = {
         content: "Dapatkan pengiriman rutin untuk eksperimen roasting terbaru kami. Kopi segar dikirim sesuai jadwal Anda."
       },
       catalog: {
-        title: "Laboratorium",
+        title: "Roastery",
         content: "Ini adalah arsip lengkap kami. Setiap biji kopi di sini telah diprofilkan secara ilmiah untuk rasa yang maksimal."
       },
       tools: {
@@ -1250,7 +1250,7 @@ export const translations = {
       },
       wholesalePage: {
         title: "Solusi B2B & Kemitraan",
-        content: "Bergabunglah menjadi mitra kami dan dapatkan berbagai keuntungan: harga khusus grosir bertingkat, dukungan lab untuk profil roasting kustom, pelatihan barista, serta akses prioritas untuk koleksi eksperimental terbatas kami."
+        content: "Bergabunglah menjadi mitra kami dan dapatkan berbagai keuntungan: harga khusus grosir bertingkat, dukungan roastery untuk profil roasting kustom, pelatihan barista, serta akses prioritas untuk koleksi eksperimental terbatas kami."
       },
       wholesaleJoin: {
         title: "Bergabung Sekarang",
@@ -1266,7 +1266,7 @@ export const translations = {
       },
       wholesaleTier: {
         title: "Tingkat Kemitraan",
-        content: "Proyeksi tingkat Anda, diskon lab, dan total penghematan akan diperbarui secara dinamis di sini."
+        content: "Proyeksi tingkat Anda, diskon roastery, dan total penghematan akan diperbarui secara dinamis di sini."
       },
       wholesaleBenefits: {
         title: "Keuntungan Mitra",
@@ -1297,7 +1297,7 @@ export const translations = {
         content: "Setelah ditandatangani, unggah dokumen di sini untuk mengaktifkan akses dashboard mitra Anda."
       },
       subHero: {
-        title: "Siklus Laboratorium",
+        title: "Siklus Roastery",
         content: "Selamat datang di layanan langganan eksklusif kami. Biarkan Master Roaster kami mengkurasi pengiriman bulanan Anda."
       },
       subMaster: {
@@ -1394,10 +1394,10 @@ export const translations = {
           { id: "05", title: "Artisan", desc: "Dicampur untuk kompleksitas dan kebahagiaan." },
           { id: "06", title: "Pelacakan", desc: "Data real-time dari mesin roasting ke pintu Anda." }
         ],
-        stickers: { lab: "Lab Sains", map: "Peta Kebahagiaan" }
+        stickers: { roastery: "Roastery Sains", map: "Peta Kebahagiaan" }
       },
       labRecords: {
-        title: "Catatan Lab.", subtitle: "Data QC Real-time", ctaExplore: "Jelajahi Laboratorium",
+        title: "Catatan Roastery.", subtitle: "Data QC Real-time", ctaExplore: "Jelajahi Roastery",
         cardTitle: "Kurva Roasting Sumedang", cardAnalysis: "Analisis: 92 Poin →",
         ctaDiveTitle: "Selami data kami lebih dalam.", ctaDiveDesc: "Buka spesifikasi teknis untuk setiap panen.", ctaDiveBtn: "Jelajahi Semua Catatan"
       },
@@ -1459,7 +1459,7 @@ export const translations = {
       preparation: "Persiapan",
       addToOrder: "Tambah Pesanan",
       initiateCheckout: "Mulai Pembayaran",
-      labSuggestions: "Saran Laboratorium",
+      labSuggestions: "Saran Roastery",
       completeArchive: "Lengkapi Koleksi.",
       browseFullCollection: "Jelajahi Semua Koleksi",
       analyzingBatch: "Menganalisis Catatan Batch...",
@@ -1491,14 +1491,14 @@ export const translations = {
       bronze: "Mitra Perunggu",
       silver: "Mitra Perak",
       gold: "Mitra Emas",
-      labDiscount: "Diskon Laboratorium",
+      labDiscount: "Diskon Roastery",
       projectedSavings: "Proyeksi Penghematan",
       perMo: "BLN",
       whyPartner: "Mengapa Bermitra?",
       confidential: "Rahasia",
       initialize: "Mulai",
       onboarding: "Proses Orientasi.",
-      ctaDesc: "Otomatiskan kemitraan Anda. Isi formulir, unduh kontrak lab Anda, dan aktifkan akses grosir Anda secara instan.",
+      ctaDesc: "Otomatiskan kemitraan Anda. Isi formulir, unduh kontrak roastery Anda, dan aktifkan akses grosir Anda secara instan.",
       beginRegistration: "Mulai Pendaftaran",
       benefits: {
         qualityTitle: "Jaminan Kualitas",
@@ -1519,16 +1519,16 @@ export const translations = {
       badge: "Klub Berlangganan Eksklusif",
       heroTitle1: "Tak perlu memilih.",
       heroTitle2: "Biarkan Master yang menentukan.",
-      heroDesc: "Buka akses ke kopi terbaik dari laboratorium kami. Pilihan kurasi dikirim otomatis, tepat ketika jiwa Anda paling membutuhkannya.",
-      labAccess: "#AKSES-LAB",
+      heroDesc: "Buka akses ke kopi terbaik dari roastery kami. Pilihan kurasi dikirim otomatis, tepat ketika jiwa Anda paling membutuhkannya.",
+      premiumAccess: "#AKSES-LAB",
       sensoryExpert: "AHLI SENSORI",
       quote: "\"Saya mencicipi lebih dari 50 cangkir sehari. Kotak Berlangganan ini adalah tempat saya menaruh 2 cangkir yang membuat saya tersenyum.\"",
       headRoaster: "Kepala Roaster & Q-Grader",
       stepsBadge: "Langkah Berlangganan",
-      stepsTitle: "Siklus Laboratorium.",
+      stepsTitle: "Siklus Roastery.",
       step1Title: "Pilih Vibe",
       step1Desc: "Pilih paket yang sesuai dengan kebutuhan kafein Anda. Dari penemuan hingga kolektor.",
-      step2Title: "Kurasi Lab",
+      step2Title: "Kurasi Roastery",
       step2Desc: "Kami memilih biji kopi terbaik yang dipanggang minggu itu khusus untuk Anda.",
       step3Title: "Keajaiban di Pintu",
       step3Desc: "Baru dipanggang. Diistirahatkan dengan presisi. Dikirim saat rasanya paling enak.",
@@ -1571,7 +1571,7 @@ export const translations = {
       step2Subheading: "Tentukan kebutuhan Anda.",
       form: {
         cafeNameLabel: "Nama Kafe / Perusahaan",
-        cafeNamePlaceholder: "c.b. Lab Kopi",
+        cafeNamePlaceholder: "c.b. Roastery Kopi",
         phoneLabel: "Nomor WhatsApp",
         phonePlaceholder: "08...",
         addressLabel: "Alamat Lengkap",
@@ -1597,7 +1597,7 @@ export const translations = {
       card: {
         heading: "Protokol Kontrak.",
         subheading: "Finalisasi Hukum",
-        description: "Dokumen perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses lab Anda.",
+        description: "Dokumen perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses roastery Anda.",
         downloadButton: "Unduh PDF Kontrak",
         upload: {
           idle: "Seret atau Klik untuk Mengunggah",

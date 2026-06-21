@@ -20,7 +20,7 @@ export default function TestPage() {
 
   const savedAddresses = [
     { label: "Alamat Utama", address: "Jalan Contoh No. 1, Cirebon" },
-    { label: "Kantor", address: "Gedung Lab Fermion, Jakarta" }
+    { label: "Kantor", address: "Gedung Roastery Fermion, Jakarta" }
   ];
 
   return (

@@ -43,7 +43,7 @@ export default function PaymentFailure() {
           
           {/* Text Content */}
           <div className="space-y-4">
-            <h1 className="text-5xl font-cloude italic tracking-tighter text-slate-900 leading-none">
+            <h1 className="text-5xl font-sans font-bold italic tracking-tighter text-slate-900 leading-none">
               Gagal<span className="text-red-500">.</span>
             </h1>
             <p className="text-stone-500 font-bold text-[10px] uppercase tracking-[0.3em] leading-relaxed italic px-4">
@@ -68,7 +68,7 @@ export default function PaymentFailure() {
           {/* Footer Info */}
           <div className="pt-8 border-t border-dashed border-black/10">
             <p className="text-[9px] font-black uppercase tracking-[0.3em] text-stone-300 italic">
-              Laboratory Dispatch Interrupted
+              Roastery Dispatch Interrupted
             </p>
           </div>
         </motion.div>

@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { publishEvent } from '../lib/ably.js';
+import { sendWelcomeB2BEmail, sendOrderShippedEmail } from '../lib/emailService.js';
 import { subDays, startOfDay, endOfDay, differenceInDays, format } from 'date-fns';
 
 // 0. Get Admin Stats for Dashboard Overview
@@ -197,6 +198,21 @@ export const updatePartnerStatus = async (req, res) => {
 
     if (!data) {
       return res.status(404).json({ message: "Partner application not found" });
+    }
+
+    // Email hook
+    if (status === 'approved' && data.profile_id) {
+      // Fetch user profile email
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email, full_name')
+        .eq('id', data.profile_id)
+        .single();
+        
+      if (profile && profile.email) {
+        // Run in background
+        sendWelcomeB2BEmail(profile.email, data.company_name || profile.full_name || 'Mitra B2B').catch(e => console.error(e));
+      }
     }
 
     res.status(200).json({ 
@@ -422,6 +438,17 @@ export const updateOrder = async (req, res) => {
     }
 
     publishEvent('orders', 'order_updated', { id: id, status: status || data.status });
+
+    // Email hook
+    if (status === 'SHIPPED' && data.customer_email) {
+      sendOrderShippedEmail(
+        data.customer_email,
+        data.customer_name || 'Coffee Lover',
+        data.id,
+        data.shipping_courier,
+        data.shipping_awb
+      ).catch(e => console.error("Email Error:", e));
+    }
 
     res.status(200).json({ message: "Order updated successfully", order: data });
   } catch (error) {

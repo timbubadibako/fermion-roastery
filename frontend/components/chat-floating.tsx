@@ -66,9 +66,9 @@ export function ChatFloating() {
                <div className="absolute top-[-5px] left-1/2 -translate-x-1/2 w-16 h-4 bg-white/20 border border-white/5 rotate-[-2deg] z-20 backdrop-blur-sm"></div>
 
                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-[#F1B941] border border-black/10 rounded-lg flex items-center justify-center text-black font-cloude shadow-sm text-lg rotate-[-5deg]">F</div>
+                  <div className="w-10 h-10 bg-[#F1B941] border border-black/10 rounded-lg flex items-center justify-center text-black font-sans font-bold shadow-sm text-lg rotate-[-5deg]">F</div>
                   <div>
-                    <h4 className="text-white text-sm font-cloude tracking-widest leading-none">Fermion Lab</h4>
+                    <h4 className="text-white text-sm font-sans font-bold tracking-widest leading-none">Bantuan Fermion</h4>
                     <p className="text-emerald-400 text-[9px] font-black uppercase tracking-[0.2em] mt-2 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> Live Support
                     </p>

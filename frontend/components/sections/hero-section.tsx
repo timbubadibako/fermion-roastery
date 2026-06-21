@@ -13,7 +13,7 @@ const sideImages = [
   },
   {
     src: "/cartoon.jpeg",
-    alt: "Fermion Roasting Lab",
+    alt: "Fermion Roasting Roastery",
     position: "left",
     span: 1,
   },

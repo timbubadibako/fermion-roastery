@@ -103,7 +103,7 @@ export function ContactSection() {
             {/* Quick Contact Info Buttons */}
             <div className="flex gap-6 relative">
                 <Sticker rotate={-5} className="relative !absolute-none scale-100 border border-black/10 shadow-[4px_4px_0px_rgba(0,0,0,0.03)]" color="#fef3c7" variant="solid">
-                    <a href="mailto:lab@fermion.co" className="flex items-center gap-2 font-sans font-bold">
+                    <a href="mailto:roastery@fermion.co" className="flex items-center gap-2 font-sans font-bold">
                         <Mail size={16} /> LAB NOTES
                     </a>
                 </Sticker>
@@ -115,7 +115,7 @@ export function ContactSection() {
             </div>
           </div>
 
-          {/* Right Column: Lab-Notebook Style Form */}
+          {/* Right Column: Roastery-Notebook Style Form */}
           <div ref={formRef} className="lg:col-span-3 relative">
             {/* Background layered paper - Removed shadow, kept border for neat stack */}
             <div className="absolute top-3 left-3 w-full h-full bg-[#E2DACB] border border-black/5 rotate-1"></div>
