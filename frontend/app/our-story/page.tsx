@@ -80,10 +80,10 @@ export default function StoryPageV2() {
               <div className="inline-block px-4 py-1.5 bg-white border border-[#8CADD8]/30 shadow-[4px_4px_0_rgba(140,173,216,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#0F3A8D] uppercase story-hero-text">
                  <Archive size={12} className="inline mr-2" /> {t.ourStory.badge}
               </div>
-              <h1 className="text-5xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-[0.8] story-hero-text">
+              <h1 className="text-5xl md:text-9xl font-cloude tracking-tighter text-slate-900 leading-[0.8] story-hero-text">
                  {t.ourStory.title1} <br/> <span className="font-display italic text-[#8CADD8]">{t.ourStory.title2}</span>
               </h1>
-              <div className="space-y-6 text-stone-600 font-medium text-lg md:text-xl leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
+              <div className="space-y-6 text-stone-600 font-medium text-lg md:text-lg leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
                  <p>{t.ourStory.desc1}</p>
                  <p className="italic">{t.ourStory.desc2}</p>
               </div>

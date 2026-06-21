@@ -76,6 +76,9 @@ function AccountContent() {
 
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
 
+  const [passwords, setPasswords] = useState({ old: "", new: "" });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   useEffect(() => {
     if (user) {
       fetchOrders();
@@ -137,6 +140,44 @@ function AccountContent() {
         toast.error(t.account.messages.subscriptionCancelFailure);
       }
     } catch (e) { toast.error(t.account.messages.networkError); }
+  };
+
+  const changePassword = async () => {
+    if (!passwords.old || !passwords.new) {
+       toast.error("Harap isi sandi lama dan sandi baru");
+       return;
+    }
+    if (passwords.new.length < 6) {
+       toast.error("Sandi baru minimal 6 karakter");
+       return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+       const res = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: {
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${user?.token || ''}`
+          },
+          body: JSON.stringify({
+             oldPassword: passwords.old,
+             newPassword: passwords.new
+          })
+       });
+
+       const data = await res.json();
+       if (res.ok) {
+          toast.success("Kata sandi berhasil diubah");
+          setPasswords({ old: "", new: "" });
+       } else {
+          toast.error(data.message || "Gagal mengubah kata sandi");
+       }
+    } catch (e) {
+       toast.error("Terjadi kesalahan sistem");
+    } finally {
+       setIsChangingPassword(false);
+    }
   };
 
   const fetchOrders = async () => {
@@ -336,7 +377,9 @@ function AccountContent() {
               { id: "overview", label: t.account.tabs.overview, icon: LayoutDashboard },
               { id: "orders", label: t.account.tabs.orderRecords, icon: Package },
               { id: "subscription", label: t.account.tabs.subscription, icon: Sparkles },
-              { id: "settings", label: t.account.tabs.accountSettings, icon: Settings },
+              { id: "profile", label: "Profil Pribadi", icon: User },
+              { id: "addresses", label: "Buku Alamat", icon: MapPin },
+              { id: "security", label: "Keamanan Akun", icon: Settings },
               // Hanya tampilkan tab ini jika mereka sudah mendaftar B2B (pending atau approved)
               ...(user?.b2b_status === 'PENDING' || user?.role === 'B2B' 
                   ? [{ id: "b2b_registration", label: t.account.tabs.b2bRegistration, icon: Coffee }] 
@@ -535,11 +578,11 @@ function AccountContent() {
                 </motion.div>
               )}
 
-              {activeTab === "settings" && (
-                <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+              {activeTab === "profile" && (
+                <motion.div key="profile" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-12">
                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
-                      <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">{t.account.settings.title}</h3>
+                      <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">Profil Pribadi</h3>
                       <div className="w-10 h-10 rounded-full bg-stone-50 border border-black/5 flex items-center justify-center text-stone-300">
                         <Settings size={16} />
                       </div>
@@ -567,18 +610,26 @@ function AccountContent() {
                       </div>
                     </div>
 
-                    <div className="space-y-8 pt-10 border-t border-dashed border-black/5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-8 h-8 rounded-full bg-[#367F4D] text-white flex items-center justify-center shadow-md">
-                            <MapPin size={14} />
-                          </div>
-                          <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900">{t.account.settings.addressBookTitle}</h4>
+                    <div className="pt-10 flex justify-center">
+                      <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
+                        Simpan Profil
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === "addresses" && (
+                <motion.div key="addresses" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                  <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
+                    <div className="flex items-center justify-between border-b border-black/5 pb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-full bg-[#367F4D] text-white flex items-center justify-center shadow-md">
+                          <MapPin size={14} />
                         </div>
-                        {/* <Button onClick={useCurrentLocation} variant="outline" className="h-10 text-[9px] font-black uppercase tracking-widest border-black/10 hover:bg-stone-50 gap-2 shadow-sm rounded-sm">
-                          <Crosshair size={12} /> {t.account.settings.useCurrentLocation}
-                        </Button> */}
+                        <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">Buku Alamat</h3>
                       </div>
+                    </div>
 
                       <div className="flex gap-2 p-1 bg-stone-50 rounded-sm border border-black/5">
                         {addresses.map(addr => {
@@ -720,11 +771,40 @@ function AccountContent() {
 
                       <div className="pt-10 flex justify-center">
                         <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
-                          {t.account.settings.saveButton}
+                          Simpan Alamat
                         </Button>
                       </div>
-                    </div> {/* Penutup space-y-8 di bawah judul */}
-                  </div> {/* Penutup bg-white p-10 */}
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === "security" && (
+                <motion.div key="security" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+                  {/* Password Change Card */}
+                  <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
+                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
+                        <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">Keamanan Akun</h3>
+                        <div className="w-10 h-10 rounded-full bg-stone-50 border border-black/5 flex items-center justify-center text-stone-300">
+                          <Sparkles size={16} />
+                        </div>
+                     </div>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Lama</label>
+                          <Input type="password" value={passwords.old} onChange={e => setPasswords({...passwords, old: e.target.value})} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Masukkan sandi saat ini" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Baru</label>
+                          <Input type="password" value={passwords.new} onChange={e => setPasswords({...passwords, new: e.target.value})} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Minimal 6 karakter" />
+                        </div>
+                     </div>
+                     <div className="flex justify-end pt-4">
+                        <Button onClick={changePassword} disabled={isChangingPassword} className="h-12 px-8 bg-slate-900 text-white rounded-sm font-black uppercase tracking-widest italic hover:bg-[#367F4D] transition-all text-[10px]">
+                           {isChangingPassword ? "Memproses..." : "Ganti Sandi"}
+                        </Button>
+                     </div>
+                  </div>
+
                 </motion.div>
               )}
               {activeTab === "b2b_registration" && (user?.b2b_status === 'PENDING' || user?.role === 'B2B') && (

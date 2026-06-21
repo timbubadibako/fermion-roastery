@@ -154,7 +154,7 @@ export default function SubscriptionPageV2() {
             {tSub.badge}
           </div>
 
-          <h1 id="tour-sub-hero" className="text-5xl md:text-7xl font-cloude tracking-tighter text-[#2A1619] leading-[0.8] sub-hero-text">
+          <h1 id="tour-sub-hero" className="text-5xl md:text-9xl font-cloude tracking-tighter text-[#2A1619] leading-[0.8] sub-hero-text">
             {tSub.heroTitle1} <br />
             <span className="font-display italic text-[#F1B941]">{tSub.heroTitle2}</span>
           </h1>

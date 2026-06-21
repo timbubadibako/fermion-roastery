@@ -144,7 +144,7 @@ export default function WholesalePageV2() {
             <div className="inline-block px-4 py-1.5 bg-white border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.02)] rotate-[-1deg] text-[9px] font-black tracking-[0.3em] text-[#367F4D] uppercase wholesale-hero-text">
                {tWholesale.heroBadge}
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-cloude tracking-tighter leading-[0.9] text-slate-900 wholesale-hero-text">
+            <h1 className="text-5xl md:text-9xl lg:text-9xl font-cloude tracking-tighter leading-[0.9] text-slate-900 wholesale-hero-text">
               {tWholesale.heroTitle1} <br/>
               <span className="font-display italic text-[#367F4D]">{tWholesale.heroTitle2}</span>
             </h1>

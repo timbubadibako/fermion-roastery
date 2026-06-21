@@ -340,7 +340,7 @@ function HeaderComponent() {
                                 className="flex items-center gap-5 p-2 hover:bg-stone-50 transition-all duration-300 group rounded-lg"
                               >
                                 <div className="w-14 h-14 bg-white p-1 border border-black/5 shadow-sm overflow-hidden rotate-[-2deg] group-hover:rotate-0 transition-transform">
-                                  <img src={product.image_url || "https://placehold.co/200x200/7a9cff/ffffff?text=FERMION"} alt={product.name} className="w-full h-full object-cover filter contrast-125 saturate-110" />
+                                  <Image width={56} height={56} src={product.image_url || "https://placehold.co/200x200/7a9cff/ffffff?text=FERMION"} alt={product.name} className="w-full h-full object-cover filter contrast-125 saturate-110" />
                                 </div>
                                 <div className="flex-1">
                                   <p className="text-[11px] font-display font-black text-stone-900 leading-tight mb-0.5 uppercase truncate">{product.name}</p>
