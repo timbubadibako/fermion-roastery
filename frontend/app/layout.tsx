@@ -8,7 +8,11 @@ const manrope = Manrope({ subsets: ["latin"], variable: '--font-sans' });
 const marker = Permanent_Marker({ weight: '400', subsets: ["latin"], variable: '--font-cloude' });
 
 export const metadata: Metadata = {
-  title: 'Fermion Roastery | Modern Coffee Culture',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fermion-roastery.vercel.app'),
+  title: {
+    template: '%s | Fermion Roastery',
+    default: 'Fermion Roastery | Specialty Coffee & Roasting Lab',
+  },
   description: 'Premium coffee roaster serving high-quality specialty beans. Join our B2B partnership, subscribe to our coffee labs, or buy retail beans.',
   keywords: 'coffee, roastery, specialty coffee, b2b coffee, coffee subscription, indonesian coffee',
   openGraph: {
@@ -16,8 +20,8 @@ export const metadata: Metadata = {
     description: 'Specialty coffee roastery and lab.',
     url: 'https://fermionroastery.com',
     siteName: 'Fermion Roastery',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
-    locale: 'en_US',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Fermion Roastery Cover Image' }],
+    locale: 'id_ID',
     type: 'website',
   },
   twitter: {

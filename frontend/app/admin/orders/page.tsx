@@ -17,7 +17,8 @@ import {
   Clock,
   Printer,
   Ban,
-  Navigation
+  Navigation,
+  Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,7 @@ interface Order {
   shipping_courier?: string;
   shipping_label_url?: string;
   biteship_order_id?: string;
+  created_at?: string;
 }
 
 export default function KanbanBoard() {
@@ -180,6 +182,47 @@ export default function KanbanBoard() {
     setIsQCModalOpen(true);
   };
 
+  const handleExportCSV = () => {
+    if (!orders.length) {
+      toast.error("Tidak ada data pesanan untuk diekspor");
+      return;
+    }
+
+    // CSV Header
+    const headers = [
+      "Order ID", "Tanggal", "Nama Pelanggan", "Telepon", "Total Tagihan (Rp)", 
+      "Status", "Kurir", "No Resi", "Jumlah Item", "Produk"
+    ];
+
+    // CSV Rows
+    const rows = orders.map(o => {
+      const date = new Date(o.created_at || Date.now()).toLocaleDateString('id-ID');
+      const itemsDetail = o.items?.map(i => `${i.quantity}x ${i.product_name}`).join('; ') || '';
+      return [
+        o.id,
+        date,
+        `"${o.customer_name || ''}"`,
+        `"${o.customer_phone || ''}"`,
+        o.total_amount,
+        o.status,
+        `"${o.shipping_courier || ''}"`,
+        `"${o.shipping_awb || ''}"`,
+        o.items?.length || 0,
+        `"${itemsDetail}"`
+      ].join(',');
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `fermion_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Laporan berhasil diunduh");
+  };
+
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
       <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin" />
@@ -221,6 +264,13 @@ export default function KanbanBoard() {
             className={`h-12 px-6 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border shadow-none ${isBatchMode ? 'bg-[#367F4D] text-white border-[#367F4D] hover:bg-[#2d6a41]' : 'bg-white border-black/10 text-slate-600 hover:bg-stone-50 hover:text-[#367F4D] hover:border-[#367F4D]/30'}`}
            >
              {isBatchMode ? 'Matikan Mode Massal' : 'Mode Cetak Massal'}
+           </Button>
+           <Button 
+            onClick={handleExportCSV}
+            variant="outline"
+            className="h-12 px-6 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border border-black/10 bg-white text-slate-600 shadow-none hover:bg-stone-50 hover:text-emerald-600 hover:border-emerald-600/30"
+           >
+             <Download size={14} className="mr-2" /> Unduh CSV
            </Button>
            <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
