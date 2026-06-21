@@ -28,6 +28,6 @@ SELECT id, 'Gold', 130000 FROM products WHERE slug = 'sumedang-anaerob';
 -- 4. Insert FAQ Data
 INSERT INTO faqs (question_id, answer_id, question_en, answer_en, sort_order)
 VALUES 
-('Apa itu Fermion Roastery?', 'Fermion Roastery adalah laboratorium sangrai kopi yang berfokus pada pendekatan ilmiah untuk menghasilkan profil rasa yang unik.', 'What is Fermion Roastery?', 'Fermion Roastery is a coffee roasting laboratory focused on a scientific approach to produce unique flavor profiles.', 1),
+('Apa itu Fermion Roastery?', 'Fermion Roastery adalah micro roastery yang berfokus menyajikan biji kopi specialty terbaik untuk rutinitas seduh dan kafe kamu, langsung dari Cirebon Timur.', 'What is Fermion Roastery?', 'Fermion Roastery is a micro roastery focused on providing the best specialty coffee beans for your daily brew and cafe, straight from East Cirebon.', 1),
 ('Bagaimana cara menjadi mitra B2B?', 'Anda bisa mendaftar melalui halaman Wholesale dan mengisi formulir aplikasi yang tersedia.', 'How do I become a B2B partner?', 'You can register via the Wholesale page and fill out the available application form.', 2),
 ('Berapa minimal pembelian untuk grosir?', 'Minimal pembelian untuk kontrak B2B adalah 10kg per bulan selama periode 6 bulan.', 'What is the minimum purchase for wholesale?', 'The minimum purchase for a B2B contract is 10kg per month over a 6-month period.', 3);

@@ -110,79 +110,68 @@ export function JournalSectionV2() {
           </Link>
         </div>
 
-        {/* Posts Grid - Scrapbook Stack */}
-        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-          {loading ? (
-             [1,2,3].map(i => (
-                <div key={i} className="aspect-[4/5] bg-white border border-black/5 shadow-[8px_8px_0_rgba(0,0,0,0.02)] animate-pulse" style={{ transform: `rotate(1deg)` }} />
-             ))
-          ) : (
-            posts.map((post, i) => (
-              <div 
-                key={post.id}
-                className="journal-card group cursor-pointer relative flex flex-col"
-              >
-                <Link href={`/journal/${post.slug}`} className="h-full">
-                  <div 
-                    className="bg-white p-6 pb-8 border border-black/10 hover:border-black/20 hover:-translate-y-2 hover:scale-[1.02] shadow-[8px_8px_0px_rgba(0,0,0,0.02)] hover:shadow-[12px_12px_0px_rgba(0,0,0,0.04)] transition-all duration-500 h-full flex flex-col"
-                    style={{ borderRadius: "4px 2px 6px 3px" }}
-                  >
-                     {/* Masking tape effect */}
-                     <div className="absolute top-[-8px] right-10 w-16 h-5 bg-white/60 border border-black/5 rotate-[8deg] z-20 backdrop-blur-sm shadow-sm"></div>
+        {loading ? (
+           <div className="w-full aspect-[21/9] bg-white border border-black/5 animate-pulse shadow-sm" />
+        ) : (
+           posts.length > 0 && (
+             <div className="relative">
+                {/* Decorative Tape */}
+                <div className="absolute -top-4 right-10 w-32 h-10 bg-white/40 border border-black/5 rotate-[3deg] backdrop-blur-sm shadow-sm z-30"></div>
+                <div className="absolute -bottom-6 left-12 w-24 h-8 bg-fermion-french-blue/10 border border-black/5 rotate-[-5deg] backdrop-blur-sm shadow-sm z-30"></div>
 
-                     {/* Image Container */}
-                     <div className="aspect-[4/5] overflow-hidden relative bg-slate-50 mb-6 rounded-sm">
-                        {post.featured_image ? (
-                          <img 
-                            src={post.featured_image} 
-                            alt={post.title}
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-300">
-                             <BookOpen size={48} />
-                          </div>
-                        )}
-                        
-                        {/* Date Stamp */}
-                        <div className="absolute bottom-4 left-4">
-                           <div className="bg-white/90 backdrop-blur-md text-slate-900 px-3 py-1.5 rounded-full border border-black/5 shadow-sm flex items-center gap-2">
-                              <Calendar size={12} className="text-fermion-french-blue" />
-                              <span className="text-[9px] font-black uppercase tracking-widest">
-                                 {new Date(post.published_at || post.created_at || new Date()).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                              </span>
-                           </div>
-                        </div>
-                     </div>
+                <Link href={`/journal/${posts[0].slug}`} className="group block w-full bg-white border border-black/10 shadow-[8px_12px_40px_rgba(0,0,0,0.06)] hover:shadow-[12px_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-2 p-4 md:p-6 lg:p-8 relative z-20">
+                   <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
+                      
+                      {/* Left: Huge Image */}
+                      <div className="w-full lg:w-3/5 aspect-square lg:aspect-[4/3] relative overflow-hidden bg-stone-100 border border-black/5">
+                         {posts[0].featured_image ? (
+                            <img 
+                              src={posts[0].featured_image} 
+                              alt={posts[0].title}
+                              className="w-full h-full object-cover filter contrast-110 sepia-[0.1] group-hover:sepia-0 group-hover:scale-105 transition-all duration-1000"
+                            />
+                         ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                               <BookOpen size={64} />
+                            </div>
+                         )}
+                         {/* Badge overlay */}
+                         <div className="absolute top-6 left-6 bg-[#2E2140] text-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#F1B941] animate-pulse"></span>
+                            LATEST DISPATCH
+                         </div>
+                      </div>
 
-                     {/* Content - Typed Note */}
-                     <div className="flex-1 flex flex-col px-2 relative">
-                        <h3 className="text-2xl font-display font-black uppercase tracking-tight text-slate-900 group-hover:text-fermion-french-blue transition-colors leading-tight mb-3 relative z-10">
-                           {post.title}
-                        </h3>
-                        
-                        {/* Squiggly line separator */}
-                        <svg className="w-12 opacity-20 mb-4" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
+                      {/* Right: Content */}
+                      <div className="w-full lg:w-2/5 flex flex-col justify-center space-y-6 lg:pr-8 pb-8 lg:pb-0">
+                         <div className="flex items-center gap-4">
+                            <div className="h-px w-12 bg-fermion-french-blue"></div>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-fermion-french-blue">
+                               {new Date(posts[0].published_at || posts[0].created_at || new Date()).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
+                            </span>
+                         </div>
+                         
+                         <h3 className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-slate-900 leading-[0.9] italic tracking-tight group-hover:text-fermion-french-blue transition-colors">
+                            {posts[0].title}
+                         </h3>
+                         
+                         <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed max-w-lg pt-4 border-t border-black/5">
+                            "{posts[0].excerpt}"
+                         </p>
 
-                        <p className="text-sm text-slate-500 font-sans font-medium line-clamp-3 leading-relaxed relative z-10">
-                           {post.excerpt}
-                        </p>
-                        
-                        <div className="pt-6 mt-auto">
-                           <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-fermion-french-blue transition-colors relative z-10">
-                             <span>Read Full Story</span>
-                             <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+                         <div className="pt-6">
+                            <div className="inline-flex items-center justify-center gap-3 bg-white border border-black/10 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-900 group-hover:bg-[#2E2140] group-hover:text-white group-hover:border-transparent transition-all duration-300">
+                               <span>Read Field Report</span>
+                               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </div>
+                         </div>
+                      </div>
+
+                   </div>
                 </Link>
-              </div>
-            ))
-          )}
-        </div>
+             </div>
+           )
+        )}
 
       </div>
     </section>

@@ -102,7 +102,10 @@ export function HeroV2() {
           ref={videoRef}
           muted
           playsInline
-          preload="auto"
+          preload="none"
+          poster="/hero-bg.jpg"
+          autoPlay
+          loop
           className="absolute inset-0 w-full h-full object-cover opacity-60"
           style={{ willChange: "contents" }}
         >

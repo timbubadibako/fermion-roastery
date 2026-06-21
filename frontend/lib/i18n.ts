@@ -902,7 +902,7 @@ export const translations = {
       },
       review: {
         title: "Daftar Produk",
-        subtitle: "Seleksi spesimen untuk pesanan Anda berikutnya",
+        subtitle: "Daftar pilihan kopi untuk pesanan Anda berikutnya",
         itemSubtotalLabel: "Subtotal Item",
         backToShopLink: "Kembali Belanja",
         proceedToShippingButton: "Lanjut ke Pengiriman"
@@ -918,7 +918,7 @@ export const translations = {
       },
       shipping: {
         title: "Info Pengiriman",
-        subtitle: "Ke mana kami harus mengirimkan spesimen Anda?",
+        subtitle: "Ke mana kami harus mengirimkan pesanan Anda?",
         courierTitle: "Metode Pengiriman",
         courierSubtitle: "Pilih mitra logistik Anda",
         searchingCouriers: "Mencari kurir terbaik...",
@@ -1213,7 +1213,7 @@ export const translations = {
         content: "Urutkan berdasarkan harga atau produk unggulan untuk menemukan yang Anda butuhkan."
       },
       card: {
-        title: "Data Spesimen",
+        title: "Daftar Produk",
         content: "Setiap kartu menampilkan asal, harga, dan catatan rasa. Klik untuk spesifikasi teknis lengkap."
       },
       buttons: {
@@ -1223,7 +1223,7 @@ export const translations = {
       },
       cartPage: {
         title: "Keranjang Anda",
-        content: "Tinjau spesimen pilihan Anda sebelum melanjutkan ke pembayaran."
+        content: "Tinjau produk pilihan Anda sebelum melanjutkan ke pembayaran."
       },
       addCart: {
         title: "Tambah ke Keranjang",
@@ -1431,13 +1431,13 @@ export const translations = {
       batchRecord: "Catatan Batch",
       perWeight: "Rp / 250G",
       addToCart: "Tambah ke Keranjang",
-      emptyStateTitle: "Spesimen Tidak Ditemukan",
+      emptyStateTitle: "Produk Tidak Ditemukan",
       emptyStateDesc: "Kami tidak dapat menemukan kopi yang sesuai dengan filter Anda. Cobalah memilih proses atau kategori yang berbeda.",
       emptyStateReset: "Reset Filter"
     },
     productDetail: {
       returnToCatalogue: "Kembali ke Katalog",
-      specimenRecord: "Rekaman Spesimen v.01",
+      specimenRecord: "Data Kopi v.01",
       score: "Skor",
       extractionProtocol: "Protokol Ekstraksi",
       brewingGuide: "Panduan Seduh",
@@ -1449,7 +1449,7 @@ export const translations = {
       ratio: "RASIO",
       authenticRecord: "Catatan Otentik",
       valuation: "Valuasi",
-      specimenAnalysis: "Analisis Spesimen",
+      specimenAnalysis: "Analisis Kopi",
       originsProcessing: "Asal & Proses",
       origin: "Asal",
       process: "Proses",
@@ -1484,7 +1484,7 @@ export const translations = {
       est: "Est. 2026",
       ecoTest: "Uji Kelayakan Ekonomi",
       growthEngine: "Mesin Pertumbuhan Anda.",
-      monthlyVol: "Volume Spesimen Bulanan",
+      monthlyVol: "Volume Kopi Bulanan",
       min: "MIN 10 KG",
       scale: "SKALA 200+ KG",
       currentTier: "Tingkat Alokasi Saat Ini",

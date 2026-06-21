@@ -5,7 +5,8 @@ export const getFaqs = async (req, res) => {
     const { data, error } = await supabase
       .from('faqs')
       .select('*')
-      .order('sort_order', { ascending: true });
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
     
     if (error) throw error;
     res.status(200).json(data);

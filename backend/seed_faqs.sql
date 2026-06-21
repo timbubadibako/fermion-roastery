@@ -5,9 +5,9 @@ INSERT INTO faqs (question_en, answer_en, question_id, answer_id)
 VALUES 
 (
     'What is Fermion Roastery?', 
-    'Fermion Roastery is a precision-focused coffee laboratory. We blend scientific methods with artisan roasting to bring out the absolute best in every bean we source.', 
+    'Fermion Roastery is a precision-focused micro roastery. We blend artisan roasting methods to bring out the absolute best in every bean we source.', 
     'Apa itu Fermion Roastery?', 
-    'Fermion Roastery adalah laboratorium kopi berfokus pada presisi. Kami memadukan metode ilmiah dengan penyangraian artisan untuk mengeluarkan kualitas terbaik dari setiap biji kopi yang kami dapatkan.'
+    'Fermion Roastery adalah micro roastery yang berfokus pada kualitas. Kami memadukan presisi dengan penyangraian artisan untuk mengeluarkan potensi terbaik dari setiap biji kopi.'
 ),
 (
     'How do I become a B2B partner?', 

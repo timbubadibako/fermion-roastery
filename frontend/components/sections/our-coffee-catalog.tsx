@@ -94,49 +94,52 @@ export function RetailCatalog() {
     fetchProducts();
   }, [user, mounted]);
 
+  // 1. Hero Text Animation (Runs only once on mount)
   useEffect(() => {
-    if (!mounted || !catalogRef.current) return;
+    if (!mounted) return;
+    let ctx = gsap.context(() => {
+      const heroText = gsap.utils.toArray(".catalog-hero-text");
+      if (heroText.length > 0) {
+        gsap.fromTo(heroText, 
+          { y: 40, opacity: 0 }, 
+          { y: 0, opacity: 1, stagger: 0.1, duration: 0.8, ease: "power2.out" }
+        );
+      }
+    });
+    return () => ctx.revert();
+  }, [mounted]);
 
-    let ctx: gsap.Context;
+  // 2. Product Cards Animation (Runs when products/page change)
+  useEffect(() => {
+    if (!mounted || !catalogRef.current || displayProducts.length === 0) return;
 
-    const runAnimations = () => {
-      ctx = gsap.context(() => {
-        // Use global scope (no parent element) for hero text so it can find elements in headerRef
-        const heroText = gsap.utils.toArray(".catalog-hero-text");
-        if (heroText.length > 0) {
-          gsap.from(heroText, {
-            y: 40, opacity: 0, stagger: 0.1, duration: 0.8, ease: "power2.out"
+    let ctx = gsap.context(() => {
+      if (catalogRef.current) {
+        const cards = gsap.utils.toArray(".product-kopi-card", catalogRef.current);
+        if (cards.length > 0) {
+          // Set initial state immediately without animation
+          gsap.set(cards, { y: 30, opacity: 0 });
+          
+          // Then animate to visible
+          gsap.to(cards, {
+            y: 0,
+            opacity: 1,
+            stagger: 0.05,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.05, // Slight delay ensures React has rendered the DOM fully before animating
+            scrollTrigger: {
+              trigger: catalogRef.current,
+              start: "top 90%"
+            }
           });
         }
+      }
+      ScrollTrigger.refresh();
+    });
 
-        // Scope grid animations to catalogRef
-        if (catalogRef.current) {
-          const cards = gsap.utils.toArray(".product-kopi-card", catalogRef.current);
-          if (cards.length > 0) {
-            gsap.from(cards, {
-              y: 30,
-              opacity: 0,
-              stagger: 0.05,
-              duration: 0.8,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: catalogRef.current,
-                start: "top 90%"
-              }
-            });
-          }
-        }
-        ScrollTrigger.refresh();
-      });
-    };
-
-    const timer = setTimeout(runAnimations, 30);
-
-    return () => {
-      clearTimeout(timer);
-      if (ctx) ctx.revert();
-    };
-  }, [mounted, products, currentPage]);
+    return () => ctx.revert();
+  }, [mounted, displayProducts, currentPage]);
 
   useEffect(() => {
     let result = [...products];
@@ -220,7 +223,7 @@ export function RetailCatalog() {
         {/* MAIN CONTENT CONTAINER */}
         {/* Tambahkan z-10 agar konten teks berada di atas lapisan efek kertas */}
         <div className="max-w-7xl mx-auto space-y-8 px-4 md:px-10 relative z-10">
-          <div className="relative inline-block catalog-hero-text will-change-transform">
+          <div className="relative inline-block catalog-hero-text will-change-transform opacity-0">
             {/* Paper Badge */}
             <div className="px-5 py-2.5 bg-[#2e1b1d] text-[#FFFFFF] rotate-[0.5deg] text-[10px] font-sans font-black tracking-[0.4em] uppercase flex items-center gap-3 relative shadow-sm">
               <Archive size={12} /> {tCat.badge}
@@ -229,13 +232,13 @@ export function RetailCatalog() {
             <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/20 border border-white/10 rotate-[-4deg] z-25"></div>
           </div>
 
-          <h1 className="text-5xl md:text-8xl font-cloude tracking-tighter text-stone-900 leading-[0.8] relative catalog-hero-text will-change-transform">
+          <h1 className="text-5xl md:text-9xl font-cloude tracking-tighter text-stone-900 leading-[0.8] relative catalog-hero-text will-change-transform opacity-0">
             {tCat.titleMain} <br />
             <span className="font-display italic text-[#e5b13f]">{tCat.titleSub}</span>
           </h1>
 
           {/* 🟢 DISKUSI WARNA: Diubah ke text-stone-700/80 agar menyatu dengan serat kertas purba #e9e8e2 */}
-          <p className="max-w-xl text-stone-700 font-medium text-lg leading-relaxed italic catalog-hero-text will-change-transform">
+          <p className="max-w-xl text-stone-700 font-medium text-lg leading-relaxed italic catalog-hero-text will-change-transform opacity-0">
             {tCat.description}
           </p>
         </div>
@@ -367,7 +370,7 @@ export function RetailCatalog() {
               "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
             }`}>
             {currentItems.map((product, index) => (
-              <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-kopi-card will-change-transform">
+              <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-kopi-card will-change-transform opacity-0 translate-y-8">
                 <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow] duration-500 shadow-md shadow-black/[0.02] hover:shadow-xl hover:shadow-black/5 border border-black/[0.03] h-full rounded-sm relative">
 
                   <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/[0.03]">

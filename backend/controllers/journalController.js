@@ -7,6 +7,7 @@ export const getJournalPosts = async (req, res) => {
     let query = supabase
       .from('journal_posts')
       .select('*')
+      .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false });
 
     if (status) {

@@ -305,3 +305,51 @@ export const claimSilverTier = async (req, res) => {
     res.status(500).json({ message: "Failed to claim tier", error: error.message });
   }
 };
+
+export const changePassword = async (req, res) => {
+  const { id } = req.user; // from verifyAuth
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    // 1. Get user email
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('id', id)
+      .single();
+
+    if (profileError || !profileData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 2. Verify old password by trying to log in
+    const authClient = getAuthClient();
+    const { data: authData, error: authError } = await authClient.auth.signInWithPassword({
+      email: profileData.email,
+      password: oldPassword,
+    });
+
+    if (authError) {
+      return res.status(401).json({ message: "Password lama salah" });
+    }
+
+    // 3. Update password in Supabase Auth using admin API
+    const { error: updateError } = await supabase.auth.admin.updateUserById(id, {
+      password: newPassword
+    });
+
+    if (updateError) {
+      return res.status(500).json({ message: "Gagal mengganti password di sistem auth", error: updateError.message });
+    }
+
+    // 4. Update password_hash in profiles (if used)
+    const { error: profileUpdateError } = await supabase
+      .from('profiles')
+      .update({ password_hash: newPassword })
+      .eq('id', id);
+
+    res.status(200).json({ message: "Password berhasil diganti" });
+  } catch (error) {
+    res.status(500).json({ message: "Terjadi kesalahan sistem", error: error.message });
+  }
+};
