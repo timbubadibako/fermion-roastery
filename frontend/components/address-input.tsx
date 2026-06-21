@@ -69,11 +69,11 @@ export function AddressInput({ value, onChange }: AddressInputProps) {
 
       {/* City/Area Search */}
       <div className="relative">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 ml-1">Cari Kota atau Kecamatan</label>
+        <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Cari Kota atau Kecamatan</label>
         <div className="relative mt-3">
           <Input 
             placeholder="Ketik minimal 3 huruf..." 
-            className="h-14 bg-white border border-black/10 font-bold rounded-sm pl-14 shadow-sm focus:border-stone-400 transition-all" 
+            className="h-11 bg-white border border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm pl-14 shadow-sm focus:border-stone-400 transition-all" 
             value={searchQuery} 
             onChange={(e) => fetchAreas(e.target.value)}
           />
@@ -130,19 +130,19 @@ export function AddressInput({ value, onChange }: AddressInputProps) {
       {/* City & Postal Code Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-stone-50/50 border border-dashed border-black/10 rounded-sm">
          <div className="space-y-2">
-            <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Kota/Daerah Terpilih</label>
-            <div className="h-12 flex items-center px-4 bg-white border border-black/5 font-bold rounded-sm text-slate-900 italic text-sm">
+            <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Kota/Daerah Terpilih</label>
+            <div className="h-11 flex items-center px-4 bg-white border border-black/5 text-xs font-medium text-stone-600 rounded-sm">
                {value.city || <span className="text-stone-300">Belum dipilih...</span>}
             </div>
          </div>
          <div className="space-y-2">
-            <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Kode Pos</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Kode Pos</label>
             <Input 
               required
               value={value.postalCode}
               onChange={(e) => onChange({ ...value, postalCode: e.target.value })}
               placeholder="12345"
-              className="h-12 bg-white border border-black/10 font-bold rounded-sm shadow-sm"
+              className="h-11 bg-white border border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm shadow-sm"
             />
          </div>
       </div>

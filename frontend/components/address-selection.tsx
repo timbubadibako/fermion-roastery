@@ -78,13 +78,13 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Nama Lengkap</label>
-                                    <Input required value={shippingData.name} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 focus:ring-[#367F4D]" />
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nama Lengkap</label>
+                                    <Input required value={shippingData.name} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 focus:ring-[#367F4D]" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Nomor WhatsApp</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nomor WhatsApp</label>
                                     <div className="relative">
-                                        <Input required value={shippingData.phone} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
+                                        <Input required value={shippingData.phone} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
                                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
 
                                 {/* Input 1: RT / RW */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">RT / RW</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">RT / RW</label>
                                     <Input
                                         required
                                         value={(address as any).houseRtRw || ""}
@@ -120,13 +120,13 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                             const combined = [e.target.value, (address as any).street, (address as any).village].map(s => s?.trim()).filter(Boolean).join(", ");
                                             setAddress({ ...nextValue, address: combined });
                                         }}
-                                        className="h-12 bg-white border-black/10 font-bold rounded-sm px-4"
+                                        className="h-11 bg-white border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4"
                                     />
                                 </div>
 
                                 {/* Input 2: Blok / Dusun / Kampung / Jalan */}
                                 <div className="space-y-2 col-span-1 md:col-span-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Blok / Dusun / Kampung / Jalan</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Blok / Dusun / Kampung / Jalan</label>
                                     <Input
                                         required
                                         value={(address as any).street || ""}
@@ -136,7 +136,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                             const combined = [(address as any).houseRtRw, e.target.value, (address as any).village].map(s => s?.trim()).filter(Boolean).join(", ");
                                             setAddress({ ...nextValue, address: combined });
                                         }}
-                                        className="h-12 bg-white border-black/10 font-bold rounded-sm px-4"
+                                        className="h-11 bg-white border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4"
                                     />
                                 </div>
                             </div>
@@ -144,7 +144,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Input 3: Desa / Kelurahan */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-stone-500 ml-1">Desa / Kelurahan</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Desa / Kelurahan</label>
                                     <Input
                                         required
                                         value={(address as any).village || ""}
@@ -154,14 +154,14 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                             const combined = [(address as any).houseRtRw, (address as any).street, e.target.value].map(s => s?.trim()).filter(Boolean).join(", ");
                                             setAddress({ ...nextValue, address: combined });
                                         }}
-                                        className="h-12 bg-white border-black/10 font-bold rounded-sm px-4"
+                                        className="h-11 bg-white border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4"
                                     />
                                 </div>
 
                                 {/* Input 4: Patokan Terbatas dengan Live Counter */}
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
-                                        <label className="text-[9px] font-black uppercase tracking-widest text-stone-500">Patokan (Opsional)</label>
+                                        <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400">Patokan (Opsional)</label>
                                         <span className={`text-[9px] font-bold ${patokanLength >= 100 ? 'text-red-500' : 'text-stone-400'}`}>
                                             {patokanLength}/100
                                         </span>
@@ -171,7 +171,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                         value={(address as any).patokan || ""}
                                         placeholder="Misal: Samping Mushola Al-Ikhlas"
                                         onChange={e => setAddress({ ...address, patokan: e.target.value })}
-                                        className="h-12 bg-white border-black/10 font-bold rounded-sm px-4"
+                                        className="h-11 bg-white border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4"
                                     />
                                 </div>
                             </div>

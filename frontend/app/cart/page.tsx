@@ -215,6 +215,15 @@ export default function CartPage() {
         const lineItemIdsToRemove = items.map(item => item.lineItemId);
         localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
 
+        const orderSummary = {
+          orderId: data.orderId,
+          subtotal: subtotal,
+          shippingFee: shippingFee,
+          total: subtotal + shippingFee,
+          items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price, weight: i.weight, grind: i.grind }))
+        };
+        localStorage.setItem('latestOrderSummary', JSON.stringify(orderSummary));
+
         window.location.href = data.invoiceUrl;
       } else {
         const errorRes = await res.json();
@@ -385,10 +394,10 @@ export default function CartPage() {
                       province: (shippingData as any).province || '',
                       patokan: (shippingData as any).patokan || '',
 
-                      // 🟢 EKSTRAK SEARA OTOMATIS: Ambil pecahan langsung dari item aktif di list addresses_json
-                      houseRtRw: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.houseRtRw || '',
-                      street: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.street || '',
-                      village: (addresses as any[])?.find((a: any) => a.id === activeAddressId || (a.isPrimary && !activeAddressId))?.village || ''
+                      // 🟢 Use value from shippingData (which gets updated by onChange)
+                      houseRtRw: (shippingData as any).houseRtRw || '',
+                      street: (shippingData as any).street || '',
+                      village: (shippingData as any).village || ''
                     }}
                     setAddress={(v) => setShippingData(prev => ({
                       ...prev,
@@ -503,7 +512,21 @@ export default function CartPage() {
                     </div>
 
                     <div className="space-y-6">
-                      <div className="flex justify-between items-end">
+                      <div className="space-y-4 pb-4 border-b border-dashed border-black/5">
+                        {items.map((item) => (
+                          <div key={item.lineItemId} className="flex justify-between items-start gap-4">
+                            <div className="flex-1">
+                              <p className="text-[10px] font-black text-slate-900 uppercase tracking-wider">{item.name}</p>
+                              <p className="text-[9px] text-stone-400 uppercase tracking-widest mt-0.5">{item.quantity}x • {item.weight} • {item.grind}</p>
+                            </div>
+                            <span className="text-[11px] font-bold text-slate-900 font-sans whitespace-nowrap">
+                              Rp {(item.price * item.quantity).toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-between items-end pt-2">
                         <span className="text-stone-400 font-black uppercase text-[9px] tracking-[0.2em]">{t.cart.payment.productSubtotalLabel}</span>
                         <span className="text-slate-900 font-bold italic font-sans text-sm">Rp {subtotal.toLocaleString('id-ID')}</span>
                       </div>
