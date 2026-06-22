@@ -1,12 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Wholesale & B2B Partnership',
-  description: 'Partner with Fermion Roastery for premium specialty coffee beans at wholesale prices. Unlock exclusive tier discounts and dedicated roasting labs.',
-  openGraph: {
-    title: 'Fermion B2B Wholesale',
-    description: 'Specialty coffee supply for cafes and businesses.',
-  }
+  title: 'Program B2B & Wholesale',
+  description: 'Bergabunglah menjadi partner B2B Fermion Roastery. Dapatkan harga grosir khusus, pelatihan barista, suplai biji kopi terbaik, dan kustomisasi profil roasting untuk kafe Anda.',
 };
 
 export default function WholesaleLayout({ children }: { children: React.ReactNode }) {

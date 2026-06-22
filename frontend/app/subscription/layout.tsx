@@ -1,12 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Coffee Subscription (The Roastery Loop)',
-  description: 'Subscribe to our monthly curated specialty coffee boxes. Delivered fresh from our roastery to your door with exclusive experimental batches.',
-  openGraph: {
-    title: 'Fermion Coffee Subscription',
-    description: 'Fresh specialty coffee delivered monthly.',
-  }
+  title: 'Langganan Kopi (Subscription)',
+  description: 'Dapatkan kiriman biji kopi segar rutin setiap bulan dari Fermion Roastery. Nikmati hasil kurasi langsung dari Master Roaster kami tanpa repot kehabisan stok.',
 };
 
 export default function SubscriptionLayout({ children }: { children: React.ReactNode }) {
