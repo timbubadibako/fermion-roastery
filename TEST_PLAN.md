@@ -10,7 +10,8 @@ Silakan jadikan daftar ini sebagai panduan pengujian manual Anda (atau kita bisa
 - [ ] **Registrasi & Login:** Daftar menggunakan email baru, pastikan role otomatis menjadi `RETAIL`.
 - [ ] **Katalog Harga:** Buka menu *Our Coffee*. Pastikan harga yang tampil adalah **Harga Retail** (bukan harga coret B2B).
 - [ ] **Add to Cart:** Masukkan kopi ke keranjang, pastikan jumlah harga (*subtotal*) terhitung benar.
-- [ ] **Checkout:** Masukkan alamat fiktif, pastikan ongkir terhitung (jika ada), dan diarahkan ke *payment gateway* / WhatsApp dengan format yang benar.
+- [ ] **Checkout & Address:** Masukkan alamat tujuan (pastikan isian dinamis RT/RW dan jalan bisa diketik manual), pastikan ongkir terhitung (jika ada), lalu lunasi via *Payment Gateway*.
+- [ ] **Success Page & Invoice:** Setelah bayar, pastikan *user* dilempar ke halaman `/retail/success` dan langsung melihat struk *invoice* (Order ID, daftar produk, dan total harga) hasil dari memori tagihan sementara.
 - [ ] **Pembatasan B2B:** Pastikan akun Retail tidak memiliki akses ke halaman `/b2b` (Partner Hub).
 
 ---

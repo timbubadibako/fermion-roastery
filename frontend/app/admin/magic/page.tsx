@@ -10,7 +10,7 @@ export default function MagicWandPage() {
   return (
     <div className="space-y-12">
       <div className="space-y-2 text-left">
-        <h1 className="display-font text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Magic <br/> Wand.</h1>
+        <h1 className="font-display text-6xl font-black tracking-tighter uppercase italic text-slate-950 leading-none">Magic <br/> Wand.</h1>
         <p className="text-sm font-medium text-slate-500">AI-powered insights and quick CMS actions.</p>
       </div>
 
@@ -27,7 +27,7 @@ export default function MagicWandPage() {
         
         <div className="space-y-4 relative z-10 max-w-lg">
            <span className="status-badge bg-blue-50 text-blue-500 uppercase tracking-widest px-3 py-1">IN_DEVELOPMENT</span>
-           <h2 className="display-font text-4xl italic font-black text-slate-900 tracking-tighter leading-none mt-2">Coming Soon.</h2>
+           <h2 className="font-display text-4xl italic font-black text-slate-900 tracking-tighter leading-none mt-2">Coming Soon.</h2>
            <p className="text-sm font-medium text-slate-500 leading-relaxed">
              Our tim analis are currently training the heuristic engine. Soon, you'll be able to receive automated tactical insights and perform one-click CMS edits directly from this terminal.
            </p>

@@ -127,7 +127,14 @@ export default function SubscriptionCheckoutPage() {
         district: addr.district || "",
         regency: addr.regency || "",
         province: addr.province || "",
-        patokan: addr.patokan || ""
+        patokan: addr.patokan || "",
+        houseRtRw: addr.houseRtRw || "",
+        street: addr.street || "",
+        village: addr.village || ""
+    } as any);
+    setShippingData({
+        name: addr.name || addr.recipientName || shippingData.name,
+        phone: addr.phone || addr.recipientPhone || shippingData.phone
     });
     toast.success(t.subscriptionCheckout.toast.savedAddressLoaded);
   };

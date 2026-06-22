@@ -232,7 +232,7 @@ export const translations = {
       b2b: {
         pendingStatusTitle: "Status: Awaiting Approval",
         pendingStatusDesc: "Please complete the contract documents below so our team can approve your B2B account.",
-        contractProtocolTitle: "Contract Protocol.",
+        contractProtocolTitle: "Informasi Kontrak.",
         legalFinalizationLabel: "Legal Finalization",
         partnershipAgreementText: "Your partnership agreement is ready. Please download, sign, and upload to finalize your partner dashboard access.",
         downloadButton: "Download Contract PDF",
@@ -428,7 +428,7 @@ export const translations = {
         content: "Fill in your details and estimated monthly volume to help us prepare your custom B2B dashboard."
       },
       b2bContractHeader: {
-        title: "Contract Protocol",
+        title: "Informasi Kontrak",
         content: "This is the final step. You can always return to this page later if you need time to review."
       },
       b2bContractDownload: {
@@ -583,7 +583,7 @@ export const translations = {
       returnToCatalogue: "Return to Catalogue",
       specimenRecord: "Kopi Record v.01",
       score: "Score",
-      extractionProtocol: "Extraction Protocol",
+      extractionProtocol: "Info Ekstraksi",
       brewingGuide: "Brewing Guide",
       forEspresso: "FOR ESPRESSO",
       withMilk: "WITH MILK",
@@ -736,10 +736,10 @@ export const translations = {
     b2bContract: {
       logo: "FERMION.",
       back: "BACK",
-      heading: "Contract Protocol.",
+      heading: "Informasi Kontrak.",
       subheading: "Legal finalization.",
       card: {
-        heading: "Contract Protocol.",
+        heading: "Informasi Kontrak.",
         subheading: "Legal Finalization",
         description: "Your partnership agreement is ready. Please download, sign, and upload to finalize your roastery access.",
         downloadButton: "Download Contract PDF",
@@ -783,7 +783,7 @@ export const translations = {
         selectCargo: "Please select a cargo method.",
         tempoSuccess: "Net-30 Invoice Created Successfully.",
         offlineSuccess: "Offline order logged successfully.",
-        gatewaySuccess: "Procurement protocol initiated! Redirecting to payment...",
+        gatewaySuccess: "Pesanan berhasil dibuat! Mengalihkan ke pembayaran...",
         invoiceFailed: "Failed to generate procurement invoice.",
         gatewayError: "Communication failure with Payment Gateway."
       },
@@ -793,7 +793,7 @@ export const translations = {
         subtitle: "Please select wholesale products first before proceeding.",
         button: "Back to Catalog"
       },
-      badge: "Payment_Protocol",
+      badge: "Pembayaran",
       stepLabel: "Step 2 of 2",
       title: "Order <br/> Completion.",
       shipping: {
@@ -1089,7 +1089,7 @@ export const translations = {
       b2b: {
         pendingStatusTitle: "Status: Menunggu Persetujuan",
         pendingStatusDesc: "Mohon lengkapi dokumen kontrak di bawah ini agar tim kami dapat segera menyetujui akun B2B Anda.",
-        contractProtocolTitle: "Protokol Kontrak.",
+        contractProtocolTitle: "Informasi Kontrak.",
         legalFinalizationLabel: "Finalisasi Hukum",
         partnershipAgreementText: "Perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses dashboard mitra Anda.",
         downloadButton: "Unduh Kontrak PDF",
@@ -1439,7 +1439,7 @@ export const translations = {
       returnToCatalogue: "Kembali ke Katalog",
       specimenRecord: "Data Kopi v.01",
       score: "Skor",
-      extractionProtocol: "Protokol Ekstraksi",
+      extractionProtocol: "Info Ekstraksi",
       brewingGuide: "Panduan Seduh",
       forEspresso: "UNTUK ESPRESSO",
       withMilk: "DENGAN SUSU",
@@ -1592,10 +1592,10 @@ export const translations = {
     b2bContract: {
       logo: "FERMION.",
       back: "KEMBALI",
-      heading: "Protokol Kontrak.",
+      heading: "Informasi Kontrak.",
       subheading: "Finalisasi hukum.",
       card: {
-        heading: "Protokol Kontrak.",
+        heading: "Informasi Kontrak.",
         subheading: "Finalisasi Hukum",
         description: "Dokumen perjanjian kemitraan Anda telah siap. Silakan unduh, tanda tangani, dan unggah untuk meresmikan akses roastery Anda.",
         downloadButton: "Unduh PDF Kontrak",

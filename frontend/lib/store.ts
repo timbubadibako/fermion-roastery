@@ -176,8 +176,8 @@ export const useAuthStore = create<AuthStore>()(
         const { user } = get();
         if (!user || !user.id) return;
         try {
-          // Use our next.js proxy routing
-          const res = await fetch(`/api/auth/profile/${user.id}`);
+          // Use our next.js proxy routing with cache busting
+          const res = await fetch(`/api/auth/profile/${user.id}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
           if (res.ok) {
             const freshUser = await res.json();
             // preserve any local auth tokens if necessary, or just merge
