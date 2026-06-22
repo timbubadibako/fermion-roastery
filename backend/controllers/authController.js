@@ -104,9 +104,21 @@ export const login = async (req, res) => {
     // 2. Fetch or Sync local profile using the MAIN service_role client
     let { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role')
+      .select(`
+        id, email, full_name, role,
+        b2b_partners (status, tier_name)
+      `)
       .eq('id', supabaseUser.id)
       .maybeSingle();
+
+    if (profile && profile.b2b_partners) {
+      const partner = Array.isArray(profile.b2b_partners) ? profile.b2b_partners[0] : profile.b2b_partners;
+      if (partner) {
+        profile.b2b_status = partner.status;
+        profile.tier_name = partner.tier_name;
+      }
+      delete profile.b2b_partners;
+    }
     
     if (!profile) {
       // Auto-sync if profile missing locally
@@ -231,12 +243,25 @@ export const getProfile = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json')
+      .select(`
+        id, email, full_name, role, phone, address, city, postal_code, area_id, district, regency, province, patokan, addresses_json,
+        b2b_partners (status, tier_name)
+      `)
       .eq('id', id)
       .single();
 
     if (error && error.code === 'PGRST116') return res.status(404).json({ message: "Profile not found" });
     if (error) throw error;
+
+    // Flatten B2B status
+    if (data.b2b_partners) {
+      const partner = Array.isArray(data.b2b_partners) ? data.b2b_partners[0] : data.b2b_partners;
+      if (partner) {
+        data.b2b_status = partner.status;
+        data.tier_name = partner.tier_name;
+      }
+    }
+    delete data.b2b_partners;
 
     res.status(200).json(data);
   } catch (error) {

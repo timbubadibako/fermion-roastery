@@ -183,6 +183,14 @@ export const createInvoice = async (req, res) => {
     if (itemsError) throw itemsError;
 
     // 3. Generate Xendit Invoice
+    const origin = req.headers.origin || 'https://fermionroastery.com';
+    const successUrl = metadata?.b2b 
+      ? `${origin}/b2b/invoice/${orderId}`
+      : `${origin}/retail/success`;
+    const failureUrl = metadata?.b2b 
+      ? `${origin}/b2b/invoice/${orderId}`
+      : `${origin}/retail/failure`;
+
     const data = {
       externalId: referenceId,
       amount: calculatedAmount,
@@ -193,8 +201,8 @@ export const createInvoice = async (req, res) => {
         quantity: item.quantity,
         price: item.price,
       })),
-      successRedirectUrl: 'https://fermionroastery.com/retail/success',
-      failureRedirectUrl: 'https://fermionroastery.com/retail/failure',
+      successRedirectUrl: successUrl,
+      failureRedirectUrl: failureUrl,
     };
 
     const response = await xendit.Invoice.createInvoice({ data });
@@ -556,7 +564,7 @@ export const createManualInvoice = async (req, res) => {
           destination_postal_code: Number(shipping.postal_code),
           courier_company: "jnt",
           courier_type: "ez",
-          delivery_type: "later",
+          delivery_type: "now",
           items: items.map(item => ({
             name: item.name,
             description: `Grind: ${item.grind || 'Whole Bean'}`,
@@ -572,13 +580,10 @@ export const createManualInvoice = async (req, res) => {
       }
     }
 
-    const internalOrderId = `ORD-${Date.now()}`;
-
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .insert([
         {
-          id: internalOrderId,
           profile_id: profileId,
           xendit_invoice_id: referenceId,
           biteship_order_id: biteshipDraftId,
