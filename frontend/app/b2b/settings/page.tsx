@@ -14,7 +14,7 @@ import {
   Clock, Truck, CheckCircle2, ChevronRight,
   Coffee, ArrowRight, Loader2, Receipt,
   LayoutDashboard, Ban, MapPin, Phone, Crosshair, Sparkles,
-  Download, Upload
+  Download, Upload, FileText, AlertTriangle
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
 
@@ -46,7 +46,7 @@ interface AddressDetail {
 
 function AccountContent() {
   const t = useI18n();
-  const { user, logout, setUser } = useAuthStore();
+  const { user, logout, setUser, refreshSession } = useAuthStore();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("settings");
   const [orders, setOrders] = useState<Order[]>([]);
@@ -54,6 +54,8 @@ function AccountContent() {
   const [subscription, setSubscription] = useState<any>(null);
   const [activeTrackingId, setActiveTrackingId] = useState<string | null>(null);
   const [isTrackingLoading, setIsTrackingLoading] = useState(false);
+  const [selectedContractFile, setSelectedContractFile] = useState<File | null>(null);
+  const [isContractUploading, setIsContractUploading] = useState(false);
 
   const [profileData, setProfileData] = useState({
     fullName: user?.full_name || "",
@@ -124,6 +126,50 @@ function AccountContent() {
         setSubscription(data);
       }
     } catch (e) { console.error("Failed to load subscription"); }
+  };
+
+  const confirmContractUpload = async () => {
+    if (!selectedContractFile || !user) return;
+    setIsContractUploading(true);
+    toast.loading(t.account.messages.uploadingContract, { id: "upload-contract" });
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedContractFile);
+      reader.onload = async () => {
+        const base64File = reader.result;
+
+        const res = await fetch('/api/b2b/upload-contract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            profileId: user.id, 
+            fileData: base64File, 
+            fileName: selectedContractFile.name, 
+            mimetype: selectedContractFile.type 
+          })
+        });
+        
+        if (res.ok) {
+          toast.success(t.account.messages.contractUploadSuccess, { id: "upload-contract" });
+          refreshSession(); // Refresh status quietly without reloading
+        } else {
+          toast.error("Gagal mengunggah dokumen.", { id: "upload-contract" });
+        }
+        setIsContractUploading(false);
+        setSelectedContractFile(null);
+      };
+
+      reader.onerror = () => {
+        toast.error("Gagal membaca file.", { id: "upload-contract" });
+        setIsContractUploading(false);
+        setSelectedContractFile(null);
+      };
+    } catch (error) {
+      toast.error("Terjadi kesalahan jaringan.", { id: "upload-contract" });
+      setIsContractUploading(false);
+      setSelectedContractFile(null);
+    }
   };
 
   const cancelSubscription = async () => {
@@ -231,8 +277,8 @@ function AccountContent() {
         setUser(data.profile);
 
         // Opsional: Refresh profile data local state agar sinkron pasca-save
-        if (data.profile?.addresses_json) {
-          setAddresses(data.profile.addresses_json);
+        if (data.addresses_json) {
+          setAddresses(data.addresses_json);
         }
       } else {
         toast.error(t.account.messages.profileSaveFailure);
@@ -700,12 +746,32 @@ function AccountContent() {
                 <motion.div key="b2b_registration" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   <div className="bg-white p-10 border border-black/5 shadow-sm rounded-sm">
                     {/* Status Badge */}
-                    {user?.b2b_status === 'PENDING' && (
+                    {user?.b2b_status?.toUpperCase() === 'PENDING' && (
                        <div className="flex items-center gap-4 bg-amber-50 border border-amber-100 p-4 rounded-xl mb-8">
                           <Clock className="text-amber-500" size={24} />
                           <div>
                              <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest">{t.account.b2b.pendingStatusTitle}</h4>
                              <p className="text-xs font-medium text-amber-700">{t.account.b2b.pendingStatusDesc}</p>
+                          </div>
+                       </div>
+                    )}
+
+                    {user?.b2b_status?.toUpperCase() === 'FLAGGED' && (
+                       <div className="flex items-center gap-4 bg-orange-50 border border-orange-200 p-4 rounded-xl mb-8">
+                          <AlertTriangle className="text-orange-500" size={24} />
+                          <div>
+                             <h4 className="text-sm font-black text-orange-900 uppercase tracking-widest">Dokumen Perlu Perhatian</h4>
+                             <p className="text-xs font-medium text-orange-800">Kami menemukan kendala pada dokumen kontrak Anda (misal: buram, salah tanda tangan). Silakan perbaiki dan unggah ulang.</p>
+                          </div>
+                       </div>
+                    )}
+
+                    {user?.b2b_status?.toUpperCase() === 'SUSPENDED' && (
+                       <div className="flex items-center gap-4 bg-red-50 border border-red-200 p-4 rounded-xl mb-8">
+                          <Ban className="text-red-500" size={24} />
+                          <div>
+                             <h4 className="text-sm font-black text-red-900 uppercase tracking-widest">Akun Ditangguhkan</h4>
+                             <p className="text-xs font-medium text-red-800">Akses B2B Anda sedang ditangguhkan sementara waktu. Silakan hubungi admin untuk informasi lebih lanjut.</p>
                           </div>
                        </div>
                     )}
@@ -718,11 +784,11 @@ function AccountContent() {
                             {/* Tape */}
                             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
                             
-                            <div className="space-y-6 relative z-10">
-                              <h2 className="text-4xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
+                            <div className="space-y-3 relative z-10">
+                              <h2 className="text-2xl font-black uppercase tracking-widest text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
                               <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">{t.account.b2b.legalFinalizationLabel}</p>
-                              <p className="text-sm text-stone-600 font-medium leading-relaxed italic">
-                                "{t.account.b2b.partnershipAgreementText}"
+                              <p className="text-sm text-stone-600 font-medium leading-relaxed">
+                                {t.account.b2b.partnershipAgreementText}
                               </p>
                             </div>
 
@@ -735,21 +801,53 @@ function AccountContent() {
                               </Button>
                               
                               <div className="relative group">
-                                 <label className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
-                                    <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />
-                                    <div className="text-center">
-                                       <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{t.account.b2b.uploadDropzoneTitle}</p>
-                                       <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">{t.account.b2b.uploadDropzoneFormat}</p>
+                                {selectedContractFile ? (
+                                  <div className="w-full flex flex-col items-center justify-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-4">
+                                    <div className="flex items-center gap-3">
+                                      <FileText size={24} className="text-[#367F4D]" />
+                                      <span className="text-xs font-bold text-stone-700 truncate max-w-[150px]">{selectedContractFile.name}</span>
                                     </div>
-                                    <input type="file" className="hidden" accept="application/pdf" onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (!file) return;
-                                      toast.loading(t.account.messages.uploadingContract, { id: "upload-contract" });
-                                      setTimeout(() => {
-                                        toast.success(t.account.messages.contractUploadSuccess, { id: "upload-contract" });
-                                      }, 2000);
-                                    }} />
-                                 </label>
+                                    <div className="flex w-full gap-3">
+                                      <Button 
+                                        variant="outline"
+                                        onClick={() => setSelectedContractFile(null)}
+                                        disabled={isContractUploading}
+                                        className="flex-1 text-[10px] uppercase font-bold tracking-widest border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900 bg-white"
+                                      >
+                                        Batal
+                                      </Button>
+                                      <Button 
+                                        onClick={confirmContractUpload}
+                                        disabled={isContractUploading}
+                                        className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
+                                      >
+                                        {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                     <label 
+                                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                        onDrop={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          const file = e.dataTransfer.files?.[0];
+                                          if (!file || !user) return;
+                                          setSelectedContractFile(file);
+                                        }}
+                                        className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
+                                        <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />
+                                        <div className="text-center pointer-events-none">
+                                           <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{t.account.b2b.uploadDropzoneTitle}</p>
+                                           <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">{t.account.b2b.uploadDropzoneFormat}</p>
+                                        </div>
+                                        <input type="file" className="hidden" accept="application/pdf" onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (!file || !user) return;
+                                          setSelectedContractFile(file);
+                                        }} />
+                                     </label>
+                                )}
                               </div>
                             </div>
                          </div>

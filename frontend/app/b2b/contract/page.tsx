@@ -11,10 +11,11 @@ import { motion } from "framer-motion";
 
 export default function B2BContractPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, refreshSession } = useAuthStore();
   const t = useI18n();
   const [mounted, setMounted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [partner, setPartner] = useState<any>(null);
 
   useEffect(() => {
@@ -45,29 +46,55 @@ export default function B2BContractPage() {
     window.open(`/api/b2b/contract?profileId=${user.id}`, '_blank');
   };
 
-  const handleUploadContract = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectFile = (e: React.ChangeEvent<HTMLInputElement> | any) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
 
+  const confirmUpload = async () => {
+    if (!selectedFile || !user) return;
     setUploading(true);
-    // Simulate upload delay
-    setTimeout(async () => {
-      try {
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onload = async () => {
+        const base64File = reader.result;
+        
         const res = await fetch('/api/b2b/upload-contract', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: user?.id })
+          body: JSON.stringify({ 
+            profileId: user.id, 
+            fileData: base64File, 
+            fileName: selectedFile.name, 
+            mimetype: selectedFile.type 
+          })
         });
+        
         if (res.ok) {
           toast.success(t.b2bContract.toasts.success);
+          await refreshSession();
           router.push('/account');
+        } else {
+          toast.error(t.b2bContract.toasts.error);
         }
-      } catch (e) {
-        toast.error(t.b2bContract.toasts.error);
-      } finally {
         setUploading(false);
-      }
-    }, 2000);
+        setSelectedFile(null);
+      };
+      
+      reader.onerror = () => {
+        toast.error("Gagal membaca file.");
+        setUploading(false);
+        setSelectedFile(null);
+      };
+    } catch (e) {
+      toast.error(t.b2bContract.toasts.error);
+      setUploading(false);
+      setSelectedFile(null);
+    }
   };
 
   if (!mounted || !user) return null;
@@ -202,11 +229,45 @@ export default function B2BContractPage() {
                <Download size={18} className="mr-3 text-[#367F4D]" /> {t.b2bContract.card.downloadButton}
             </Button>
             
-            <label className="w-full h-16 bg-slate-900 text-white rounded-xl flex items-center justify-center gap-3 cursor-pointer hover:bg-[#367F4D] transition-all shadow-xl font-black uppercase tracking-widest text-[10px]">
-               {uploading ? <Loader2 className="animate-spin" size={18} /> : <Upload size={18} />}
-               <span>{uploading ? t.b2bContract.card.upload.uploading : t.b2bContract.card.upload.idle}</span>
-               <input type="file" className="hidden" accept="application/pdf" onChange={handleUploadContract} />
-            </label>
+            {selectedFile ? (
+              <div className="w-full flex flex-col items-center justify-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <FileText size={24} className="text-[#367F4D]" />
+                  <span className="text-xs font-bold text-stone-700 truncate max-w-[150px]">{selectedFile.name}</span>
+                </div>
+                <div className="flex w-full gap-3">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setSelectedFile(null)}
+                    disabled={uploading}
+                    className="flex-1 text-[10px] uppercase font-bold tracking-widest border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900 bg-white"
+                  >
+                    Batal
+                  </Button>
+                  <Button 
+                    onClick={confirmUpload}
+                    disabled={uploading}
+                    className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
+                  >
+                    {uploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <label 
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleSelectFile({ target: { files: [file] } } as any);
+                }}
+                className="w-full h-16 bg-slate-900 text-white rounded-xl flex items-center justify-center gap-3 cursor-pointer hover:bg-[#367F4D] transition-all shadow-xl font-black uppercase tracking-widest text-[10px]">
+                 <Upload size={18} />
+                 <span className="pointer-events-none">{t.b2bContract.card.upload.idle}</span>
+                 <input type="file" className="hidden" accept="application/pdf" onChange={handleSelectFile} />
+              </label>
+            )}
           </div>
         </div>
       )}

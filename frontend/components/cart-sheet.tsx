@@ -20,7 +20,7 @@ import { useCartStore, useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
-export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
+export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }: { isScrolled?: boolean, textColor?: string, hideTrigger?: boolean }) {
   const t = useI18n();
   const router = useRouter();
   const { items, isOpen, setIsOpen, updateQuantity, removeItem, toggleSelection, getTotal, ensureIds } = useCartStore();
@@ -46,36 +46,31 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
   };
 
   const handleTriggerClick = (e: React.MouseEvent) => {
-    if (user?.role === 'B2B' || user?.b2b_status === 'APPROVED') {
-      e.preventDefault();
-      router.push("/b2b/checkout");
-    }
+    // allow default trigger behavior to open sheet
   };
 
   return (
     <Sheet 
       open={isOpen} 
       onOpenChange={(val) => {
-        if ((user?.role === 'B2B' || user?.b2b_status === 'APPROVED') && val) {
-          router.push("/b2b/checkout");
-          return;
-        }
         setIsOpen(val);
       }}
     >
-      <SheetTrigger asChild>
-        <button 
-          onClick={handleTriggerClick}
-          className={`${isScrolled ? 'text-stone-900' : 'text-stone-400'} hover:text-[#367F4D] transition-all duration-300 relative group z-[200]`}
-        >
-          <ShoppingCart size={18} strokeWidth={2.2} />
-          {items.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
-              {items.reduce((acc, item) => acc + item.quantity, 0)}
-            </span>
-          )}
-        </button>
-      </SheetTrigger>
+      {!hideTrigger && (
+        <SheetTrigger asChild>
+          <button 
+            onClick={handleTriggerClick}
+            className={`${textColor || (isScrolled ? 'text-stone-900' : 'text-stone-400')} hover:text-[#367F4D] transition-all flex items-center justify-center relative group z-[200] hover:scale-110`}
+          >
+            <ShoppingCart size={20} strokeWidth={1.8} />
+            {items.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
+                {items.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
+          </button>
+        </SheetTrigger>
+      )}
       
       <SheetContent 
         className="w-full sm:max-w-md bg-[#FDFBF7] border-l border-black/5 flex flex-col p-0 z-[300]"
@@ -121,9 +116,19 @@ export function CartSheet({ isScrolled = true }: { isScrolled?: boolean }) {
                     
                     <div className="flex-1 space-y-1">
                       <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 leading-tight">{item.name}</h4>
-                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">{item.weight} • {item.grind}</p>
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-stone-400 uppercase tracking-widest">
+                        {item.weight && (
+                          <div className="flex items-center gap-0.5">
+                            <span>{item.weight.replace(/g|kg/i, '').trim()}</span>
+                            <span className="bg-stone-200/70 text-stone-500 px-1.5 py-0.5 rounded-full text-[7px] leading-none lowercase tracking-normal">
+                              {item.weight.match(/g|kg/i)?.[0] || 'g'}
+                            </span>
+                          </div>
+                        )}
+                        <span>• {item.grind}</span>
+                      </div>
                       <p className="text-[11px] font-bold text-stone-900">
-                        Rp {item.price.toLocaleString('id-ID')}
+                        Rp {(Number(item.price) || 0).toLocaleString('id-ID')}
                       </p>
                       
                       <div className="flex items-center gap-3 pt-2">

@@ -103,7 +103,6 @@ export function HeroV2() {
           muted
           playsInline
           preload="none"
-          poster="/hero-bg.jpg"
           autoPlay
           loop
           className="absolute inset-0 w-full h-full object-cover opacity-60"

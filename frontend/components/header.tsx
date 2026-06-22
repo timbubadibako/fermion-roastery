@@ -161,20 +161,14 @@ function HeaderComponent() {
       
       if (lastShown !== today) {
         setTimeout(() => {
-          toast.custom((t) => (
-            <div 
-              onClick={() => { toast.dismiss(t); router.push('/account'); }}
-              className="bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] cursor-pointer hover:bg-amber-100 transition-all transform hover:scale-105"
-            >
-              <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" /> 
-                Aksi Diperlukan
-              </h4>
-              <p className="text-xs font-medium text-amber-800 mt-1">
-                Akun Grosir B2B Anda menunggu persetujuan. Klik di sini untuk mengunggah dokumen!
-              </p>
-            </div>
-          ), { duration: 8000, position: 'top-center' });
+          toast.warning('AKSI DIPERLUKAN', {
+            description: 'Akun Grosir B2B Anda menunggu persetujuan. Klik untuk mengunggah dokumen!',
+            duration: 8000,
+            action: {
+              label: 'Upload',
+              onClick: () => router.push('/account')
+            }
+          });
           
           localStorage.setItem('b2b_pending_hint_date', today);
         }, 1500); // slight delay so it doesn't pop instantly on fast loads
@@ -291,23 +285,23 @@ function HeaderComponent() {
             <div className="flex items-center gap-3 md:gap-4 flex-shrink-0" ref={searchContainerRef}>
               <div className="relative hidden lg:block">
                 {/* 🟢 FIXED: Memperbaiki background wrapper search button agar sewarna teman-temannya */}
-                <div className={`flex items-center transition-all duration-700 ease-out h-10 ${isSearchOpen ? "w-64 md:w-[320px] bg-[#FDFBF7] border border-black/5 rounded-full px-4 shadow-sm" : "w-9"}`}>
-                  <button id="tour-search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none`}>
-                    <Search size={18} strokeWidth={2} />
+                <div className={`flex items-center transition-all duration-500 ease-out h-10`}>
+                  <button id="tour-search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none flex items-center justify-center hover:scale-110`}>
+                    <Search size={20} strokeWidth={1.8} />
                   </button>
                   <input
                     ref={searchInputRef}
                     type="text"
                     placeholder="Search archives..."
-                    className="bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full transition-all duration-300 ml-2 placeholder:text-stone-300 text-stone-900"
+                    className={`bg-transparent outline-none text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ease-out placeholder:text-stone-400 ${isDarkHero ? 'text-white border-white/30 focus:border-white/70' : 'text-stone-900 border-black/10 focus:border-black/30'} ${isSearchOpen ? 'w-48 md:w-64 ml-3 opacity-100 border-b pb-1' : 'w-0 ml-0 opacity-0 p-0 border-b-0 pointer-events-none'}`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ display: isSearchOpen ? 'block' : 'none' }}
+                    tabIndex={isSearchOpen ? 0 : -1}
                   />
                   {isSearchOpen && (
                     <button
                       onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
-                      className="text-stone-400 hover:text-stone-900 transition-colors ml-2"
+                      className={`${isDarkHero ? 'text-white/60 hover:text-white' : 'text-stone-400 hover:text-stone-900'} transition-colors ml-2`}
                     >
                       <X size={16} strokeWidth={2} />
                     </button>
@@ -443,8 +437,8 @@ function HeaderComponent() {
               </div>
 
               {mounted && (
-                <div id="tour-cart-wrapper" className={`relative border-l ${isDarkHero ? "border-white/20" : "border-black/10"} pl-3 md:pl-4`}>
-                  <CartSheet isScrolled={isScrolled} />
+                <div id="tour-cart-wrapper" className={`relative border-l ${isDarkHero ? "border-white/20" : "border-black/10"} pl-3 md:pl-4 flex items-center`}>
+                  <CartSheet isScrolled={isScrolled} textColor={currentTextColor} />
                 </div>
               )}
 

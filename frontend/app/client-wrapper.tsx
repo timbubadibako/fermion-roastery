@@ -63,8 +63,8 @@ export function ClientWrapper({
       
       {!hideMainLayout && <Header />}
 
-      <main className={`${(mounted && activeRole) ? "ml-64 min-h-screen bg-slate-50 flex flex-col items-center" : ""}`}>
-        <div className={`${(mounted && activeRole) ? "w-full max-w-[1440px] px-8 lg:px-12 py-16" : "min-h-screen"}`}>
+      <main className={`${(mounted && activeRole) ? "ml-64 min-h-screen bg-slate-50 flex flex-col items-center print:ml-0 print:bg-white print:min-h-0" : ""}`}>
+        <div className={`${(mounted && activeRole) ? "w-full max-w-[1440px] px-8 lg:px-12 py-16 print:p-0 print:max-w-none" : "min-h-screen"}`}>
           {children}
         </div>
       </main>
@@ -82,7 +82,7 @@ export function ClientWrapper({
           classNames: {
             toast: "group toast border shadow-lg rounded-sm px-5 py-4 flex items-center gap-3 font-sans",
             title: "text-[10px] font-black uppercase tracking-[0.15em]",
-            description: "text-xs font-medium",
+            description: "text-xs font-medium !text-stone-600",
             success: "border-[#367F4D]/20 bg-[#F2F9F4] text-[#367F4D]",
             error: "border-[#E05A47]/20 bg-[#FDF5F4] text-[#E05A47]",
             info: "border-black/5 bg-white text-slate-900",

@@ -79,12 +79,12 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nama Lengkap</label>
-                                    <Input required value={shippingData.name} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 focus:ring-[#367F4D]" />
+                                    <Input required value={shippingData.name || ""} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 focus:ring-[#367F4D]" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nomor WhatsApp</label>
                                     <div className="relative">
-                                        <Input required value={shippingData.phone} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
+                                        <Input required value={shippingData.phone || ""} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
                                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
                                     </div>
                                 </div>

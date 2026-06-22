@@ -75,8 +75,8 @@ export default function B2BCheckoutPage() {
       fetch(`/api/auth/profile/${user.id}`)
         .then(res => res.json())
         .then(data => {
-           if (data.profile?.addresses_json?.length > 0) {
-              setAddresses(data.profile.addresses_json);
+           if (data.addresses_json?.length > 0) {
+              setAddresses(data.addresses_json);
            }
            setLoading(false);
         })
@@ -89,16 +89,19 @@ export default function B2BCheckoutPage() {
     setAddress({
       address: addr.address || "",
       city: addr.city || "",
-      postalCode: addr.postalCode || "",
+      postalCode: addr.postalCode || addr.postal_code || "",
       area_id: addr.area_id || "",
       district: addr.district || "",
       regency: addr.regency || "",
       province: addr.province || "",
-      patokan: addr.patokan || ""
-    });
+      patokan: addr.patokan || "",
+      houseRtRw: addr.houseRtRw || "",
+      street: addr.street || "",
+      village: addr.village || ""
+    } as any);
     setShippingData({
-      name: addr.recipientName || shippingData.name,
-      phone: addr.recipientPhone || shippingData.phone
+      name: addr.name || addr.recipientName || shippingData.name,
+      phone: addr.phone || addr.recipientPhone || shippingData.phone
     });
   };
 
@@ -145,11 +148,12 @@ export default function B2BCheckoutPage() {
         });
 
         if (res.ok) {
+          const data = await res.json();
           toast.success(paymentType === 'tempo' ? t.b2bCheckout.toast.tempoSuccess : t.b2bCheckout.toast.offlineSuccess);
           const lineItemIdsToRemove = items.map(item => item.lineItemId);
           localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
           
-          router.push('/b2b/ledger');
+          router.push(`/b2b/invoice/${data.orderId}`);
         } else {
           const error = await res.json();
           toast.error(error.message || "Gagal membuat pesanan.");
@@ -185,7 +189,8 @@ export default function B2BCheckoutPage() {
               notes: address.patokan
             },
             shippingFee: 0,
-            courier: { courier_name: "B2B Free Shipping", price: 0 }
+            courier: { courier_name: "B2B Free Shipping", price: 0 },
+            b2b: true
           }
         })
       });
@@ -198,8 +203,8 @@ export default function B2BCheckoutPage() {
         const lineItemIdsToRemove = items.map(item => item.lineItemId);
         localStorage.setItem('purchasedLineItemIds', JSON.stringify(lineItemIdsToRemove));
         
-        // Redirect to Xendit
-        window.location.href = data.invoiceUrl;
+        // Redirect to our internal invoice instead of directly to Xendit
+        router.push(`/b2b/invoice/${data.orderId}?paymentUrl=${encodeURIComponent(data.invoiceUrl)}`);
       } else {
         const error = await res.json();
         toast.error(error.message || t.b2bCheckout.toast.invoiceFailed);
@@ -245,7 +250,7 @@ export default function B2BCheckoutPage() {
     return (
       <div className="space-y-12 pb-20 text-center pt-20">
          <Package size={48} className="text-slate-200" />
-         <h1 className="display-font text-4xl font-black italic">{t.b2bCheckout.emptyState.title}</h1>
+         <h1 className="font-display text-4xl font-black italic">{t.b2bCheckout.emptyState.title}</h1>
          <p className="text-slate-500 font-medium">{t.b2bCheckout.emptyState.subtitle}</p>
          <Link href="/b2b/shop">
             <Button className="bg-slate-900 text-white rounded-2xl h-14 px-8 uppercase font-black tracking-widest text-[10px]">{t.b2bCheckout.emptyState.button}</Button>
@@ -258,10 +263,10 @@ export default function B2BCheckoutPage() {
     <div className="space-y-12 pb-20">
       <div className="space-y-2 text-left">
         <div className="flex items-center gap-2">
-           <span className="status-badge bg-periwinkle/10 text-periwinkle uppercase border border-periwinkle/20">{t.b2bCheckout.badge}</span>
+           <span className="px-3 py-1 rounded-sm text-[9px] font-black tracking-widest bg-periwinkle/10 text-periwinkle uppercase border border-periwinkle/20">{t.b2bCheckout.badge}</span>
            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.b2bCheckout.stepLabel}</span>
         </div>
-        <h1 className="display-font text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none" dangerouslySetInnerHTML={{ __html: t.b2bCheckout.title }} />
+        <h1 className="font-display text-5xl font-black tracking-tighter uppercase italic text-slate-950 leading-none" dangerouslySetInnerHTML={{ __html: t.b2bCheckout.title }} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -276,7 +281,7 @@ export default function B2BCheckoutPage() {
               savedAddresses={addresses}
               onSelectSaved={selectSavedAddress}
               activeAddressId={activeAddressId || undefined}
-              contextType='subscription'
+              contextType='retail'
               emptyStateHref='/b2b/settings'
            />
         </div>

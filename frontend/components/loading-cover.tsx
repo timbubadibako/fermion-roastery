@@ -13,15 +13,15 @@ export function LoadingCover() {
     setIsVisible(true);
     setShouldRender(true);
 
-    // Keep it solid for 200ms
+    // Tahan efek blur selama 150ms agar animasi spinner sempat terlihat dan tidak sekadar berkedip
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 200);
+    }, 150);
 
-    // Completely remove from DOM after fade animation (700ms transition)
+    // Fade out glass effect
     const removeTimer = setTimeout(() => {
       setShouldRender(false);
-    }, 900);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
@@ -33,9 +33,13 @@ export function LoadingCover() {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] bg-[#FDFBF7] transition-opacity duration-700 ease-in-out ${
+      className={`fixed inset-0 z-[100] bg-[#FDFBF7]/40 backdrop-blur-[8px] transition-opacity duration-500 ease-out flex items-center justify-center ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
-    />
+    >
+      <div className={`flex flex-col items-center gap-3 transition-transform duration-500 ${isVisible ? 'scale-100' : 'scale-95'}`}>
+        <div className="w-6 h-6 rounded-full border-2 border-black/10 border-t-[#367F4D] animate-spin" />
+      </div>
+    </div>
   );
 }

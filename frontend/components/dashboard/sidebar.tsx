@@ -105,7 +105,7 @@ export function UnifiedSidebar({ role }: SidebarProps) {
   };
 
   return (
-    <aside className="w-64 bg-slate-950 h-screen fixed left-0 top-0 text-white flex flex-col z-50 border-r border-white/5">
+    <aside className="w-64 bg-slate-950 h-screen fixed left-0 top-0 text-white flex flex-col z-50 border-r border-white/5 print:hidden">
       {/* Brand Header */}
       <div className="h-24 flex flex-col justify-center px-8 border-b border-white/5">
         <h2 className="display-font text-2xl font-black italic tracking-tighter uppercase leading-none text-white">Fermion<span className="text-[#367F4D]">.</span></h2>

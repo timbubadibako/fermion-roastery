@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Coffee
 } from "lucide-react";
+import { CartSheet } from "@/components/cart-sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuthStore, useCartStore } from "@/lib/store";
@@ -31,12 +32,14 @@ interface Product {
   notes: string;
   price?: number; // Backend dynamic price
   priceType?: string;
+  category?: string;
+  sub_category?: string;
 }
 
 export default function WholesaleShopPage() {
   const t = useI18n();
   const { user } = useAuthStore();
-  const { addItem, items } = useCartStore(); // All hooks at the top
+  const { addItem, items, setIsOpen } = useCartStore(); // All hooks at the top
   const [partner, setPartner] = useState<any>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,12 +99,10 @@ export default function WholesaleShopPage() {
       {/* FLOATING CART BUTTON */}
       <div className="sticky top-24 z-40 flex justify-end pointer-events-none">
         <div className="pointer-events-auto">
-          <Link href="/b2b/checkout">
-            <Button className="h-14 px-6 rounded-sm bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:bg-[#367F4D] transition-all flex items-center gap-3 border-none">
-              <ShoppingCart size={18} />
-              <span>{t.b2bShop.floatingCart.replace('{{count}}', String(totalItems))}</span>
-            </Button>
-          </Link>
+          <Button onClick={() => setIsOpen(true)} className="h-14 px-6 rounded-sm bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:bg-[#367F4D] transition-all flex items-center gap-3 border-none">
+            <ShoppingCart size={18} />
+            <span>{t.b2bShop.floatingCart.replace('{{count}}', String(totalItems))}</span>
+          </Button>
         </div>
       </div>
 
@@ -132,13 +133,20 @@ export default function WholesaleShopPage() {
       {/* PRODUCT CATALOG GROUPS */}
       <div className="space-y-20">
          {['Espresso', 'Filter'].map((mainCat) => {
-            // Group by subcategory
+            // Group by subcategory using database fields first
             const getSubCat = (p: Product) => {
+               if (p.category?.toLowerCase() === 'espresso') {
+                  if (p.sub_category?.toLowerCase() === 'specialty') return 'Espresso Specialty';
+                  return 'Espresso Komodity';
+               } else if (p.category?.toLowerCase() === 'filter') {
+                  if (p.sub_category?.toLowerCase() === 'exotic') return 'Filter Exotic';
+                  return 'Filter Specialty';
+               }
+               
+               // Fallback if db fields missing
                const n = p.name.toLowerCase();
                if (mainCat === 'Espresso') {
-                  if (n.includes('komoditi') || n.includes('komersil')) return 'Espresso Komodity';
                   if (n.includes('specialty')) return 'Espresso Specialty';
-                  // if not specified, default to Komodity
                   return 'Espresso Komodity'; 
                } else {
                   if (n.includes('exotic')) return 'Filter Exotic';
@@ -147,9 +155,12 @@ export default function WholesaleShopPage() {
             };
 
             const catProducts = products.filter(p => {
+               if (p.category) {
+                  return p.category.toLowerCase() === mainCat.toLowerCase();
+               }
+               // Fallback if db fields missing
                const n = p.name.toLowerCase();
                if (mainCat === 'Filter') return n.includes('filter') || n.includes('exotic') || n.includes('v60');
-               // Espresso is default if not filter
                return !(n.includes('filter') || n.includes('exotic') || n.includes('v60'));
             });
 
@@ -181,8 +192,7 @@ export default function WholesaleShopPage() {
                                <p className="text-[10px] text-slate-400 mt-2">Koleksi untuk kategori ini sedang disiapkan.</p>
                              </div>
                            ) : (
-                             <Carousel opts={{ align: "start" }} className="w-full relative">
-                               <CarouselContent className="-ml-4">
+                             <div className="flex overflow-x-auto gap-6 pb-8 pt-4 px-2 -mx-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                                  {subProducts.map((product, i) => {
                                    const wholesalePrice = product.price || product.price_retail;
                                    const isDiscounted = wholesalePrice < product.price_retail;
@@ -192,7 +202,7 @@ export default function WholesaleShopPage() {
                                      : "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=800&q=80";
 
                                    return (
-                                     <CarouselItem key={product.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                                     <div key={product.id} className="w-[300px] md:w-[360px] shrink-0 snap-start">
                                        <motion.div 
                                          initial={{ opacity: 0, y: 20 }}
                                          animate={{ opacity: 1, y: 0 }}
@@ -238,13 +248,10 @@ export default function WholesaleShopPage() {
                                             </div>
                                          </div>
                                        </motion.div>
-                                     </CarouselItem>
+                                     </div>
                                    );
                                  })}
-                               </CarouselContent>
-                               <CarouselPrevious className="hidden md:flex -left-4 bg-white shadow-md border-black/5 w-10 h-10" />
-                               <CarouselNext className="hidden md:flex -right-4 bg-white shadow-md border-black/5 w-10 h-10" />
-                             </Carousel>
+                             </div>
                            )}
                         </div>
                      );
@@ -266,6 +273,7 @@ export default function WholesaleShopPage() {
             </Button>
          </Link>
       </div>
+      <CartSheet hideTrigger={true} />
     </div>
   );
 }
