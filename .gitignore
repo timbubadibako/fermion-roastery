@@ -43,6 +43,9 @@ seed_plans.sql
 docs/
 .agents/
 
+# Raw Assets
+font/
+
 # Root Documentation & Notes
 BITESHIP_INTEGRATION_GUIDE.md
 BITESHIP_TESTING.md
