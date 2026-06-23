@@ -26,3 +26,15 @@ Thumbs.db
 .superpowers/
 backend/invoices/
 \n# Secrets\nbackend/seed*.js\n
+
+# Testing & Reports
+*.pdf
+pagespeed.json
+
+# Notes & AI Memory
+intruksi.md
+.agents/
+frontend/.agents/
+
+# Temporary SQL/Seed
+seed_plans.sql
