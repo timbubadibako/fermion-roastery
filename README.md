@@ -37,7 +37,7 @@ I specialize in:
 If you are interested in discussing your next project or building an application like this for your brand, let's connect!
 
 📫 **Contact Me:**
-- Feel free to reach out via [My Portfolio / LinkedIn] *(Replace with actual link)*
-- Email me at: *(Replace with email)*
+- Feel free to reach out via [[My LinkedIn]](https://www.linkedin.com/in/syifa-pajril-yaum-730162264/) 
+- Email me at: pjrlywm@gmail.com
 
 *Note: The codebase inside this repository is proprietary and specifically designed for Fermion Roastery. It is provided here as a portfolio showcase of architecture, logic, and design capabilities. Please do not duplicate this code for your own commercial project. Instead, hire me to build one tailored perfectly for you!*
