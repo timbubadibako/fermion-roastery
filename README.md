@@ -8,6 +8,13 @@ This web application was built entirely as a real-world project for **Fermion Ro
 
 **Live Website:** [https://fermionroastery.com](https://fermionroastery.com)
 
+### 📸 Previews
+<div align="center">
+  <img src="screenshots/docs-1.png" alt="Preview 1" width="30%">
+  <img src="screenshots/docs-2.png" alt="Preview 2" width="30%">
+  <img src="screenshots/docs-3.png" alt="Preview 3" width="30%">
+</div>
+
 ### Key Features
 - **Retail E-Commerce:** Dynamic catalog, cart management, and seamless checkout for specialty beans.
 - **B2B Partner Portal:** Exclusive dashboard for cafes to manage recurring orders, custom roast profiles, and track invoices.
