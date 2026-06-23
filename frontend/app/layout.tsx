@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Fraunces, Manrope, Permanent_Marker } from 'next/font/google';
 import { ClientWrapper } from './client-wrapper';
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: '--font-display' });
@@ -50,6 +51,7 @@ export default function RootLayout({
         <ClientWrapper>
           {children}
         </ClientWrapper>
+        <Analytics />
       </body>
     </html>
   );
