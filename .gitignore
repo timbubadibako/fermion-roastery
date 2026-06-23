@@ -39,6 +39,10 @@ frontend/.agents/
 # Temporary SQL/Seed
 seed_plans.sql
 
+# Documentation & AI Folders
+docs/
+.agents/
+
 # Root Documentation & Notes
 BITESHIP_INTEGRATION_GUIDE.md
 BITESHIP_TESTING.md
