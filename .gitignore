@@ -56,3 +56,11 @@ README-alternatives.md
 TEST_PLAN.md
 TODO.md
 WEBHOOK_SETUP.md
+
+# Redundant Files
+skills-lock.json
+frontend/*.md
+backend/seed*.js
+backend/alter_*.js
+backend/migrate_*.js
+backend/fix_*.js
