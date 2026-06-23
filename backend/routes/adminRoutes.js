@@ -10,8 +10,7 @@ import {
   getMaintenanceSchedule, 
   getChurnAlerts,
   getSettings,
-  updateSettings,
-  createManualTransaction
+  updateSettings
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -19,7 +18,6 @@ const router = express.Router();
 router.get('/stats', getAdminStats);
 router.get('/settings', getSettings);
 router.put('/settings', updateSettings);
-router.post('/manual-transaction', createManualTransaction);
 
 // In a real app, these routes should be protected by an isAdmin middleware
 router.get('/partners', getB2bPartners);
