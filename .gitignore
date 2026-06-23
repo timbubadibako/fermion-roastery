@@ -38,3 +38,12 @@ frontend/.agents/
 
 # Temporary SQL/Seed
 seed_plans.sql
+
+# Root Documentation & Notes
+BITESHIP_INTEGRATION_GUIDE.md
+BITESHIP_TESTING.md
+PROJECT.md
+README-alternatives.md
+TEST_PLAN.md
+TODO.md
+WEBHOOK_SETUP.md
