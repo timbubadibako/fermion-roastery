@@ -23,8 +23,31 @@ export const getJournalPosts = async (req, res) => {
   }
 };
 
+export const getJournalPostById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    let query = supabase.from('journal_posts').select('*');
+    
+    // Support fetching by slug or UUID
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+    if (isUuid) {
+      query = query.eq('id', id);
+    } else {
+      query = query.eq('slug', id);
+    }
+
+    const { data, error } = await query.single();
+    if (error) throw error;
+    
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(404).json({ message: "Journal post not found", error: error.message });
+  }
+};
+
 export const createJournalPost = async (req, res) => {
-  const { title, content, excerpt, featured_image, status, author_id } = req.body;
+  const { title, category, content, excerpt, featured_image, status, author_id } = req.body;
   const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
   
   try {
@@ -34,6 +57,7 @@ export const createJournalPost = async (req, res) => {
         { 
           title, 
           slug, 
+          category: category || 'Eksperimen',
           content, 
           excerpt, 
           featured_image, 
@@ -54,12 +78,13 @@ export const createJournalPost = async (req, res) => {
 
 export const updateJournalPost = async (req, res) => {
   const { id } = req.params;
-  const { title, content, excerpt, featured_image, status } = req.body;
+  const { title, category, content, excerpt, featured_image, status } = req.body;
   
   try {
     const publishedAt = status === 'published' ? new Date() : null;
     const updateData = {
       title,
+      category,
       content,
       excerpt,
       featured_image,
