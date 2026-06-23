@@ -38,6 +38,8 @@ frontend/.agents/
 
 # Temporary SQL/Seed
 seed_plans.sql
+check_cart.sql
+backend/seed*.sql
 
 # Documentation & AI Folders
 docs/
