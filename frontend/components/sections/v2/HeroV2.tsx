@@ -5,6 +5,8 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useI18n } from "@/lib/i18n";
+import { apiFetch } from "@/lib/api"; // Pastikan apiFetch di-import
+import { supabase } from "@/lib/supabase"; // Pastikan supabase di-import
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,12 +21,25 @@ export function HeroV2() {
 
   const words = ["CURATED", "ROASTED", "REVERED"];
 
-  useEffect(() => {
-    fetch('/api/admin/settings')
-      .then(res => res.ok ? res.json() : null)
-      .then(data => data && setSettings(data))
-      .catch(err => console.error("Failed to load hero settings", err));
-  }, []);
+ useEffect(() => {
+  const getHeroSettings = async () => {
+    try {
+      // 1. Paksa nunggu Supabase selesai inisialisasi session dari storage
+      await supabase.auth.getSession();
+
+      // 2. Gunakan apiFetch (bukan fetch mentah) agar Bearer token nempel otomatis
+      const res = await apiFetch('/api/admin/settings');
+      if (res && res.ok) {
+        const data = await res.json();
+        setSettings(data);
+      }
+    } catch (err) {
+      console.error("Failed to load hero settings", err);
+    }
+  };
+
+  getHeroSettings();
+}, []);
 
   useEffect(() => {
     const video = videoRef.current;
