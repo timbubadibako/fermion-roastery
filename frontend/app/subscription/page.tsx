@@ -42,10 +42,11 @@ export default function SubscriptionPageV2() {
   useEffect(() => {
     setMounted(true);
     fetch('/api/subscription/plans')
-      .then(res => res.json())
-      .then(data => {
-        console.log("DEBUG: Subscription Plans API response:", data);
-        setPlans(data);
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          setPlans(data);
+        }
       })
       .catch(console.error);
   }, []);

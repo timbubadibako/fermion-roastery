@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Analytics } from '@vercel/analytics/next';
 import { Header } from "@/components/header";
 import { UnifiedSidebar } from "@/components/dashboard/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -22,12 +21,9 @@ export function ClientWrapper({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    console.log("LAYOUT DEBUG:", {
-      pathname,
-      userRole: user?.role,
-      user,
-      mounted
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      // console.log("LAYOUT DEBUG:", { pathname, userRole: user?.role, user, mounted });
+    }
   }, [user, mounted, pathname]);
 
   useEffect(() => {
@@ -90,7 +86,6 @@ export function ClientWrapper({
           }
         }}
       />
-      <Analytics />
     </>
   );
 }

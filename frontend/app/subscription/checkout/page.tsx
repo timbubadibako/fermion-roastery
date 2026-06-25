@@ -82,7 +82,6 @@ export default function SubscriptionCheckoutPage() {
       const res = await fetch(`/api/auth/profile/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
-        console.log("Raw profile data:", data); // Debugging
         
         setShippingData({
             name: data.full_name || "",
@@ -102,12 +101,8 @@ export default function SubscriptionCheckoutPage() {
           });
         }
         if (data.addresses_json) {
-            console.log("Found addresses_json:", data.addresses_json);
             const parsedAddresses = typeof data.addresses_json === 'string' ? JSON.parse(data.addresses_json) : data.addresses_json;
-            console.log("Parsed addresses:", parsedAddresses);
             setAddresses(parsedAddresses);
-        } else {
-            console.log("No addresses_json found in profile data");
         }
       }
     } catch (e) {
