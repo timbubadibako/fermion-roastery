@@ -1,7 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
 // Import Routes
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -18,7 +19,6 @@ import b2bRoutes from './routes/b2bRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import { startMonthlyEvaluation } from './lib/cron.js';
 
-dotenv.config();
 
 const app = express();
 

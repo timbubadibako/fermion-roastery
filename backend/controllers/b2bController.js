@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import PDFDocument from 'pdfkit';
+// TODO: [MAILER] Integrate Resend / Nodemailer to send Welcome B2B Email & Contract PDF
 
 /**
  * Register a new B2B Partner and generate contract

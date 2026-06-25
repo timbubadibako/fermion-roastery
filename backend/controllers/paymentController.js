@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 import { publishEvent } from '../lib/ably.js';
 import { sendOrderNotification } from '../lib/notifications.js';
+// TODO: [MAILER] Integrate Resend / Nodemailer here for email notifications
+// Example: import { sendEmail } from '../lib/mailer.js';
 
 dotenv.config();
 
