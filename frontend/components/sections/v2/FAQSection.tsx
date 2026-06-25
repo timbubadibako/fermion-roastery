@@ -104,6 +104,7 @@ function FAQSectionComponent() {
 
   return (
     <section 
+      id="faq"
       ref={sectionRef}
       className={`min-h-screen pt-32 pb-32 px-6 bg-[#2B4031] text-white relative z-40 overflow-hidden font-sans flex flex-col justify-center ${isScrolling ? "pointer-events-none" : ""}`} 
     >

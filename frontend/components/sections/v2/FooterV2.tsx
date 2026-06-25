@@ -79,21 +79,24 @@ export function FooterV2() {
         {/* Dynamic Link Groups */}
         <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-5 gap-8 pt-4">
           {[
-            { title: "ROASTERY", links: ["Our Coffee", "B2B Wholesale", "Calibration"] },
-            { title: "KNOWLEDGE", links: ["Journal", "Brew Guides", "Our Story"] },
-            { title: "SUPPORT", links: ["FAQ", "Contact", "Feedback"] },
-            { title: "LEGAL", links: ["Privacy", "Terms", "Shipping"] },
-            { title: "FOLLOW US", links: content.socials },
+            { title: "ROASTERY", links: [{ name: "Our Coffee", url: "/products" }, { name: "B2B Wholesale", url: "/wholesale" }] },
+            { title: "KNOWLEDGE", links: [{ name: "Journal", url: "/journal" }, { name: "FAQ", url: "/#faq" }] },
+            { title: "VISIT US", links: [
+                { name: "Dusun 02 RT 004 RW 002, Sumber Lor, Kec. Babakan, Cirebon 45191", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" },
+                { name: "Open in Google Maps", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" }
+            ]},
+            { title: "SUPPORT", links: [{ name: "Admin Portal", url: "/admin" }, { name: "WhatsApp", url: "https://wa.me/628" }] },
+            { title: "FOLLOW US", links: [{ name: "Instagram", url: "https://instagram.com/fermionroastery" }] },
           ].map((group, idx) => (
             <div key={idx} className="space-y-6 footer-reveal" style={{ transform: `rotate(${idx % 2 === 0 ? 1 : -1}deg)` }}>
               <div className="inline-block border-b-2 border-fermion-gold/50 pb-1">
                 <h3 className="text-[11px] font-black tracking-widest text-white uppercase">{group.title}</h3>
               </div>
               <ul className="space-y-4 text-sm text-[#E2DACB]/80 font-medium">
-                {group.links.map((link: string, i: number) => (
+                {group.links.map((link: {name: string, url: string}, i: number) => (
                   <li key={i}>
-                    <a href="#" className="hover:text-fermion-coral hover:italic transition-all uppercase tracking-wider text-xs inline-block hover:translate-x-1">
-                      {link}
+                    <a href={link.url} className="hover:text-fermion-coral hover:italic transition-all uppercase tracking-wider text-xs inline-block hover:translate-x-1">
+                      {link.name}
                     </a>
                   </li>
                 ))}
