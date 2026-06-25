@@ -37,16 +37,27 @@ export default function JournalReadPage() {
   const { id } = useParams();
   const router = useRouter();
   const [post, setPost] = useState<JournalPost | null>(null);
+  const [otherPosts, setOtherPosts] = useState<JournalPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/journal/${id}`)
-      .then(res => {
+    Promise.all([
+      fetch(`/api/journal/${id}`).then(res => {
         if (!res.ok) throw new Error("Not found");
         return res.json();
+      }),
+      fetch(`/api/journal`).then(res => {
+        if (!res.ok) return [];
+        return res.json();
       })
-      .then(data => {
-        setPost(data);
+    ])
+      .then(([postData, allPostsData]) => {
+        setPost(postData);
+        if (Array.isArray(allPostsData)) {
+           // Filter out current post and get max 3
+           const others = allPostsData.filter(p => p.id !== postData.id && p.slug !== postData.slug).slice(0, 3);
+           setOtherPosts(others);
+        }
       })
       .catch(() => {
         toast.error("Artikel tidak ditemukan.");
@@ -109,7 +120,7 @@ export default function JournalReadPage() {
 
         {/* Featured Image */}
         {post.featured_image && (
-          <div className="relative w-full aspect-[21/9] mb-16 rounded-xl overflow-hidden shadow-2xl">
+          <div className="relative w-full aspect-video md:aspect-[21/9] mb-16 rounded-xl overflow-hidden shadow-2xl">
             <Image 
               src={post.featured_image} 
               alt={post.title}
@@ -131,22 +142,57 @@ export default function JournalReadPage() {
         <Separator className="my-16" />
 
         {/* Footer Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 max-w-3xl mx-auto">
-          <div className="flex items-center gap-4">
-            <span className="text-sm uppercase tracking-widest font-semibold text-stone-500">Bagikan:</span>
-            <Button variant="outline" size="icon" className="rounded-full" onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              toast.success("Tautan artikel berhasil disalin!");
-            }}>
-              <Share2 size={16} />
-            </Button>
-          </div>
-          <Link href="/journal">
-            <Button className="bg-stone-900 text-white rounded-full px-8 uppercase tracking-widest text-xs h-12 font-bold hover:bg-stone-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-              Baca Artikel Lainnya
-            </Button>
-          </Link>
+        <div className="flex items-center gap-4 max-w-3xl mx-auto mb-16">
+          <span className="text-sm uppercase tracking-widest font-semibold text-stone-500">Bagikan:</span>
+          <Button variant="outline" size="icon" className="rounded-full" onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            toast.success("Tautan artikel berhasil disalin!");
+          }}>
+            <Share2 size={16} />
+          </Button>
         </div>
+
+        {/* Read Other Articles */}
+        {otherPosts.length > 0 && (
+          <div className="mt-20">
+            <h3 className="text-2xl font-display font-black uppercase italic text-stone-900 mb-8 border-b border-stone-200 pb-4">
+              Baca Artikel Lainnya
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {otherPosts.map((other) => (
+                <Link href={`/journal/${other.slug}`} key={other.id} className="group block bg-white rounded-xl border border-stone-100 overflow-hidden shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                  <div className="aspect-video relative overflow-hidden bg-stone-100">
+                    {other.featured_image ? (
+                      <Image 
+                        src={other.featured_image} 
+                        alt={other.title} 
+                        fill 
+                        className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-stone-300 font-cloude text-3xl">{other.category}</div>
+                    )}
+                  </div>
+                  <div className="p-5 space-y-2">
+                    <p className="text-[10px] font-black text-[#A288E3] uppercase tracking-widest">
+                      {other.published_at ? format(new Date(other.published_at), "dd MMM yyyy", { locale: localeId }) : "Draft"}
+                    </p>
+                    <h4 className="font-display font-bold text-stone-900 leading-tight group-hover:text-[#A288E3] transition-colors line-clamp-2">
+                      {other.title}
+                    </h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-10 text-center">
+               <Link href="/journal">
+                 <Button variant="outline" className="rounded-full px-8 uppercase tracking-widest text-xs h-12 font-bold hover:bg-stone-100 transition-all">
+                   Lihat Semua Arsip
+                 </Button>
+               </Link>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
