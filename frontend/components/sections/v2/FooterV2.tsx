@@ -81,11 +81,11 @@ export function FooterV2() {
           {[
             { title: "ROASTERY", links: [{ name: "Our Coffee", url: "/products" }, { name: "B2B Wholesale", url: "/wholesale" }] },
             { title: "KNOWLEDGE", links: [{ name: "Journal", url: "/journal" }, { name: "FAQ", url: "/#faq" }] },
-            { title: "VISIT US", links: [
-                { name: "Dusun 02 RT 004 RW 002, Sumber Lor, Kec. Babakan, Cirebon 45191", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" },
-                { name: "Open in Google Maps", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" }
+            { title: "CONTACT", links: [
+                { name: "Google Maps", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" },
+                { name: "WhatsApp", url: "https://wa.me/628" }
             ]},
-            { title: "SUPPORT", links: [{ name: "Admin Portal", url: "/admin" }, { name: "WhatsApp", url: "https://wa.me/628" }] },
+            { title: "SUPPORT", links: [{ name: "Admin Portal", url: "/admin" }] },
             { title: "FOLLOW US", links: [{ name: "Instagram", url: "https://instagram.com/fermionroastery" }] },
           ].map((group, idx) => (
             <div key={idx} className="space-y-6 footer-reveal" style={{ transform: `rotate(${idx % 2 === 0 ? 1 : -1}deg)` }}>
