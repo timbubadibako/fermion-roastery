@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import B2bRouteGuard from '@/components/B2bRouteGuard';
 
 export const metadata: Metadata = {
   title: {
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function B2BPortalLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <B2bRouteGuard>
+      {children}
+    </B2bRouteGuard>
+  );
 }

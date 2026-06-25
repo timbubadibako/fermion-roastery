@@ -1,4 +1,5 @@
 import express from 'express';
+import { verifyAuth, verifyAdmin } from '../middleware/authMiddleware.js';
 import { 
   getAdminStats, 
   getB2bPartners, 
@@ -14,6 +15,9 @@ import {
 } from '../controllers/adminController.js';
 
 const router = express.Router();
+
+// Apply auth and admin check to all admin routes
+router.use(verifyAuth, verifyAdmin);
 
 router.get('/stats', getAdminStats);
 router.get('/settings', getSettings);

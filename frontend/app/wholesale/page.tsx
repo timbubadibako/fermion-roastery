@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { 
   ArrowRight, ShieldCheck, Truck, 
@@ -163,7 +164,7 @@ export default function WholesalePageV2() {
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-auto relative">
             <div className="bento-item bg-white p-3 pb-8 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] rotate-0 md:rotate-[-3deg] relative z-20">
                <div className="w-full aspect-[4/3] bg-[#E2DACB] overflow-hidden relative border border-black/5">
-                  <img src="https://placehold.co/800x600/2a1619/e2dacb?text=BATCH+001" alt="Roast Machine" className="w-full h-full object-cover filter contrast-125 saturate-50 grayscale-[0.2]" />
+                  <Image src="https://placehold.co/800x600/2a1619/e2dacb?text=BATCH+001" alt="Roast Machine" fill className="object-cover filter contrast-125 saturate-50 grayscale-[0.2]" />
                </div>
             </div>
             <div className="grid grid-cols-2 gap-6">

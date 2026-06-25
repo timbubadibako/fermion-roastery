@@ -1,4 +1,5 @@
 import express from 'express';
+import { verifyAuth, verifyAdmin } from '../middleware/authMiddleware.js';
 import { 
   getJournalPosts, 
   getJournalPostById,
@@ -11,8 +12,8 @@ const router = express.Router();
 
 router.get('/', getJournalPosts);
 router.get('/:id', getJournalPostById);
-router.post('/', createJournalPost);
-router.put('/:id', updateJournalPost);
-router.delete('/:id', deleteJournalPost);
+router.post('/', verifyAuth, verifyAdmin, createJournalPost);
+router.put('/:id', verifyAuth, verifyAdmin, updateJournalPost);
+router.delete('/:id', verifyAuth, verifyAdmin, deleteJournalPost);
 
 export default router;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Check, Loader2, ArrowRight, FlaskConical, Sprout, Quote, Microscope, Star } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { toast } from "sonner";
@@ -182,7 +183,7 @@ export default function SubscriptionPageV2() {
             <div className="bg-white p-4 pb-16 border border-white/10 shadow-[15px_15px_0px_rgba(0,0,0,0.2)] rotate-[-3deg] relative z-20">
               <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-24 h-6 bg-[#F1B941]/40 border border-white/10 rotate-[4deg] z-30 backdrop-blur-sm shadow-sm"></div>
               <div className="relative aspect-[4/5] bg-[#FFFBEB] overflow-hidden border border-black/5">
-                <img src="https://placehold.co/800x1000/7c2d12/f1b941?text=MASTER+ROASTER" alt="Master" className="w-full h-full object-cover filter contrast-125 grayscale" />
+                <Image src="https://placehold.co/800x1000/7c2d12/f1b941?text=MASTER+ROASTER" alt="Master" fill className="object-cover filter contrast-125 grayscale" />
               </div>
               <div className="absolute bottom-4 left-6">
                 <p className="font-cloude text-stone-300 text-2xl opacity-40 italic">{tSub.premiumAccess}</p>
