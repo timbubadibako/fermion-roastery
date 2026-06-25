@@ -40,7 +40,6 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
     }
 
     setLoading(true);
-    console.log(`🔑 Attempting ${mode}...`, { email: formData.email });
     
     try {
       const endpoint = mode === "register" ? '/api/auth/register' : '/api/auth/login';
@@ -70,6 +69,14 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       const profile = data.profile;
 
       if (!profile) throw new Error("Failed to resolve profile data.");
+
+      // Establish Supabase client-side session so apiFetch can use the token
+      if (data.session?.access_token && data.session?.refresh_token) {
+        await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+      }
 
       // Set security cookie for middleware (expires in 24h)
       document.cookie = `fermion_profile_id=${profile.id}; path=/; max-age=86400; SameSite=Lax`;

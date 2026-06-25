@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { apiFetch } from "@/lib/api";
+import { supabase } from "./supabase";
 
 const generateId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -17,7 +19,7 @@ export interface CartItem {
   image: string;
   weight: string;
   grind: string;
-  selected?: boolean; 
+  selected?: boolean;
   priceType?: string;
   original_price?: number;
   isB2B?: boolean;
@@ -47,7 +49,7 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       isOpen: false,
-      
+
       setIsOpen: (isOpen) => set({ isOpen }),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -66,8 +68,8 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (newItem, selectOnly = false) => {
         const currentItems = get().items;
-        
-        let baseItems = selectOnly 
+
+        let baseItems = selectOnly
           ? currentItems.map(item => ({ ...item, selected: false }))
           : currentItems;
 
@@ -80,16 +82,16 @@ export const useCartStore = create<CartStore>()(
         if (existingItemIndex > -1) {
           updatedItems = [...baseItems];
           updatedItems[existingItemIndex].quantity += newItem.quantity;
-          updatedItems[existingItemIndex].selected = true; 
+          updatedItems[existingItemIndex].selected = true;
         } else {
-          updatedItems = [...baseItems, { 
-            ...newItem, 
-            lineItemId: generateId(), 
-            selected: true 
+          updatedItems = [...baseItems, {
+            ...newItem,
+            lineItemId: generateId(),
+            selected: true
           }];
         }
-        
-        set({ items: updatedItems, isOpen: !selectOnly }); 
+
+        set({ items: updatedItems, isOpen: !selectOnly });
         get().syncWithServer();
       },
 
@@ -100,7 +102,7 @@ export const useCartStore = create<CartStore>()(
 
       removeItems: (lineItemIdsToRemove) => {
         if (!lineItemIdsToRemove || lineItemIdsToRemove.length === 0) return;
-        
+
         const updatedItems = get().items.filter(
           (item) => !lineItemIdsToRemove.includes(item.lineItemId)
         );
@@ -110,8 +112,8 @@ export const useCartStore = create<CartStore>()(
 
       updateQuantity: (lineItemId, quantity) => {
         const updatedItems = get().items.map((item) =>
-          (item.lineItemId === lineItemId) 
-            ? { ...item, quantity: Math.max(1, quantity) } 
+          (item.lineItemId === lineItemId)
+            ? { ...item, quantity: Math.max(1, quantity) }
             : item
         );
         set({ items: updatedItems });
@@ -142,8 +144,8 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotal: (onlySelected = false) => {
-        const targetItems = onlySelected 
-          ? get().items.filter(item => item.selected !== false) 
+        const targetItems = onlySelected
+          ? get().items.filter(item => item.selected !== false)
           : get().items;
         return targetItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
       },
@@ -176,8 +178,15 @@ export const useAuthStore = create<AuthStore>()(
         const { user } = get();
         if (!user || !user.id) return;
         try {
+          // FORCE nunggu inisialisasi session Supabase kelar dulu sebelum nembak apiFetch
+          await supabase.auth.getSession();
+
           // Use our next.js proxy routing with cache busting
-          const res = await fetch(`/api/auth/profile/${user.id}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+          const res = await apiFetch(`/api/auth/profile/${user.id}`, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+
           if (res.ok) {
             const freshUser = await res.json();
             // preserve any local auth tokens if necessary, or just merge
