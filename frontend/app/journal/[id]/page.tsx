@@ -29,6 +29,9 @@ interface JournalPost {
   featured_image: string;
   status: string;
   category: string;
+  title_en?: string;
+  content_en?: string;
+  excerpt_en?: string;
   published_at: string;
   created_at: string;
 }
@@ -39,6 +42,7 @@ export default function JournalReadPage() {
   const [post, setPost] = useState<JournalPost | null>(null);
   const [otherPosts, setOtherPosts] = useState<JournalPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState<"id" | "en">("id");
 
   useEffect(() => {
     Promise.all([
@@ -98,8 +102,26 @@ export default function JournalReadPage() {
           <Badge variant="outline" className="mb-6 font-cloude text-xl px-4 py-1 border-stone-300">
             {post.category || "Jurnal"}
           </Badge>
+          
+          <div className="flex justify-center mb-6">
+            <div className="flex bg-stone-100 rounded-full p-1 border border-stone-200">
+              <button 
+                onClick={() => setLang('id')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${lang === 'id' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-400 hover:text-stone-600'}`}
+              >
+                ID
+              </button>
+              <button 
+                onClick={() => setLang('en')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${lang === 'en' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-400 hover:text-stone-600'}`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
+
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display text-stone-900 leading-tight mb-8">
-            {post.title}
+            {lang === 'en' && post.title_en ? post.title_en : post.title}
           </h1>
           
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-stone-500 uppercase tracking-widest font-semibold">
@@ -135,7 +157,7 @@ export default function JournalReadPage() {
         <article className="prose prose-stone prose-lg max-w-3xl mx-auto">
           <div 
             className="first-letter:text-7xl first-letter:font-display first-letter:text-stone-900 first-letter:mr-3 first-letter:float-left font-sans leading-relaxed text-stone-700"
-            dangerouslySetInnerHTML={{ __html: post.content }} 
+            dangerouslySetInnerHTML={{ __html: (lang === 'en' && post.content_en) ? post.content_en : post.content }} 
           />
         </article>
 

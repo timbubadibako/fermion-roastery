@@ -32,13 +32,17 @@ export default function JournalFormPage() {
   const isEdit = !!params.id;
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [activeLang, setActiveLang] = useState<"id" | "en">("id");
 
   const [formData, setFormData] = useState({
     title: "",
+    title_en: "",
     category: "Eksperimen",
     status: "published",
     content: "",
+    content_en: "",
     excerpt: "",
+    excerpt_en: "",
     featured_image: ""
   });
 
@@ -133,28 +137,59 @@ export default function JournalFormPage() {
         {/* MAIN EDITOR AREA */}
         <div className="lg:col-span-3 space-y-10">
             <div className="bg-white border border-black/5 rounded-sm p-10 space-y-10 shadow-sm">
-                <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Judul Utama</label>
-                    <Input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Cerita dari Kebun: Panen Gayo Tahun Ini" className="h-16 bg-stone-50 border-black/5 font-bold rounded-sm text-2xl px-6 focus-visible:ring-[#367F4D]" />
+                
+                {/* Language Toggle */}
+                <div className="flex border-b border-black/5 pb-6 gap-4">
+                  <Button 
+                    variant={activeLang === 'id' ? 'default' : 'outline'}
+                    className={activeLang === 'id' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
+                    onClick={() => setActiveLang('id')}
+                  >
+                    Indonesian (ID)
+                  </Button>
+                  <Button 
+                    variant={activeLang === 'en' ? 'default' : 'outline'}
+                    className={activeLang === 'en' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
+                    onClick={() => setActiveLang('en')}
+                  >
+                    English (EN)
+                  </Button>
                 </div>
 
                 <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Ringkasan Singkat</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                      Judul Utama {activeLang === 'en' ? '(EN)' : '(ID)'}
+                    </label>
+                    <Input 
+                      required={activeLang === 'id'} 
+                      value={activeLang === 'en' ? (formData.title_en || '') : formData.title} 
+                      onChange={e => setFormData(activeLang === 'en' ? {...formData, title_en: e.target.value} : {...formData, title: e.target.value})} 
+                      placeholder={activeLang === 'en' ? "e.g. Tales from the Farm: Gayo Harvest" : "e.g. Cerita dari Kebun: Panen Gayo Tahun Ini"} 
+                      className="h-16 bg-stone-50 border-black/5 font-bold rounded-sm text-2xl px-6 focus-visible:ring-[#367F4D]" 
+                    />
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                      Ringkasan Singkat {activeLang === 'en' ? '(EN)' : '(ID)'}
+                    </label>
                     <textarea 
-                        value={formData.excerpt} 
-                        onChange={e => setFormData({...formData, excerpt: e.target.value})} 
-                        placeholder="Tuliskan 1-2 kalimat pengantar untuk pembaca..." 
+                        value={activeLang === 'en' ? (formData.excerpt_en || '') : formData.excerpt} 
+                        onChange={e => setFormData(activeLang === 'en' ? {...formData, excerpt_en: e.target.value} : {...formData, excerpt: e.target.value})} 
+                        placeholder={activeLang === 'en' ? "Write 1-2 introductory sentences..." : "Tuliskan 1-2 kalimat pengantar untuk pembaca..."} 
                         className="w-full h-32 bg-stone-50 border border-black/5 rounded-sm p-6 text-sm font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D] uppercase tracking-wider opacity-70" 
                     />
                 </div>
 
                 <div className="space-y-3 pt-6 border-t border-black/5">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Isi Tulisan</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+                      Isi Tulisan {activeLang === 'en' ? '(EN)' : '(ID)'}
+                    </label>
                     <textarea 
-                        required 
-                        value={formData.content} 
-                        onChange={e => setFormData({...formData, content: e.target.value})} 
-                        placeholder="Tuangkan isi tulisan blog Anda di sini..." 
+                        required={activeLang === 'id'} 
+                        value={activeLang === 'en' ? (formData.content_en || '') : formData.content} 
+                        onChange={e => setFormData(activeLang === 'en' ? {...formData, content_en: e.target.value} : {...formData, content: e.target.value})} 
+                        placeholder={activeLang === 'en' ? "Write your blog content here..." : "Tuangkan isi tulisan blog Anda di sini..."} 
                         className="w-full h-[600px] bg-stone-50 border border-black/5 rounded-sm p-10 text-base font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D]" 
                     />
                 </div>

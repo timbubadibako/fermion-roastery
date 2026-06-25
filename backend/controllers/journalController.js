@@ -47,7 +47,7 @@ export const getJournalPostById = async (req, res) => {
 };
 
 export const createJournalPost = async (req, res) => {
-  const { title, category, content, excerpt, featured_image, status, author_id } = req.body;
+  const { title, category, content, excerpt, featured_image, status, author_id, title_en, content_en, excerpt_en } = req.body;
   const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
   
   try {
@@ -60,6 +60,9 @@ export const createJournalPost = async (req, res) => {
           category: category || 'Eksperimen',
           content, 
           excerpt, 
+          title_en,
+          content_en,
+          excerpt_en,
           featured_image, 
           status: status || 'draft', 
           author_id, 
@@ -78,7 +81,7 @@ export const createJournalPost = async (req, res) => {
 
 export const updateJournalPost = async (req, res) => {
   const { id } = req.params;
-  const { title, category, content, excerpt, featured_image, status } = req.body;
+  const { title, category, content, excerpt, featured_image, status, title_en, content_en, excerpt_en } = req.body;
   
   try {
     const publishedAt = status === 'published' ? new Date() : null;
@@ -87,6 +90,9 @@ export const updateJournalPost = async (req, res) => {
       category,
       content,
       excerpt,
+      title_en,
+      content_en,
+      excerpt_en,
       featured_image,
       status,
       updated_at: new Date()

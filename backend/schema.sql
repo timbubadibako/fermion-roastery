@@ -55,6 +55,9 @@ CREATE TABLE IF NOT EXISTS journal_posts (
     featured_image TEXT,
     status TEXT DEFAULT 'draft', -- 'draft', 'published'
     is_pinned BOOLEAN DEFAULT false,
+    title_en TEXT,
+    content_en TEXT,
+    excerpt_en TEXT,
     author_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
     published_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
