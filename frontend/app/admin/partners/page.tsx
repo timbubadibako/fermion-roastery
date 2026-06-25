@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/api"; // atau "../../lib/api" tergantung posisi file
 import React, { useState, useEffect } from "react";
 import {
   Users,
@@ -56,13 +57,16 @@ export default function PartnerManagement() {
   }, []);
 
   const fetchPartners = async () => {
-    try {
-      const res = await fetch("/api/admin/partners");
-      if (res.ok) setPartners(await res.json());
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    // 🎯 KUNCI UTAMANYA: Ganti fetch mentah menjadi apiFetch biar token ADMIN nempel otomatis
+    const res = await apiFetch("/api/admin/partners");
+    if (res.ok) setPartners(await res.json());
+  } catch (error) {
+    console.error("Fetch partners error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleUpdateStatus = async (id: string, status: string, tier?: string | null) => {
     const payload: any = { status };

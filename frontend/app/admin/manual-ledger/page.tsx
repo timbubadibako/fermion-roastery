@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import {
    Plus,
@@ -53,28 +54,31 @@ export default function ManualLedger() {
    }, []);
 
    const fetchLedgerData = async () => {
-      try {
-         const [pRes, prodRes, ledgerRes] = await Promise.all([
-            fetch("/api/admin/partners"),
-            fetch("/api/products"),
-            fetch("/api/admin/manual-transaction") // Pastikan endpoint GET ini ada
-         ]);
+   try {
+      // 🎯 KUNCI UTAMANYA: Ganti semua fetch mentah menjadi apiFetch biar token ADMIN ikut terbang!
+      const [pRes, prodRes, ledgerRes] = await Promise.all([
+         apiFetch("/api/admin/partners"),
+         apiFetch("/api/products"),
+         apiFetch("/api/admin/manual-transaction")
+      ]);
 
-         const pData = await pRes.json();
-         const prodData = await prodRes.json();
+      // Pastikan response-nya ok sebelum di-parse json biar gak crash internal jika ada fail
+      const pData = pRes.ok ? await pRes.json() : [];
+      const prodData = prodRes.ok ? await prodRes.json() : [];
 
-         setPartners(pData.filter((p: any) => p.status === 'approved'));
-         setProducts(prodData);
+      setPartners(pData.filter((p: any) => p.status === 'approved'));
+      setProducts(prodData);
 
-         if (ledgerRes.ok) {
-            setTransactions(await ledgerRes.json());
-         }
-      } catch (error) {
-         toast.error("Gagal memuat data referensi buku besar.");
-      } finally {
-         setLoading(false);
+      if (ledgerRes.ok) {
+         setTransactions(await ledgerRes.json());
       }
-   };
+   } catch (error) {
+      console.error("Ledger fetch error:", error);
+      toast.error("Gagal memuat data referensi buku besar.");
+   } finally {
+      setLoading(false);
+   }
+};
 
    const handleSave = async (e: React.FormEvent) => {
       e.preventDefault();
