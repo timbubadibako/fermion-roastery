@@ -3,12 +3,11 @@ import { supabase } from '../lib/supabase.js';
 export const verifyAuth = async (req, res, next) => {
   try {
     let token;
-    
-    // 1. Check Authorization header
+
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.substring(7);
-    } 
+    }
 
     if (!token) {
       return res.status(401).json({ message: "Access denied. No token provided." });
@@ -17,10 +16,16 @@ export const verifyAuth = async (req, res, next) => {
     const { data: { user }, error } = await supabase.auth.getUser(token);
 
     if (error || !user) {
+      // 🎯 PRINT ERROR ASLI SUPABASE KE TERMINAL BACKEND LU
+      console.log("========================================");
+      console.log("❌ JET ENGINE AUTH ERROR:");
+      console.log("Pesan Error:", error ? error.message : "User tidak ditemukan");
+      console.log("Status Error:", error ? error.status : "401");
+      console.log("========================================");
+
       return res.status(401).json({ message: "Invalid or expired token." });
     }
 
-    // Attach user to request
     req.user = user;
     next();
   } catch (error) {
@@ -41,7 +46,7 @@ export const verifyAdmin = async (req, res, next) => {
       .eq('id', req.user.id)
       .single();
 
-    if (error || !profile || profile.role !== 'admin') {
+    if (error || !profile || profile.role !== 'ADMIN') {
       return res.status(403).json({ message: "Forbidden: Requires admin privileges." });
     }
 

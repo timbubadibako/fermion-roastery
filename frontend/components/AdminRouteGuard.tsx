@@ -19,13 +19,13 @@ export default function AdminRouteGuard({ children }: { children: React.ReactNod
     if (mounted) {
       if (!user) {
         router.replace("/auth?redirect=" + encodeURIComponent(pathname));
-      } else if (user.role !== "admin") {
+      } else if (user.role !== "ADMIN") {
         router.replace("/");
       }
     }
   }, [user, mounted, router, pathname]);
 
-  if (!mounted || !user || user.role !== "admin") {
+  if (!mounted || !user || user.role !== "ADMIN") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50 text-stone-500">
         <Loader2 size={40} className="animate-spin" />

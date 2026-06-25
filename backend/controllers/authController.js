@@ -2,11 +2,17 @@ import { supabase } from '../lib/supabase.js';
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to get a clean client for auth checks to avoid RLS pollution
-const getAuthClient = () => createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { persistSession: false } }
-);
+const getAuthClient = () => {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  return createClient(url, anonKey, { 
+    auth: { 
+      persistSession: false,
+      detectSessionInUrl: false 
+    } 
+  });
+};
 
 export const register = async (req, res) => {
   const { id: externalId, email, password, fullName, role = 'RETAIL' } = req.body;

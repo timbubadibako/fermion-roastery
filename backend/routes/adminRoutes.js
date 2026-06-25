@@ -16,11 +16,12 @@ import {
 
 const router = express.Router();
 
+router.get('/settings', getSettings);
+
 // Apply auth and admin check to all admin routes
 router.use(verifyAuth, verifyAdmin);
 
 router.get('/stats', getAdminStats);
-router.get('/settings', getSettings);
 router.put('/settings', updateSettings);
 
 // In a real app, these routes should be protected by an isAdmin middleware
