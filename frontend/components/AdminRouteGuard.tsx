@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 export default function AdminRouteGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading } = useAuthStore();
+  const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -16,16 +16,16 @@ export default function AdminRouteGuard({ children }: { children: React.ReactNod
   }, []);
 
   useEffect(() => {
-    if (mounted && !loading) {
+    if (mounted) {
       if (!user) {
         router.replace("/auth?redirect=" + encodeURIComponent(pathname));
       } else if (user.role !== "admin") {
         router.replace("/");
       }
     }
-  }, [user, loading, mounted, router, pathname]);
+  }, [user, mounted, router, pathname]);
 
-  if (!mounted || loading || !user || user.role !== "admin") {
+  if (!mounted || !user || user.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50 text-stone-500">
         <Loader2 size={40} className="animate-spin" />
