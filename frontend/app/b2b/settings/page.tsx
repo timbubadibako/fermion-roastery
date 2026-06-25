@@ -17,6 +17,7 @@ import {
   Download, Upload, FileText, AlertTriangle
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
+import { apiFetch } from "@/lib/api";
 
 interface Order {
   id: string;
@@ -88,7 +89,7 @@ function AccountContent() {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch(`/api/auth/profile/${user?.id}`);
+      const res = await apiFetch(`/api/auth/profile/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setProfileData({
@@ -120,7 +121,7 @@ function AccountContent() {
 
   const fetchSubscription = async () => {
     try {
-      const res = await fetch(`/api/subscription/active/${user?.id}`);
+      const res = await apiFetch(`/api/subscription/active/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setSubscription(data);
@@ -175,7 +176,7 @@ function AccountContent() {
   const cancelSubscription = async () => {
     if (!subscription) return;
     try {
-      const res = await fetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
+      const res = await apiFetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
       if (res.ok) {
         toast.success(t.account.messages.subscriptionCancelSuccess);
         fetchSubscription();
@@ -187,7 +188,7 @@ function AccountContent() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`/api/orders/my-orders?profileId=${user?.id}`);
+      const res = await apiFetch(`/api/orders/my-orders?profileId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -265,7 +266,7 @@ function AccountContent() {
     };
 
     try {
-      const res = await fetch(`/api/auth/profile/${user?.id}`, {
+      const res = await apiFetch(`/api/auth/profile/${user?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedPayload)

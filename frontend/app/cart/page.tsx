@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AddressInput } from "@/components/address-input";
 import { AddressSelection } from "@/components/address-selection";
 import { useI18n } from "@/lib/i18n";
+import { apiFetch } from "@/lib/api";
 
 export default function CartPage() {
   const t = useI18n();
@@ -60,7 +61,7 @@ export default function CartPage() {
     if (user) {
       const fetchProfile = async () => {
         try {
-          const res = await fetch(`/api/auth/profile/${user.id}`);
+          const res = await apiFetch(`/api/auth/profile/${user.id}`);
           if (res.ok) {
             const data = await res.json();
             setShippingData(prev => ({
@@ -90,7 +91,7 @@ export default function CartPage() {
     if (user) {
       const fetchAddresses = async () => {
         try {
-          const res = await fetch(`/api/auth/profile/${user.id}`);
+          const res = await apiFetch(`/api/auth/profile/${user.id}`);
           if (res.ok) {
             const data = await res.json();
             if (data.addresses_json) {

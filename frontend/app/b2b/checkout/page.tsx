@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { AddressSelection } from "@/components/address-selection";
 import { AddressValue } from "@/components/address-input";
+import { apiFetch } from "@/lib/api";
 
 export default function B2BCheckoutPage() {
   const t = useI18n();
@@ -61,7 +62,7 @@ export default function B2BCheckoutPage() {
   useEffect(() => {
     if (user) {
       // Fetch partner info
-      fetch(`/api/admin/partners?profileId=${user.id}`)
+      apiFetch(`/api/admin/partners?profileId=${user.id}`)
         .then(res => res.json())
         .then(data => {
           const p = data.find((p: any) => p.profile_id === user.id);
@@ -72,7 +73,7 @@ export default function B2BCheckoutPage() {
         });
         
       // Fetch profile addresses
-      fetch(`/api/auth/profile/${user.id}`)
+      apiFetch(`/api/auth/profile/${user.id}`)
         .then(res => res.json())
         .then(data => {
            if (data.addresses_json?.length > 0) {

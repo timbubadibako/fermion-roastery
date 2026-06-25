@@ -21,6 +21,7 @@ import { useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
+import { apiFetch } from "@/lib/api";
 
 export default function SubscriptionCheckoutPage() {
   const router = useRouter();
@@ -79,7 +80,7 @@ export default function SubscriptionCheckoutPage() {
 
   const fetchUserProfile = async () => {
     try {
-      const res = await fetch(`/api/auth/profile/${user?.id}`);
+      const res = await apiFetch(`/api/auth/profile/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         
@@ -142,7 +143,7 @@ export default function SubscriptionCheckoutPage() {
 
     setProcessing(true);
     try {
-      await fetch(`/api/auth/profile/${user?.id}`, {
+      await apiFetch(`/api/auth/profile/${user?.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

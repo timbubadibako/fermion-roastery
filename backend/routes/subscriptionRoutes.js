@@ -29,10 +29,8 @@ router.get('/active/:profileId', async (req, res) => {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) {
-      return res.status(404).json({ message: "No active subscription found" });
-    }
-    res.json(data);
+    // No active subscription is a normal state, not an error
+    res.json(data || null);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

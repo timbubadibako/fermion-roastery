@@ -17,6 +17,8 @@ import {
   Download, Upload, FileText, AlertTriangle
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
+import { apiFetch } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 interface Order {
   id: string;
@@ -82,11 +84,50 @@ function AccountContent() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchOrders();
-      fetchProfile();
-      fetchSubscription();
-    }
+    const checkSessionAndFetch = async () => {
+      try {
+        // 1. Tunggu inisialisasi session dari Supabase selesai
+        const { data: { session } } = await supabase.auth.getSession();
+
+        // 2. Jalankan fetch data paralel jika session dan user store sudah sinkron
+        if (session && user) {
+          // allSettled memastikan profile & orders tetap ke-load meskipun subscription lu masih 404
+          await Promise.allSettled([
+            fetchOrders(),
+            fetchProfile(),
+            fetchSubscription()
+          ]);
+        } else {
+          console.log("[AccountContent] Session atau user store belum siap.");
+        }
+      } catch (err) {
+        console.error("[AccountContent] Error fetching initial data:", err);
+      } finally {
+        // 3. APAPUN YANG TERJADI (Sukses/Gagal/Kosong), WAJIB MATIKAN LOADING DI SINI
+        setLoading(false);
+      }
+    };
+
+    checkSessionAndFetch();
+
+    // Dengerin perubahan auth state secara dinamis
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session && user) {
+        try {
+          await Promise.allSettled([
+            fetchOrders(),
+            fetchProfile(),
+            fetchSubscription()
+          ]);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+
+    return () => authSub.unsubscribe();
   }, [user]);
 
   useEffect(() => {
@@ -97,7 +138,7 @@ function AccountContent() {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch(`/api/auth/profile/${user?.id}`);
+      const res = await apiFetch(`/api/auth/profile/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setProfileData({
@@ -129,7 +170,7 @@ function AccountContent() {
 
   const fetchSubscription = async () => {
     try {
-      const res = await fetch(`/api/subscription/active/${user?.id}`);
+      const res = await apiFetch(`/api/subscription/active/${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setSubscription(data);
@@ -151,14 +192,14 @@ function AccountContent() {
         const res = await fetch('/api/b2b/upload-contract', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            profileId: user.id, 
-            fileData: base64File, 
-            fileName: selectedContractFile.name, 
-            mimetype: selectedContractFile.type 
+          body: JSON.stringify({
+            profileId: user.id,
+            fileData: base64File,
+            fileName: selectedContractFile.name,
+            mimetype: selectedContractFile.type
           })
         });
-        
+
         if (res.ok) {
           toast.success(t.account.messages.contractUploadSuccess, { id: "upload-contract" });
           refreshSession(); // Refresh status quietly without reloading
@@ -184,7 +225,7 @@ function AccountContent() {
   const cancelSubscription = async () => {
     if (!subscription) return;
     try {
-      const res = await fetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
+      const res = await apiFetch(`/api/subscription/cancel/${subscription.id}`, { method: 'POST' });
       if (res.ok) {
         toast.success(t.account.messages.subscriptionCancelSuccess);
         fetchSubscription();
@@ -196,45 +237,45 @@ function AccountContent() {
 
   const changePassword = async () => {
     if (!passwords.old || !passwords.new) {
-       toast.error("Harap isi sandi lama dan sandi baru");
-       return;
+      toast.error("Harap isi sandi lama dan sandi baru");
+      return;
     }
     if (passwords.new.length < 6) {
-       toast.error("Sandi baru minimal 6 karakter");
-       return;
+      toast.error("Sandi baru minimal 6 karakter");
+      return;
     }
 
     setIsChangingPassword(true);
     try {
-       const res = await fetch('/api/auth/change-password', {
-          method: 'POST',
-          headers: {
-             'Content-Type': 'application/json',
-             'Authorization': `Bearer ${user?.token || ''}`
-          },
-          body: JSON.stringify({
-             oldPassword: passwords.old,
-             newPassword: passwords.new
-          })
-       });
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token || ''}`
+        },
+        body: JSON.stringify({
+          oldPassword: passwords.old,
+          newPassword: passwords.new
+        })
+      });
 
-       const data = await res.json();
-       if (res.ok) {
-          toast.success("Kata sandi berhasil diubah");
-          setPasswords({ old: "", new: "" });
-       } else {
-          toast.error(data.message || "Gagal mengubah kata sandi");
-       }
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Kata sandi berhasil diubah");
+        setPasswords({ old: "", new: "" });
+      } else {
+        toast.error(data.message || "Gagal mengubah kata sandi");
+      }
     } catch (e) {
-       toast.error("Terjadi kesalahan sistem");
+      toast.error("Terjadi kesalahan sistem");
     } finally {
-       setIsChangingPassword(false);
+      setIsChangingPassword(false);
     }
   };
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`/api/orders/my-orders?profileId=${user?.id}`);
+      const res = await apiFetch(`/api/orders/my-orders?profileId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -312,7 +353,7 @@ function AccountContent() {
     };
 
     try {
-      const res = await fetch(`/api/auth/profile/${user?.id}`, {
+      const res = await apiFetch(`/api/auth/profile/${user?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedPayload)
@@ -434,10 +475,10 @@ function AccountContent() {
               { id: "security", label: "Keamanan Akun", icon: Settings },
               // Hanya tampilkan tab ini jika mereka sudah mendaftar B2B (pending atau approved)
               ...((user?.b2b_status && user.b2b_status !== 'approved')
-                  ? [{ id: "b2b_registration", label: t.account.tabs.b2bRegistration, icon: Coffee }] 
-                  : (user?.role === 'B2B' || user?.b2b_status === 'approved')
-                    ? [{ id: "b2b_dashboard", label: "B2B Dashboard", icon: Coffee, isLink: true, href: '/b2b' }]
-                    : [])
+                ? [{ id: "b2b_registration", label: t.account.tabs.b2bRegistration, icon: Coffee }]
+                : (user?.role === 'B2B' || user?.b2b_status === 'approved')
+                  ? [{ id: "b2b_dashboard", label: "B2B Dashboard", icon: Coffee, isLink: true, href: '/b2b' }]
+                  : [])
             ].map(tab => {
               const isActive = activeTab === tab.id;
               return (
@@ -458,7 +499,7 @@ function AccountContent() {
                   <tab.icon size={16} />
                   {tab.label}
                   {tab.id === "b2b_registration" && user?.b2b_status?.toUpperCase() === 'PENDING' && (
-                     <span className="absolute top-4 right-4 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                    <span className="absolute top-4 right-4 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                   )}
                 </button>
               )
@@ -691,149 +732,149 @@ function AccountContent() {
                       </div>
                     </div>
 
-                      <div className="flex gap-2 p-1 bg-stone-50 rounded-sm border border-black/5">
-                        {addresses.map(addr => {
-                          const localizedLabel = addr.id === 'primary' 
-                            ? t.account.settings.addresses.primaryLabel 
-                            : addr.id === '2' 
-                              ? t.account.settings.addresses.address2Label 
-                              : t.account.settings.addresses.address3Label;
-                          return (
-                            <button
-                              key={addr.id}
-                              onClick={() => setEditingAddressId(addr.id)}
-                              className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-sm ${(editingAddressId === addr.id || (!editingAddressId && addr.isPrimary))
-                                ? 'bg-white shadow-sm text-slate-900 border border-black/5'
-                                : 'text-stone-400 hover:text-stone-600'
-                                }`}
-                            >
-                              {localizedLabel} {addr.isPrimary && "★"}
-                            </button>
-                          );
-                        })}
-                      </div>
+                    <div className="flex gap-2 p-1 bg-stone-50 rounded-sm border border-black/5">
+                      {addresses.map(addr => {
+                        const localizedLabel = addr.id === 'primary'
+                          ? t.account.settings.addresses.primaryLabel
+                          : addr.id === '2'
+                            ? t.account.settings.addresses.address2Label
+                            : t.account.settings.addresses.address3Label;
+                        return (
+                          <button
+                            key={addr.id}
+                            onClick={() => setEditingAddressId(addr.id)}
+                            className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest transition-all rounded-sm ${(editingAddressId === addr.id || (!editingAddressId && addr.isPrimary))
+                              ? 'bg-white shadow-sm text-slate-900 border border-black/5'
+                              : 'text-stone-400 hover:text-stone-600'
+                              }`}
+                          >
+                            {localizedLabel} {addr.isPrimary && "★"}
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                      {addresses.filter(a => editingAddressId ? a.id === editingAddressId : a.isPrimary).map(addr => (
-                        <motion.div key={addr.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-8 border border-dashed border-black/10 rounded-sm">
+                    {addresses.filter(a => editingAddressId ? a.id === editingAddressId : a.isPrimary).map(addr => (
+                      <motion.div key={addr.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 p-8 border border-dashed border-black/10 rounded-sm">
 
-                          {/* 1. GRID IDENTITAS PENERIMA */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* INPUT NAMA PENERIMA */}
-                            <div className="space-y-2">
-                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.recipientNameLabel}</label>
-                              <Input
-                                value={addr.name ?? ""}
-                                placeholder={profileData.fullName}
-                                onChange={e => updateAddressField(addr.id, 'name', e.target.value)}
-                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                              />
-                            </div>
-
-                            {/* INPUT NOMOR TELPON PENERIMA */}
-                            <div className="space-y-2">
-                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.recipientPhoneLabel}</label>
-                              <Input
-                                value={addr.phone ?? ""}
-                                placeholder={profileData.phone}
-                                onChange={e => updateAddressField(addr.id, 'phone', e.target.value)}
-                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                              />
-                            </div>
-                          </div>
-
-                          {/* 🟢 2. SEKTOR BARU: GRID INPUT PECAHAN ALAMAT LENGKAP */}
-                          {/* 🟢 SEKTOR PECAHAN ALAMAT YANG SUDAH DISESUAIKAN LOKAL */}
-                          <div className="space-y-6 pt-6 border-t border-dashed border-black/5">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                              {/* Input 1: RT / RW */}
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.rtRwLabel}</label>
-                                <Input
-                                  value={(addr as any).houseRtRw || ""}
-                                  placeholder={t.account.settings.rtRwPlaceholder}
-                                  onChange={e => updateAddressField(addr.id, 'houseRtRw' as any, e.target.value)}
-                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                                />
-                              </div>
-
-                              {/* Input 2: Blok / Dusun / Jalan */}
-                              <div className="space-y-2 col-span-1 md:col-span-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.streetAddressLabel}</label>
-                                <Input
-                                  value={(addr as any).street || ""}
-                                  placeholder={t.account.settings.streetAddressPlaceholder}
-                                  onChange={e => updateAddressField(addr.id, 'street' as any, e.target.value)}
-                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {/* Input 3: Desa / Kelurahan */}
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.villageLabel}</label>
-                                <Input
-                                  value={(addr as any).village || ""}
-                                  placeholder={t.account.settings.villagePlaceholder}
-                                  onChange={e => updateAddressField(addr.id, 'village' as any, e.target.value)}
-                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                                />
-                              </div>
-
-                              {/* Input 4: Patokan */}
-                              <div className="space-y-2">
-                                <div className="flex justify-between items-center ml-1">
-                                  <label className="text-[9px] font-black uppercase tracking-widest text-stone-400">{t.account.settings.landmarkLabel}</label>
-                                  <span className={`text-[9px] font-bold ${(((addr as any).patokan || '').length >= 100) ? 'text-red-500' : 'text-stone-400'}`}>
-                                    {((addr as any).patokan || '').length}/100
-                                  </span>
-                                </div>
-                                <Input
-                                  maxLength={100}
-                                  value={(addr as any).patokan || ""}
-                                  placeholder={t.account.settings.landmarkPlaceholder}
-                                  onChange={e => updateAddressField(addr.id, 'patokan', e.target.value)}
-                                  className="h-12 bg-white border border-black/10 font-bold rounded-sm"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* 3. KOMPONEN PENCARIAN WILAYAH ADMISTRASI (CITY & POSTAL CODE) */}
-                          <div className="pt-6 border-t border-dashed border-black/5">
-                            <AddressInput
-                              label={t.account.settings.districtCitySearchLabel}
-                              value={{
-                                address: addr.address,
-                                city: addr.city,
-                                postalCode: addr.postalCode,
-                                area_id: addr.area_id,
-                                district: addr.district,
-                                province: addr.province,
-                                regency: addr.regency,
-                                patokan: addr.patokan
-                              }}
-                              onChange={(v) => {
-                                updateAddressField(addr.id, 'address', v.address);
-                                updateAddressField(addr.id, 'city', v.city);
-                                updateAddressField(addr.id, 'postalCode', v.postalCode);
-                                updateAddressField(addr.id, 'area_id', v.area_id);
-                                updateAddressField(addr.id, 'district', v.district || '');
-                                updateAddressField(addr.id, 'province', v.province || '');
-                                updateAddressField(addr.id, 'regency', v.regency || '');
-                                updateAddressField(addr.id, 'patokan', v.patokan || '');
-                              }}
+                        {/* 1. GRID IDENTITAS PENERIMA */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {/* INPUT NAMA PENERIMA */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.recipientNameLabel}</label>
+                            <Input
+                              value={addr.name ?? ""}
+                              placeholder={profileData.fullName}
+                              onChange={e => updateAddressField(addr.id, 'name', e.target.value)}
+                              className="h-12 bg-white border border-black/10 font-bold rounded-sm"
                             />
                           </div>
-                        </motion.div>
-                      ))}
 
-                      <div className="pt-10 flex justify-center">
-                        <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
-                          Simpan Alamat
-                        </Button>
-                      </div>
+                          {/* INPUT NOMOR TELPON PENERIMA */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.recipientPhoneLabel}</label>
+                            <Input
+                              value={addr.phone ?? ""}
+                              placeholder={profileData.phone}
+                              onChange={e => updateAddressField(addr.id, 'phone', e.target.value)}
+                              className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                            />
+                          </div>
+                        </div>
+
+                        {/* 🟢 2. SEKTOR BARU: GRID INPUT PECAHAN ALAMAT LENGKAP */}
+                        {/* 🟢 SEKTOR PECAHAN ALAMAT YANG SUDAH DISESUAIKAN LOKAL */}
+                        <div className="space-y-6 pt-6 border-t border-dashed border-black/5">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                            {/* Input 1: RT / RW */}
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.rtRwLabel}</label>
+                              <Input
+                                value={(addr as any).houseRtRw || ""}
+                                placeholder={t.account.settings.rtRwPlaceholder}
+                                onChange={e => updateAddressField(addr.id, 'houseRtRw' as any, e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
+                            </div>
+
+                            {/* Input 2: Blok / Dusun / Jalan */}
+                            <div className="space-y-2 col-span-1 md:col-span-2">
+                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.streetAddressLabel}</label>
+                              <Input
+                                value={(addr as any).street || ""}
+                                placeholder={t.account.settings.streetAddressPlaceholder}
+                                onChange={e => updateAddressField(addr.id, 'street' as any, e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Input 3: Desa / Kelurahan */}
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.account.settings.villageLabel}</label>
+                              <Input
+                                value={(addr as any).village || ""}
+                                placeholder={t.account.settings.villagePlaceholder}
+                                onChange={e => updateAddressField(addr.id, 'village' as any, e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
+                            </div>
+
+                            {/* Input 4: Patokan */}
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center ml-1">
+                                <label className="text-[9px] font-black uppercase tracking-widest text-stone-400">{t.account.settings.landmarkLabel}</label>
+                                <span className={`text-[9px] font-bold ${(((addr as any).patokan || '').length >= 100) ? 'text-red-500' : 'text-stone-400'}`}>
+                                  {((addr as any).patokan || '').length}/100
+                                </span>
+                              </div>
+                              <Input
+                                maxLength={100}
+                                value={(addr as any).patokan || ""}
+                                placeholder={t.account.settings.landmarkPlaceholder}
+                                onChange={e => updateAddressField(addr.id, 'patokan', e.target.value)}
+                                className="h-12 bg-white border border-black/10 font-bold rounded-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 3. KOMPONEN PENCARIAN WILAYAH ADMISTRASI (CITY & POSTAL CODE) */}
+                        <div className="pt-6 border-t border-dashed border-black/5">
+                          <AddressInput
+                            label={t.account.settings.districtCitySearchLabel}
+                            value={{
+                              address: addr.address,
+                              city: addr.city,
+                              postalCode: addr.postalCode,
+                              area_id: addr.area_id,
+                              district: addr.district,
+                              province: addr.province,
+                              regency: addr.regency,
+                              patokan: addr.patokan
+                            }}
+                            onChange={(v) => {
+                              updateAddressField(addr.id, 'address', v.address);
+                              updateAddressField(addr.id, 'city', v.city);
+                              updateAddressField(addr.id, 'postalCode', v.postalCode);
+                              updateAddressField(addr.id, 'area_id', v.area_id);
+                              updateAddressField(addr.id, 'district', v.district || '');
+                              updateAddressField(addr.id, 'province', v.province || '');
+                              updateAddressField(addr.id, 'regency', v.regency || '');
+                              updateAddressField(addr.id, 'patokan', v.patokan || '');
+                            }}
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    <div className="pt-10 flex justify-center">
+                      <Button onClick={saveAllSettings} className="h-16 px-12 bg-stone-900 text-white rounded-sm font-black uppercase tracking-widest italic shadow-2xl hover:bg-[#367F4D] transition-all hover:-translate-y-1 active:scale-95 text-[11px]">
+                        Simpan Alamat
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -842,27 +883,27 @@ function AccountContent() {
                 <motion.div key="security" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
                   {/* Password Change Card */}
                   <div className="bg-white p-10 border border-black/5 rounded-sm shadow-sm space-y-8">
-                     <div className="flex justify-between items-center border-b border-black/5 pb-6">
-                        <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">Keamanan Akun</h3>
-                        <div className="w-10 h-10 rounded-full bg-stone-50 border border-black/5 flex items-center justify-center text-stone-300">
-                          <Sparkles size={16} />
-                        </div>
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Lama</label>
-                          <Input type="password" value={passwords.old} onChange={e => setPasswords({...passwords, old: e.target.value})} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Masukkan sandi saat ini" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Baru</label>
-                          <Input type="password" value={passwords.new} onChange={e => setPasswords({...passwords, new: e.target.value})} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Minimal 6 karakter" />
-                        </div>
-                     </div>
-                     <div className="flex justify-end pt-4">
-                        <Button onClick={changePassword} disabled={isChangingPassword} className="h-12 px-8 bg-slate-900 text-white rounded-sm font-black uppercase tracking-widest italic hover:bg-[#367F4D] transition-all text-[10px]">
-                           {isChangingPassword ? "Memproses..." : "Ganti Sandi"}
-                        </Button>
-                     </div>
+                    <div className="flex justify-between items-center border-b border-black/5 pb-6">
+                      <h3 className="text-3xl font-display italic font-bold tracking-tighter text-slate-900">Keamanan Akun</h3>
+                      <div className="w-10 h-10 rounded-full bg-stone-50 border border-black/5 flex items-center justify-center text-stone-300">
+                        <Sparkles size={16} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Lama</label>
+                        <Input type="password" value={passwords.old} onChange={e => setPasswords({ ...passwords, old: e.target.value })} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Masukkan sandi saat ini" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-stone-400 ml-1">Sandi Baru</label>
+                        <Input type="password" value={passwords.new} onChange={e => setPasswords({ ...passwords, new: e.target.value })} className="h-12 bg-stone-50/50 border border-black/5 font-bold rounded-sm shadow-inner" placeholder="Minimal 6 karakter" />
+                      </div>
+                    </div>
+                    <div className="flex justify-end pt-4">
+                      <Button onClick={changePassword} disabled={isChangingPassword} className="h-12 px-8 bg-slate-900 text-white rounded-sm font-black uppercase tracking-widest italic hover:bg-[#367F4D] transition-all text-[10px]">
+                        {isChangingPassword ? "Memproses..." : "Ganti Sandi"}
+                      </Button>
+                    </div>
                   </div>
 
                 </motion.div>
@@ -872,110 +913,110 @@ function AccountContent() {
                   <div className="bg-white p-10 border border-black/5 shadow-sm rounded-sm">
                     {/* Status Badge */}
                     {user?.b2b_status?.toUpperCase() === 'PENDING' && (
-                       <div className="flex items-center gap-4 bg-amber-50 border border-amber-100 p-4 rounded-xl mb-8">
-                          <Clock className="text-amber-500" size={24} />
-                          <div>
-                             <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest">{t.account.b2b.pendingStatusTitle}</h4>
-                             <p className="text-xs font-medium text-amber-700">{t.account.b2b.pendingStatusDesc}</p>
-                          </div>
-                       </div>
+                      <div className="flex items-center gap-4 bg-amber-50 border border-amber-100 p-4 rounded-xl mb-8">
+                        <Clock className="text-amber-500" size={24} />
+                        <div>
+                          <h4 className="text-sm font-black text-amber-900 uppercase tracking-widest">{t.account.b2b.pendingStatusTitle}</h4>
+                          <p className="text-xs font-medium text-amber-700">{t.account.b2b.pendingStatusDesc}</p>
+                        </div>
+                      </div>
                     )}
-                    
+
                     {user?.b2b_status?.toUpperCase() === 'FLAGGED' && (
-                       <div className="flex items-center gap-4 bg-orange-50 border border-orange-200 p-4 rounded-xl mb-8">
-                          <AlertTriangle className="text-orange-500" size={24} />
-                          <div>
-                             <h4 className="text-sm font-black text-orange-900 uppercase tracking-widest">Dokumen Perlu Perhatian</h4>
-                             <p className="text-xs font-medium text-orange-800">Kami menemukan kendala pada dokumen kontrak Anda (misal: buram, salah tanda tangan). Silakan perbaiki dan unggah ulang.</p>
-                          </div>
-                       </div>
+                      <div className="flex items-center gap-4 bg-orange-50 border border-orange-200 p-4 rounded-xl mb-8">
+                        <AlertTriangle className="text-orange-500" size={24} />
+                        <div>
+                          <h4 className="text-sm font-black text-orange-900 uppercase tracking-widest">Dokumen Perlu Perhatian</h4>
+                          <p className="text-xs font-medium text-orange-800">Kami menemukan kendala pada dokumen kontrak Anda (misal: buram, salah tanda tangan). Silakan perbaiki dan unggah ulang.</p>
+                        </div>
+                      </div>
                     )}
 
                     {user?.b2b_status?.toUpperCase() === 'SUSPENDED' && (
-                       <div className="flex items-center gap-4 bg-red-50 border border-red-200 p-4 rounded-xl mb-8">
-                          <Ban className="text-red-500" size={24} />
-                          <div>
-                             <h4 className="text-sm font-black text-red-900 uppercase tracking-widest">Akun Ditangguhkan</h4>
-                             <p className="text-xs font-medium text-red-800">Akses B2B Anda sedang ditangguhkan sementara waktu. Silakan hubungi admin untuk informasi lebih lanjut.</p>
-                          </div>
-                       </div>
+                      <div className="flex items-center gap-4 bg-red-50 border border-red-200 p-4 rounded-xl mb-8">
+                        <Ban className="text-red-500" size={24} />
+                        <div>
+                          <h4 className="text-sm font-black text-red-900 uppercase tracking-widest">Akun Ditangguhkan</h4>
+                          <p className="text-xs font-medium text-red-800">Akses B2B Anda sedang ditangguhkan sementara waktu. Silakan hubungi admin untuk informasi lebih lanjut.</p>
+                        </div>
+                      </div>
                     )}
 
                     {/* Documents - Scrapbook Style from /b2b/contract */}
                     <div className="bg-[#FDFBF7] p-8 md:p-12 border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.02)] rounded-none relative text-center overflow-visible mt-4">
-                            {/* Grid Pattern */}
-                            <div className="absolute inset-0 opacity-[0.1] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-                            
-                            {/* Tape */}
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
-                            
-                            <div className="space-y-3 relative z-10">
-                              <h2 className="text-2xl font-black uppercase tracking-widest text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
-                              <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">{t.account.b2b.legalFinalizationLabel}</p>
-                              <p className="text-sm text-stone-600 font-medium leading-relaxed">
-                                {t.account.b2b.partnershipAgreementText}
-                              </p>
-                            </div>
+                      {/* Grid Pattern */}
+                      <div className="absolute inset-0 opacity-[0.1] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
-                            <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
-                              <Button 
-                                onClick={() => window.open(`/api/b2b/contract?profileId=${user.id}`, '_blank')}
-                                className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
-                              >
-                                 <Download size={14} className="mr-3" /> {t.account.b2b.downloadButton}
-                              </Button>
-                              
-                              <div className="relative group">
-                                {selectedContractFile ? (
-                                  <div className="w-full flex flex-col items-center justify-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-4">
-                                    <div className="flex items-center gap-3">
-                                      <FileText size={24} className="text-[#367F4D]" />
-                                      <span className="text-xs font-bold text-stone-700 truncate max-w-[150px]">{selectedContractFile.name}</span>
-                                    </div>
-                                    <div className="flex w-full gap-3">
-                                      <Button 
-                                        variant="outline"
-                                        onClick={() => setSelectedContractFile(null)}
-                                        disabled={isContractUploading}
-                                        className="flex-1 text-[10px] uppercase font-bold tracking-widest border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900 bg-white"
-                                      >
-                                        Batal
-                                      </Button>
-                                      <Button 
-                                        onClick={confirmContractUpload}
-                                        disabled={isContractUploading}
-                                        className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
-                                      >
-                                        {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <label 
-                                     onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                                     onDrop={(e) => {
-                                       e.preventDefault();
-                                       e.stopPropagation();
-                                       const file = e.dataTransfer.files?.[0];
-                                       if (!file || !user) return;
-                                       setSelectedContractFile(file);
-                                     }}
-                                     className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
-                                     <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />
-                                     <div className="text-center pointer-events-none">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{t.account.b2b.uploadDropzoneTitle}</p>
-                                        <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">{t.account.b2b.uploadDropzoneFormat}</p>
-                                     </div>
-                                     <input type="file" className="hidden" accept="application/pdf" onChange={(e) => {
-                                       const file = e.target.files?.[0];
-                                       if (!file || !user) return;
-                                       setSelectedContractFile(file);
-                                     }} />
-                                  </label>
-                                )}
+                      {/* Tape */}
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
+
+                      <div className="space-y-3 relative z-10">
+                        <h2 className="text-2xl font-black uppercase tracking-widest text-slate-900 leading-none">{t.account.b2b.contractProtocolTitle}</h2>
+                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.3em]">{t.account.b2b.legalFinalizationLabel}</p>
+                        <p className="text-sm text-stone-600 font-medium leading-relaxed">
+                          {t.account.b2b.partnershipAgreementText}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
+                        <Button
+                          onClick={() => window.open(`/api/b2b/contract?profileId=${user.id}`, '_blank')}
+                          className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
+                        >
+                          <Download size={14} className="mr-3" /> {t.account.b2b.downloadButton}
+                        </Button>
+
+                        <div className="relative group">
+                          {selectedContractFile ? (
+                            <div className="w-full flex flex-col items-center justify-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-4">
+                              <div className="flex items-center gap-3">
+                                <FileText size={24} className="text-[#367F4D]" />
+                                <span className="text-xs font-bold text-stone-700 truncate max-w-[150px]">{selectedContractFile.name}</span>
+                              </div>
+                              <div className="flex w-full gap-3">
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setSelectedContractFile(null)}
+                                  disabled={isContractUploading}
+                                  className="flex-1 text-[10px] uppercase font-bold tracking-widest border-stone-300 text-stone-600 hover:bg-stone-100 hover:text-stone-900 bg-white"
+                                >
+                                  Batal
+                                </Button>
+                                <Button
+                                  onClick={confirmContractUpload}
+                                  disabled={isContractUploading}
+                                  className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
+                                >
+                                  {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                                </Button>
                               </div>
                             </div>
-                         </div>
+                          ) : (
+                            <label
+                              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const file = e.dataTransfer.files?.[0];
+                                if (!file || !user) return;
+                                setSelectedContractFile(file);
+                              }}
+                              className="h-32 w-full bg-white border-2 border-dashed border-black/10 rounded-sm flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#367F4D] transition-all group-hover:bg-stone-50">
+                              <Upload size={24} className="text-stone-300 group-hover:text-[#367F4D]" />
+                              <div className="text-center pointer-events-none">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-stone-900">{t.account.b2b.uploadDropzoneTitle}</p>
+                                <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest mt-1">{t.account.b2b.uploadDropzoneFormat}</p>
+                              </div>
+                              <input type="file" className="hidden" accept="application/pdf" onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file || !user) return;
+                                setSelectedContractFile(file);
+                              }} />
+                            </label>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
