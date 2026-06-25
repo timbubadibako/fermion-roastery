@@ -45,6 +45,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
+    // If we are on Vercel build and NEXT_PUBLIC_API_URL is missing, skip fetch to avoid ECONNREFUSED
+    if (process.env.VERCEL && !process.env.NEXT_PUBLIC_API_URL) {
+      console.warn("Skipping products fetch in sitemap during Vercel build without API URL.");
+      return routes;
+    }
+    
     // Fetch dynamic products to include in sitemap
     const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 3600 } });
     if (res.ok) {

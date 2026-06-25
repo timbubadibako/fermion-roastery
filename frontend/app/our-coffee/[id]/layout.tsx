@@ -5,6 +5,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const id = resolvedParams.id;
   
   try {
+    if (process.env.VERCEL && !process.env.NEXT_PUBLIC_API_URL) {
+      // Fallback during build if API is unreachable
+      throw new Error("Skipping fetch during Vercel build");
+    }
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products/${id}`);
     if (res.ok) {
       const product = await res.json();
