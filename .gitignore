@@ -64,3 +64,15 @@ backend/seed*.js
 backend/alter_*.js
 backend/migrate_*.js
 backend/fix_*.js
+
+# AI and Local Junk
+.aider*
+.env*
+*.log
+backend/invoices/*.pdf
+
+# AI and Local Junk
+.aider*
+.env*
+*.log
+backend/invoices/*.pdf
