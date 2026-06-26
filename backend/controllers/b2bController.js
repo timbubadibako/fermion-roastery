@@ -31,7 +31,7 @@ export const registerB2B = async (req, res) => {
       .maybeSingle();
 
     if (appError) throw appError;
-    
+
     if (existing) {
       await supabase
         .from('b2b_partners')
@@ -61,13 +61,42 @@ export const registerB2B = async (req, res) => {
       .update({ role: 'B2B' })
       .eq('id', profileId);
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Registration data saved. Please download and sign the contract.",
       status: 'onboarding'
     });
   } catch (error) {
     console.error('B2B Registration Error:', error);
     res.status(500).json({ message: "Failed to register B2B partner", error: error.message });
+  }
+};
+
+export const getPartnerStatus = async (req, res) => {
+  try {
+    const { profileId } = req.query;
+    
+    if (!profileId) {
+      return res.status(400).json({ message: "Profile ID required" });
+    }
+
+    // 🎯 KUNCI UTAMANYA: Ganti dari 'partners' menjadi 'b2b_partners' sesuai schema SQL asli lu!
+    const { data: partnerData, error } = await supabase
+      .from('b2b_partners') 
+      .select('*')
+      .eq('profile_id', profileId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (partnerData) {
+      return res.status(200).json([partnerData]);
+    }
+
+    res.status(200).json([]);
+    
+  } catch (error) {
+    console.error("❌ Error di getPartnerStatus Controller:", error.message);
+    res.status(500).json({ message: "Internal server error data fetching." });
   }
 };
 
@@ -140,13 +169,13 @@ export const generateContract = async (req, res) => {
     // --- Signature Area ---
     doc.font('Courier-Bold').text('TANDA TANGAN:', { underline: true });
     doc.moveDown(4);
-    
+
     const startX = doc.x;
     const currentY = doc.y;
-    
+
     doc.text('__________________________', startX, currentY);
     doc.text('(FERMION ROASTERY)', startX, currentY + 15);
-    
+
     doc.text('__________________________', startX + 250, currentY);
     doc.text(`(${data.company_name.toUpperCase()})`, startX + 250, currentY + 15);
 
@@ -162,7 +191,7 @@ export const generateContract = async (req, res) => {
  */
 export const uploadContract = async (req, res) => {
   const { profileId, fileData, mimetype } = req.body;
-  
+
   if (!fileData || !profileId) {
     return res.status(400).json({ message: "Missing file data or profile ID" });
   }
@@ -200,7 +229,7 @@ export const uploadContract = async (req, res) => {
     // 2. Update Database Status and save the URL
     const { error: dbError } = await supabase
       .from('b2b_partners')
-      .update({ 
+      .update({
         status: 'awaiting_contract_review',
         // Assuming we add a column or just keep track of it, but for now we definitely change the status
         // contract_url: urlData.publicUrl 
@@ -209,8 +238,8 @@ export const uploadContract = async (req, res) => {
 
     if (dbError) throw dbError;
 
-    res.status(200).json({ 
-      message: "Contract uploaded securely to cloud. Awaiting admin review.", 
+    res.status(200).json({
+      message: "Contract uploaded securely to cloud. Awaiting admin review.",
       status: 'awaiting_contract_review',
       url: urlData.publicUrl
     });
@@ -270,13 +299,13 @@ export const testContract = async (req, res) => {
     // --- Signature Area ---
     doc.font('Courier-Bold').text('TANDA TANGAN:', { underline: true });
     doc.moveDown(4);
-    
+
     const startX = doc.x;
     const currentY = doc.y;
-    
+
     doc.text('__________________________', startX, currentY);
     doc.text('(FERMION ROASTERY)', startX, currentY + 15);
-    
+
     doc.text('__________________________', startX + 250, currentY);
     doc.text(`(PT. CONTOH KAFE SEJAHTERA)`, startX + 250, currentY + 15);
 
