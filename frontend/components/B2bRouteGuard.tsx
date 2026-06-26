@@ -19,7 +19,7 @@ export default function B2bRouteGuard({ children }: { children: React.ReactNode 
     if (mounted && !pathname.includes("/register")) {
       if (!user) {
         router.replace("/auth?redirect=" + encodeURIComponent(pathname));
-      } else if (user.role !== "b2b_partner" && user.role !== "admin") {
+      } else if (user.role !== "B2B" && user.role !== "admin") {
         router.replace("/");
       }
     }
@@ -39,7 +39,7 @@ export default function B2bRouteGuard({ children }: { children: React.ReactNode 
     return <>{children}</>;
   }
 
-  if (!user || (user.role !== "b2b_partner" && user.role !== "admin")) {
+  if (!user || (user.role !== "B2B" && user.role !== "admin")) {
     return null; // Will be redirected by useEffect
   }
 
