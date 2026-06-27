@@ -213,7 +213,7 @@ export function NewReleasesV2() {
                   <div className="mt-auto pt-6">
                     <Link href={`/our-coffee/${product.id}`} className="block">
                       <button className="w-full bg-slate-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-fermion-coral transition-all duration-300 hover:tracking-[0.4em] active:scale-95 shadow-xl">
-                        Examine Kopi
+                        {content.ctaViewDetails}
                       </button>
                     </Link>
                   </div>

@@ -564,8 +564,10 @@ export const translations = {
         ctaDiveTitle: "Dive deeper into our data.", ctaDiveDesc: "Unlock technical specs for every single harvest.", ctaDiveBtn: "Explore All Records"
       },
       newReleases: {
-        title: "New Releases.", subtitle: "Directly from the cooling tray",
-        cta: "Add to Cart"
+        title: "Latest Roasts.",
+        subtitle: "Freshly roasted, ready to brew",
+        cta: "Add to Cart",
+        ctaViewDetails: "View Details"
       },
       faq: {
         title: "Frequently Asked Questions",
@@ -1452,8 +1454,10 @@ export const translations = {
         ctaDiveTitle: "Selami data kami lebih dalam.", ctaDiveDesc: "Buka spesifikasi teknis untuk setiap panen.", ctaDiveBtn: "Jelajahi Semua Catatan"
       },
       newReleases: {
-        title: "Rilis Terbaru.", subtitle: "Langsung dari nampan pendingin",
-        cta: "Tambah ke Keranjang"
+        title: "Roast Terbaru.",
+        subtitle: "Baru disangrai, siap diseduh",
+        cta: "Tambah ke Keranjang",
+        ctaViewDetails: "Lihat Detail"
       },
       faq: {
         title: "Pertanyaan yang Sering Diajukan",
