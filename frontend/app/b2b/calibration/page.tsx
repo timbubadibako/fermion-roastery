@@ -20,7 +20,7 @@ export default function CalibrationPage() {
   useEffect(() => {
     if (user) {
       // 🎯 FIX 1: Ganti ke apiFetch (biar token admin/user ikut) & alihkan ke endpoint /api/b2b/partner-status
-      apiFetch(`/api/b2b/partner-status?profileId=${user.id}`)
+      apiFetch(`/api/b2b/partner-status`)
         .then(res => (res.ok ? res.json() : [])) // Amankan kalau response gagal, balikin array kosong
         .then(data => {
           // 🎯 FIX 2: Proteksi .find() biar gak crash kalau tipenya bukan array

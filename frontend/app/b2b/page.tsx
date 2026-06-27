@@ -37,8 +37,8 @@ export default function B2BOverview() {
          // 🎯 REFACTOR ENDPOINT: Alihkan dari /api/admin/... ke jalur /api/b2b/... atau jalur yang lolos dari verifyAdmin
          // Jika di backend lu endpoint-nya adalah /api/b2b/partner-status:
          const [pRes, oRes] = await Promise.all([
-            apiFetch(`/api/b2b/partner-status?profileId=${user?.id}`), // 💡 Sesuaikan dengan endpoint B2B profile di backend lu, JANGAN pakai /api/admin/
-            apiFetch(`/api/orders/my-orders?profileId=${user?.id}`)
+            apiFetch(`/api/b2b/partner-status`),
+            apiFetch(`/api/orders/my-orders`)
          ]);
 
          if (pRes.ok) {

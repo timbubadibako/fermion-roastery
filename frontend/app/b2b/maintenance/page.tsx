@@ -25,7 +25,7 @@ export default function MaintenancePage() {
    useEffect(() => {
       if (user) {
          // 🎯 KUNCI 1: Alihkan dari /api/admin/partners ke endpoint B2B yang lolos gembok admin
-         apiFetch(`/api/b2b/partner-status?profileId=${user.id}`)
+         apiFetch(`/api/b2b/partner-status`)
             .then(res => (res.ok ? res.json() : [])) // Amankan jika response fail, return array kosong
             .then(data => {
                // 🎯 KUNCI 2: Proteksi agar .find() tidak pecah jika data bukan array
