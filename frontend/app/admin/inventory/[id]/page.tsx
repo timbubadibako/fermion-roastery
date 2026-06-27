@@ -91,6 +91,7 @@ export default function ProductFormPage() {
     stock_quantity: 0,
     category: "filter",
     sub_category: "filter_specialty",
+    b2b_discount_enabled: true,
     is_active: true,
     linked_journal_id: "",
 
@@ -161,6 +162,7 @@ export default function ProductFormPage() {
               stock_quantity: numberValue(data.stock_quantity),
               category: textValue(data.category) || "filter",
               sub_category: textValue(data.sub_category) || "filter_specialty",
+              b2b_discount_enabled: data.b2b_discount_enabled ?? true,
               is_active: data.is_active ?? true,
               linked_journal_id: textValue(data.linked_journal_id),
               is_new_release: data.is_new_release ?? false,
@@ -414,7 +416,7 @@ export default function ProductFormPage() {
 
             {formData.variants.length === 0 ? (
               <div className="p-8 border border-dashed border-stone-200 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider bg-stone-50/50 rounded-sm">
-                Kosong (Default sistem otomatis mendaftarkan ukuran kemasan 150gr & 250gr saat disimpan).
+                Kosong (Default sistem otomatis mendaftarkan ukuran kemasan 150gr & 250gr saat disimpan). Harga transaksi tetap mengikuti harga varian.
               </div>
             ) : (
               <div className="space-y-4">
@@ -431,7 +433,7 @@ export default function ProductFormPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Harga Khusus Varian (IDR)</label>
+                      <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Harga Retail Varian (IDR)</label>
                       <Input
                         required
                         type="number"
@@ -472,12 +474,13 @@ export default function ProductFormPage() {
           <div className="bg-slate-900 text-white rounded-sm p-10 space-y-10 shadow-2xl">
             <div className="space-y-6">
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Harga Retail (IDR)</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Harga Display / Mulai Dari (IDR)</label>
                 <div className="relative">
                   {/* AMAN: Menggunakan fallback OR string kosong menghalau eror NaN */}
                   <Input type="number" required value={formData.price_retail || ""} onChange={e => setFormData({ ...formData, price_retail: parseFloat(e.target.value) || 0 })} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
-                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-tighter italic">PER_UNIT</span>
+                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-tighter italic">DISPLAY</span>
                 </div>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">Dipakai untuk katalog dan fallback. Harga transaksi utama tetap dari baris varian.</p>
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Stok Inventaris (Unit)</label>
@@ -513,6 +516,19 @@ export default function ProductFormPage() {
             <div className="flex items-center gap-2.5 border-b border-black/5 pb-4">
               <Sparkles size={16} className="text-[#367F4D]" />
               <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Campaign & Discovery Engine</h4>
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div className="space-y-0.5">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Aktifkan Diskon B2B</p>
+                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Matikan untuk exotic/nano lot agar margin aman</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={formData.b2b_discount_enabled}
+                onChange={e => setFormData({ ...formData, b2b_discount_enabled: e.target.checked })}
+                className="w-10 h-6 appearance-none bg-stone-100 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-1 after:left-1 checked:after:left-5 after:transition-all shadow-inner border border-black/5"
+              />
             </div>
 
             {/* New Release Badge Custom Control */}

@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS products (
     stock_quantity INTEGER DEFAULT 0,
     category TEXT DEFAULT 'filter', -- 'espresso', 'filter'
     sub_category TEXT, -- 'specialty', 'exotic' (for filter), 'commodity', 'commercial' (for espresso)
+    b2b_discount_enabled BOOLEAN DEFAULT true,
     is_active BOOLEAN DEFAULT true,
     linked_journal_id UUID REFERENCES journal_posts(id) ON DELETE SET NULL,
     
@@ -102,6 +103,8 @@ CREATE TABLE IF NOT EXISTS products (
 
 DROP TRIGGER IF EXISTS update_products_updated_at ON products;
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS b2b_discount_enabled BOOLEAN DEFAULT true;
 
 -- 3. Pricing Tiers Table (B2B Fixed Prices per SKU)
 CREATE TABLE IF NOT EXISTS pricing_tiers (
@@ -300,4 +303,3 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 
 DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON subscriptions;
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-

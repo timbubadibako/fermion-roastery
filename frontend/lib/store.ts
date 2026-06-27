@@ -23,6 +23,7 @@ export interface CartItem {
   priceType?: string;
   original_price?: number;
   isB2B?: boolean;
+  b2b_discount_enabled?: boolean;
 }
 
 interface CartStore {

@@ -126,7 +126,8 @@ export default function B2BCheckoutPage() {
               name: `${item.name} (${item.weight})`,
               price: item.price,
               quantity: item.quantity,
-              grind: item.grind
+              grind: item.grind,
+              b2b_discount_enabled: item.b2b_discount_enabled !== false
             })),
             customerDetails: {
               name: shippingData.name || partner?.company_name || user?.full_name,
@@ -174,7 +175,8 @@ export default function B2BCheckoutPage() {
             name: `${item.name} (${item.weight})`,
             price: item.price,
             quantity: item.quantity,
-            grind: item.grind
+            grind: item.grind,
+            b2b_discount_enabled: item.b2b_discount_enabled !== false
           })),
           customerDetails: {
             name: shippingData.name || partner?.company_name || user?.full_name,
@@ -235,8 +237,7 @@ export default function B2BCheckoutPage() {
     return acc + (weight * item.quantity);
   }, 0);
 
-  const volumeDiscount = totalVolumeKg * 10000;
-  const subtotal = baseSubtotal - volumeDiscount;
+  const subtotal = baseSubtotal;
   const shippingFee = 0; // B2B always free shipping
   const grandTotal = subtotal + shippingFee;
 
@@ -341,12 +342,10 @@ export default function B2BCheckoutPage() {
                        <span>{t.b2bCheckout.summary.subtotal}</span>
                        <span className="font-mono text-slate-300">Rp {baseSubtotal.toLocaleString('id-ID')}</span>
                     </div>
-                    {volumeDiscount > 0 && (
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-400">
-                         <span>Diskon Mitra (Rp 10rb/Kg)</span>
-                         <span className="font-mono">-Rp {volumeDiscount.toLocaleString('id-ID')}</span>
-                      </div>
-                    )}
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                       <span>Harga mitra diterapkan di katalog</span>
+                       <span className="font-mono">Included</span>
+                    </div>
                     <div className="flex justify-between text-lg font-black uppercase italic text-white pt-4 border-t border-white/20">
                        <span>{t.b2bCheckout.summary.total}</span>
                        <span className="font-mono text-periwinkle">Rp {grandTotal.toLocaleString('id-ID')}</span>

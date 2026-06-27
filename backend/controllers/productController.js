@@ -36,7 +36,7 @@ export const getAllProducts = async (req, res) => {
       let priceType = 'retail';
       let discountAmount = 0;
 
-      if (partner) {
+      if (partner && product.b2b_discount_enabled !== false) {
         if (partner.tier_name === 'Silver') {
           discountAmount = 15000;
           priceType = 'tier_silver';
@@ -99,7 +99,7 @@ export const getProductById = async (req, res) => {
         .eq('profile_id', profileId)
         .single();
 
-      if (!partnerError && partner) {
+      if (!partnerError && partner && product.b2b_discount_enabled !== false) {
         if (partner.tier_name === 'Silver') {
           discountAmount = 15000;
           priceType = 'tier_silver';
@@ -136,7 +136,7 @@ export const createProduct = async (req, res, next) => {
     name, slug, notes, origin, process, altitude, price_retail, roast_profile,
     description, farm, image_url, fermentation, sweetness, acidity, body,
     stock_quantity, linked_journal_id, category, sub_category,
-    is_new_release, is_promoted, search_upsell_headline, variants // 🟢 Tangkap payload baru dari frontend
+    b2b_discount_enabled, is_new_release, is_promoted, search_upsell_headline, variants // 🟢 Tangkap payload baru dari frontend
   } = req.body;
 
   const sanitize = (val) => (val === "" ? null : val);
@@ -165,6 +165,7 @@ export const createProduct = async (req, res, next) => {
         linked_journal_id: sanitize(linked_journal_id),
         category,
         sub_category,
+        b2b_discount_enabled: b2b_discount_enabled !== undefined ? b2b_discount_enabled : true,
         is_new_release: is_new_release || false,
         is_promoted: is_promoted || false,
         search_upsell_headline: sanitize(search_upsell_headline)
@@ -217,7 +218,7 @@ export const updateProduct = async (req, res) => {
     'price_retail', 'discount_percent', 'roast_profile', 'description',
     'farm', 'image_url', 'fermentation', 'sweetness', 'acidity',
     'body', 'stock_quantity', 'is_active', 'linked_journal_id', 'category', 'sub_category',
-    'is_new_release', 'is_promoted', 'search_upsell_headline'
+    'b2b_discount_enabled', 'is_new_release', 'is_promoted', 'search_upsell_headline'
   ];
 
   const filteredFields = Object.keys(bodyFields)

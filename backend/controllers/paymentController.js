@@ -55,12 +55,12 @@ export const createInvoice = async (req, res) => {
           if (metadata) metadata.shippingFee = 0;
           if (courier) courier.price = 0;
 
-          // Calculate total volume
+          // B2B prices are already resolved in product API/cart. Do not discount again here.
           let totalVolumeKg = 0;
-          let baseTotal = 0;
+          let submittedTotal = 0;
 
           items.forEach(item => {
-             baseTotal += Number(item.price) * Number(item.quantity);
+             submittedTotal += Number(item.price) * Number(item.quantity);
              const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
              let itemWeightKg = 0.25; // default 250g
              if (weightMatch) {
@@ -71,15 +71,9 @@ export const createInvoice = async (req, res) => {
              totalVolumeKg += itemWeightKg * Number(item.quantity);
           });
 
-          // Apply Tier Discount
-          let discountPerKg = 10000; // Default Bronze
-          if (partner.tier_name === 'Silver') discountPerKg = 15000;
-          else if (partner.tier_name === 'Gold') discountPerKg = 20000;
-
-          const totalDiscount = totalVolumeKg * discountPerKg;
-          calculatedAmount = Math.max(0, baseTotal - totalDiscount);
+          calculatedAmount = submittedTotal;
           
-          console.log(`🔒 B2B Enforcement - Profile: ${profileId}, Tier: ${partner.tier_name}, Volume: ${totalVolumeKg}kg, RawTotal: ${baseTotal}, Discount: ${totalDiscount}, EnforcedTotal: ${calculatedAmount}`);
+          console.log(`🔒 B2B Enforcement - Profile: ${profileId}, Tier: ${partner.tier_name}, Volume: ${totalVolumeKg}kg, SubmittedTotal: ${submittedTotal}, EnforcedTotal: ${calculatedAmount}`);
        }
     }
 
@@ -524,10 +518,10 @@ export const createManualInvoice = async (req, res) => {
        if (partner && partner.status === 'approved') {
           isB2bOrder = true;
           let totalVolumeKg = 0;
-          let baseTotal = 0;
+          let submittedTotal = 0;
 
           items.forEach(item => {
-             baseTotal += Number(item.price) * Number(item.quantity);
+             submittedTotal += Number(item.price) * Number(item.quantity);
              const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
              let itemWeightKg = 0.25;
              if (weightMatch) {
@@ -538,12 +532,7 @@ export const createManualInvoice = async (req, res) => {
              totalVolumeKg += itemWeightKg * Number(item.quantity);
           });
 
-          let discountPerKg = 10000;
-          if (partner.tier_name === 'Silver') discountPerKg = 15000;
-          else if (partner.tier_name === 'Gold') discountPerKg = 20000;
-
-          const totalDiscount = totalVolumeKg * discountPerKg;
-          calculatedAmount = Math.max(0, baseTotal - totalDiscount);
+          calculatedAmount = submittedTotal;
        }
     }
 
