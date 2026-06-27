@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
+  const canonical = `/our-coffee/${id}`;
   
   try {
     if (process.env.VERCEL && !process.env.NEXT_PUBLIC_API_URL) {
@@ -16,11 +17,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       return {
         title: product.name,
         description: product.description || `Biji kopi ${product.name} dari Fermion Roastery. Karakteristik notes: ${product.notes}.`,
+        alternates: {
+          canonical,
+        },
         openGraph: {
           title: `${product.name} | Fermion Roastery`,
           description: product.description || `Biji kopi ${product.name} dari Fermion Roastery. Karakteristik notes: ${product.notes}.`,
+          url: canonical,
+          type: 'website',
           images: product.image_url ? [{ url: product.image_url }] : [],
-        }
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `${product.name} | Fermion Roastery`,
+          description: product.description || `Biji kopi ${product.name} dari Fermion Roastery. Karakteristik notes: ${product.notes}.`,
+          images: product.image_url ? [product.image_url] : [],
+        },
       }
     }
   } catch (error) {
@@ -29,7 +41,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   return {
     title: 'Detail Kopi',
-    description: 'Detail produk biji kopi specialty pilihan Fermion Roastery.'
+    description: 'Detail produk biji kopi specialty pilihan Fermion Roastery.',
+    alternates: {
+      canonical,
+    },
   };
 }
 

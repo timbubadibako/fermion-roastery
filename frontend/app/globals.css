@@ -2,6 +2,12 @@
 @plugin '@tailwindcss/typography';
 @import './tw-animate.css';
 
+@font-face {
+  font-family: 'Cloude';
+  src: url('./fonts/cloude.otf') format('opentype');
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -36,9 +42,9 @@
 }
 
 @theme inline {
-  --font-sans: 'Manrope', 'Manrope Fallback', system-ui, sans-serif;
-  --font-display: 'Fraunces', 'Times New Roman', serif;
-  --font-cloude: var(--font-cloude), 'Fraunces', serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-cloude: 'Cloude', Georgia, 'Times New Roman', serif;
   
   /* Fermion V2 Palette */
   --color-fermion-black: #000000;

@@ -2,7 +2,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Katalog Kopi (Retail)',
-  description: 'Jelajahi koleksi biji kopi specialty dan komersial terbaik dari Fermion Roastery. Sangrai segar, siap kirim ke seluruh Indonesia.',
+  description: 'Jelajahi koleksi kopi retail Fermion Roastery, dari filter coffee sampai espresso roast, disangrai segar dan siap dikirim.',
+  alternates: {
+    canonical: '/our-coffee',
+  },
 };
 
 export default function OurCoffeeLayout({ children }: { children: React.ReactNode }) {

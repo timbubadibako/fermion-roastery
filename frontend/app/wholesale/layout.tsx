@@ -2,7 +2,10 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Program B2B & Wholesale',
-  description: 'Bergabunglah menjadi partner B2B Fermion Roastery. Dapatkan harga grosir khusus, pelatihan barista, suplai biji kopi terbaik, dan kustomisasi profil roasting untuk kafe Anda.',
+  description: 'Program wholesale Fermion Roastery untuk kafe dan bisnis yang membutuhkan suplai kopi specialty, harga grosir, dan partnership berbasis presisi.',
+  alternates: {
+    canonical: '/wholesale',
+  },
 };
 
 export default function WholesaleLayout({ children }: { children: React.ReactNode }) {
