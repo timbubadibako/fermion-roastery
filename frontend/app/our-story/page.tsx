@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, ArrowRight, Activity, Globe2, Coffee, Quote, Microscope, PenTool, Archive } from "lucide-react";
+import { Activity, Globe2, Quote, Microscope, Archive } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
 import { useI18n } from "@/lib/i18n";
@@ -14,16 +13,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function StoryPageV2() {
   const t = useI18n();
-  const [mounted, setMounted] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const philosophyRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
 
-  useEffect(() => { setMounted(true); }, []);
-
   useEffect(() => {
-    if (!mounted) return;
-    
     let ctx: gsap.Context;
 
     const runAnimations = () => {
@@ -60,9 +54,7 @@ export default function StoryPageV2() {
       clearTimeout(timer);
       if (ctx) ctx.revert();
     };
-  }, [mounted]);
-
-  if (!mounted) return null;
+  }, []);
 
   return (
     <div className="bg-[#FAF9F6] min-h-screen relative overflow-hidden font-sans">
@@ -108,11 +100,55 @@ export default function StoryPageV2() {
         </div>
       </section>
 
+      <section className="py-32 px-6 relative z-20 bg-[#FAF9F6]">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="lg:col-span-5 space-y-6">
+            <div className="inline-flex items-center gap-3 text-[#0F3A8D]">
+              <Microscope size={20} />
+              <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.ourStory.identityTitle}</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-cloude tracking-tighter text-slate-900 leading-[0.9]">
+              {t.ourStory.philTitle1}
+            </h2>
+          </div>
+
+          <div className="lg:col-span-7 space-y-8">
+            <div className="space-y-5 text-stone-600 font-medium text-base md:text-lg leading-relaxed">
+              {t.ourStory.identityParagraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+              <div className="bg-white border border-black/10 p-8 shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#367F4D] mb-5">{t.ourStory.filterTitle}</p>
+                <p className="text-stone-600 leading-relaxed font-medium">{t.ourStory.filterDesc}</p>
+              </div>
+              <div className="bg-[#1A2B40] border border-black/10 p-8 shadow-sm text-white">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8CADD8] mb-5">{t.ourStory.espressoTitle}</p>
+                <p className="text-white/70 leading-relaxed font-medium">{t.ourStory.espressoDesc}</p>
+              </div>
+            </div>
+
+            <div className="border-l-4 border-[#8CADD8] pl-6 pt-2">
+              <h3 className="text-2xl md:text-3xl font-display font-black italic tracking-tight text-slate-900">{t.ourStory.closingTitle}</h3>
+              <p className="mt-3 text-stone-500 font-medium leading-relaxed">{t.ourStory.closingDesc}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 2: PHILOSOPHY (Roastery Note Cards - Character: Dark Navy) */}
       <section ref={philosophyRef} className="py-48 px-6 relative z-20 -mt-16 overflow-hidden bg-[#1A2B40] text-white"
         style={{ clipPath: "polygon(0 40px, 12% 0%, 25% 40px, 38% 0%, 50% 40px, 62% 0%, 75% 40px, 88% 0%, 100% 40px, 100% 100%, 0 100%)" }}
       >
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 pt-12">
+        <div className="max-w-7xl mx-auto space-y-12 pt-12">
+           <div className="max-w-3xl">
+              <p className="text-[10px] font-black text-[#8CADD8] tracking-[0.4em] uppercase mb-5">{t.ourStory.coffeeTitle}</p>
+              <h2 className="text-4xl md:text-6xl font-cloude text-white leading-[0.9]">{t.ourStory.galleryTitle}</h2>
+              <p className="text-white/60 leading-relaxed font-medium text-lg mt-6">{t.ourStory.coffeeIntro}</p>
+           </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
            {[
               { 
                 idx: "01", category: t.ourStory.philCategory1, title: t.ourStory.philTitle1, icon: <Globe2 size={24} />,
@@ -133,9 +169,10 @@ export default function StoryPageV2() {
                    <h2 className="text-4xl font-display font-black text-white uppercase italic tracking-tighter leading-none">{p.title}</h2>
                    <svg className="w-16 opacity-10" viewBox="0 0 100 10"><path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="3" strokeLinecap="round" /></svg>
                    <p className="text-white/60 leading-relaxed font-medium text-lg">{p.desc}</p>
-                </div>
+               </div>
              </div>
            ))}
+        </div>
         </div>
       </section>
 

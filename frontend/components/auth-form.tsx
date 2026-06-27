@@ -7,14 +7,38 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { useI18n } from "@/lib/i18n";
 
 interface AuthFormProps {
-  onSuccess: (profile: any) => void;
+  onSuccess: (profile: AuthProfile) => void;
   defaultRole?: "RETAIL" | "B2B";
   initialMode?: "login" | "register";
 }
 
+type AuthProfile = {
+  id: string;
+  email?: string;
+  full_name?: string;
+  role?: string;
+  [key: string]: unknown;
+};
+
+type AuthResponse = {
+  message?: string;
+  profile?: AuthProfile;
+  session?: {
+    access_token?: string;
+    refresh_token?: string;
+  };
+};
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  return error instanceof Error ? error.message : fallback;
+};
+
 export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "login" }: AuthFormProps) {
+  const t = useI18n();
+  const authCopy = t.auth;
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -27,14 +51,14 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password || (mode === "register" && !formData.fullName)) {
-      toast.error("Please fill in all fields.");
+      toast.error(authCopy.fillAllFields);
       return;
     }
 
     if (mode === "register") {
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
       if (!passwordRegex.test(formData.password)) {
-        toast.error("Password must be at least 8 characters long and contain both letters and numbers.");
+        toast.error(authCopy.passwordRequirement);
         return;
       }
     }
@@ -59,16 +83,16 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
         try {
           const errorJson = JSON.parse(errorText);
           errorMessage = errorJson.message || errorMessage;
-        } catch (e) {
+        } catch {
           errorMessage = errorText || errorMessage;
         }
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      const data = await response.json() as AuthResponse;
       const profile = data.profile;
 
-      if (!profile) throw new Error("Failed to resolve profile data.");
+      if (!profile) throw new Error(authCopy.resolveProfileFailure);
 
       // Establish Supabase client-side session so apiFetch can use the token
       if (data.session?.access_token && data.session?.refresh_token) {
@@ -80,27 +104,13 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
 
       // Set security cookie for middleware (expires in 24h)
       document.cookie = `fermion_profile_id=${profile.id}; path=/; max-age=86400; SameSite=Lax`;
-      toast.success(data.message);
+      toast.success(data.message || (mode === "login" ? authCopy.submitLogin : authCopy.submitRegister));
       onSuccess(profile); 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Auth error:", error);
-      toast.error(`${error.message || 'Please try again later.'}`);
+      toast.error(getErrorMessage(error, authCopy.fallbackError));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOAuth = async (provider: 'google' | 'facebook') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      toast.error(error.message || `Failed to login with ${provider}`);
     }
   };
 
@@ -120,13 +130,13 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
           >
             {mode === "register" && (
               <div className="space-y-2 relative">
-                <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">Full Name</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">{authCopy.fullNameLabel}</label>
                 <div className="relative">
                   <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
                   <Input 
                     required
                     type="text"
-                    placeholder="John Doe"
+                    placeholder={authCopy.fullNamePlaceholder}
                     className="h-14 pl-14 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
                     value={formData.fullName}
                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
@@ -136,13 +146,13 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
             )}
 
             <div className="space-y-2 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[1deg]">Email Address</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[1deg]">{authCopy.emailLabel}</label>
               <div className="relative">
                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
                 <Input 
                   required
                   type="email"
-                  placeholder="user@example.com"
+                  placeholder={authCopy.emailPlaceholder}
                   className="h-14 pl-14 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -151,7 +161,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
             </div>
             
             <div className="space-y-2 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">Password</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">{authCopy.passwordLabel}</label>
               <div className="relative">
                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
                 <Input 
@@ -180,9 +190,9 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
               {loading ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="animate-spin" size={16} />
-                  <span>Processing...</span>
+                  <span>{authCopy.processing}</span>
                 </div>
-              ) : (mode === "login" ? "Log In" : "Register")}
+              ) : (mode === "login" ? authCopy.submitLogin : authCopy.submitRegister)}
             </Button>
           </motion.form>
         </AnimatePresence>
@@ -205,13 +215,13 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       </svg>
 
       <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">
-        {mode === "login" ? "New kopi? " : "Already here? "}
+        {mode === "login" ? authCopy.loginPrompt : authCopy.registerPrompt}
         <button 
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
           className="text-[#367F4D] hover:text-stone-900 transition-colors ml-1 underline underline-offset-4"
         >
-          {mode === "login" ? "Register" : "Log In"}
+          {mode === "login" ? authCopy.switchToRegister : authCopy.switchToLogin}
         </button>
       </p>
     </div>
