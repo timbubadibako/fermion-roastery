@@ -40,6 +40,27 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
     }
   };
 
+  const handleDownloadInvoice = async () => {
+    try {
+      const res = await apiFetch(`/api/orders/${unwrappedParams.id}/invoice`);
+      if (!res.ok) {
+        throw new Error('Failed to download invoice');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `INV-${unwrappedParams.id.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Loading Invoice...</div>;
   if (!order) return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Invoice not found.</div>;
 
@@ -68,7 +89,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
               <button onClick={() => window.print()} className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest hover:border-slate-400 transition-all shadow-sm">
                 <Printer size={16} /> Cetak
               </button>
-              <button className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-periwinkle transition-all shadow-sm">
+              <button onClick={handleDownloadInvoice} className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-periwinkle transition-all shadow-sm">
                 <Download size={16} /> Unduh PDF
               </button>
            </div>

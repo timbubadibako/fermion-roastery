@@ -1,4 +1,7 @@
 import { supabase } from '../lib/supabase.js';
+import fs from 'fs';
+import path from 'path';
+import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 
 // 1. Get User's Own Orders
 export const getMyOrders = async (req, res) => {
@@ -53,5 +56,39 @@ export const getOrderDetail = async (req, res) => {
   } catch (error) {
     console.error('Error fetching order detail:', error);
     res.status(500).json({ message: "Failed to fetch order detail", error: error.message });
+  }
+};
+
+export const downloadOrderInvoice = async (req, res) => {
+  const { id } = req.params;
+  const profileId = req.user?.id;
+
+  if (!profileId) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+
+  try {
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('id, profile_id')
+      .eq('id', id)
+      .eq('profile_id', profileId)
+      .single();
+
+    if (error || !order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
+    const filePath = path.join(process.cwd(), 'invoices', fileName);
+
+    const resolvedPath = fs.existsSync(filePath)
+      ? filePath
+      : await generateInvoicePDF(order.id);
+
+    return res.download(resolvedPath, fileName);
+  } catch (error) {
+    console.error('Error downloading order invoice:', error);
+    res.status(500).json({ message: "Failed to download invoice", error: error.message });
   }
 };

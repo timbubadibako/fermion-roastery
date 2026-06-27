@@ -21,14 +21,14 @@ export default function ShippingTracker() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const activeStatuses = ['UNPAID', 'NET30', 'PENDING_CASH', 'PAID', 'PROCESSING', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'];
 
   useEffect(() => {
     if (user) {
       apiFetch(`/api/orders/my-orders`)
         .then(res => res.json())
         .then(data => {
-          // Show active orders (PAID, PROCESSING, SHIPPED, DELIVERED)
-          const activeOrders = data.filter((o: any) => ['PAID', 'PROCESSING', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(o.status?.toUpperCase()));
+          const activeOrders = data.filter((o: any) => activeStatuses.includes(o.status?.toUpperCase()));
           setOrders(activeOrders);
           if (activeOrders.length > 0) setSelectedOrderId(activeOrders[0].id);
           setLoading(false);
@@ -115,7 +115,7 @@ export default function ShippingTracker() {
                  const selectedOrder = orders.find(o => o.id === selectedOrderId);
                  const isDelivered = selectedOrder?.status === 'DELIVERED';
                  const isShipped = selectedOrder?.status === 'SHIPPED';
-                 const isProcessing = ['PAID', 'PROCESSING'].includes(selectedOrder?.status);
+                 const isProcessing = ['UNPAID', 'NET30', 'PENDING_CASH', 'PAID', 'PROCESSING', 'ROASTING', 'READY_TO_SHIP'].includes(selectedOrder?.status);
                  
                  return (
                   <div className="space-y-12 relative z-10">

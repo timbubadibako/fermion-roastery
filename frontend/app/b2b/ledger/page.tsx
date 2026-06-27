@@ -40,6 +40,30 @@ export default function OrderLedger() {
     }
   };
 
+  const handleDownloadInvoice = async (orderId: string) => {
+    try {
+      const res = await apiFetch(`/api/orders/${orderId}/invoice`);
+      if (!res.ok) {
+        toast.info("Invoice belum tersedia atau sedang diproses.");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `INV-${orderId.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.info("Invoice belum tersedia atau sedang diproses.");
+    }
+  };
+
+  const activeTrackingStatuses = ['UNPAID', 'NET30', 'PENDING_CASH', 'PAID', 'PROCESSING', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'];
+
   const getStatusConfig = (status: string) => {
     switch(status?.toUpperCase()) {
       case 'PENDING': return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', icon: Clock, label: 'Menunggu' };
@@ -121,20 +145,14 @@ export default function OrderLedger() {
                    </div>
                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <Button 
-                        onClick={() => {
-                           if (order.pdf_url) {
-                              window.open(order.pdf_url, '_blank');
-                           } else {
-                              toast.info("Invoice belum tersedia atau sedang diproses.");
-                           }
-                        }}
+                        onClick={() => handleDownloadInvoice(order.id)}
                         variant="outline" 
                         className="flex-1 sm:flex-none h-12 bg-white text-slate-600 border-black/10 hover:bg-stone-50 rounded-lg font-black uppercase tracking-widest text-[9px] shadow-sm"
                       >
                          <Download size={14} className="mr-2" /> Invoice
                       </Button>
                       
-                      {['READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(order.status) && (
+                      {activeTrackingStatuses.includes(order.status) && (
                         <Link href="/b2b/shipping" className="flex-1 sm:flex-none">
                           <Button 
                             className="w-full h-12 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg transition-all border border-emerald-100 shadow-none font-black uppercase tracking-widest text-[9px]"

@@ -30,8 +30,8 @@ const generateInvoicePDF = async (orderId) => {
     if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir);
     const filePath = path.join(invoicesDir, fileName);
     
-    // Pipe to file
-    doc.pipe(fs.createWriteStream(filePath));
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
 
     // --- Header ---
     const logoPath = path.join(process.cwd(), '../frontend/public/fermion-logo.png');
@@ -118,8 +118,13 @@ const generateInvoicePDF = async (orderId) => {
     doc.fontSize(10).font('Helvetica-Oblique');
     doc.text('Thank you for choosing Fermion Roastery.', 50, 700, { align: 'center' });
 
-    // Finalize
     doc.end();
+    await new Promise((resolve, reject) => {
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+      doc.on('error', reject);
+    });
+
     return filePath;
   } catch (error) {
     console.error('PDF Generation Error:', error);
