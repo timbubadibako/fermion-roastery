@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 export default function JournalCMS() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -39,10 +40,13 @@ export default function JournalCMS() {
   const confirmDelete = async () => {
     if (!postToDelete) return;
     try {
-      const res = await fetch(`/api/journal/${postToDelete}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/journal/${postToDelete}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success("Jurnal berhasil dihapus.");
         fetchPosts();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal menghapus.");
       }
     } catch (e) {
       toast.error("Gagal menghapus.");

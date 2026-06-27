@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 
 interface VariantItem {
   id?: string;
@@ -80,7 +81,7 @@ export default function ProductFormPage() {
 
     setUploading(true);
     try {
-      const res = await fetch("/api/products/upload", {
+      const res = await apiFetch("/api/products/upload", {
         method: "POST",
         body: uploadData,
       });
@@ -89,7 +90,8 @@ export default function ProductFormPage() {
         setFormData(prev => ({ ...prev, image_url: data.url }));
         toast.success("Gambar berhasil diunggah.");
       } else {
-        toast.error("Gagal mengunggah gambar.");
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal mengunggah gambar.");
       }
     } catch (err) {
       toast.error("Kesalahan mengunggah gambar.");
@@ -150,9 +152,8 @@ export default function ProductFormPage() {
       const url = isEdit ? `/api/products/${params.id}` : "/api/products";
       const method = isEdit ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
 
@@ -160,7 +161,8 @@ export default function ProductFormPage() {
         toast.success(`Produk berhasil ${isEdit ? "diperbarui" : "ditambahkan"}.`);
         router.push("/admin/inventory");
       } else {
-        toast.error("Gagal menyimpan produk.");
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal menyimpan produk.");
       }
     } catch (e) {
       toast.error("Kesalahan jaringan.");

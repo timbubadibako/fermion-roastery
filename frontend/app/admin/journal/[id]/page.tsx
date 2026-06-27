@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 
 export default function JournalFormPage() {
   const router = useRouter();
@@ -68,16 +69,16 @@ export default function JournalFormPage() {
       const url = isEdit ? `/api/journal/${params.id}` : "/api/journal";
       const method = isEdit ? "PUT" : "POST";
       
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       if (res.ok) {
         toast.success(`Tulisan berhasil ${isEdit ? 'diperbarui' : 'disimpan'}.`);
         router.push("/admin/journal");
       } else {
-        toast.error("Gagal menyimpan tulisan.");
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal menyimpan tulisan.");
       }
     } catch (e) {
       toast.error("Kesalahan jaringan.");

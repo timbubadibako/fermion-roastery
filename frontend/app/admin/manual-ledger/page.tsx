@@ -88,9 +88,8 @@ export default function ManualLedger() {
       }
 
       try {
-         const res = await fetch("/api/admin/manual-transaction", {
+         const res = await apiFetch("/api/admin/manual-transaction", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData)
          });
          if (res.ok) {
@@ -105,7 +104,8 @@ export default function ManualLedger() {
             });
             fetchLedgerData(); // Refresh list tabel otomatis
          } else {
-            toast.error("Gagal menyimpan transaksi.");
+            const data = await res.json().catch(() => null);
+            toast.error(data?.message || "Gagal menyimpan transaksi.");
          }
       } catch (e) {
          toast.error("Kesalahan jaringan.");

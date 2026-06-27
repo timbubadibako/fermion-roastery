@@ -90,14 +90,16 @@ export default function KanbanBoard() {
 
   const handleUpdateStatus = async (id: string, newStatus: string, additionalData?: any) => {
     try {
-      const res = await fetch(`/api/admin/orders/${id}`, {
+      const res = await apiFetch(`/api/admin/orders/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, ...additionalData })
       });
       if (res.ok) {
         toast.success(`Status diperbarui ke ${newStatus}`);
         fetchOrders();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal memperbarui status.");
       }
     } catch (e) {
       toast.error("Gagal memperbarui status.");

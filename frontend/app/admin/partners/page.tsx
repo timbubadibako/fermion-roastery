@@ -73,14 +73,16 @@ export default function PartnerManagement() {
     if (tier !== undefined) payload.tier_name = tier;
 
     try {
-      const res = await fetch(`/api/admin/partners/${id}`, {
+      const res = await apiFetch(`/api/admin/partners/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       if (res.ok) {
         toast.success(`Data mitra telah diperbarui.`);
         fetchPartners();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal memperbarui data mitra.");
       }
     } catch (error) {
       toast.error("Gagal memperbarui data mitra.");

@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 interface Product {
   id: string;
@@ -69,10 +70,13 @@ export default function InventoryManagement() {
   const confirmDelete = async () => {
     if (!productToDelete) return;
     try {
-      const res = await fetch(`/api/products/${productToDelete}`, { method: "DELETE" });
+      const res = await apiFetch(`/api/products/${productToDelete}`, { method: "DELETE" });
       if (res.ok) {
         toast.success("Produk berhasil dihapus.");
         fetchProducts();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal menghapus produk.");
       }
     } catch (e) {
       toast.error("Gagal menghapus produk.");

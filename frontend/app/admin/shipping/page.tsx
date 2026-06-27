@@ -41,14 +41,16 @@ export default function AdminShippingLab() {
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
-      const res = await fetch(`/api/admin/orders/${id}`, {
+      const res = await apiFetch(`/api/admin/orders/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
       if (res.ok) {
         toast.success(`Status pengiriman diperbarui.`);
         fetchShipped();
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || "Gagal memperbarui status.");
       }
     } catch (e) {
       toast.error("Gagal memperbarui status.");
