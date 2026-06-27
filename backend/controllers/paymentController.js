@@ -31,7 +31,7 @@ const ORIGIN_DETAILS = {
 export const createInvoice = async (req, res) => {
   const { amount, items, customerDetails, metadata } = req.body;
   const shipping = metadata?.shipping || {};
-  const profileId = metadata?.profileId || null;
+  const profileId = metadata?.b2b ? req.user?.id : metadata?.profileId || null;
   const shippingFee = metadata?.shippingFee || 0;
   const courier = metadata?.courier || null;
 
@@ -40,6 +40,10 @@ export const createInvoice = async (req, res) => {
   let isB2bOrder = false;
 
   try {
+    if (metadata?.b2b && !profileId) {
+      return res.status(401).json({ message: "Authentication required for B2B checkout" });
+    }
+
     // 0. B2B Pricing Verification & Enforcement
     if (profileId) {
        const { data: partner } = await supabase
@@ -71,9 +75,11 @@ export const createInvoice = async (req, res) => {
              totalVolumeKg += itemWeightKg * Number(item.quantity);
           });
 
-          calculatedAmount = submittedTotal;
+         calculatedAmount = submittedTotal;
           
           console.log(`🔒 B2B Enforcement - Profile: ${profileId}, Tier: ${partner.tier_name}, Volume: ${totalVolumeKg}kg, SubmittedTotal: ${submittedTotal}, EnforcedTotal: ${calculatedAmount}`);
+       } else if (metadata?.b2b) {
+          return res.status(403).json({ message: "B2B partner is not approved for checkout" });
        }
     }
 
@@ -502,12 +508,19 @@ export const handleNotification = async (req, res) => {
 export const createManualInvoice = async (req, res) => {
   const { amount, items, customerDetails, metadata, paymentType } = req.body;
   const shipping = metadata?.shipping || {};
-  const profileId = metadata?.profileId || null;
+  const profileId = req.user?.id;
   
   let calculatedAmount = Number(amount);
-  let isB2bOrder = false;
 
   try {
+    if (!profileId) {
+      return res.status(401).json({ message: "Authentication required for B2B manual payment" });
+    }
+
+    if (!['tempo', 'cash_offline'].includes(paymentType)) {
+      return res.status(400).json({ message: "Invalid manual payment type" });
+    }
+
     if (profileId) {
        const { data: partner } = await supabase
          .from('b2b_partners')
@@ -516,7 +529,6 @@ export const createManualInvoice = async (req, res) => {
          .maybeSingle();
          
        if (partner && partner.status === 'approved') {
-          isB2bOrder = true;
           let totalVolumeKg = 0;
           let submittedTotal = 0;
 
@@ -533,6 +545,8 @@ export const createManualInvoice = async (req, res) => {
           });
 
           calculatedAmount = submittedTotal;
+       } else {
+          return res.status(403).json({ message: "B2B partner is not approved for manual checkout" });
        }
     }
 
@@ -579,7 +593,7 @@ export const createManualInvoice = async (req, res) => {
           xendit_invoice_id: referenceId,
           biteship_order_id: biteshipDraftId,
           total_amount: calculatedAmount,
-          status: 'PAID', // Directly PAID for B2B Tempo/Offline
+          status: paymentType === 'tempo' ? 'NET30' : 'PENDING_CASH',
           customer_name: customerDetails?.name,
           customer_email: customerDetails?.email,
           customer_phone: customerDetails?.phone,
@@ -608,46 +622,7 @@ export const createManualInvoice = async (req, res) => {
     const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
     if (itemsError) throw itemsError;
 
-    // IMMEDIATELY PROCESS IT LIKE WEBHOOK
-    // Inventory Sync
-    for (const item of items) {
-       let deductionUnits = 0;
-       const weightMatch = item.name.match(/\((.*?)\)/);
-       const weightLower = weightMatch ? weightMatch[1].toLowerCase() : "1kg";
-       const match = weightLower.match(/(\d+)(g|kg)/);
-       if (match) {
-          const val = parseInt(match[1]);
-          const unit = match[2];
-          const grams = unit === 'kg' ? val * 1000 : val;
-          deductionUnits = item.quantity * (grams / 250);
-       }
-       if (deductionUnits > 0) {
-          const { data: product } = await supabase.from('products').select('stock_quantity').eq('id', item.id).single();
-          if (product) {
-             await supabase.from('products').update({ stock_quantity: product.stock_quantity - deductionUnits }).eq('id', item.id);
-          }
-       }
-    }
-
-    // Biteship Confirmation
-    if (biteshipDraftId) {
-      try {
-        const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${biteshipDraftId}/confirm`, {}, { headers: biteshipHeaders });
-        const finalOrderId = confirmRes.data.id;
-        const waybillId = confirmRes.data.courier.waybill_id;
-        const labelUrl = confirmRes.data.label_url || confirmRes.data.courier?.label_url || `https://dashboard.biteship.com/labels/${finalOrderId}`;
-
-        await supabase.from('orders').update({
-           biteship_order_id: finalOrderId,
-           shipping_awb: waybillId,
-           shipping_label_url: labelUrl,
-           status: 'READY_TO_SHIP'
-        }).eq('id', orderData.id);
-        publishEvent('orders', 'order_updated', { id: orderData.id, status: 'READY_TO_SHIP', awb: waybillId });
-      } catch (bsConfErr) {
-        console.error('Manual Biteship Confirm Error:', bsConfErr);
-      }
-    }
+    publishEvent('orders', 'order_updated', { id: orderData.id, status: orderData.status });
 
     // PDF Generation
     await generateInvoicePDF(orderData.id);

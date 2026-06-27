@@ -62,10 +62,10 @@ export default function B2BCheckoutPage() {
   useEffect(() => {
     if (user) {
       // Fetch partner info
-      apiFetch(`/api/admin/partners?profileId=${user.id}`)
+      apiFetch(`/api/b2b/partner-status`)
         .then(res => res.json())
         .then(data => {
-          const p = data.find((p: any) => p.profile_id === user.id);
+          const p = Array.isArray(data) ? data.find((p: any) => p.profile_id === user.id) : data;
           setPartner(p);
           if (p) {
              setShippingData({ name: p.company_name, phone: p.phone });
@@ -116,9 +116,8 @@ export default function B2BCheckoutPage() {
     try {
       // MANUAL PAYMENT LOGIC (TEMPO & OFFLINE)
       if (paymentType === 'tempo' || paymentType === 'cash_offline') {
-        const res = await fetch("/api/payments/manual-invoice", {
+        const res = await apiFetch("/api/payments/manual-invoice", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: grandTotal,
             items: items.map(item => ({
@@ -165,9 +164,8 @@ export default function B2BCheckoutPage() {
       }
 
       // FULL PAYMENT LOGIC
-      const res = await fetch("/api/payments/invoice", {
+      const res = await apiFetch("/api/payments/b2b-invoice", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: grandTotal,
           items: items.map(item => ({
