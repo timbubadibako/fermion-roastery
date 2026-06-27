@@ -240,24 +240,38 @@ export const updateProduct = async (req, res) => {
     if (productError) throw productError;
 
     // Jika di body payload update membawa set array variants baru, sinkronisasikan ulang
-    if (bodyFields.variants) {
+    if (Array.isArray(bodyFields.variants)) {
       // Hapus varian lama biar tidak menumpuk duplikat
-      await supabase.from('product_variants').delete().eq('product_id', id);
+      const { error: deleteVariantError } = await supabase
+        .from('product_variants')
+        .delete()
+        .eq('product_id', id);
 
-      const finalVariants = bodyFields.variants.map(v => ({
-        product_id: id,
-        weight: v.weight.endsWith('g') ? v.weight : `${v.weight}g`,
-        price: Number(v.price),
-        stock_quantity: Number(v.stock_quantity)
-      }));
+      if (deleteVariantError) throw deleteVariantError;
 
-      const { error: variantError } = await supabase.from('product_variants').insert(finalVariants);
-      if (variantError) throw variantError;
+      const finalVariants = bodyFields.variants
+        .map(v => {
+          const weight = String(v.weight ?? '').trim();
+
+          return {
+            product_id: id,
+            weight: weight.endsWith('g') || weight.endsWith('kg') ? weight : `${weight}g`,
+            price: Number(v.price),
+            stock_quantity: Number(v.stock_quantity)
+          };
+        })
+        .filter(v => v.weight !== 'g' && Number.isFinite(v.price) && Number.isFinite(v.stock_quantity));
+
+      if (finalVariants.length > 0) {
+        const { error: variantError } = await supabase.from('product_variants').insert(finalVariants);
+        if (variantError) throw variantError;
+      }
     }
 
     res.status(200).json(product);
   } catch (error) {
-    res.status(500).json({ message: "Failed to update product", error: error.message });
+    console.error('UpdateProduct Error:', error);
+    res.status(500).json({ message: "Failed to update product", error: error.message, code: error.code, details: error.details });
   }
 };
 

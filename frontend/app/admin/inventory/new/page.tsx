@@ -208,7 +208,7 @@ export default function ProductFormPage() {
         router.push("/admin/inventory");
       } else {
         const data = await res.json().catch(() => null);
-        toast.error(data?.message || "Gagal menyimpan produk.");
+        toast.error(data?.error || data?.message || "Gagal menyimpan produk.");
       }
     } catch (e) {
       toast.error("Kesalahan jaringan.");
