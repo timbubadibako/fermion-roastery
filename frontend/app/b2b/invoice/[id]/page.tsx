@@ -5,6 +5,7 @@ import { useCartStore } from "@/lib/store";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Printer, Download, ArrowLeft, CreditCard } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 export default function InvoiceTemplate({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ paymentUrl?: string }> }) {
   const unwrappedParams = use(params);
@@ -28,7 +29,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
 
   const fetchOrder = async () => {
     try {
-      const res = await fetch(`/api/orders/${unwrappedParams.id}`);
+      const res = await apiFetch(`/api/orders/${unwrappedParams.id}`);
       if (res.ok) {
         setOrder(await res.json());
       }
@@ -94,7 +95,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
              <div className="mt-8 md:mt-0 text-left md:text-right space-y-1">
                 <h2 className="text-6xl font-display italic font-black tracking-tighter text-slate-200 uppercase leading-none">Invoice.</h2>
                 <p className="text-sm font-black text-slate-900 font-mono tracking-widest">{order.id.slice(0, 8).toUpperCase()}</p>
-                <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mt-2 ${order.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                <div className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mt-2 ${['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                   {order.status}
                 </div>
              </div>

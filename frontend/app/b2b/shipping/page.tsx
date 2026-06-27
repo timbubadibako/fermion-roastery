@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store";
 import { motion } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 
 export default function ShippingTracker() {
   const { user } = useAuthStore();
@@ -23,11 +24,11 @@ export default function ShippingTracker() {
 
   useEffect(() => {
     if (user) {
-      fetch(`/api/orders/my-orders?profileId=${user.id}`)
+      apiFetch(`/api/orders/my-orders`)
         .then(res => res.json())
         .then(data => {
           // Show active orders (PAID, PROCESSING, SHIPPED, DELIVERED)
-          const activeOrders = data.filter((o: any) => ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status?.toUpperCase()));
+          const activeOrders = data.filter((o: any) => ['PAID', 'PROCESSING', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(o.status?.toUpperCase()));
           setOrders(activeOrders);
           if (activeOrders.length > 0) setSelectedOrderId(activeOrders[0].id);
           setLoading(false);

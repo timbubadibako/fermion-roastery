@@ -2,10 +2,10 @@ import { supabase } from '../lib/supabase.js';
 
 // 1. Get User's Own Orders
 export const getMyOrders = async (req, res) => {
-  const { profileId } = req.query;
+  const profileId = req.user?.id;
 
   if (!profileId) {
-    return res.status(400).json({ message: "Profile ID is required" });
+    return res.status(401).json({ message: "Authentication required" });
   }
 
   try {
@@ -27,17 +27,18 @@ export const getMyOrders = async (req, res) => {
 // 2. Get Single Order Detail (for Tracking)
 export const getOrderDetail = async (req, res) => {
   const { id } = req.params;
-  const { profileId } = req.query;
+  const profileId = req.user?.id;
+
+  if (!profileId) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
 
   try {
-    let query = supabase
+    const query = supabase
       .from('orders')
       .select('*, items:order_items(id, name:product_name, quantity, price:unit_price, weight:variant_weight, grind:variant_grind)')
-      .eq('id', id);
-
-    if (profileId) {
-      query = query.eq('profile_id', profileId);
-    }
+      .eq('id', id)
+      .eq('profile_id', profileId);
 
     const { data, error } = await query.single();
 

@@ -20,6 +20,7 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 
 export default function OrderLedger() {
   const { user } = useAuthStore();
@@ -32,7 +33,7 @@ export default function OrderLedger() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`/api/orders/my-orders?profileId=${user?.id}`);
+      const res = await apiFetch(`/api/orders/my-orders`);
       if (res.ok) setOrders(await res.json());
     } finally {
       setLoading(false);
@@ -42,6 +43,12 @@ export default function OrderLedger() {
   const getStatusConfig = (status: string) => {
     switch(status?.toUpperCase()) {
       case 'PENDING': return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', icon: Clock, label: 'Menunggu' };
+      case 'UNPAID': return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', icon: Clock, label: 'Menunggu Bayar' };
+      case 'NET30': return { color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-100', icon: Clock, label: 'Tempo 30 Hari' };
+      case 'PENDING_CASH': return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', icon: Clock, label: 'Tunai Pending' };
+      case 'PAID': return { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: CheckCircle2, label: 'Dibayar' };
+      case 'ROASTING': return { color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', icon: Package, label: 'Roasting' };
+      case 'READY_TO_SHIP': return { color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', icon: Truck, label: 'Siap Kirim' };
       case 'PROCESSING': return { color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100', icon: Package, label: 'Diproses' };
       case 'SHIPPED': return { color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100', icon: Truck, label: 'Dikirim' };
       case 'DELIVERED': return { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: CheckCircle2, label: 'Selesai' };
