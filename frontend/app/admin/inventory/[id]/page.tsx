@@ -41,6 +41,27 @@ interface VariantItem {
   stock_quantity: number;
 }
 
+const textValue = (value: unknown) => value == null ? "" : String(value);
+const numberValue = (value: unknown, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const normalizeVariants = (variants: unknown): VariantItem[] => {
+  if (!Array.isArray(variants)) return [];
+
+  return variants.map((variant) => {
+    const item = variant as Partial<VariantItem>;
+
+    return {
+      id: item.id,
+      weight: textValue(item.weight),
+      price: numberValue(item.price),
+      stock_quantity: numberValue(item.stock_quantity)
+    };
+  });
+};
+
 export default function ProductFormPage() {
   const router = useRouter();
   const params = useParams();
@@ -122,7 +143,30 @@ export default function ProductFormPage() {
             // 🟢 Hidrasi data varian jika berpindah ke mode edit produk
             setFormData({
               ...data,
-              variants: data.product_variants || data.variants || []
+              name: textValue(data.name),
+              slug: textValue(data.slug),
+              notes: textValue(data.notes),
+              origin: textValue(data.origin),
+              process: textValue(data.process),
+              altitude: textValue(data.altitude),
+              price_retail: numberValue(data.price_retail),
+              roast_profile: textValue(data.roast_profile) || "Light to Medium",
+              description: textValue(data.description),
+              farm: textValue(data.farm),
+              image_url: textValue(data.image_url),
+              fermentation: textValue(data.fermentation),
+              sweetness: numberValue(data.sweetness, 3),
+              acidity: numberValue(data.acidity, 3),
+              body: numberValue(data.body, 3),
+              stock_quantity: numberValue(data.stock_quantity),
+              category: textValue(data.category) || "filter",
+              sub_category: textValue(data.sub_category) || "filter_specialty",
+              is_active: data.is_active ?? true,
+              linked_journal_id: textValue(data.linked_journal_id),
+              is_new_release: data.is_new_release ?? false,
+              is_promoted: data.is_promoted ?? false,
+              search_upsell_headline: textValue(data.search_upsell_headline),
+              variants: normalizeVariants(data.product_variants || data.variants)
             });
           }
         }
