@@ -36,9 +36,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 
 import { useI18n } from "@/lib/i18n";
+import { useAuthStore } from "@/lib/store";
 
 export default function AdminOverview() {
   const t = useI18n();
+  const { user } = useAuthStore();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [churnAlerts, setChurnAlerts] = useState<any[]>([]);
@@ -52,6 +54,7 @@ export default function AdminOverview() {
   });
 
   const fetchVitals = async () => {
+    if (!user || user.role !== "ADMIN") return;
     setLoading(true);
     try {
       let url = "/api/admin/stats";
@@ -78,10 +81,10 @@ export default function AdminOverview() {
   };
 
   useEffect(() => {
-    if (timeframe !== "custom") {
+    if (user?.role === "ADMIN" && timeframe !== "custom") {
       fetchVitals();
     }
-  }, [timeframe]);
+  }, [user, timeframe]);
 
   // Special effect for custom range application
   const handleApplyCustomRange = () => {
