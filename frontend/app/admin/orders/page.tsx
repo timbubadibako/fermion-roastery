@@ -16,6 +16,7 @@ import {
   X,
   Plus,
   Clock,
+  CreditCard,
   Printer,
   Ban,
   Navigation,
@@ -235,6 +236,8 @@ export default function KanbanBoard() {
 
   const columns = [
     { id: 'UNPAID', label: 'Menunggu Bayar', icon: Clock },
+    { id: 'NET30', label: 'Tempo 30 Hari', icon: Clock },
+    { id: 'PENDING_CASH', label: 'Tunai Pending', icon: CreditCard },
     { id: 'PAID', label: 'Pesanan Baru', icon: Package },
     { id: 'READY_TO_SHIP', label: 'Siap Kirim', icon: CheckCircle2 },
     { id: 'ROASTING', label: 'Proses Roasting', icon: Beaker },
@@ -249,6 +252,8 @@ export default function KanbanBoard() {
       `#ORD-${o.id.slice(0, 8)}`.toLowerCase().includes(query)
     );
   });
+
+  const draftStatuses = ['UNPAID', 'NET30', 'PENDING_CASH'];
 
   return (
     <div className="space-y-12">
@@ -292,7 +297,7 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-7 gap-6">
         {columns.map(col => (
           <div
             key={col.id}
@@ -336,7 +341,7 @@ export default function KanbanBoard() {
                       <div className="flex justify-between items-start mb-4 relative z-10">
                         {order.biteship_order_id ? (
                           <a
-                            href={order.status === 'UNPAID' ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`}
+                            href={draftStatuses.includes(order.status) ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[8px] font-black uppercase tracking-widest text-[#367F4D] hover:underline"
@@ -359,7 +364,7 @@ export default function KanbanBoard() {
                             <DropdownMenuContent align="end" className="w-48 rounded-sm border-black/5 shadow-xl font-sans p-1 bg-white">
                               <DropdownMenuItem
                                 className="text-[10px] font-bold uppercase tracking-widest py-3 cursor-pointer text-slate-600 focus:bg-stone-50 focus:text-slate-900 outline-none"
-                                onClick={() => window.open(order.status === 'UNPAID' ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`, '_blank')}
+                                onClick={() => window.open(draftStatuses.includes(order.status) ? 'https://dashboard.biteship.com/draft-orders' : `https://dashboard.biteship.com/orders/details/${order.biteship_order_id}`, '_blank')}
                               >
                                 Detail Biteship
                               </DropdownMenuItem>
@@ -386,7 +391,7 @@ export default function KanbanBoard() {
                       </div>
 
                       <div className="pt-4 border-t border-black/5 space-y-2 relative z-10">
-                        {order.status === 'UNPAID' && (
+                        {['UNPAID', 'NET30', 'PENDING_CASH'].includes(order.status) && (
                           <Button onClick={() => handleUpdateStatus(order.id, 'PAID')} className="w-full h-10 bg-amber-50 hover:bg-slate-900 hover:text-white text-amber-600 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">
                             Konfirmasi Bayar
                           </Button>

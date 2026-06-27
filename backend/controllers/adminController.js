@@ -403,7 +403,7 @@ export const updateOrder = async (req, res) => {
   const { status, shipping_awb, shipping_courier, rejection_reason, qcData } = req.body;
 
   try {
-    const validStatuses = ['UNPAID', 'PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+    const validStatuses = ['UNPAID', 'NET30', 'PENDING_CASH', 'PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
     if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
@@ -497,4 +497,3 @@ export const updateSettings = async (req, res) => {
     res.status(500).json({ message: "Error updating settings", error: error.message });
   }
 };
-
