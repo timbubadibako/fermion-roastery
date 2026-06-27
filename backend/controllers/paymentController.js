@@ -599,7 +599,6 @@ export const createManualInvoice = async (req, res) => {
           customer_phone: customerDetails?.phone,
           shipping_address: shipping.address,
           shipping_city: shipping.city || 'Cirebon',
-          payment_method: paymentType === 'tempo' ? 'TEMPO' : 'OFFLINE_CASH',
           type: 'b2b'
         }
       ])

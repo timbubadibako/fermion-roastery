@@ -68,6 +68,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
   const due = new Date(order.created_at);
   due.setDate(due.getDate() + 30);
   const dueDateStr = due.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+  const resolvedPaymentMethod = order.payment_method || (order.status === 'NET30' ? 'TEMPO' : order.status === 'PENDING_CASH' ? 'OFFLINE_CASH' : null);
 
   return (
     <div className="font-sans text-slate-900 w-full">
@@ -141,12 +142,12 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
                    <p className="text-sm font-black text-slate-900">{dateStr}</p>
                 </div>
                 <div className="space-y-1 pt-4">
-                   {order.payment_method === 'TEMPO' ? (
+                   {resolvedPaymentMethod === 'TEMPO' ? (
                      <>
                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500">Jatuh Tempo (Net-30)</h3>
                        <p className="text-sm font-black text-slate-900">{dueDateStr}</p>
                      </>
-                   ) : order.payment_method === 'OFFLINE_CASH' ? (
+                   ) : resolvedPaymentMethod === 'OFFLINE_CASH' ? (
                      <>
                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Metode Pembayaran</h3>
                        <p className="text-sm font-black text-slate-900">Tunai (Offline)</p>
@@ -210,9 +211,9 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
           <div className="mt-20 pt-12 border-t border-slate-100 text-center md:text-left space-y-2">
              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Instruksi Pembayaran</h3>
              <p className="text-xs text-slate-500 leading-relaxed font-medium">
-               {order.payment_method === 'TEMPO' ? (
+               {resolvedPaymentMethod === 'TEMPO' ? (
                  <>Harap lakukan pembayaran sebelum tanggal jatuh tempo. Jika memilih transfer manual, silakan transfer ke rekening BCA 1234567890 a/n Fermion Roastery dan sertakan nomor invoice <strong>{order.id.slice(0,8).toUpperCase()}</strong>.</>
-               ) : order.payment_method === 'OFFLINE_CASH' ? (
+               ) : resolvedPaymentMethod === 'OFFLINE_CASH' ? (
                  <>Pembayaran tunai (Cash) akan dilakukan secara langsung saat pengambilan atau pengiriman barang oleh kurir Fermion.</>
                ) : (
                  <>Silakan selesaikan pembayaran melalui link Xendit yang telah disediakan agar pesanan Anda segera diproses.</>
