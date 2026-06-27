@@ -167,7 +167,7 @@ interface AuthStore {
   user: any | null;
   setUser: (user: any) => void;
   logout: () => void;
-  refreshSession: () => Promise<void>;
+  refreshSession: (userOverride?: any) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -175,14 +175,13 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       setUser: (user) => set({ user }),
-      refreshSession: async () => {
-        const { user } = get();
+      refreshSession: async (userOverride) => {
+        const user = userOverride || get().user;
         if (!user || !user.id) return;
+
         try {
-          // FORCE nunggu inisialisasi session Supabase kelar dulu sebelum nembak apiFetch
           await supabase.auth.getSession();
 
-          // Use our next.js proxy routing with cache busting
           const res = await apiFetch(`/api/auth/profile/${user.id}`, {
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-cache' }
@@ -190,7 +189,6 @@ export const useAuthStore = create<AuthStore>()(
 
           if (res.ok) {
             const freshUser = await res.json();
-            // preserve any local auth tokens if necessary, or just merge
             set({ user: { ...user, ...freshUser } });
           }
         } catch (e) {

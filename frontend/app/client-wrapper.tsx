@@ -28,20 +28,23 @@ export function ClientWrapper({
 
   useEffect(() => {
     setMounted(true);
-    // Silent refresh to ensure roles and b2b_status are up to date
-    if (user) {
-      refreshSession();
-    }
-    // Hydrate auth state from localStorage
+
     const savedAuth = localStorage.getItem('fermion-auth-storage');
+
     if (savedAuth) {
       try {
         const { state } = JSON.parse(savedAuth);
-        if (state.user) setUser(state.user);
-      } catch (e) { console.error("Hydration failed"); }
+
+        if (state.user) {
+          setUser(state.user);
+          refreshSession(state.user);
+        }
+      } catch (e) {
+        console.error("Hydration failed", e);
+      }
     }
-  }, [setUser]);
-  
+  }, [setUser, refreshSession]);
+
   // Portal detection
   const isAdmin = pathname.startsWith('/admin');
   const isB2BPortal = pathname.startsWith('/b2b') && !pathname.startsWith('/b2b/register');
@@ -56,7 +59,7 @@ export function ClientWrapper({
       <CartSync />
 
       {mounted && activeRole && <UnifiedSidebar role={activeRole} />}
-      
+
       {!hideMainLayout && <Header />}
 
       <main className={`${(mounted && activeRole) ? "ml-64 min-h-screen bg-slate-50 flex flex-col items-center print:ml-0 print:bg-white print:min-h-0" : ""}`}>
@@ -67,13 +70,13 @@ export function ClientWrapper({
 
       {/* Temporarily hidden chat feature */}
       {/* {!hideMainLayout && <ChatFloating />} */}
-      
+
       <SpotlightGuide />
       <SpotlightFAB />
 
-      <Toaster 
-        position="top-center" 
-        expand={false} 
+      <Toaster
+        position="top-center"
+        expand={false}
         toastOptions={{
           classNames: {
             toast: "group toast border shadow-lg rounded-sm px-5 py-4 flex items-center gap-3 font-sans",
