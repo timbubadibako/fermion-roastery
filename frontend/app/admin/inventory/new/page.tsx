@@ -42,6 +42,8 @@ const numberValue = (value: unknown, fallback = 0) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
+const parseNumericInput = (value: string) => Number(value.replace(/\D/g, "")) || 0;
+const formatNumberInput = (value: number) => value ? value.toLocaleString("id-ID") : "";
 
 const normalizeVariants = (variants: unknown): VariantItem[] => {
   if (!Array.isArray(variants)) return [];
@@ -433,10 +435,11 @@ export default function ProductFormPage() {
                       <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Harga Retail Varian (IDR)</label>
                       <Input
                         required
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
                         placeholder="0"
-                        value={variant.price || ""}
-                        onChange={e => handleVariantChange(index, "price", parseFloat(e.target.value) || 0)}
+                        value={formatNumberInput(variant.price)}
+                        onChange={e => handleVariantChange(index, "price", parseNumericInput(e.target.value))}
                         className="h-10 bg-white border-black/10 rounded-sm font-mono text-xs focus-visible:ring-[#367F4D]"
                       />
                     </div>
@@ -444,10 +447,11 @@ export default function ProductFormPage() {
                       <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Stok Varian</label>
                       <Input
                         required
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
                         placeholder="0"
-                        value={variant.stock_quantity || ""}
-                        onChange={e => handleVariantChange(index, "stock_quantity", parseInt(e.target.value) || 0)}
+                        value={formatNumberInput(variant.stock_quantity)}
+                        onChange={e => handleVariantChange(index, "stock_quantity", parseNumericInput(e.target.value))}
                         className="h-10 bg-white border-black/10 rounded-sm font-mono text-xs focus-visible:ring-[#367F4D]"
                       />
                       <button
@@ -472,7 +476,7 @@ export default function ProductFormPage() {
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Harga Display / Mulai Dari (IDR)</label>
                 <div className="relative">
-                  <Input type="number" required value={formData.price_retail || ""} onChange={e => setFormData({ ...formData, price_retail: parseFloat(e.target.value) || 0 })} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                  <Input type="text" inputMode="numeric" required value={formatNumberInput(formData.price_retail)} onChange={e => setFormData({ ...formData, price_retail: parseNumericInput(e.target.value) })} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
                   <span className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-tighter italic text-xs">DISPLAY</span>
                 </div>
                 <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">Dipakai untuk katalog dan fallback. Harga transaksi utama tetap dari baris varian.</p>
@@ -481,10 +485,11 @@ export default function ProductFormPage() {
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Stok Inventaris Gabungan</label>
                 <div className="relative">
                   <Input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     required
-                    value={formData.stock_quantity || ""}
-                    onChange={e => setFormData({ ...formData, stock_quantity: parseInt(e.target.value) || 0 })}
+                    value={formatNumberInput(formData.stock_quantity)}
+                    onChange={e => setFormData({ ...formData, stock_quantity: parseNumericInput(e.target.value) })}
                     className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]"
                   />
                   <Boxes className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20" size={20} />

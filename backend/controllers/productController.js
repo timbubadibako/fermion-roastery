@@ -140,6 +140,22 @@ export const createProduct = async (req, res, next) => {
   } = req.body;
 
   const sanitize = (val) => (val === "" ? null : val);
+  const toCurrencyNumber = (val, fallback = 0) => {
+    if (typeof val === 'string') {
+      const parsed = Number(val.replace(/[^\d]/g, ""));
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+    const parsed = Number(val);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const toNumber = (val, fallback = 0) => {
+    const parsed = Number(val);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const toInteger = (val, fallback = 0) => {
+    const parsed = parseInt(val, 10);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
 
   try {
     // LANGKAH 1: Masukkan data induk ke tabel products
@@ -152,16 +168,16 @@ export const createProduct = async (req, res, next) => {
         origin: sanitize(origin),
         process: sanitize(process),
         altitude: sanitize(altitude),
-        price_retail,
+        price_retail: toCurrencyNumber(price_retail),
         roast_profile,
         description: sanitize(description),
         farm: sanitize(farm),
         image_url: sanitize(image_url),
         fermentation: sanitize(fermentation),
-        sweetness,
-        acidity,
-        body,
-        stock_quantity,
+        sweetness: toNumber(sweetness, 3),
+        acidity: toNumber(acidity, 3),
+        body: toNumber(body, 3),
+        stock_quantity: toInteger(stock_quantity),
         linked_journal_id: sanitize(linked_journal_id),
         category,
         sub_category,
@@ -181,14 +197,14 @@ export const createProduct = async (req, res, next) => {
       finalVariants = variants.map(v => ({
         product_id: product.id,
         weight: v.weight.endsWith('g') ? v.weight : `${v.weight}g`, // Garansi string format '150g'
-        price: Number(v.price),
+        price: toCurrencyNumber(v.price),
         stock_quantity: Number(v.stock_quantity)
       }));
     } else {
       // 🟢 Mendorong otomatis varian 150g & 250g jika dikosongkan admin
       finalVariants = [
-        { product_id: product.id, weight: "150g", price: price_retail, stock_quantity: stock_quantity || 0 },
-        { product_id: product.id, weight: "250g", price: Math.round(price_retail * 1.6), stock_quantity: stock_quantity || 0 }
+        { product_id: product.id, weight: "150g", price: toCurrencyNumber(price_retail), stock_quantity: toInteger(stock_quantity) },
+        { product_id: product.id, weight: "250g", price: Math.round(toCurrencyNumber(price_retail) * 1.6), stock_quantity: toInteger(stock_quantity) }
       ];
     }
 
@@ -221,10 +237,44 @@ export const updateProduct = async (req, res) => {
     'b2b_discount_enabled', 'is_new_release', 'is_promoted', 'search_upsell_headline'
   ];
 
+  const numericColumns = new Set(['price_retail', 'sweetness', 'acidity', 'body']);
+  const integerColumns = new Set(['discount_percent', 'stock_quantity']);
+  const nullableColumns = new Set([
+    'notes', 'origin', 'process', 'altitude', 'description', 'farm',
+    'image_url', 'fermentation', 'linked_journal_id', 'search_upsell_headline'
+  ]);
+
+  const sanitizeFieldValue = (key, value) => {
+    if (key === 'price_retail') {
+      if (typeof value === 'string') {
+        const parsed = Number(value.replace(/[^\d]/g, ""));
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    if (integerColumns.has(key)) {
+      const parsed = parseInt(value, 10);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    if (numericColumns.has(key)) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    if (nullableColumns.has(key) && value === "") {
+      return null;
+    }
+
+    return value;
+  };
+
   const filteredFields = Object.keys(bodyFields)
     .filter(key => validColumns.includes(key))
     .reduce((obj, key) => {
-      obj[key] = bodyFields[key];
+      obj[key] = sanitizeFieldValue(key, bodyFields[key]);
       return obj;
     }, {});
 
@@ -256,7 +306,7 @@ export const updateProduct = async (req, res) => {
           return {
             product_id: id,
             weight: weight.endsWith('g') || weight.endsWith('kg') ? weight : `${weight}g`,
-            price: Number(v.price),
+            price: typeof v.price === 'string' ? Number(v.price.replace(/[^\d]/g, "")) : Number(v.price),
             stock_quantity: Number(v.stock_quantity)
           };
         })
