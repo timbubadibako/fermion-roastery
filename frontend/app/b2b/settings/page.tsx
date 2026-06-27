@@ -129,6 +129,23 @@ function AccountContent() {
     } catch (e) { console.error("Failed to load subscription"); }
   };
 
+  const downloadContract = async () => {
+    try {
+      const res = await apiFetch('/api/b2b/contract');
+      if (!res.ok) {
+        toast.error("Gagal mengunduh kontrak.");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+    } catch (error) {
+      toast.error("Gagal mengunduh kontrak.");
+    }
+  };
+
   const confirmContractUpload = async () => {
     if (!selectedContractFile || !user) return;
     setIsContractUploading(true);
@@ -140,11 +157,9 @@ function AccountContent() {
       reader.onload = async () => {
         const base64File = reader.result;
 
-        const res = await fetch('/api/b2b/upload-contract', {
+        const res = await apiFetch('/api/b2b/upload-contract', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            profileId: user.id, 
             fileData: base64File, 
             fileName: selectedContractFile.name, 
             mimetype: selectedContractFile.type 
@@ -795,7 +810,7 @@ function AccountContent() {
 
                             <div className="grid grid-cols-1 gap-6 pt-10 relative z-10">
                               <Button 
-                                onClick={() => window.open(`/api/b2b/contract?profileId=${user.id}`, '_blank')}
+                                onClick={downloadContract}
                                 className="w-full h-14 bg-white text-stone-900 border border-black/10 rounded-sm font-black uppercase tracking-widest text-[10px] hover:bg-stone-50 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.02)] hover:shadow-none"
                               >
                                  <Download size={14} className="mr-3" /> {t.account.b2b.downloadButton}

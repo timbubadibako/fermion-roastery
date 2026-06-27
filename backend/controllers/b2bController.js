@@ -73,10 +73,10 @@ export const registerB2B = async (req, res) => {
 
 export const getPartnerStatus = async (req, res) => {
   try {
-    const { profileId } = req.query;
+    const profileId = req.user?.id;
     
     if (!profileId) {
-      return res.status(400).json({ message: "Profile ID required" });
+      return res.status(401).json({ message: "Authentication required" });
     }
 
     // 🎯 KUNCI UTAMANYA: Ganti dari 'partners' menjadi 'b2b_partners' sesuai schema SQL asli lu!
@@ -104,7 +104,7 @@ export const getPartnerStatus = async (req, res) => {
  * Generate Dynamic B2B Contract PDF
  */
 export const generateContract = async (req, res) => {
-  const { profileId } = req.query;
+  const profileId = req.user?.id;
 
   try {
     const { data, error } = await supabase
@@ -190,7 +190,8 @@ export const generateContract = async (req, res) => {
  * Handle Contract Upload
  */
 export const uploadContract = async (req, res) => {
-  const { profileId, fileData, mimetype } = req.body;
+  const { fileData, mimetype } = req.body;
+  const profileId = req.user?.id;
 
   if (!fileData || !profileId) {
     return res.status(400).json({ message: "Missing file data or profile ID" });

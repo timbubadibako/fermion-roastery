@@ -53,13 +53,13 @@ export default function WholesaleShopPage() {
   const fetchPartnerAndProducts = async () => {
     try {
       const [pRes, prodRes] = await Promise.all([
-        apiFetch(`/api/admin/partners?profileId=${user?.id}`),
+        apiFetch(`/api/b2b/partner-status`),
         apiFetch(`/api/products?profileId=${user?.id}`)
       ]);
 
       if (pRes.ok) {
         const pData = await pRes.json();
-        setPartner(pData.find((p: any) => p.profile_id === user?.id));
+        setPartner(Array.isArray(pData) ? pData.find((p: any) => p.profile_id === user?.id) : pData);
       }
       if (prodRes.ok) setProducts(await prodRes.json());
     } catch (e) {
