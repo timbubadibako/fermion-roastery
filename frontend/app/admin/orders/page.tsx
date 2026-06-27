@@ -254,6 +254,17 @@ export default function KanbanBoard() {
   });
 
   const draftStatuses = ['UNPAID', 'NET30', 'PENDING_CASH'];
+  const getNet30ReminderUrl = (order: Order) => {
+    const dueDate = new Date(order.created_at || Date.now());
+    dueDate.setDate(dueDate.getDate() + 30);
+    const dueDateText = dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    const phone = order.customer_phone?.replace(/\D/g, '');
+    const message = encodeURIComponent(
+      `Halo, kami mengingatkan invoice #ORD-${order.id.slice(0, 8).toUpperCase()} dari Fermion Roastery dengan total Rp ${parseInt(order.total_amount).toLocaleString('id-ID')} jatuh tempo pada ${dueDateText}. Mohon konfirmasi jika pembayaran sudah diproses.`
+    );
+
+    return phone ? `https://wa.me/${phone}?text=${message}` : null;
+  };
 
   return (
     <div className="space-y-12">
@@ -391,10 +402,44 @@ export default function KanbanBoard() {
                       </div>
 
                       <div className="pt-4 border-t border-black/5 space-y-2 relative z-10">
-                        {['UNPAID', 'NET30', 'PENDING_CASH'].includes(order.status) && (
+                        {order.status === 'UNPAID' && (
                           <Button onClick={() => handleUpdateStatus(order.id, 'PAID')} className="w-full h-10 bg-amber-50 hover:bg-slate-900 hover:text-white text-amber-600 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">
                             Konfirmasi Bayar
                           </Button>
+                        )}
+                        {order.status === 'NET30' && (
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button onClick={() => handleUpdateStatus(order.id, 'PAID')} className="bg-amber-50 hover:bg-slate-900 hover:text-white text-amber-600 rounded-sm text-[8px] font-black uppercase tracking-widest h-9 border-none">
+                                Tandai Lunas
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  const reminderUrl = getNet30ReminderUrl(order);
+                                  if (reminderUrl) window.open(reminderUrl, '_blank');
+                                  else toast.error("Nomor telepon pelanggan tidak tersedia.");
+                                }}
+                                className="bg-white border border-black/5 hover:bg-stone-50 text-slate-600 rounded-sm text-[8px] font-black uppercase tracking-widest h-9 shadow-none"
+                              >
+                                Ingatkan
+                              </Button>
+                            </div>
+                            <Button onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')} className="w-full h-9 bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-900 rounded-sm text-[8px] font-black uppercase tracking-widest transition-all border-none">
+                              Terbitkan Resi
+                            </Button>
+                          </div>
+                        )}
+                        {order.status === 'PENDING_CASH' && (
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button onClick={() => handleUpdateStatus(order.id, 'PAID')} className="bg-amber-50 hover:bg-slate-900 hover:text-white text-amber-600 rounded-sm text-[8px] font-black uppercase tracking-widest h-9 border-none">
+                                Konfirmasi Tunai
+                              </Button>
+                              <Button onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')} className="bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-900 rounded-sm text-[8px] font-black uppercase tracking-widest h-9 border-none">
+                                Terbitkan Resi
+                              </Button>
+                            </div>
+                          </div>
                         )}
                         {order.status === 'PAID' && (
                           <Button onClick={() => handleUpdateStatus(order.id, 'READY_TO_SHIP')} className="w-full h-10 bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-900 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all border-none">

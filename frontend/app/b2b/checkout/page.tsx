@@ -29,10 +29,10 @@ export default function B2BCheckoutPage() {
   const t = useI18n();
   const router = useRouter();
   const { user } = useAuthStore();
-  const { items: allItems, removeItem, getTotal } = useCartStore();
+  const { items: allItems } = useCartStore();
   
   // Selective Checkout Logic
-  const items = allItems.filter(i => i.selected !== false && i.isB2B);
+  const items = allItems.filter(i => i.selected !== false && i.isB2B !== false);
 
   const [partner, setPartner] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -224,7 +224,7 @@ export default function B2BCheckoutPage() {
     </div>
   );
 
-  const baseSubtotal = getTotal(true);
+  const baseSubtotal = items.reduce((acc, item) => acc + Number(item.price) * Number(item.quantity), 0);
   
   const totalVolumeKg = items.reduce((acc, item) => {
     let weight = 0.25; 
