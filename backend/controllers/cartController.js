@@ -65,7 +65,7 @@ export const getCart = async (req, res) => {
       .select('tier_name')
       .eq('profile_id', profileId)
       .single();
-    
+
     const userTier = b2bData?.tier_name || 'Retail'; // Default Retail
 
     // 2. Ambil data keranjang beserta kategori produk
@@ -93,25 +93,26 @@ export const getCart = async (req, res) => {
       const basePrice = item.products?.price_retail || 0;
       const category = (item.products?.category || '').toLowerCase(); // 'espresso' atau 'filter'
       let finalPrice = basePrice;
-      
+
       // Hitung Diskon B2B
       if (userTier === 'Bronze') {
         if (category === 'espresso') {
-           // Diskon Rp 10.000 per kg
-           const weightKg = parseWeightToKg(item.weight);
-           finalPrice = basePrice - (10000 * weightKg);
+          // Diskon Rp 10.000 per kg
+          const weightKg = parseWeightToKg(item.weight);
+
+          finalPrice = basePrice - (10000 * weightKg);
         } else if (category === 'filter') {
-           // Diskon 10%
-           finalPrice = basePrice * 0.90;
+          // Diskon 10%
+          finalPrice = basePrice * 0.90;
         }
       } else if (userTier === 'Silver') {
         if (category === 'espresso') {
-           // Diskon Rp 15.000 per kg
-           const weightKg = parseWeightToKg(item.weight);
-           finalPrice = basePrice - (15000 * weightKg);
+          // Diskon Rp 15.000 per kg
+          const weightKg = parseWeightToKg(item.weight);
+          finalPrice = basePrice - (15000 * weightKg);
         } else if (category === 'filter') {
-           // Diskon 15%
-           finalPrice = basePrice * 0.85;
+          // Diskon 15%
+          finalPrice = basePrice * 0.85;
         }
       }
       // Untuk 'Gold' atau 'Retail', harga tetap basePrice (sementara dikosongkan/sama dengan retail)
