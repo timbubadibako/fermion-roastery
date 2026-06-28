@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { generateInvoicePDF, INVOICE_BUCKET, getInvoiceStoragePath } from '../lib/pdfGenerator.js';
+import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 
 const getRequestRole = async (userId) => {
   const { data: profile, error } = await supabase
@@ -114,24 +114,10 @@ export const downloadOrderInvoice = async (req, res) => {
     }
 
     const { order } = authorized;
-    const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
-    const storagePath = getInvoiceStoragePath(order);
-
-    let { data: fileData, error: downloadError } = await supabase.storage
-      .from(INVOICE_BUCKET)
-      .download(storagePath);
-
-    if (downloadError || !fileData) {
-      const generated = await generateInvoicePDF(order.id);
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${generated.fileName}"`);
-      return res.send(generated.buffer);
-    }
-
-    const fileBuffer = Buffer.from(await fileData.arrayBuffer());
+    const generated = await generateInvoicePDF(order.id);
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-    return res.send(fileBuffer);
+    res.setHeader('Content-Disposition', `attachment; filename="${generated.fileName}"`);
+    return res.send(generated.buffer);
   } catch (error) {
     console.error('Error downloading order invoice:', error);
     res.status(500).json({ message: "Failed to download invoice", error: error.message });
