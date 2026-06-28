@@ -30,6 +30,8 @@ backend/invoices/
 # Testing & Reports
 *.pdf
 pagespeed.json
+frontend/test-results/
+frontend/playwright-report/
 
 # Notes & AI Memory
 intruksi.md
