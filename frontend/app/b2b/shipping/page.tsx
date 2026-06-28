@@ -40,6 +40,7 @@ export default function ShippingTracker() {
     o.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
     (o.shipping_awb && o.shipping_awb.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+  const visibleOrders = filteredOrders.slice(0, 4);
 
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
@@ -70,13 +71,13 @@ export default function ShippingTracker() {
            </div>
 
            <div className="space-y-4">
-              {filteredOrders.length === 0 ? (
+              {visibleOrders.length === 0 ? (
                  <div className="bg-white p-10 rounded-sm border border-black/5 shadow-sm text-center space-y-4 opacity-50">
                     <Truck className="mx-auto text-stone-300" size={32} />
                     <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">Tidak ada pengiriman aktif</p>
                  </div>
               ) : (
-                filteredOrders.map((order, i) => {
+                visibleOrders.map((order, i) => {
                   const isSelected = selectedOrderId === order.id;
                   return (
                     <motion.div 
@@ -107,8 +108,8 @@ export default function ShippingTracker() {
         </div>
 
         {/* TRACKING TIMELINE */}
-        <div className="lg:col-span-8">
-           <div className="bg-slate-900 rounded-sm p-12 text-white shadow-2xl relative overflow-hidden h-full min-h-[500px] border border-black">
+        <div className="lg:col-span-8 self-start">
+           <div className="bg-slate-900 rounded-sm p-12 text-white shadow-2xl relative overflow-hidden min-h-[500px] border border-black">
               <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 blur-3xl -mr-40 -mt-40" />
               
               {selectedOrderId ? (() => {
