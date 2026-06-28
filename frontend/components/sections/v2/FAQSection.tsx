@@ -8,6 +8,7 @@ import { Plus, Minus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useLangStore } from "@/lib/store";
 import { Sticker } from "@/components/ui/sticker";
+import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,7 +49,7 @@ function FAQSectionComponent() {
   useEffect(() => {
     axios.get("/api/content/faqs")
       .then(res => setFaqs(res.data))
-      .catch(err => console.error("Failed to load FAQs", err));
+      .catch(err => debugError("Failed to load FAQs", err));
   }, []);
 
   useEffect(() => {

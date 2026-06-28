@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useI18n } from "@/lib/i18n";
 import { apiFetch } from "@/lib/api"; // Pastikan apiFetch di-import
 import { supabase } from "@/lib/supabase"; // Pastikan supabase di-import
+import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,7 +35,7 @@ export function HeroV2() {
         setSettings(data);
       }
     } catch (err) {
-      console.error("Failed to load hero settings", err);
+      debugError("Failed to load hero settings", err);
     }
   };
 

@@ -19,6 +19,7 @@ import {
 import { AddressInput } from "@/components/address-input";
 import { apiFetch } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
+import { debugError, debugLog } from "@/lib/debug";
 
 interface Order {
   id: string;
@@ -98,10 +99,10 @@ function AccountContent() {
             fetchSubscription()
           ]);
         } else {
-          console.log("[AccountContent] Session atau user store belum siap.");
+          debugLog("[AccountContent] Session atau user store belum siap.");
         }
       } catch (err) {
-        console.error("[AccountContent] Error fetching initial data:", err);
+        debugError("[AccountContent] Error fetching initial data:", err);
       } finally {
         // 3. APAPUN YANG TERJADI (Sukses/Gagal/Kosong), WAJIB MATIKAN LOADING DI SINI
         setLoading(false);
@@ -120,7 +121,7 @@ function AccountContent() {
             fetchSubscription()
           ]);
         } catch (e) {
-          console.error(e);
+          debugError("Tracking fetch error:", e);
         } finally {
           setLoading(false);
         }
@@ -165,7 +166,7 @@ function AccountContent() {
           });
         }
       }
-    } catch (e) { console.error("Failed to load profile"); }
+    } catch (e) { debugError("Failed to load profile", e); }
   };
 
   const fetchSubscription = async () => {
@@ -175,7 +176,7 @@ function AccountContent() {
         const data = await res.json();
         setSubscription(data);
       }
-    } catch (e) { console.error("Failed to load subscription"); }
+    } catch (e) { debugError("Failed to load subscription", e); }
   };
 
   const downloadContract = async () => {
@@ -1002,7 +1003,7 @@ function AccountContent() {
                                   disabled={isContractUploading}
                                   className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
                                 >
-                                  {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                                  {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Kirim Dokumen"}
                                 </Button>
                               </div>
                             </div>

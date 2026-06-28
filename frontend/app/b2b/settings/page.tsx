@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
 import { apiFetch } from "@/lib/api";
+import { debugError } from "@/lib/debug";
 
 interface Order {
   id: string;
@@ -116,7 +117,7 @@ function AccountContent() {
           });
         }
       }
-    } catch (e) { console.error("Failed to load profile"); }
+    } catch (e) { debugError("Failed to load profile", e); }
   };
 
   const fetchSubscription = async () => {
@@ -126,7 +127,7 @@ function AccountContent() {
         const data = await res.json();
         setSubscription(data);
       }
-    } catch (e) { console.error("Failed to load subscription"); }
+    } catch (e) { debugError("Failed to load subscription", e); }
   };
 
   const downloadContract = async () => {
@@ -837,7 +838,7 @@ function AccountContent() {
                                         disabled={isContractUploading}
                                         className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
                                       >
-                                        {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                                        {isContractUploading ? <Loader2 className="animate-spin" size={14} /> : "Kirim Dokumen"}
                                       </Button>
                                     </div>
                                   </div>

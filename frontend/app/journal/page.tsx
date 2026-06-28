@@ -9,6 +9,7 @@ import { Sticker } from "@/components/ui/sticker";
 import { FooterV2 } from "@/components/sections/v2/FooterV2";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,7 +34,7 @@ export default function JournalPageV2() {
          .then(data => {
             if (Array.isArray(data)) setPosts(data);
          })
-         .catch(console.error);
+         .catch((error) => debugError("Failed to load journal posts:", error));
    }, []);
 
    const pinnedPosts = posts.filter(p => p.is_pinned).slice(0, 4);
@@ -130,7 +131,7 @@ export default function JournalPageV2() {
                      <Search size={16} className="text-[#A855F7] transition-transform duration-300 group-focus-within/search:scale-105" strokeWidth={2.5} />
                      <input
                         type="text"
-                        placeholder="Search the archives..."
+                        placeholder="Cari arsip..."
                         className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-[0.15em] w-full text-stone-900 placeholder:text-stone-500/70"
                      />
                   </div>
@@ -237,7 +238,7 @@ export default function JournalPageV2() {
             <div id="tour-journal-explore" ref={exploreRef} className="mt-10 pt-10 pb-20 max-w-7xl mx-auto">
                <div className="flex items-center gap-4 mb-8">
                   <div className="h-1 w-12 bg-[#2E2140]"></div>
-                  <h3 className="text-xl font-black uppercase tracking-[0.2em] text-[#2E2140]">Explore The Archives</h3>
+                  <h3 className="text-xl font-black uppercase tracking-[0.2em] text-[#2E2140]">Jelajahi Arsip</h3>
                </div>
                
                <div className="flex overflow-x-auto gap-6 pb-8 pt-4 px-2 -mx-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -257,7 +258,7 @@ export default function JournalPageV2() {
 
                {explorePosts.length === 0 && (
                   <div className="text-center text-stone-500 py-12 italic border border-dashed border-stone-300">
-                     No more articles found in the archive.
+                     Tidak ada artikel tambahan di arsip saat ini.
                   </div>
                )}
             </div>

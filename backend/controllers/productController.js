@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { buildStorageReference, createSignedAssetUrl, resolveSignedAssetUrls } from '../lib/storage.js';
 
 /**
  * Get all products with dynamic tiered pricing & marketing flags
@@ -30,7 +31,7 @@ export const getAllProducts = async (req, res) => {
       }
     }
 
-    const resolvedProducts = products.map(product => {
+    const pricedProducts = products.map(product => {
       const retailPrice = parseFloat(product.price_retail);
       let finalPrice = retailPrice;
       let priceType = 'retail';
@@ -53,7 +54,6 @@ export const getAllProducts = async (req, res) => {
 
       return {
         ...product,
-        image: product.image_url || "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+COFFEE",
         price: finalPrice,
         original_price: retailPrice,
         priceType,
@@ -61,6 +61,7 @@ export const getAllProducts = async (req, res) => {
       };
     });
 
+    const resolvedProducts = await resolveSignedAssetUrls(pricedProducts, 'image_url');
     res.status(200).json(resolvedProducts);
   } catch (error) {
     console.error('GetAllProducts Error:', error);
@@ -114,9 +115,12 @@ export const getProductById = async (req, res) => {
       }
     }
 
+    const signedImageUrl = await createSignedAssetUrl(product.image_url);
+
     res.status(200).json({
       ...product,
-      image: product.image_url || "https://placehold.co/800x1000/7a9cff/ffffff?text=FERMION+COFFEE",
+      image_url: signedImageUrl,
+      image_url_storage_path: product.image_url || null,
       price: finalPrice,
       original_price: retailPrice,
       priceType,
@@ -369,18 +373,16 @@ export const uploadProductImage = async (req, res) => {
 
       if (errorAlt) throw errorAlt;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('products')
-        .getPublicUrl(filePath);
+      const storagePath = buildStorageReference('products', filePath);
+      const previewUrl = await createSignedAssetUrl(storagePath);
 
-      return res.status(200).json({ url: publicUrl });
+      return res.status(200).json({ url: storagePath, previewUrl, storagePath });
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('images')
-      .getPublicUrl(filePath);
+    const storagePath = buildStorageReference('images', filePath);
+    const previewUrl = await createSignedAssetUrl(storagePath);
 
-    res.status(200).json({ url: publicUrl });
+    res.status(200).json({ url: storagePath, previewUrl, storagePath });
   } catch (error) {
     console.error('Upload Error:', error);
     res.status(500).json({ message: "Upload failed", error: error.message });

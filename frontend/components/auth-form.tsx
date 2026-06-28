@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
+import { debugError } from "@/lib/debug";
 
 interface AuthFormProps {
   onSuccess: (profile: AuthProfile) => void;
@@ -79,7 +80,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorMessage = `Failed to ${mode}`;
+        let errorMessage = mode === "register" ? authCopy.registerFailure : authCopy.loginFailure;
         try {
           const errorJson = JSON.parse(errorText);
           errorMessage = errorJson.message || errorMessage;
@@ -107,7 +108,7 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       toast.success(data.message || (mode === "login" ? authCopy.submitLogin : authCopy.submitRegister));
       onSuccess(profile); 
     } catch (error: unknown) {
-      console.error("❌ Auth error:", error);
+      debugError("Auth error:", error);
       toast.error(getErrorMessage(error, authCopy.fallbackError));
     } finally {
       setLoading(false);

@@ -8,6 +8,7 @@ import { X, ChevronRight, Check } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useI18n } from "@/lib/i18n";
+import { debugLog } from "@/lib/debug";
 
 // Define the steps for different pages
 const getStepsConfig = (t: any): Record<string, any[]> => ({
@@ -326,7 +327,7 @@ export function SpotlightGuide() {
   const STEPS_CONFIG = getStepsConfig(t);
   const TOUR_STEPS = STEPS_CONFIG[pathname] || [];
 
-  console.log("SpotlightGuide Rendering Check:", {
+  debugLog("SpotlightGuide Rendering Check:", {
     isReady,
     isTourActive,
     isMobile,
@@ -567,7 +568,7 @@ export function SpotlightFAB() {
     setMounted(true);
   }, []);
 
-  console.log("SpotlightFAB Debug:", { mounted, isTourActive, isMobile, pathname });
+  debugLog("SpotlightFAB Debug:", { mounted, isTourActive, isMobile, pathname });
 
   if (!mounted || isTourActive || isMobile) return null;
 

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { apiFetch } from "@/lib/api";
 import { supabase } from "./supabase";
+import { debugError } from "./debug";
 
 const generateId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -192,7 +193,7 @@ export const useAuthStore = create<AuthStore>()(
             set({ user: { ...user, ...freshUser } });
           }
         } catch (e) {
-          console.error("Failed to refresh session", e);
+          debugError("Failed to refresh session", e);
         }
       },
       logout: () => {

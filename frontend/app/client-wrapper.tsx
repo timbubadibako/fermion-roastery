@@ -10,6 +10,7 @@ import { CartSync } from "@/components/cart-sync";
 import { SpotlightGuide, SpotlightFAB } from "@/components/ui/spotlight-guide";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
+import { debugError, debugLog } from "@/lib/debug";
 
 export function ClientWrapper({
   children,
@@ -21,9 +22,7 @@ export function ClientWrapper({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      // console.log("LAYOUT DEBUG:", { pathname, userRole: user?.role, user, mounted });
-    }
+    debugLog("LAYOUT DEBUG:", { pathname, userRole: user?.role, user, mounted });
   }, [user, mounted, pathname]);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export function ClientWrapper({
           refreshSession(state.user);
         }
       } catch (e) {
-        console.error("Hydration failed", e);
+        debugError("Hydration failed", e);
       }
     }
   }, [setUser, refreshSession]);

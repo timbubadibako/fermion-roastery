@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { debugError } from '@/lib/debug';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,7 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
   } catch (error) {
-    console.error('Failed to fetch dynamic routes for sitemap:', error);
+    debugError('Failed to fetch dynamic routes for sitemap:', error);
   }
 
   return routes;

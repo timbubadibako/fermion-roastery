@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { debugError } from '@/lib/debug';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       }
     }
   } catch (error) {
-    console.error("Metadata fetch error:", error);
+    debugError("Metadata fetch error:", error);
   }
 
   return {

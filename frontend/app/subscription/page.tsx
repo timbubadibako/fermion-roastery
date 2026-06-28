@@ -11,6 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAuthStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { debugError } from "@/lib/debug";
 
 // Visual Mapping (untuk mengembalikan styling lama)
 const planVisuals: any = {
@@ -49,7 +50,7 @@ export default function SubscriptionPageV2() {
           setPlans(data);
         }
       })
-      .catch(console.error);
+      .catch((error) => debugError("Failed to load subscription plans:", error));
   }, []);
 
   // 2. Animasi Statis

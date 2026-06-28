@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,7 +50,7 @@ export function NewReleasesV2() {
           setProducts(filtered);
         }
       } catch (error) {
-        console.error("Failed to fetch products:", error);
+        debugError("Failed to fetch products:", error);
       } finally {
         setLoading(false);
       }

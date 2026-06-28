@@ -6,6 +6,7 @@ import { CheckCircle2, ArrowRight, Package, Truck, ShoppingBag } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/lib/store";
+import { debugError } from "@/lib/debug";
 
 export default function OrderSuccessPage() {
   const [mounted, setMounted] = useState(false);
@@ -25,7 +26,7 @@ export default function OrderSuccessPage() {
                     removeItems(idsToRemove);
                 }
                 localStorage.removeItem('purchasedLineItemIds');
-            } catch (e) { console.error("Failed to parse purchased IDs", e); }
+            } catch (e) { debugError("Failed to parse purchased IDs", e); }
         }
 
         const summary = localStorage.getItem('latestOrderSummary');

@@ -38,11 +38,11 @@ export function B2BProfileSetup({ onComplete, profileId }: { onComplete: () => v
       });
 
       if (res.ok) {
-        toast.success("Profile completed successfully!");
+        toast.success("Profil mitra berhasil dilengkapi.");
         onComplete();
       }
     } catch (e) {
-      toast.error("Save failed");
+      toast.error("Gagal menyimpan profil.");
     } finally {
       setLoading(false);
     }
@@ -60,15 +60,15 @@ export function B2BProfileSetup({ onComplete, profileId }: { onComplete: () => v
               <div className="w-16 h-16 bg-fermion-french-blue/10 rounded-2xl flex items-center justify-center mx-auto text-fermion-french-blue mb-4">
                  <Building2 size={32} />
               </div>
-              <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Identity <br/> Verification.</h2>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Complete your profile to unlock full dashboard access</p>
+              <h2 className="text-4xl font-black uppercase italic tracking-tighter text-slate-900 leading-none">Verifikasi <br/> Profil.</h2>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Lengkapi profil untuk membuka akses dashboard penuh</p>
            </div>
 
            <form onSubmit={handleSave} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                  {/* Logo Upload */}
                  <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Cafe Logo (For Showcase & Invoices)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Logo Kafe Untuk Showcase & Invoice</label>
                     <div className="relative group">
                        <div className="aspect-square bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden transition-colors group-hover:bg-slate-100 group-hover:border-fermion-french-blue/30">
                           {logo ? (
@@ -92,20 +92,20 @@ export function B2BProfileSetup({ onComplete, profileId }: { onComplete: () => v
                  {/* Billing Info */}
                  <div className="space-y-6">
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tax ID (NPWP)</label>
+                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nomor NPWP</label>
                        <Input 
                         value={billingInfo.npwp} 
                         onChange={e => setBillingInfo({...billingInfo, npwp: e.target.value})}
-                        placeholder="00.000.000.0-000.000" 
+                        placeholder="Nomor NPWP" 
                         className="h-14 rounded-2xl bg-slate-50 border-none font-bold"
                        />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Billing Address</label>
+                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Alamat Penagihan</label>
                        <Input 
                         value={billingInfo.billingAddress} 
                         onChange={e => setBillingInfo({...billingInfo, billingAddress: e.target.value})}
-                        placeholder="Same as cafe address..." 
+                        placeholder="Alamat penagihan lengkap" 
                         className="h-14 rounded-2xl bg-slate-50 border-none font-bold"
                        />
                     </div>
@@ -116,7 +116,7 @@ export function B2BProfileSetup({ onComplete, profileId }: { onComplete: () => v
                 disabled={!logo || loading} 
                 className="w-full h-16 bg-slate-900 hover:bg-fermion-french-blue text-white rounded-3xl font-black uppercase tracking-widest italic shadow-xl shadow-slate-900/20"
               >
-                 {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" size={18} /> Save & Unlock Dashboard</>}
+                 {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" size={18} /> Simpan & Buka Dashboard</>}
               </Button>
            </form>
         </div>

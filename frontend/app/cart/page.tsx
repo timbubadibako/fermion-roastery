@@ -18,6 +18,7 @@ import { AddressInput } from "@/components/address-input";
 import { AddressSelection } from "@/components/address-selection";
 import { useI18n } from "@/lib/i18n";
 import { apiFetch } from "@/lib/api";
+import { debugError } from "@/lib/debug";
 
 export default function CartPage() {
   const t = useI18n();
@@ -76,7 +77,7 @@ export default function CartPage() {
             }));
           }
         } catch (e) {
-          console.error("Failed to auto-fill address");
+          debugError("Failed to auto-fill address");
         }
       };
       fetchProfile();
@@ -99,7 +100,7 @@ export default function CartPage() {
               setAddresses(parsedAddresses);
             }
           }
-        } catch (e) { console.error("Failed to fetch addresses", e); }
+        } catch (e) { debugError("Failed to fetch addresses", e); }
       };
       fetchAddresses();
     }

@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { apiFetch } from "@/lib/api";
+import { debugError } from "@/lib/debug";
 
 export default function SubscriptionCheckoutPage() {
   const router = useRouter();
@@ -107,7 +108,7 @@ export default function SubscriptionCheckoutPage() {
         }
       }
     } catch (e) {
-      console.error("Failed to load profile:", e);
+      debugError("Failed to load profile:", e);
     } finally {
       setLoading(false);
     }

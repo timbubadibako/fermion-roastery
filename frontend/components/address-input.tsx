@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { debugError } from "@/lib/debug";
 
 // 🟢 Tambahkan properti pecahan opsional di interface agar TypeScript aman
 export interface AddressValue {
@@ -56,7 +57,7 @@ export function AddressInput({ value, onChange }: AddressInputProps) {
         setShowAreas(true);
       }
     } catch (error) {
-      console.error("Area search error:", error);
+      debugError("Area search error:", error);
     } finally {
       setAreaSearchLoading(false);
     }
@@ -72,7 +73,7 @@ export function AddressInput({ value, onChange }: AddressInputProps) {
         <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Cari Kota atau Kecamatan</label>
         <div className="relative mt-3">
           <Input 
-            placeholder="Ketik minimal 3 huruf..." 
+            placeholder="Ketik nama kota atau kecamatan" 
             className="h-11 bg-white border border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm pl-14 shadow-sm focus:border-stone-400 transition-all" 
             value={searchQuery} 
             onChange={(e) => fetchAreas(e.target.value)}

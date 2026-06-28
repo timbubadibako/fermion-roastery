@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { siteContent } from "@/lib/content";
 import { Sticker } from "./ui/sticker";
 import { toast } from "sonner";
+import { debugError } from "@/lib/debug";
 
 // 🟢 Perbarui interface agar mendukung kustomisasi warna active per link
 interface CustomNavLink {
@@ -95,7 +96,7 @@ function HeaderComponent() {
           setPromotedProducts(data.slice(0, 2));
         }
       } catch (e) {
-        console.error("Failed to fetch products for search:", e);
+        debugError("Failed to fetch products for search:", e);
       }
     };
     fetchAll();
@@ -292,7 +293,7 @@ function HeaderComponent() {
                   <input
                     ref={searchInputRef}
                     type="text"
-                    placeholder="Search archives..."
+                    placeholder="Cari arsip..."
                     className={`bg-transparent outline-none text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ease-out placeholder:text-stone-400 ${isDarkHero ? 'text-white border-white/30 focus:border-white/70' : 'text-stone-900 border-black/10 focus:border-black/30'} ${isSearchOpen ? 'w-48 md:w-64 ml-3 opacity-100 border-b pb-1' : 'w-0 ml-0 opacity-0 p-0 border-b-0 pointer-events-none'}`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -375,7 +376,7 @@ function HeaderComponent() {
                             ) : (
                               <div className="py-12 text-center space-y-3">
                                 <Search size={28} strokeWidth={2} className="mx-auto text-stone-100" />
-                                <p className="text-[11px] font-display italic text-stone-300">No kopi matches your query.</p>
+                                <p className="text-[11px] font-display italic text-stone-300">Belum ada kopi yang cocok dengan pencarianmu.</p>
                               </div>
                             )}
                           </div>
@@ -387,7 +388,7 @@ function HeaderComponent() {
                           onClick={() => setIsSearchOpen(false)}
                           className="text-[10px] font-black text-stone-400 hover:text-stone-900 transition-colors duration-300 uppercase tracking-[0.3em] flex items-center justify-center gap-2"
                         >
-                          <span>Examine All Results</span>
+                          <span>Lihat Semua Hasil</span>
                           <ArrowRight size={12} strokeWidth={2.5} />
                         </Link>
                       </div>
@@ -459,7 +460,7 @@ function HeaderComponent() {
                   <Search size={18} className="text-stone-500" />
                   <input
                     type="text"
-                    placeholder="Search Kopi..."
+                    placeholder="Cari kopi..."
                     className="bg-transparent border-none outline-none text-[12px] font-black uppercase tracking-widest w-full text-stone-900 placeholder:text-stone-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -496,7 +497,7 @@ function HeaderComponent() {
                       onClick={() => setIsMenuOpen(false)}
                       className="block text-center text-[10px] font-black text-[#367F4D] uppercase tracking-widest pt-2 hover:underline"
                     >
-                      Examine All Results →
+                      Lihat Semua Hasil →
                     </Link>
                   </div>
                 )}

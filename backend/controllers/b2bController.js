@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import PDFDocument from 'pdfkit';
+import { buildStorageReference, createSignedAssetUrl } from '../lib/storage.js';
 // TODO: [MAILER] Integrate Resend / Nodemailer to send Welcome B2B Email & Contract PDF
 
 /**
@@ -224,8 +225,8 @@ export const uploadContract = async (req, res) => {
 
     if (storageError) throw new Error(`Storage upload failed: ${storageError.message}`);
 
-    // Get the public URL (if the bucket is public) or we just store the path
-    const { data: urlData } = supabase.storage.from('b2b_contracts').getPublicUrl(filePath);
+    const storagePath = buildStorageReference('b2b_contracts', filePath);
+    const signedUrl = await createSignedAssetUrl(storagePath, 15 * 60);
 
     // 2. Update Database Status and save the URL
     const { error: dbError } = await supabase
@@ -242,7 +243,8 @@ export const uploadContract = async (req, res) => {
     res.status(200).json({
       message: "Contract uploaded securely to cloud. Awaiting admin review.",
       status: 'awaiting_contract_review',
-      url: urlData.publicUrl
+      url: signedUrl,
+      storagePath
     });
   } catch (error) {
     console.error("Upload Contract Error:", error);

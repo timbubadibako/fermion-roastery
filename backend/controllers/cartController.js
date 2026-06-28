@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { createSignedAssetUrl } from '../lib/storage.js';
 
 // 1. Sync / Save Cart
 export const syncCart = async (req, res) => {
@@ -78,7 +79,7 @@ export const getCart = async (req, res) => {
 
     if (error) throw error;
 
-    const formattedData = data.map(item => {
+    const formattedData = await Promise.all(data.map(async (item) => {
       const basePrice = item.products?.price_retail || 0;
       const category = (item.products?.category || '').toLowerCase(); // 'espresso' atau 'filter'
       let finalPrice = basePrice;
@@ -118,10 +119,10 @@ export const getCart = async (req, res) => {
         grind: item.grind,
         quantity: item.quantity,
         selected: item.selected,
-        image: item.products?.image_url,
+        image: await createSignedAssetUrl(item.products?.image_url),
         tier: userTier
       };
-    });
+    }));
 
     res.status(200).json(formattedData);
   } catch (error) {

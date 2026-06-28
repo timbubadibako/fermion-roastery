@@ -48,6 +48,13 @@ const numberValue = (value: unknown, fallback = 0) => {
 };
 const parseNumericInput = (value: string) => Number(value.replace(/\D/g, "")) || 0;
 const formatNumberInput = (value: number) => value ? value.toLocaleString("id-ID") : "";
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
 
 const normalizeVariants = (variants: unknown): VariantItem[] => {
   if (!Array.isArray(variants)) return [];
@@ -72,6 +79,7 @@ export default function ProductFormPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [journalPosts, setJournalPosts] = useState<any[]>([]);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -120,7 +128,8 @@ export default function ProductFormPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        setFormData(prev => ({ ...prev, image_url: data.url }));
+        setFormData(prev => ({ ...prev, image_url: data.storagePath || data.url }));
+        setImagePreviewUrl(data.previewUrl || data.url || "");
         toast.success("Gambar berhasil diunggah.");
       } else {
         const data = await res.json().catch(() => null);
@@ -156,7 +165,7 @@ export default function ProductFormPage() {
               roast_profile: textValue(data.roast_profile) || "Light to Medium",
               description: textValue(data.description),
               farm: textValue(data.farm),
-              image_url: textValue(data.image_url),
+              image_url: textValue(data.image_url_storage_path || data.image_url),
               fermentation: textValue(data.fermentation),
               sweetness: numberValue(data.sweetness, 3),
               acidity: numberValue(data.acidity, 3),
@@ -172,6 +181,7 @@ export default function ProductFormPage() {
               search_upsell_headline: textValue(data.search_upsell_headline),
               variants: normalizeVariants(data.product_variants || data.variants)
             });
+            setImagePreviewUrl(textValue(data.image_url));
           }
         }
       } catch (error) {
@@ -206,6 +216,17 @@ export default function ProductFormPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedSlug = slugify(formData.slug || formData.name);
+    if (normalizedSlug.length < 3) {
+      toast.error("Slug produk minimal 3 karakter.");
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      slug: normalizedSlug,
+    };
+
     setSaving(true);
     try {
       const url = isEdit ? `/api/products/${params.id}` : "/api/products";
@@ -213,7 +234,7 @@ export default function ProductFormPage() {
 
       const res = await apiFetch(url, {
         method,
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
@@ -272,11 +293,12 @@ export default function ProductFormPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Nama SKU Produk</label>
-                <Input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. Sumedang Anaerob" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <Input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Nama produk atau lot kopi" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Slug URL</label>
-                <Input required value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} placeholder="e.g. sumedang-anaerob" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <Input required value={formData.slug} onChange={e => setFormData({ ...formData, slug: slugify(e.target.value) })} placeholder="slug-produk-unik" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <p className="text-[9px] font-bold text-stone-400">Dipakai untuk URL. Sistem akan merapikan huruf besar, spasi, dan simbol otomatis.</p>
               </div>
             </div>
 
@@ -340,15 +362,15 @@ export default function ProductFormPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Origin (Wilayah)</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Origin / Wilayah</label>
                 <div className="relative">
-                  <Input value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value })} placeholder="West Java, Indonesia" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 pl-14 focus-visible:ring-[#367F4D]" />
+                  <Input value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value })} placeholder="Wilayah origin kopi" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 pl-14 focus-visible:ring-[#367F4D]" />
                   <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-stone-300" size={16} />
                 </div>
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kebun / Farm</label>
-                <Input value={formData.farm} onChange={e => setFormData({ ...formData, farm: e.target.value })} placeholder="Manglayang Farm" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <Input value={formData.farm} onChange={e => setFormData({ ...formData, farm: e.target.value })} placeholder="Nama kebun, koperasi, atau produsen" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
               </div>
             </div>
           </div>
@@ -362,8 +384,8 @@ export default function ProductFormPage() {
 
             <div className="space-y-10">
               {[
-                { id: 'sweetness', label: 'Sweetness Intensity' },
-                { id: 'acidity', label: 'Acidity Brightness' },
+                { id: 'sweetness', label: 'Intensitas Sweetness' },
+                { id: 'acidity', label: 'Brightness Acidity' },
                 { id: 'body', label: 'Mouthfeel / Body' }
               ].map(sensor => {
                 const sensorKey = sensor.id as keyof typeof formData;
@@ -390,11 +412,11 @@ export default function ProductFormPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-6">
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Proses Pasca Panen</label>
-                <Input value={formData.process} onChange={e => setFormData({ ...formData, process: e.target.value })} placeholder="e.g. Natural, Washed" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <Input value={formData.process} onChange={e => setFormData({ ...formData, process: e.target.value })} placeholder="Natural, Washed, Honey, atau lainnya" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Ketinggian (MASL)</label>
-                <Input value={formData.altitude} onChange={e => setFormData({ ...formData, altitude: e.target.value })} placeholder="e.g. 1400 - 1600" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+                <Input value={formData.altitude} onChange={e => setFormData({ ...formData, altitude: e.target.value })} placeholder="1400 - 1600 mdpl" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
               </div>
             </div>
           </div>
@@ -428,7 +450,7 @@ export default function ProductFormPage() {
                       <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Berat Kemasan</label>
                       <Input
                         required
-                        placeholder="e.g. 150g atau 250g"
+                        placeholder="150g, 250g, atau 1kg"
                         value={variant.weight}
                         onChange={e => handleVariantChange(index, "weight", e.target.value)}
                         className="h-10 bg-white border-black/10 rounded-sm font-bold text-xs focus-visible:ring-[#367F4D]"
@@ -519,7 +541,7 @@ export default function ProductFormPage() {
           <div className="bg-white border border-black/5 rounded-sm p-10 space-y-6 shadow-sm text-left">
             <div className="flex items-center gap-2.5 border-b border-black/5 pb-4">
               <Sparkles size={16} className="text-[#367F4D]" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Campaign & Discovery Engine</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Pengaturan Campaign & Discovery</h4>
             </div>
 
             <div className="flex items-center justify-between py-2">
@@ -538,7 +560,7 @@ export default function ProductFormPage() {
             {/* New Release Badge Custom Control */}
             <div className="flex items-center justify-between py-2">
               <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">New Release Badge</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Badge New Release</p>
                 <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Injeksi Banner "Just Roasted"</p>
               </div>
               <input
@@ -552,7 +574,7 @@ export default function ProductFormPage() {
             {/* Pre-Search Upsell Control */}
             <div className="flex items-center justify-between py-2 border-t border-black/5">
               <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Promoted Search Upsell</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Promoted Search</p>
                 <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Rekomendasikan sebelum user mencari</p>
               </div>
               <input
@@ -576,7 +598,7 @@ export default function ProductFormPage() {
                   <Input
                     value={formData.search_upsell_headline || ""}
                     onChange={e => setFormData({ ...formData, search_upsell_headline: e.target.value })}
-                    placeholder="e.g. Profil anaerob paling manis bulan ini."
+                    placeholder="Contoh: Profil anaerob paling manis bulan ini."
                     className="h-10 bg-stone-50 border-black/10 font-medium rounded-sm text-xs focus-visible:ring-[#367F4D]"
                   />
                 </motion.div>
@@ -602,16 +624,17 @@ export default function ProductFormPage() {
                 {uploading ? (
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 size={30} className="animate-spin text-[#367F4D]" />
-                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Uploading...</p>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Mengunggah...</p>
                   </div>
-                ) : formData.image_url ? (
+                ) : (imagePreviewUrl || formData.image_url) ? (
                   <>
-                    <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={imagePreviewUrl || formData.image_url} alt="Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setFormData({ ...formData, image_url: "" });
+                        setImagePreviewUrl("");
                       }}
                       className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-sm text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
                     >
@@ -630,7 +653,11 @@ export default function ProductFormPage() {
                   </>
                 )}
               </div>
-              <Input value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} placeholder="https://cloud.fermion.com/prod-01.jpg" className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 text-[10px] focus-visible:ring-[#367F4D]" />
+              <Input value={formData.image_url} onChange={e => {
+                const value = e.target.value;
+                setFormData({ ...formData, image_url: value });
+                setImagePreviewUrl(value);
+              }} placeholder="Storage path internal atau URL gambar" className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 text-[10px] focus-visible:ring-[#367F4D]" />
             </div>
 
             {/* Journal Linking */}
