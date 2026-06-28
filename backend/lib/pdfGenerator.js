@@ -32,45 +32,45 @@ const createInvoiceBuffer = async (order) => {
   });
 
   if (fs.existsSync(logoPath)) {
-    doc.image(logoPath, 48, 40, { width: 94 });
+    doc.image(logoPath, 48, 34, { width: 116 });
   }
 
-  doc.fillColor('#64748B').font('Helvetica').fontSize(9).text('Jl. Kesambi No. 202, Cirebon, Jawa Barat 45133', 48, 112);
-  doc.text('hello@fermionroastery.com', 48, 125);
+  doc.fillColor('#64748B').font('Helvetica').fontSize(8.5).text('Dusun 02 RT 004 RW 002, Penggilingan Padi, Sumber Lor, Kec. Babakan, Kabupaten Cirebon, Jawa Barat 45191', 48, 96, { width: 220 });
+  doc.text('hello@fermionroastery.com', 48, doc.y + 4);
 
   doc.fillColor('#CBD5E1').font('Helvetica-BoldOblique').fontSize(38).text('Invoice.', 360, 46, { align: 'right' });
   doc.fillColor('#0F172A').font('Courier-Bold').fontSize(12).text(order.id.slice(0, 8).toUpperCase(), 360, 92, { align: 'right' });
 
   const badgeWidth = 120;
-  doc.roundedRect(430, 112, badgeWidth, 22, 11)
+  doc.roundedRect(430, 108, badgeWidth, 22, 11)
     .fillAndStroke(['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#DCFCE7' : '#FEF3C7', ['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#DCFCE7' : '#FEF3C7');
   doc.fillColor(['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#15803D' : '#B45309')
     .font('Helvetica-Bold')
     .fontSize(9)
-    .text(order.status, 430, 119, { width: badgeWidth, align: 'center' });
+    .text(order.status, 430, 115, { width: badgeWidth, align: 'center' });
 
-  doc.moveTo(48, 160).lineTo(547, 160).strokeColor('#E2E8F0').stroke();
+  doc.moveTo(48, 150).lineTo(547, 150).strokeColor('#E2E8F0').stroke();
 
-  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('DITAGIHKAN KEPADA', 48, 182);
-  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(14).text(order.customer_name || '-', 48, 200);
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('DITAGIHKAN KEPADA', 48, 170);
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(14).text(order.customer_name || '-', 48, 188);
   doc.fillColor('#64748B').font('Helvetica').fontSize(10)
-    .text(order.shipping_address || '-', 48, 220, { width: 220 })
+    .text(order.shipping_address || '-', 48, 208, { width: 220 })
     .text(order.shipping_city || '-', 48, doc.y + 4)
     .text(order.customer_email || '-', 48, doc.y + 4)
     .text(order.customer_phone || '-', 48, doc.y + 4);
 
-  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('TANGGAL INVOICE', 350, 182, { align: 'right', width: 200 });
-  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(createdAt.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 200, { align: 'right', width: 200 });
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('TANGGAL INVOICE', 350, 170, { align: 'right', width: 200 });
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(createdAt.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 188, { align: 'right', width: 200 });
 
   if (paymentMethod === 'TEMPO') {
-    doc.fillColor('#DC2626').font('Helvetica-Bold').fontSize(9).text('JATUH TEMPO (NET-30)', 350, 232, { align: 'right', width: 200 });
-    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 250, { align: 'right', width: 200 });
+    doc.fillColor('#DC2626').font('Helvetica-Bold').fontSize(9).text('JATUH TEMPO (NET-30)', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 238, { align: 'right', width: 200 });
   } else if (paymentMethod === 'OFFLINE_CASH') {
-    doc.fillColor('#059669').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 232, { align: 'right', width: 200 });
-    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Tunai (Offline)', 350, 250, { align: 'right', width: 200 });
+    doc.fillColor('#059669').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Tunai (Offline)', 350, 238, { align: 'right', width: 200 });
   } else {
-    doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 232, { align: 'right', width: 200 });
-    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Transfer / E-Wallet', 350, 250, { align: 'right', width: 200 });
+    doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Transfer / E-Wallet', 350, 238, { align: 'right', width: 200 });
   }
 
   doc.moveTo(48, 280).lineTo(547, 280).strokeColor('#E2E8F0').stroke();
