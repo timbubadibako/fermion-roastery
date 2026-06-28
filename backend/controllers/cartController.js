@@ -2,6 +2,16 @@ import { supabase } from '../lib/supabase.js';
 import { createSignedAssetUrl } from '../lib/storage.js';
 import crypto from 'crypto';
 
+const parseWeightToKg = (value) => {
+  if (value == null) return 1;
+  const raw = String(value).trim().toLowerCase();
+  const numeric = Number(raw.replace(/[^\d.]/g, ''));
+
+  if (!Number.isFinite(numeric) || numeric <= 0) return 1;
+  if (raw.includes('kg')) return numeric;
+  return numeric / 1000;
+};
+
 // 1. Sync / Save Cart
 export const syncCart = async (req, res) => {
   const { profileId, items } = req.body;
@@ -88,7 +98,7 @@ export const getCart = async (req, res) => {
       if (userTier === 'Bronze') {
         if (category === 'espresso') {
            // Diskon Rp 10.000 per kg
-           const weightKg = (item.weight || 1000) / 1000;
+           const weightKg = parseWeightToKg(item.weight);
            finalPrice = basePrice - (10000 * weightKg);
         } else if (category === 'filter') {
            // Diskon 10%
@@ -97,7 +107,7 @@ export const getCart = async (req, res) => {
       } else if (userTier === 'Silver') {
         if (category === 'espresso') {
            // Diskon Rp 15.000 per kg
-           const weightKg = (item.weight || 1000) / 1000;
+           const weightKg = parseWeightToKg(item.weight);
            finalPrice = basePrice - (15000 * weightKg);
         } else if (category === 'filter') {
            // Diskon 15%
