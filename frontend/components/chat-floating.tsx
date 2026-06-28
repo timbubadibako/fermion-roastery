@@ -94,7 +94,7 @@ export function ChatFloating() {
             {/* Input: Integrated Notebook Form */}
             <form onSubmit={handleSendMessage} className="p-6 bg-white border-t border-black/5 flex gap-3">
                <Input 
-                 placeholder="Type your question..." 
+                 placeholder="Tulis pertanyaan Anda..." 
                  className="flex-1 h-12 bg-stone-50 border border-black/5 rounded-xl text-[11px] font-display italic px-5 focus:ring-1 focus:ring-[#367F4D]/20 transition-all shadow-inner"
                  value={inputText}
                  onChange={(e) => setInputText(e.target.value)}

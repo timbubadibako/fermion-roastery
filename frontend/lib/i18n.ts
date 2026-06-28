@@ -37,7 +37,7 @@ export const translations = {
       buy_now: "Buy It Now",
       emptyState: {
         title: "Empty Cart",
-        viewProductsButton: "View Products"
+        viewProductsButton: "Lihat Produk"
       },
       steps: {
         review: "01 Review",
@@ -51,7 +51,7 @@ export const translations = {
         proceedToShippingButton: "Proceed to Shipping"
       },
       summary: {
-        title: "Order Summary",
+        title: "Ringkasan Pesanan",
         totalItemsLabel: "Total Products",
         pcsLabel: "Pcs",
         subtotalLabel: "Subtotal",
@@ -95,7 +95,7 @@ export const translations = {
       },
       emptyState: {
         title: "Your cart is empty.",
-        exploreButton: "Explore Produk"
+        exploreButton: "Lihat Produk"
       },
       footer: {
         subtotalLabel: "Subtotal",
@@ -113,7 +113,7 @@ export const translations = {
       phone: "WhatsApp Number",
       destination: "Shipping Destination",
       address: "Full Street Address",
-      city_search: "Search City or Area",
+      city_search: "Cari Kota atau Area",
       postal_code: "Postal Code",
       courier_selection: "Courier Selection",
       finalize: "Pay Now",
@@ -122,9 +122,9 @@ export const translations = {
     },
     auth: {
       fullNameLabel: "Full Name",
-      fullNamePlaceholder: "Your name",
+      fullNamePlaceholder: "Enter your full name",
       emailLabel: "Email Address",
-      emailPlaceholder: "you@example.com",
+      emailPlaceholder: "name@example.com",
       passwordLabel: "Password",
       submitLogin: "Log In",
       submitRegister: "Create Account",
@@ -136,6 +136,8 @@ export const translations = {
       fillAllFields: "Please fill in all fields.",
       passwordRequirement: "Password must be at least 8 characters long and contain both letters and numbers.",
       resolveProfileFailure: "Failed to resolve profile data.",
+      loginFailure: "Login failed.",
+      registerFailure: "Registration failed.",
       fallbackError: "Please try again later."
     },
     account: {
@@ -151,9 +153,9 @@ export const translations = {
       },
       latest_order: "Latest Order Status",
       tracking: {
-        expand: "Track Package",
+        expand: "Lacak Kiriman",
         collapse: "Close Details",
-        history: "Package Journey",
+        history: "Riwayat Kiriman",
         no_data: "No data available from courier yet.",
         courierAndAwb: "Courier & AWB",
         pending: "Pending",
@@ -198,7 +200,7 @@ export const translations = {
       overview: {
         latestOrderStatus: "Latest Order Status",
         orderLabel: "Order #",
-        viewDetailsButton: "View Details",
+        viewDetailsButton: "Lihat Detail",
         noActiveOrders: "No active orders found.",
         totalPurchaseTitle: "Total Purchases",
         ordersCountLabel: "Orders",
@@ -227,19 +229,19 @@ export const translations = {
         fullNameLabel: "Full Name",
         whatsappNumberLabel: "WhatsApp Contact Number",
         whatsappPlaceholder: "08...",
-        addressBookTitle: "Shipping Address Book",
+        addressBookTitle: "Buku Alamat Pengiriman",
         useCurrentLocation: "Use Current Location",
         recipientNameLabel: "Recipient Name",
         recipientPhoneLabel: "Recipient Phone Number",
         rtRwLabel: "RT / RW",
-        rtRwPlaceholder: "e.g. RT 03 / RW 01",
-        streetAddressLabel: "Block / Hamlet / Village / Street",
-        streetAddressPlaceholder: "e.g. Dusun Manis / Blok Pahing / Jl. Elang",
-        villageLabel: "Subdistrict / Village",
-        villagePlaceholder: "e.g. Desa Waled Kota",
+        rtRwPlaceholder: "RT 03 / RW 01",
+        streetAddressLabel: "Street / Block / Hamlet",
+        streetAddressPlaceholder: "Street, block, or hamlet name",
+        villageLabel: "Village / Subdistrict",
+        villagePlaceholder: "Village or subdistrict name",
         landmarkLabel: "Landmark (Optional)",
-        landmarkPlaceholder: "e.g. Next to Al-Ikhlas Mosque",
-        districtCitySearchLabel: "Search District / City",
+        landmarkPlaceholder: "Nearby landmark or building",
+        districtCitySearchLabel: "Cari Kecamatan / Kota",
         saveButton: "Confirm & Save All Changes",
         addresses: {
           primaryLabel: "Primary Address",
@@ -253,8 +255,8 @@ export const translations = {
         contractProtocolTitle: "Informasi Kontrak.",
         legalFinalizationLabel: "Legal Finalization",
         partnershipAgreementText: "Your partnership agreement is ready. Please download, sign, and upload to finalize your partner dashboard access.",
-        downloadButton: "Download Contract PDF",
-        uploadDropzoneTitle: "Drop or Click to Upload",
+        downloadButton: "Unduh PDF Kontrak",
+        uploadDropzoneTitle: "Tarik File atau Klik untuk Unggah",
         uploadDropzoneFormat: "Accepted Format: PDF Only (Max 5MB)"
       },
       messages: {
@@ -265,7 +267,7 @@ export const translations = {
         profileSaveFailure: "Failed to save changes.",
         geolocationUnsupported: "Geolocation is not supported by your browser.",
         detectingLocation: "Detecting your current location...",
-        locationDetected: "Address automatically detected! Please complete the house number details and search for city/district.",
+        locationDetected: "Address detected automatically. Please complete the house number and confirm the city or district.",
         locationGeocodeFailure: "Failed to resolve location. Please fill in manually.",
         locationAccessDenied: "Location access denied by browser.",
         uploadingContract: "Uploading contract...",
@@ -303,7 +305,7 @@ export const translations = {
       labDescPart2: ". Consider prioritizing the next roast batch for Silver Tier partners.",
       roastAccuracy: "Roast Accuracy",
       aiStrategyBtn: "Generate AI Strategy",
-      comingSoonTitle: "Coming Soon.",
+      comingSoonTitle: "Segera Hadir.",
       comingSoonDesc: "AI Strategy features are currently being calibrated in our roastery. Stay tuned!",
       okUnderstand: "OK, Understood",
       revenue: "Revenue",
@@ -333,12 +335,12 @@ export const translations = {
         minPurchase: "Above Rp 500.000"
       },
       search: {
-        placeholder: "Search archives...",
+        placeholder: "Cari arsip...",
         curated: "Curated Kopi",
         matchesFound: "Matches Found",
         results: "Result(s)",
-        noMatch: "No kopi matches your query.",
-        examineAll: "Examine All Results"
+        noMatch: "Tidak ada kopi yang sesuai dengan pencarianmu.",
+        examineAll: "Lihat Semua Hasil"
       },
       navMobile: {
         account: "My Account",
@@ -350,16 +352,16 @@ export const translations = {
     },
     spotlight: {
       ourCoffee: {
-        title: "The Produk",
-        content: "Explore our latest roasts and roastery-grade single origins. Each bean is treated like a unique kopi."
+        title: "Koleksi Kopi",
+        content: "Jelajahi hasil roasting terbaru dan single origin berstandar roastery kami. Setiap biji kopi diperlakukan secara unik."
       },
       wholesale: {
-        title: "B2B Partnership",
-        content: "Looking for precision roasting for your cafe? We provide custom profiles and scalable wholesale pricing."
+        title: "Kemitraan B2B",
+        content: "Butuh suplai presisi untuk kafe Anda? Kami menyediakan profil roasting khusus dan harga grosir yang terukur."
       },
       subscription: {
-        title: "Never Run Out",
-        content: "Subscribe to our rotating experimental lots. Fresh roasts delivered on your schedule."
+        title: "Berlangganan",
+        content: "Dapatkan pengiriman rutin untuk eksperimen roasting terbaru kami. Kopi segar dikirim sesuai jadwal Anda."
       },
       catalog: {
         title: "The Roastery",
@@ -383,24 +385,24 @@ export const translations = {
         quickTour: "Quick Tour"
       },
       cartPage: {
-        title: "Your Cart",
-        content: "Review your selected produk before proceeding to checkout."
+        title: "Keranjang Anda",
+        content: "Tinjau produk pilihan Anda sebelum melanjutkan ke checkout."
       },
       addCart: {
         title: "Add to Cart",
         content: "Click this button to add the item to your cart. (This is just a tour, your cart can be emptied later and transaction won't be forced)."
       },
       openCart: {
-        title: "Your Cart",
-        content: "This is your shopping cart. You can find all your added produk here."
+        title: "Keranjang Anda",
+        content: "Ini ikon keranjang belanja Anda. Semua produk yang ditambahkan akan muncul di sini."
       },
       checkoutBtn: {
         title: "Checkout",
         content: "Proceed to checkout. Don't worry, the transaction won't be forced."
       },
       addressSelection: {
-        title: "Shipping Address",
-        content: "Select or add your shipping address here."
+        title: "Alamat Pengiriman",
+        content: "Pilih atau tambahkan alamat pengiriman Anda di sini."
       },
       accountSaveHint: {
         content: "To save your addresses for future orders, you can register or log in from the menu up here."
@@ -431,7 +433,7 @@ export const translations = {
       },
       wholesaleBenefits: {
         title: "Partner Benefits",
-        content: "Explore the six core pillars of our B2B partnership, from quality control to priority logistics."
+        content: "Pelajari enam pilar utama kemitraan B2B kami, dari kontrol mutu hingga prioritas logistik."
       },
       wholesaleBenefitCard: {
         title: "Quality Assurance",
@@ -450,12 +452,12 @@ export const translations = {
         content: "This is the final step. You can always return to this page later if you need time to review."
       },
       b2bContractDownload: {
-        title: "Download Contract",
-        content: "Click here to download your personalized B2B partnership agreement."
+        title: "Unduh Kontrak",
+        content: "Klik di sini untuk mengunduh dokumen kemitraan B2B yang sudah dipersonalisasi."
       },
       b2bContractUpload: {
-        title: "Upload Signed Copy",
-        content: "Once signed, upload the document here to activate your partner dashboard access."
+        title: "Unggah Dokumen Tanda Tangan",
+        content: "Setelah ditandatangani, unggah dokumennya di sini untuk mengaktifkan akses dashboard mitra."
       },
       subHero: {
         title: "The Roastery Loop",
@@ -486,27 +488,27 @@ export const translations = {
         content: "As a subscriber, your delivery automatically receives priority routing on the first roasting day."
       },
       subCheckSummary: {
-        title: "Order Summary",
-        content: "Review your selected subscription plan. Note that shipping is completely free."
+        title: "Ringkasan Pesanan",
+        content: "Tinjau paket langganan yang Anda pilih. Ongkir sepenuhnya gratis."
       },
       subCheckPay: {
-        title: "Complete Subscription",
-        content: "Click here to proceed to payment and finalize your coffee subscription."
+        title: "Selesaikan Langganan",
+        content: "Klik di sini untuk melanjutkan ke pembayaran dan mengaktifkan langganan kopi Anda."
       },
       journalHero: {
-        title: "The Archives",
-        content: "Read our latest experiments, field reports, and roastery updates."
+        title: "Arsip Jurnal",
+        content: "Baca eksperimen terbaru, laporan lapangan, dan kabar terbaru dari roastery kami."
       },
       journalSearch: {
-        title: "Search Records",
+        title: "Cari Arsip",
         content: "Looking for something specific? Search through our entire repository of articles."
       },
       journalGrid: {
         title: "Pinned Chronicles",
-        content: "Explore our featured stories presented in a staggered scrapbook layout."
+        content: "Jelajahi cerita unggulan kami yang disusun dalam tampilan editorial bertingkat."
       },
       journalExplore: {
-        title: "Explore More",
+        title: "Jelajahi Arsip",
         content: "Swipe through our older entries and discover the history behind our beans."
       },
       storyPage: {
@@ -515,19 +517,19 @@ export const translations = {
       },
 
       headerSearch: {
-        title: "Quick Search",
+        title: "Pencarian Cepat",
         content: "Find specific coffee beans, origins, or journal articles instantly."
       },
       headerLang: {
-        title: "Language Switch",
+        title: "Ganti Bahasa",
         content: "Toggle between English and Bahasa Indonesia seamlessly."
       },
       headerAccount: {
-        title: "Your Account",
+        title: "Akun Anda",
         content: "Manage your orders, subscriptions, and profile settings."
       },
       headerCart: {
-        title: "Mini Cart",
+        title: "Keranjang Mini",
         content: "Quickly view your added items and total price."
       }
     },
@@ -586,49 +588,49 @@ export const translations = {
       }
     },
     catalog: {
-      badge: "Retail Catalogue",
+      badge: "Katalog Retail",
       titleMain: "Our Coffee",
-      titleSub: "Produk.",
-      description: "Explore our collection of precision-roasted beans, curated from the finest altitudes.",
-      tools: "Catalogue Tools",
+      titleSub: "Koleksi.",
+      description: "Jelajahi koleksi biji kopi yang dipanggang presisi dan dikurasi dari origin terbaik.",
+      tools: "Alat Katalog",
       bestSeller: "BEST SELLER",
       batchRecord: "Batch Record",
       perWeight: "Rp / 250G",
       addToCart: "Add to Cart",
-      emptyStateTitle: "No Produk Found",
-      emptyStateDesc: "We couldn't find any coffee that matches your current filters. Try selecting a different process or category.",
-      emptyStateReset: "Reset Filters"
+      emptyStateTitle: "Produk Tidak Ditemukan",
+      emptyStateDesc: "Belum ada kopi yang cocok dengan filter saat ini. Coba ganti proses atau kategorinya.",
+      emptyStateReset: "Reset Filter"
     },
     productDetail: {
-      returnToCatalogue: "Return to Catalogue",
-      specimenRecord: "Kopi Record v.01",
+      returnToCatalogue: "Kembali ke Katalog",
+      specimenRecord: "Catatan Kopi v.01",
       score: "Score",
       extractionProtocol: "Info Ekstraksi",
-      brewingGuide: "Brewing Guide",
+      brewingGuide: "Panduan Seduh",
       forEspresso: "FOR ESPRESSO",
       withMilk: "WITH MILK",
       dose: "DOSE",
       yield: "YIELD",
       time: "TIME",
       ratio: "RATIO",
-      authenticRecord: "Authentic Record",
+      authenticRecord: "Catatan Asli",
       valuation: "Valuation",
-      specimenAnalysis: "Kopi Analysis",
+      specimenAnalysis: "Analisis Kopi",
       originsProcessing: "Origins & Processing",
       origin: "Origin",
       process: "Process",
       altitude: "Altitude",
       selectQuantity: "Select Quantity",
-      packaging: "Packaging",
-      preparation: "Preparation",
-      addToOrder: "Add to Order",
-      initiateCheckout: "Initiate Checkout",
-      labSuggestions: "Roastery Suggestions",
-      completeArchive: "Complete the Archive.",
-      browseFullCollection: "Browse Full Collection",
-      analyzingBatch: "Analyzing Batch Record...",
-      productNotFound: "Product not found",
-      returnToArchive: "Return to Archive",
+      packaging: "Kemasan",
+      preparation: "Persiapan",
+      addToOrder: "Tambah ke Pesanan",
+      initiateCheckout: "Lanjut ke Checkout",
+      labSuggestions: "Saran Roastery",
+      completeArchive: "Lengkapi Arsip.",
+      browseFullCollection: "Lihat Koleksi Lengkap",
+      analyzingBatch: "Menganalisis Catatan Batch...",
+      productNotFound: "Produk tidak ditemukan",
+      returnToArchive: "Kembali ke Arsip",
       fermentation: "Fermentation",
       sweetness: "Sweetness",
       acidity: "Acidity",
@@ -749,11 +751,11 @@ export const translations = {
       step2Subheading: "Define your needs.",
       form: {
         cafeNameLabel: "Cafe / Company Name",
-        cafeNamePlaceholder: "e.g. Roastery Kopi",
+        cafeNamePlaceholder: "Cafe or company name",
         phoneLabel: "WhatsApp Number",
         phonePlaceholder: "08...",
-        addressLabel: "Full Address",
-        addressPlaceholder: "Street, City...",
+        addressLabel: "Business Address",
+        addressPlaceholder: "Full business address",
         options: {
           artisanTitle: "Artisan",
           growthTitle: "Growth",
@@ -776,24 +778,24 @@ export const translations = {
         heading: "Informasi Kontrak.",
         subheading: "Legal Finalization",
         description: "Your partnership agreement is ready. Please download, sign, and upload to finalize your roastery access.",
-        downloadButton: "Download Contract PDF",
+        downloadButton: "Unduh PDF Kontrak",
         upload: {
-          idle: "Drop or Click to Upload",
-          uploading: "Uploading...",
+          idle: "Tarik File atau Klik untuk Unggah",
+          uploading: "Mengunggah...",
           hint: "Accepted Format: PDF Only (Max 5MB)"
         }
       },
       toasts: {
-        success: "Contract uploaded successfully",
-        error: "Upload failed"
+        success: "Kontrak berhasil diunggah",
+        error: "Unggah dokumen gagal"
       }
     },
     b2bShop: {
       toast: {
-        loadFailed: "Failed to load wholesale catalog.",
-        addedToCart: "{{name}} added to wholesale cart"
+        loadFailed: "Gagal memuat katalog wholesale.",
+        addedToCart: "{{name}} ditambahkan ke keranjang wholesale"
       },
-      loading: "Loading Wholesale Catalog...",
+      loading: "Memuat Katalog Wholesale...",
       floatingCart: "Cart ({{count}})",
       activeTierPrice: "Active Tier {{tier}} Pricing",
       title: "Wholesale <br/> Shop.",
@@ -807,25 +809,25 @@ export const translations = {
       retailLabel: "Retail: Rp",
       unitLabel: "/ 1 KG",
       checkoutPrompt: {
-        title: "Done Selecting?",
-        description: "Review your order and proceed to delivery to secure this week's roastery batch.",
-        button: "Process Order"
+        title: "Sudah Selesai Memilih?",
+        description: "Tinjau pesanan Anda lalu lanjut ke pengiriman untuk mengamankan batch roasting minggu ini.",
+        button: "Proses Pesanan"
       }
     },
     b2bCheckout: {
       toast: {
-        selectCargo: "Please select a cargo method.",
-        tempoSuccess: "Net-30 Invoice Created Successfully.",
-        offlineSuccess: "Offline order logged successfully.",
+        selectCargo: "Silakan pilih metode pengiriman.",
+        tempoSuccess: "Invoice Net-30 berhasil dibuat.",
+        offlineSuccess: "Pesanan offline berhasil dicatat.",
         gatewaySuccess: "Pesanan berhasil dibuat! Mengalihkan ke pembayaran...",
-        invoiceFailed: "Failed to generate procurement invoice.",
-        gatewayError: "Communication failure with Payment Gateway."
+        invoiceFailed: "Gagal membuat invoice procurement.",
+        gatewayError: "Gagal berkomunikasi dengan payment gateway."
       },
-      loading: "Preparing Wholesale Order...",
+      loading: "Menyiapkan Pesanan Wholesale...",
       emptyState: {
-        title: "Wholesale Cart is Empty.",
-        subtitle: "Please select wholesale products first before proceeding.",
-        button: "Back to Catalog"
+        title: "Keranjang Wholesale Masih Kosong.",
+        subtitle: "Silakan pilih produk wholesale terlebih dulu sebelum melanjutkan.",
+        button: "Kembali ke Katalog"
       },
       badge: "Pembayaran",
       stepLabel: "Step 2 of 2",
@@ -833,11 +835,11 @@ export const translations = {
       shipping: {
         sectionTitle: "Shipping Destination",
         defaultAddressLabel: "Default Cafe Address",
-        fallbackAddress: "Jl. Sudirman No. 1, South Jakarta",
-        customAddressLabel: "Custom Branch / WH",
-        customAddressSubtitle: "Deliver this specific batch to a different location.",
+        fallbackAddress: "Use the main address from your profile",
+        customAddressLabel: "Custom Branch / Warehouse",
+        customAddressSubtitle: "Send this batch to a different branch or warehouse location.",
         customAddressInputLabel: "Custom Delivery Address",
-        customAddressPlaceholder: "Full street address..."
+        customAddressPlaceholder: "Complete delivery address",
       },
       cargo: {
         sectionTitle: "Cargo Selection",
@@ -845,7 +847,7 @@ export const translations = {
         days: "Days"
       },
       summary: {
-        sectionTitle: "Order Summary",
+        sectionTitle: "Ringkasan Pesanan",
         itemCalculation: "{{quantity}} UNIT x Rp {{price}}",
         monthlyAccumulationAlert: "This purchase of {{weight}}KG will be added to your monthly accumulation.",
         subtotal: "Product Subtotal",
@@ -865,11 +867,11 @@ export const translations = {
       toast: {
         noPlanSelected: "No subscription plan selected.",
         savedAddressLoaded: "Saved address loaded.",
-        completeAddressAndIdentity: "Please complete the delivery address and recipient identity.",
+        completeAddressAndIdentity: "Please complete the delivery address and recipient details.",
         invoiceFailed: "Failed to generate payment invoice.",
         networkError: "A network error occurred."
       },
-      loading: "Preparing Checkout...",
+      loading: "Menyiapkan Checkout...",
       title: "Shipping Info.",
       subtitle: "Where should we deliver your order?",
       priorityShipping: {
@@ -1013,7 +1015,7 @@ export const translations = {
     },
     auth: {
       fullNameLabel: "Nama Lengkap",
-      fullNamePlaceholder: "Nama Anda",
+        fullNamePlaceholder: "Masukkan nama lengkap",
       emailLabel: "Alamat Email",
       emailPlaceholder: "anda@email.com",
       passwordLabel: "Kata Sandi",
@@ -1027,6 +1029,8 @@ export const translations = {
       fillAllFields: "Silakan lengkapi semua kolom.",
       passwordRequirement: "Kata sandi minimal 8 karakter dan harus berisi huruf serta angka.",
       resolveProfileFailure: "Gagal memuat data profil.",
+      loginFailure: "Masuk gagal.",
+      registerFailure: "Pendaftaran gagal.",
       fallbackError: "Silakan coba lagi nanti."
     },
     account: {
@@ -1123,13 +1127,13 @@ export const translations = {
         recipientNameLabel: "Nama Penerima",
         recipientPhoneLabel: "Nomor Telpon Penerima",
         rtRwLabel: "RT / RW",
-        rtRwPlaceholder: "Misal: RT 03 / RW 01",
+        rtRwPlaceholder: "RT 03 / RW 01",
         streetAddressLabel: "Blok / Dusun / Kampung / Jalan",
-        streetAddressPlaceholder: "Misal: Dusun Manis / Blok Pahing / Jl. Elang",
+        streetAddressPlaceholder: "Nama jalan, blok, atau dusun",
         villageLabel: "Desa / Kelurahan",
-        villagePlaceholder: "Misal: Desa Waled Kota",
+        villagePlaceholder: "Nama desa atau kelurahan",
         landmarkLabel: "Patokan (Opsional)",
-        landmarkPlaceholder: "Misal: Samping Mushola Al-Ikhlas",
+        landmarkPlaceholder: "Patokan terdekat yang mudah dikenali",
         districtCitySearchLabel: "Cari Kecamatan / Kota",
         saveButton: "Konfirmasi & Simpan Semua Perubahan",
         addresses: {
@@ -1156,7 +1160,7 @@ export const translations = {
         profileSaveFailure: "Gagal menyimpan perubahan.",
         geolocationUnsupported: "Geolocation tidak didukung browser.",
         detectingLocation: "Mendeteksi lokasi asli anda...",
-        locationDetected: "Alamat terdeteksi otomatis! Silakan lengkapi detail nomor rumah dan cari kota/kecamatan.",
+        locationDetected: "Alamat terdeteksi otomatis. Silakan lengkapi nomor rumah lalu pastikan kota atau kecamatannya.",
         locationGeocodeFailure: "Gagal menerjemahkan lokasi. Silakan isi manual.",
         locationAccessDenied: "Akses lokasi ditolak browser.",
         uploadingContract: "Mengunggah kontrak...",
@@ -1194,7 +1198,7 @@ export const translations = {
       labDescPart2: ". Pertimbangkan untuk memprioritaskan batch pemanggangan berikutnya untuk partner Tier Silver.",
       roastAccuracy: "Akurasi Pemanggangan",
       aiStrategyBtn: "Buat Strategi AI",
-      comingSoonTitle: "Coming Soon.",
+      comingSoonTitle: "Segera Hadir.",
       comingSoonDesc: "Fitur Strategi AI sedang dikalibrasi di roastery kami. Nantikan kehadirannya!",
       okUnderstand: "Oke, Mengerti",
       revenue: "Pendapatan",
@@ -1270,8 +1274,8 @@ export const translations = {
       },
       buttons: {
         next: "Lanjut",
-        gotIt: "Mengerti",
-        quickTour: "Panduan Cepat"
+        gotIt: "Got It",
+        quickTour: "Quick Tour"
       },
       cartPage: {
         title: "Keranjang Anda",
@@ -1279,22 +1283,22 @@ export const translations = {
       },
       addCart: {
         title: "Tambah ke Keranjang",
-        content: "Klik tombol ini untuk memasukkan kopi ke keranjang belanja Anda. (Ini hanya tour, keranjang akan dikosongkan dan transaksi tidak terpaksa)."
+        content: "Klik tombol ini untuk menambahkan kopi ke keranjang. Ini hanya bagian dari tour, jadi transaksi tidak akan berjalan otomatis."
       },
       openCart: {
         title: "Keranjang Anda",
-        content: "Ini adalah ikon keranjang belanja Anda. Anda dapat menemukan semua pesanan Anda di sini."
+        content: "Di sini Anda bisa melihat semua produk yang sudah ditambahkan ke keranjang."
       },
       checkoutBtn: {
         title: "Checkout",
-        content: "Lanjut ke checkout. Jangan khawatir, transaksi ini tidak akan diproses."
+        content: "Lanjut ke checkout. Tenang, tour ini tidak akan memproses transaksi apa pun."
       },
       addressSelection: {
         title: "Alamat Pengiriman",
         content: "Pilih atau tambahkan alamat pengiriman Anda di sini."
       },
       accountSaveHint: {
-        content: "Untuk menyimpan alamat Anda secara permanen, Anda bisa mendaftar dan melihatnya di kanan atas sana."
+        content: "Kalau ingin menyimpan alamat untuk order berikutnya, Anda bisa daftar atau login lewat menu di kanan atas."
       },
       checkout: {
         title: "Pembayaran Aman",
@@ -1322,34 +1326,34 @@ export const translations = {
       },
       wholesaleBenefits: {
         title: "Keuntungan Mitra",
-        content: "Jelajahi enam pilar inti dari kemitraan B2B kami, dari kontrol kualitas hingga prioritas logistik."
+        content: "Lihat enam pilar utama kemitraan B2B kami, dari quality control sampai prioritas logistik."
       },
       wholesaleBenefitCard: {
         title: "Jaminan Kualitas",
-        content: "Ini adalah salah satu dari enam janji inti kami. Setiap kemitraan hadir dengan jaminan keunggulan."
+        content: "Ini salah satu dari enam komitmen utama kami. Setiap kemitraan datang dengan standar mutu yang kami jaga ketat."
       },
       b2bRegHeader: {
         title: "Progres Pendaftaran",
-        content: "Ikuti tiga langkah ini: pembuatan akun, pengaturan profil, dan finalisasi kontrak."
+        content: "Ikuti tiga tahap ini: buat akun, lengkapi profil, lalu finalisasi kontrak."
       },
       b2bRegForm: {
         title: "Formulir Kemitraan",
-        content: "Isi detail Anda dan estimasi volume bulanan untuk membantu kami menyiapkan dashboard B2B kustom Anda."
+        content: "Isi detail usaha dan estimasi volume bulanan agar kami bisa menyiapkan dashboard B2B yang sesuai."
       },
       b2bContractHeader: {
-        title: "Protokol Kontrak",
-        content: "Ini adalah langkah terakhir. Anda selalu dapat kembali ke halaman ini nanti jika butuh waktu untuk meninjau."
+        title: "Informasi Kontrak",
+        content: "Ini tahap terakhir. Anda bisa kembali ke halaman ini kapan saja kalau masih perlu waktu untuk meninjau dokumen."
       },
       b2bContractDownload: {
         title: "Unduh Kontrak",
-        content: "Klik di sini untuk mengunduh perjanjian kemitraan B2B kustom Anda."
+        content: "Klik di sini untuk mengunduh dokumen kemitraan B2B yang sudah disiapkan untuk bisnis Anda."
       },
       b2bContractUpload: {
-        title: "Unggah Salinan Bertanda Tangan",
-        content: "Setelah ditandatangani, unggah dokumen di sini untuk mengaktifkan akses dashboard mitra Anda."
+        title: "Unggah Dokumen Tanda Tangan",
+        content: "Setelah ditandatangani, unggah dokumennya di sini untuk mengaktifkan akses dashboard mitra."
       },
       subHero: {
-        title: "Siklus Roastery",
+        title: "The Roastery Loop",
         content: "Selamat datang di layanan langganan eksklusif kami. Biarkan Master Roaster kami mengkurasi pengiriman bulanan Anda."
       },
       subMaster: {
@@ -1358,7 +1362,7 @@ export const translations = {
       },
       subSteps: {
         title: "Cara Kerja",
-        content: "Prosesnya sederhana: pilih paket Anda, tunggu proses roasting, dan nikmati pasokan bulanan Anda."
+        content: "Prosesnya sederhana: pilih paket, tunggu roasting, lalu nikmati suplai kopi bulanan Anda."
       },
       subPricing: {
         title: "Pilih Paket Anda",
@@ -1373,52 +1377,52 @@ export const translations = {
         content: "Harap periksa dan lengkapi detail identitas penerima serta koordinat pengiriman Anda."
       },
       subCheckPriority: {
-        title: "Pengiriman Prioritas",
-        content: "Sebagai pelanggan, pesanan Anda otomatis mendapatkan rute pengiriman prioritas di hari pertama roasting."
+        title: "Priority Shipping",
+        content: "Sebagai subscriber, pesanan Anda otomatis masuk prioritas pengiriman di hari roasting pertama."
       },
       subCheckSummary: {
         title: "Ringkasan Pesanan",
         content: "Tinjau paket langganan pilihan Anda. Perhatikan bahwa ongkos kirim sepenuhnya gratis."
       },
       subCheckPay: {
-        title: "Selesaikan Berlangganan",
-        content: "Klik di sini untuk melanjutkan ke pembayaran dan menyelesaikan langganan kopi Anda."
+        title: "Selesaikan Langganan",
+        content: "Klik di sini untuk lanjut ke pembayaran dan mengaktifkan langganan kopi Anda."
       },
       journalHero: {
         title: "Arsip Jurnal",
         content: "Baca eksperimen terbaru, laporan lapangan, dan pembaruan roastery kami."
       },
       journalSearch: {
-        title: "Cari Catatan",
-        content: "Mencari sesuatu yang spesifik? Cari melalui seluruh repositori artikel kami."
+        title: "Cari Arsip",
+        content: "Kalau Anda mencari topik tertentu, gunakan pencarian ini untuk menelusuri seluruh arsip artikel kami."
       },
       journalGrid: {
-        title: "Kronik Utama",
-        content: "Jelajahi cerita unggulan kami yang disajikan dalam tata letak buku tempel bertingkat."
+        title: "Pilihan Editor",
+        content: "Jelajahi cerita unggulan kami yang disusun dalam tampilan editorial bertingkat."
       },
       journalExplore: {
-        title: "Jelajahi Lebih Lanjut",
-        content: "Geser melalui entri lama kami dan temukan sejarah di balik biji kopi kami."
+        title: "Jelajahi Arsip",
+        content: "Telusuri artikel yang lebih lama dan temukan cerita di balik kopi-kopi kami."
       },
       storyPage: {
-        title: "Manifesto Kami",
-        content: "Pelajari tentang filosofi dan sejarah yang mendorong Fermion Roastery."
+        title: "Our Manifesto",
+        content: "Pelajari filosofi dan perjalanan yang membentuk cara kerja Fermion Roastery hari ini."
       },
       headerSearch: {
         title: "Pencarian Cepat",
-        content: "Temukan biji kopi tertentu, asal, atau artikel jurnal secara instan."
+        content: "Temukan biji kopi, origin, atau artikel jurnal tertentu dalam beberapa detik."
       },
       headerLang: {
         title: "Ganti Bahasa",
-        content: "Beralih antara Bahasa Inggris dan Bahasa Indonesia dengan mulus."
+        content: "Pindah antara English dan Bahasa Indonesia kapan saja sesuai kebutuhan Anda."
       },
       headerAccount: {
         title: "Akun Anda",
-        content: "Kelola pesanan, langganan, dan pengaturan profil Anda."
+        content: "Kelola order, subscription, dan pengaturan profil Anda dari sini."
       },
       headerCart: {
         title: "Keranjang Mini",
-        content: "Lihat dengan cepat barang yang Anda tambahkan dan total harga."
+        content: "Lihat cepat produk yang sudah ditambahkan beserta total belanjanya."
       }
     },
     landing: {
@@ -1639,11 +1643,11 @@ export const translations = {
       step2Subheading: "Tentukan kebutuhan Anda.",
       form: {
         cafeNameLabel: "Nama Kafe / Perusahaan",
-        cafeNamePlaceholder: "c.b. Roastery Kopi",
+        cafeNamePlaceholder: "Nama kafe atau perusahaan",
         phoneLabel: "Nomor WhatsApp",
         phonePlaceholder: "08...",
         addressLabel: "Alamat Lengkap",
-        addressPlaceholder: "Jalan, Kota...",
+        addressPlaceholder: "Alamat usaha lengkap",
         options: {
           artisanTitle: "Artisan",
           growthTitle: "Growth",
@@ -1723,11 +1727,11 @@ export const translations = {
       shipping: {
         sectionTitle: "Tujuan Pengiriman",
         defaultAddressLabel: "Alamat Cafe Default",
-        fallbackAddress: "Jl. Sudirman No. 1, Jakarta Selatan",
-        customAddressLabel: "Custom Branch / WH",
+        fallbackAddress: "Gunakan alamat utama dari profil Anda",
+        customAddressLabel: "Cabang / Gudang Khusus",
         customAddressSubtitle: "Kirim batch khusus ini ke lokasi yang berbeda.",
         customAddressInputLabel: "Alamat Pengiriman Kustom",
-        customAddressPlaceholder: "Alamat jalan lengkap..."
+        customAddressPlaceholder: "Alamat pengiriman lengkap"
       },
       cargo: {
         sectionTitle: "Pilihan Kargo",

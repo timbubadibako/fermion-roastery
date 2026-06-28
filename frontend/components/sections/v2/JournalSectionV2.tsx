@@ -89,23 +89,23 @@ export function JournalSectionV2() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 my-20 journal-header">
           <div className="space-y-4 relative">
              <Sticker rotate={15} className="-top-12 -left-8 hidden md:block border border-black/10 shadow-sm" color="#8CADD8" variant="dashed">
-               Read Me
+               Baca
              </Sticker>
              
              <div className="flex items-center gap-3 text-black">
                 <BookOpen size={24} strokeWidth={2} />
                 <span className="text-[12px] font-black uppercase tracking-[0.4em] bg-white px-2 border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.03)] rotate-[-2deg]">
-                  Roastery Journal
+                  Jurnal Roastery
                 </span>
              </div>
              <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-[0.85] pt-4">
-                Stories from <br/>
-                <span className="font-display italic text-[#367F4D]">the Field.</span>
+                Catatan dari <br/>
+                <span className="font-display italic text-[#367F4D]">lapangan.</span>
              </h2>
           </div>
           
           <Link href="/journal" className="group flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] text-black hover:text-[#367F4D] transition-all duration-300 pb-2 bg-white px-6 py-3 border border-black/10 shadow-sm rotate-[1deg] hover:-translate-y-1 hover:scale-105 active:scale-95">
-             <span>Browse All</span>
+             <span>Lihat Semua</span>
              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -138,7 +138,7 @@ export function JournalSectionV2() {
                          {/* Badge overlay */}
                          <div className="absolute top-6 left-6 bg-[#2E2140] text-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#F1B941] animate-pulse"></span>
-                            LATEST DISPATCH
+                            TERBARU
                          </div>
                       </div>
 
@@ -161,7 +161,7 @@ export function JournalSectionV2() {
 
                          <div className="pt-6">
                             <div className="inline-flex items-center justify-center gap-3 bg-white border border-black/10 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-900 group-hover:bg-[#2E2140] group-hover:text-white group-hover:border-transparent transition-all duration-300">
-                               <span>Read Field Report</span>
+                               <span>Baca Laporan</span>
                                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </div>
                          </div>

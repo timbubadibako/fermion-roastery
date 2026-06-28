@@ -11,9 +11,12 @@ import {
   getMaintenanceSchedule,
   getChurnAlerts,
   getSettings,
-  updateSettings
-  // 💡 Note: Jika nanti di adminController.js udah ada fungsinya, tinggal import di sini
+  updateSettings,
+  exportOrders,
+  exportPartners,
+  exportInvoices,
 } from '../controllers/adminController.js';
+import { adminMutationRateLimiter } from '../lib/security.js';
 
 const router = express.Router();
 
@@ -24,6 +27,9 @@ router.use(verifyAuth, verifyAdmin);
 
 router.get('/stats', getAdminStats);
 router.put('/settings', updateSettings);
+router.get('/exports/orders', exportOrders);
+router.get('/exports/partners', exportPartners);
+router.get('/exports/invoices', exportInvoices);
 
 // 🎯 TAMBAHKAN ROUTE INI JIR: Biar GET /api/admin/manual-transaction gak 404 Not Found!
 router.get('/manual-transaction', (req, res) => {
@@ -34,14 +40,14 @@ router.get('/manual-transaction', (req, res) => {
 
 // In a real app, these routes should be protected by an isAdmin middleware
 router.get('/partners', getB2bPartners);
-router.put('/partners/:id', updatePartnerStatus);
-router.delete('/partners/:id', deletePartner);
-router.post('/contracts', createContract);
+router.put('/partners/:id', adminMutationRateLimiter, updatePartnerStatus);
+router.delete('/partners/:id', adminMutationRateLimiter, deletePartner);
+router.post('/contracts', adminMutationRateLimiter, createContract);
 router.get('/maintenance', getMaintenanceSchedule);
 router.get('/churn', getChurnAlerts);
 
 // Order Management
 router.get('/orders', getOrders);
-router.put('/orders/:id', updateOrder);
+router.put('/orders/:id', adminMutationRateLimiter, updateOrder);
 
 export default router;

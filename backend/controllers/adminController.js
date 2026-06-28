@@ -2,6 +2,10 @@ import { supabase } from '../lib/supabase.js';
 import { publishEvent } from '../lib/ably.js';
 import { sendWelcomeB2BEmail, sendOrderShippedEmail } from '../lib/emailService.js';
 import { subDays, startOfDay, endOfDay, differenceInDays, format } from 'date-fns';
+import { logError, logInfo } from '../lib/logger.js';
+import { sanitizeError } from '../lib/security.js';
+import { recordAuditEvent } from '../lib/audit.js';
+import { mapInvoicesExport, mapOrdersExport, mapPartnersExport, toCsv } from '../lib/exporters.js';
 
 // 0. Get Admin Stats for Dashboard Overview
 export const getAdminStats = async (req, res) => {
@@ -119,8 +123,8 @@ export const getAdminStats = async (req, res) => {
       recentOrders
     });
   } catch (error) {
-    console.error('❌ Admin Stats Error:', error);
-    res.status(500).json({ message: "Failed to fetch dashboard stats", error: error.message });
+    logError('admin.stats.failed', error);
+    res.status(500).json(sanitizeError(error, "Failed to fetch dashboard stats"));
   }
 };
 
@@ -215,13 +219,21 @@ export const updatePartnerStatus = async (req, res) => {
       }
     }
 
+    await recordAuditEvent({
+      actorId: req.user?.id,
+      action: status === 'approved' ? 'partner.approve' : 'partner.status_update',
+      entityType: 'b2b_partner',
+      entityId: id,
+      details: { status, tier_name },
+    });
+
     res.status(200).json({ 
       message: "Data mitra berhasil diperbarui", 
       partner: data 
     });
   } catch (error) {
-    console.error('Error updating partner status:', error);
-    res.status(500).json({ message: "Gagal memperbarui data mitra", error: error.message });
+    logError('admin.partner.update_failed', error, { partnerId: id });
+    res.status(500).json(sanitizeError(error, "Gagal memperbarui data mitra"));
   }
 };
 
@@ -240,10 +252,16 @@ export const deletePartner = async (req, res) => {
     if (!data) {
       return res.status(404).json({ message: "Partner application not found" });
     }
+    await recordAuditEvent({
+      actorId: req.user?.id,
+      action: 'partner.delete',
+      entityType: 'b2b_partner',
+      entityId: id,
+    });
     res.status(200).json({ message: "Application successfully cancelled", id: data.id });
   } catch (error) {
-    console.error('Error deleting partner:', error);
-    res.status(500).json({ message: "Failed to cancel application", error: error.message });
+    logError('admin.partner.delete_failed', error, { partnerId: id });
+    res.status(500).json(sanitizeError(error, "Failed to cancel application"));
   }
 };
 
@@ -279,8 +297,8 @@ export const createContract = async (req, res) => {
     // Update partner status and logo logic can be added later
     res.status(201).json({ message: "Contract created successfully", contract: data });
   } catch (error) {
-    console.error('Error creating contract:', error);
-    res.status(500).json({ message: "Failed to create contract", error: error.message });
+    logError('admin.contract.create_failed', error, { profileId: profile_id });
+    res.status(500).json(sanitizeError(error, "Failed to create contract"));
   }
 };
 
@@ -392,8 +410,8 @@ export const getOrders = async (req, res) => {
     
     res.status(200).json(transformedData);
   } catch (error) {
-    console.error('Error fetching orders:', error);
-    res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+    logError('admin.orders.fetch_failed', error);
+    res.status(500).json(sanitizeError(error, "Failed to fetch orders"));
   }
 };
 
@@ -450,10 +468,19 @@ export const updateOrder = async (req, res) => {
       ).catch(e => console.error("Email Error:", e));
     }
 
+    await recordAuditEvent({
+      actorId: req.user?.id,
+      action: status === 'SHIPPED' ? 'order.release_shipping' : status === 'PAID' ? 'order.confirm_payment' : 'order.update',
+      entityType: 'order',
+      entityId: id,
+      details: { status, shipping_awb, shipping_courier },
+    });
+    logInfo('admin.order.updated', { orderId: id, status: status || data.status });
+
     res.status(200).json({ message: "Order updated successfully", order: data });
   } catch (error) {
-    console.error('Error updating order:', error);
-    res.status(500).json({ message: "Failed to update order", error: error.message });
+    logError('admin.order.update_failed', error, { orderId: id });
+    res.status(500).json(sanitizeError(error, "Failed to update order"));
   }
 };
 
@@ -472,7 +499,7 @@ export const getSettings = async (req, res) => {
     }, {});
     res.status(200).json(settings);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching settings", error: error.message });
+    res.status(500).json(sanitizeError(error, "Error fetching settings"));
   }
 };
 
@@ -494,6 +521,71 @@ export const updateSettings = async (req, res) => {
 
     res.status(200).json({ message: "Settings updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error updating settings", error: error.message });
+    res.status(500).json(sanitizeError(error, "Error updating settings"));
+  }
+};
+
+const sendCsv = async ({ res, filename, rows, audit }) => {
+  const csv = toCsv(rows);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  await recordAuditEvent(audit);
+  return res.status(200).send(csv);
+};
+
+export const exportOrders = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*, order_items(product_name, quantity, variant_weight)')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return sendCsv({
+      res,
+      filename: `fermion-orders-${new Date().toISOString().slice(0, 10)}.csv`,
+      rows: mapOrdersExport(data || []),
+      audit: { actorId: req.user?.id, action: 'export.orders', entityType: 'report', entityId: 'orders' },
+    });
+  } catch (error) {
+    logError('admin.export.orders_failed', error);
+    return res.status(500).json(sanitizeError(error, 'Gagal mengekspor laporan pesanan'));
+  }
+};
+
+export const exportPartners = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('b2b_partners')
+      .select('*, profiles(full_name, email)')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return sendCsv({
+      res,
+      filename: `fermion-partners-${new Date().toISOString().slice(0, 10)}.csv`,
+      rows: mapPartnersExport(data || []),
+      audit: { actorId: req.user?.id, action: 'export.partners', entityType: 'report', entityId: 'partners' },
+    });
+  } catch (error) {
+    logError('admin.export.partners_failed', error);
+    return res.status(500).json(sanitizeError(error, 'Gagal mengekspor laporan mitra'));
+  }
+};
+
+export const exportInvoices = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('id, customer_name, status, payment_method, total_amount, created_at')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return sendCsv({
+      res,
+      filename: `fermion-invoices-${new Date().toISOString().slice(0, 10)}.csv`,
+      rows: mapInvoicesExport(data || []),
+      audit: { actorId: req.user?.id, action: 'export.invoices', entityType: 'report', entityId: 'invoices' },
+    });
+  } catch (error) {
+    logError('admin.export.invoices_failed', error);
+    return res.status(500).json(sanitizeError(error, 'Gagal mengekspor daftar invoice'));
   }
 };

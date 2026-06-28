@@ -269,7 +269,7 @@ export default function B2BContractPage() {
                     disabled={uploading}
                     className="flex-1 bg-[#367F4D] hover:bg-[#2A653C] text-white text-[10px] uppercase font-bold tracking-widest"
                   >
-                    {uploading ? <Loader2 className="animate-spin" size={14} /> : "Submit"}
+                    {uploading ? <Loader2 className="animate-spin" size={14} /> : "Kirim Dokumen"}
                   </Button>
                 </div>
               </div>

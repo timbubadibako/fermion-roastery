@@ -71,7 +71,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `INV-${unwrappedParams.id.slice(0, 8).toUpperCase()}.pdf`;
+      link.download = `INV-${unwrappedParams.id.replace(/-/g, "").slice(0, 12).toUpperCase()}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

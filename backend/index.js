@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import cors from 'cors';
 // Import Routes
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -18,6 +17,8 @@ import journalRoutes from './routes/journalRoutes.js';
 import b2bRoutes from './routes/b2bRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import { startMonthlyEvaluation } from './lib/cron.js';
+import { corsMiddleware, sanitizeError } from './lib/security.js';
+import { logError, logInfo } from './lib/logger.js';
 
 
 const app = express();
@@ -26,12 +27,14 @@ const app = express();
 startMonthlyEvaluation();
 
 // Middleware
-app.use(cors());
+app.use(corsMiddleware);
 app.use(express.json({ limit: '10mb' }));
 
-// Simple logging middleware
+// Minimal request logging to keep production noise down.
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  if (process.env.NODE_ENV !== 'production' || req.path === '/api/health') {
+    logInfo('http.request', { method: req.method, path: req.path });
+  }
   next();
 });
 
@@ -41,6 +44,14 @@ app.use((req, res, next) => {
     req.url = '/api' + req.url;
   }
   next();
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'fermion-backend',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // API Routes
@@ -60,19 +71,17 @@ app.use('/api/subscription', subscriptionRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(`${new Date().toISOString()} - ERROR:`, err.stack);
-  res.status(500).json({ 
-    message: "Internal Server Error", 
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
+  logError('http.unhandled_error', err, { method: req.method, path: req.path });
+  res.status(500).json(sanitizeError(err));
 });
 
-// Base route for health check
+// Base route for info
 app.get('/', (req, res) => {
   res.json({ 
-    status: 'online', 
-    engine: 'Fermion Business Engine v1.0',
-    services: ['ProductAPI', 'AuthSync', 'PaymentGateway', 'AdminPortal', 'CartSync']
+    name: 'Fermion Business Engine',
+    status: 'online',
+    health: '/api/health',
+    version: '1.0',
   });
 });
 

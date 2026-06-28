@@ -27,7 +27,7 @@ export default function MagicWandPage() {
         
         <div className="space-y-4 relative z-10 max-w-lg">
            <span className="status-badge bg-blue-50 text-blue-500 uppercase tracking-widest px-3 py-1">IN_DEVELOPMENT</span>
-           <h2 className="font-display text-4xl italic font-black text-slate-900 tracking-tighter leading-none mt-2">Coming Soon.</h2>
+           <h2 className="font-display text-4xl italic font-black text-slate-900 tracking-tighter leading-none mt-2">Segera Hadir.</h2>
            <p className="text-sm font-medium text-slate-500 leading-relaxed">
              Our tim analis are currently training the heuristic engine. Soon, you'll be able to receive automated tactical insights and perform one-click CMS edits directly from this terminal.
            </p>
@@ -36,7 +36,7 @@ export default function MagicWandPage() {
         <div className="pt-8 border-t border-slate-50 w-full max-w-md relative z-10">
            <Link href="/admin">
               <Button className="w-full h-16 bg-slate-950 text-white rounded-2xl font-black uppercase tracking-widest italic text-[10px] shadow-xl hover:bg-fermion-french-blue transition-all gap-2">
-                 <ArrowLeft size={16} /> Return to Command Overview
+                 <ArrowLeft size={16} /> Kembali ke Ringkasan Command
               </Button>
            </Link>
         </div>

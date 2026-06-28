@@ -84,7 +84,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                 <div className="space-y-2">
                                     <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nomor WhatsApp</label>
                                     <div className="relative">
-                                        <Input required value={shippingData.phone || ""} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="08..." className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
+                                        <Input required value={shippingData.phone || ""} onChange={e => setShippingData({ ...shippingData, phone: e.target.value })} placeholder="Nomor WhatsApp aktif" className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]" />
                                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
                                     </div>
                                 </div>
@@ -114,7 +114,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                     <Input
                                         required
                                         value={(address as any).houseRtRw || ""}
-                                        placeholder="Misal: RT 01 / RW 03"
+                                        placeholder="RT 01 / RW 03"
                                         onChange={e => {
                                             const nextValue = { ...address, houseRtRw: e.target.value };
                                             const combined = [e.target.value, (address as any).street, (address as any).village].map(s => s?.trim()).filter(Boolean).join(", ");
@@ -130,7 +130,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                     <Input
                                         required
                                         value={(address as any).street || ""}
-                                        placeholder="Misal: Dusun Manis Blok Pahing"
+                                        placeholder="Nama jalan, blok, atau dusun"
                                         onChange={e => {
                                             const nextValue = { ...address, street: e.target.value };
                                             const combined = [(address as any).houseRtRw, e.target.value, (address as any).village].map(s => s?.trim()).filter(Boolean).join(", ");
@@ -148,7 +148,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                     <Input
                                         required
                                         value={(address as any).village || ""}
-                                        placeholder="Misal: Gunungsari"
+                                        placeholder="Nama desa atau kelurahan"
                                         onChange={e => {
                                             const nextValue = { ...address, village: e.target.value };
                                             const combined = [(address as any).houseRtRw, (address as any).street, e.target.value].map(s => s?.trim()).filter(Boolean).join(", ");
@@ -169,7 +169,7 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                     <Input
                                         maxLength={100}
                                         value={(address as any).patokan || ""}
-                                        placeholder="Misal: Samping Mushola Al-Ikhlas"
+                                        placeholder="Patokan terdekat yang mudah dikenali"
                                         onChange={e => setAddress({ ...address, patokan: e.target.value })}
                                         className="h-11 bg-white border-black/10 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4"
                                     />

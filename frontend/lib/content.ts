@@ -9,8 +9,8 @@ export const siteContent = {
     badge: "Exclusive Coffee Roastery",
     headlineMain: "Fermion",
     headlineJoy: "Roastery.",
-    description: "Precision roasting meets artisan passion. Built for the morning rutinitas.",
-    cta: "Explore Catalogue",
+    description: "Presisi roasting bertemu sentuhan artisan. Diracik untuk ritme pagi yang rapi.",
+    cta: "Lihat Katalog",
     backgroundText: "FERMION",
     stickers: {
       origin: "Origin",
@@ -26,13 +26,13 @@ export const siteContent = {
     espresso: {
       title: "Espresso Series.",
       subtitle: "Rich • Syrupy • Bold",
-      cta: "Explore Bold Beans",
+      cta: "Lihat Seri Espresso",
       sticker: "Adventure Ready"
     },
     filter: {
       title: "Filter Series.",
       subtitle: "Clean • Tea-like • Vibrant",
-      cta: "Explore Vibrant Beans",
+      cta: "Lihat Seri Filter",
       sticker: "Eco Conscious"
     }
   },
@@ -63,7 +63,7 @@ export const siteContent = {
     cardAnalysis: "Analysis: 92 Points →",
     ctaDiveTitle: "Dive deeper into our data.",
     ctaDiveDesc: "Unlock technical specs for every single harvest.",
-    ctaDiveBtn: "Explore All Records"
+    ctaDiveBtn: "Lihat Semua Catatan"
   },
   
   newReleases: {

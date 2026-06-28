@@ -6,10 +6,10 @@ import { FermionPlaceholderPanel } from "@/components/ui/fermion-placeholder-pan
 
 export function SubscriptionTeaserSection() {
   const perks = [
-    "Never-ending freshness",
-    "Curated by our master roaster",
-    "Doorstep delivery",
-    "3 tiers to choose from",
+    "Kesegaran terjaga setiap kiriman",
+    "Dikurasi langsung oleh head roaster kami",
+    "Diantar sampai alamat tujuan",
+    "Tiga tier yang bisa dipilih",
   ];
 
   return (
@@ -21,7 +21,7 @@ export function SubscriptionTeaserSection() {
             <div className="hidden lg:block order-2 lg:order-1">
               <FermionPlaceholderPanel
                 color="yellow"
-                text="Subscription Plans"
+                text="Paket Langganan"
                 className="aspect-square"
               />
             </div>
@@ -30,15 +30,15 @@ export function SubscriptionTeaserSection() {
             <div className="space-y-8 order-1 lg:order-2">
               <div className="space-y-4">
                 <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
-                  Freshness Delivered
+                  Langganan Kopi
                 </p>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic">
-                  Never Run Out.
+                  Kopi Selalu Siap.
                 </h2>
               </div>
 
               <p className="text-lg font-medium leading-relaxed text-muted-foreground">
-                Automate your coffee supply with our subscription service. Choose your frequency and let us curate the finest micro-batches for your home or office.
+                Amankan suplai kopi Anda dengan layanan langganan kami. Pilih frekuensi kiriman dan biarkan kami mengkurasi micro-batch terbaik untuk rumah atau kantor Anda.
               </p>
 
               <div className="space-y-3">
@@ -52,7 +52,7 @@ export function SubscriptionTeaserSection() {
 
               <Link href="/subscription">
                 <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all">
-                  Explore Plans
+                  Lihat Paket
                   <ArrowRight size={16} />
                 </button>
               </Link>

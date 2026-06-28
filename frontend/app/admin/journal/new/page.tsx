@@ -165,7 +165,7 @@ export default function JournalFormPage() {
                       required={activeLang === 'id'} 
                       value={activeLang === 'en' ? (formData.title_en || '') : formData.title} 
                       onChange={e => setFormData(activeLang === 'en' ? {...formData, title_en: e.target.value} : {...formData, title: e.target.value})} 
-                      placeholder={activeLang === 'en' ? "e.g. Tales from the Farm: Gayo Harvest" : "e.g. Cerita dari Kebun: Panen Gayo Tahun Ini"} 
+                      placeholder={activeLang === 'en' ? "Example: Tales from the Farm: Gayo Harvest" : "Contoh: Cerita dari Kebun: Panen Gayo Tahun Ini"} 
                       className="h-16 bg-stone-50 border-black/5 font-bold rounded-sm text-2xl px-6 focus-visible:ring-[#367F4D]" 
                     />
                 </div>

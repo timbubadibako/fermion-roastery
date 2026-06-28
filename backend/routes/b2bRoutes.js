@@ -8,13 +8,14 @@ import {
   testContract,
   getPartnerStatus // 🎯 Pastikan ini terimport dari controller
 } from '../controllers/b2bController.js';
+import { b2bRateLimiter, validateB2BRegistration } from '../lib/security.js';
 
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 // Public / Semi-public routes
-router.post('/register', registerB2B);
+router.post('/register', b2bRateLimiter, validateB2BRegistration, registerB2B);
 router.get('/test-contract', testContract);
 
 // 🔒 Gembok Auth

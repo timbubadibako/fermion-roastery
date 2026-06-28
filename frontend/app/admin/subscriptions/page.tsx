@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { debugError } from "@/lib/debug";
 
 interface SubscriptionPlan {
     id: string;
@@ -40,7 +41,7 @@ export default function SubscriptionPlansManagement() {
                 setPlans(data);
             }
         } catch (error) {
-            console.error(error);
+            debugError("Subscription plans fetch error:", error);
         } finally {
             setLoading(false);
         }
@@ -203,7 +204,7 @@ export default function SubscriptionPlansManagement() {
                         >
                             <div className="flex justify-between items-center border-b border-black/5 pb-4">
                                 <h2 className="font-display text-3xl italic font-bold text-slate-950 leading-none">
-                                    {editingId ? "Edit Subscription Plan" : "New Subscription Plan"}
+                                    {editingId ? "Edit Paket Langganan" : "Paket Langganan Baru"}
                                 </h2>
                                 <button onClick={() => setIsModalOpen(false)} className="text-stone-400 hover:text-stone-900"><X size={20} /></button>
                             </div>
@@ -211,7 +212,7 @@ export default function SubscriptionPlansManagement() {
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="space-y-2">
                                     <label className="text-[9px] font-black uppercase tracking-widest text-stone-400">Nama Paket Langganan</label>
-                                    <Input value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: The Discovery Box" className="h-11 rounded-sm border-black/10 font-bold text-xs" />
+                                    <Input value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: Discovery Box" className="h-11 rounded-sm border-black/10 font-bold text-xs" />
                                 </div>
 
                                 <div className="space-y-2">
@@ -227,8 +228,8 @@ export default function SubscriptionPlansManagement() {
                                 <div className="space-y-3">
                                     <label className="text-[9px] font-black uppercase tracking-widest text-stone-400">Daftar Benefit / Keuntungan</label>
                                     <div className="flex gap-2">
-                                        <Input value={featureInput} onChange={e => setFeatureInput(e.target.value)} placeholder="Contoh: Potongan 10% All Retail Items" className="h-10 rounded-sm border-black/10 text-xs font-bold" />
-                                        <Button type="button" onClick={handleAddFeature} className="bg-slate-900 text-white rounded-sm h-10 px-4 text-xs font-bold">Add</Button>
+                                        <Input value={featureInput} onChange={e => setFeatureInput(e.target.value)} placeholder="Contoh: Potongan 10% untuk semua produk retail" className="h-10 rounded-sm border-black/10 text-xs font-bold" />
+                                        <Button type="button" onClick={handleAddFeature} className="bg-slate-900 text-white rounded-sm h-10 px-4 text-xs font-bold">Tambah</Button>
                                     </div>
                                     <div className="flex flex-wrap gap-2 pt-2">
                                         {features.map((feat, index) => (

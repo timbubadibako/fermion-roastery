@@ -187,44 +187,27 @@ export default function KanbanBoard() {
   };
 
   const handleExportCSV = () => {
-    if (!orders.length) {
-      toast.error("Tidak ada data pesanan untuk diekspor");
-      return;
-    }
-
-    // CSV Header
-    const headers = [
-      "Order ID", "Tanggal", "Nama Pelanggan", "Telepon", "Total Tagihan (Rp)",
-      "Status", "Kurir", "No Resi", "Jumlah Item", "Produk"
-    ];
-
-    // CSV Rows
-    const rows = orders.map(o => {
-      const date = new Date(o.created_at || Date.now()).toLocaleDateString('id-ID');
-      const itemsDetail = o.items?.map(i => `${i.quantity}x ${i.product_name}`).join('; ') || '';
-      return [
-        o.id,
-        date,
-        `"${o.customer_name || ''}"`,
-        `"${o.customer_phone || ''}"`,
-        o.total_amount,
-        o.status,
-        `"${o.shipping_courier || ''}"`,
-        `"${o.shipping_awb || ''}"`,
-        o.items?.length || 0,
-        `"${itemsDetail}"`
-      ].join(',');
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `fermion_orders_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Laporan berhasil diunduh");
+    (async () => {
+      try {
+        const res = await apiFetch("/api/admin/exports/orders");
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.message || "Gagal menyiapkan ekspor CSV");
+        }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `fermion_orders_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        toast.success("Laporan berhasil diunduh");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Gagal mengekspor pesanan");
+      }
+    })();
   };
 
   if (loading) return (
@@ -600,7 +583,7 @@ export default function KanbanBoard() {
                   <Input
                     value={awbData.courier}
                     onChange={(e) => setAwbData({ ...awbData, courier: e.target.value })}
-                    placeholder="e.g. JNE Trucking"
+                    placeholder="Nama layanan kurir"
                     className="h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus-visible:ring-[#367F4D]"
                   />
                 </div>

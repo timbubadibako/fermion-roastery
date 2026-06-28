@@ -7,18 +7,18 @@ import { FermionPlaceholderPanel } from "@/components/ui/fermion-placeholder-pan
 export function JournalTeaserSection() {
   const recentArticles = [
     {
-      title: "Understanding Natural Yeast Fermentation",
-      category: "EDUCATION",
+      title: "Memahami Fermentasi Ragi Alami",
+      category: "EDUKASI",
       color: "blue" as const,
     },
     {
-      title: "Sourcing in Kendal: Meet the Farmers",
-      category: "ORIGIN STORY",
+      title: "Sourcing di Kendal: Mengenal Para Petani",
+      category: "CERITA ASAL",
       color: "coral" as const,
     },
     {
-      title: "How to Dial Your Espresso at Home",
-      category: "BREWING",
+      title: "Cara Menyetel Espresso di Rumah",
+      category: "SEDUH",
       color: "lilac" as const,
     },
   ];
@@ -30,17 +30,17 @@ export function JournalTeaserSection() {
           {/* Header */}
           <div className="mb-16 space-y-4">
             <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
-              The Fermion Journal
+              Jurnal Fermion
             </p>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic">
-                Stories Behind
+                Cerita di Balik
                 <br />
-                The Beans.
+                Biji Kopi.
               </h2>
               <Link href="/journal">
                 <button className="inline-flex items-center gap-2 px-6 py-3 text-fermion-french-blue font-black tracking-widest text-[10px] uppercase border-b-2 border-fermion-french-blue hover:text-fermion-lilac hover:border-fermion-lilac transition-all">
-                  Read Journal
+                  Baca Jurnal
                   <ArrowRight size={14} />
                 </button>
               </Link>
@@ -80,26 +80,26 @@ export function OurStoryTeaserSection() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
-                  The Roastery Story
+                  Kisah Roastery
                 </p>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground uppercase italic">
-                  Artisan Spirit.
+                  Jiwa Artisan.
                   <br />
-                  Micro Roots.
+                  Akar Lokal.
                 </h2>
               </div>
 
               <p className="text-lg font-medium leading-relaxed text-muted-foreground">
-                Fermion Roastery started in a small garage in Cirebon with a single mission: to prove that world-class coffee could be roasted with scientific precision in our local community.
+                Fermion Roastery berawal dari garasi kecil di Cirebon dengan satu misi: membuktikan bahwa kopi kelas dunia bisa di-roasting dengan presisi ilmiah dari komunitas lokal kami.
               </p>
 
               <p className="text-lg font-medium leading-relaxed text-muted-foreground">
-                We don't just roast coffee; we engineer happiness. Every batch is a result of hundreds of sensory tests, cupping sessions, and obsessive temperature profiling.
+                Kami tidak sekadar me-roasting kopi; kami merancang pengalaman minum yang lebih konsisten. Setiap batch lahir dari ratusan uji sensori, sesi cupping, dan profiling suhu yang disiplin.
               </p>
 
               <Link href="/our-story">
                 <button className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all">
-                  Learn Our Story
+                  Baca Kisah Kami
                   <ArrowRight size={16} />
                 </button>
               </Link>
@@ -109,7 +109,7 @@ export function OurStoryTeaserSection() {
             <div className="hidden lg:block">
               <FermionPlaceholderPanel
                 color="lilac"
-                text="Our Story Image"
+                text="Visual Kisah Kami"
                 className="aspect-square"
               />
             </div>

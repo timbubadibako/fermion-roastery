@@ -8,23 +8,23 @@ export function BeanShowcaseSection() {
   const beans = [
     {
       name: "Alpine",
-      origin: "West Java Highlands",
-      profile: "Bright, Citrus, Tea-like",
-      price: "$12.99/250g",
+      origin: "Dataran Tinggi Jawa Barat",
+      profile: "Bright, citrus, tea-like",
+      price: "Rp 189.000 / 250g",
       color: "blue" as const,
     },
     {
       name: "Forest",
-      origin: "Central Java",
-      profile: "Chocolate, Nutty, Full Body",
-      price: "$11.99/250g",
+      origin: "Jawa Tengah",
+      profile: "Chocolate, nutty, full body",
+      price: "Rp 175.000 / 250g",
       color: "lilac" as const,
     },
     {
       name: "Liberika",
-      origin: "Experimental Lot",
-      profile: "Bold, Smoky, Rare",
-      price: "$16.99/250g",
+      origin: "Lot Eksperimental",
+      profile: "Bold, smoky, rare",
+      price: "Rp 245.000 / 250g",
       color: "coral" as const,
     },
   ];
@@ -36,14 +36,14 @@ export function BeanShowcaseSection() {
           {/* Header */}
           <div className="mb-20 space-y-4 text-center">
             <p className="text-[10px] font-black text-fermion-french-blue tracking-[0.4em] uppercase">
-              Our Coffee
+              Kopi Kami
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-foreground uppercase italic">
-              Signature Origins.
+              Origin Andalan.
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto font-medium">
-              Each blend represents our commitment to precision roasting and
-              direct sourcing from partner farms across Java.
+              Setiap rilisan mewakili komitmen kami pada roasting presisi dan
+              sourcing langsung dari kebun mitra di berbagai wilayah Jawa.
             </p>
           </div>
 
@@ -90,7 +90,7 @@ export function BeanShowcaseSection() {
               href="/our-coffee"
               className="inline-flex items-center gap-2 px-8 py-4 bg-fermion-french-blue text-white rounded-full font-black tracking-widest text-[10px] uppercase hover:shadow-lg hover:shadow-fermion-french-blue/40 transition-all"
             >
-              Browse All Coffee
+              Lihat Semua Kopi
               <span>→</span>
             </Link>
           </div>

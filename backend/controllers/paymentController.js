@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
 import { publishEvent } from '../lib/ably.js';
 import { sendOrderNotification } from '../lib/notifications.js';
+import { logError, logInfo } from '../lib/logger.js';
+import { sanitizeError, verifyStaticWebhookSecret } from '../lib/security.js';
 // TODO: [MAILER] Integrate Resend / Nodemailer here for email notifications
 // Example: import { sendEmail } from '../lib/mailer.js';
 
@@ -77,7 +79,7 @@ export const createInvoice = async (req, res) => {
 
          calculatedAmount = submittedTotal;
           
-          console.log(`🔒 B2B Enforcement - Profile: ${profileId}, Tier: ${partner.tier_name}, Volume: ${totalVolumeKg}kg, SubmittedTotal: ${submittedTotal}, EnforcedTotal: ${calculatedAmount}`);
+          logInfo('checkout.b2b.enforced', { profileId, tier: partner.tier_name, totalVolumeKg, submittedTotal, calculatedAmount });
        } else if (metadata?.b2b) {
           return res.status(403).json({ message: "B2B partner is not approved for checkout" });
        }
@@ -123,13 +125,11 @@ export const createInvoice = async (req, res) => {
           })
         };
 
-        console.log('🚀 Sending Draft Payload to Biteship:', JSON.stringify(draftPayload, null, 2));
-
         const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
         biteshipDraftId = draftRes.data.id;
-        console.log(`📦 Biteship Draft Created: ${biteshipDraftId}`);
+        logInfo('shipping.draft_order.created', { biteshipDraftId });
       } catch (bsError) {
-        console.error('⚠️ Biteship Draft Error:', bsError.response?.data || bsError.message);
+        logError('shipping.draft_order.failed', bsError);
         // We continue even if Biteship fails, we can fix it manually later
       }
     }
@@ -214,9 +214,10 @@ export const createInvoice = async (req, res) => {
       externalId: response.externalId,
       orderId: orderId
     });
+    logInfo('payment.invoice.created', { orderId, externalId: response.externalId, amount: calculatedAmount, orderType: isB2bOrder ? 'b2b' : 'retail' });
   } catch (error) {
-    console.error('Xendit Error:', error);
-    res.status(500).json({ message: "Failed to create payment invoice", error: error.message });
+    logError('payment.invoice.create_failed', error);
+    res.status(500).json(sanitizeError(error, "Failed to create payment invoice"));
   }
 };
 
@@ -285,11 +286,14 @@ export const createSubscription = async (req, res) => {
 };
 
 export const handleNotification = async (req, res) => {
-  console.log("Xendit Payment Notification Received:", JSON.stringify(req.body, null, 2));
-
   const { external_id, status } = req.body;
 
   try {
+    const providedSecret = req.headers['x-callback-token'] || req.headers['x-webhook-token'];
+    if (!verifyStaticWebhookSecret(providedSecret, process.env.XENDIT_WEBHOOK_TOKEN)) {
+      return res.status(401).json({ message: 'Unauthorized webhook request' });
+    }
+
     // 0. Flexible Lookup: Try xendit_invoice_id first, then fallback to internal order id
     let { data: orderData, error: lookupError } = await supabase
       .from('orders')
@@ -298,7 +302,6 @@ export const handleNotification = async (req, res) => {
       .maybeSingle();
 
     if (!orderData) {
-      console.log(`🔍 Invoice ID not found, trying fallback to Order ID: ${external_id}`);
       // Clean ID from # if present
       const cleanId = external_id.replace('#', '').toLowerCase();
 
@@ -312,15 +315,13 @@ export const handleNotification = async (req, res) => {
     }
 
     if (!orderData) {
-      console.log(`❌ ERROR: Webhook received for completely unknown ID: ${external_id}`);
+      logInfo('payment.webhook.unknown_order', { externalId: external_id });
       return res.status(200).send("OK");
     }
 
-    console.log(`📦 Found Order: ${orderData.id} (Current Status: ${orderData.status})`);
-
     // If already paid or beyond, skip
     if (['PAID', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'].includes(orderData.status)) {
-      console.log(`ℹ️ Order ${orderData.id} already processed. Skipping.`);
+      logInfo('payment.webhook.already_processed', { orderId: orderData.id, status: orderData.status });
       return res.status(200).send("OK");
     }
 
@@ -333,7 +334,7 @@ export const handleNotification = async (req, res) => {
 
       if (updateError) throw updateError;
 
-      console.log(`✅ Order ${orderData.id} status updated to PAID via Webhook.`);
+      logInfo('payment.webhook.paid', { orderId: orderData.id });
       publishEvent('orders', 'order_updated', { id: orderData.id, status: 'PAID' });
       await sendOrderNotification(orderData.id, orderData.customer_name, orderData.customer_email, orderData.customer_phone);
 
@@ -380,21 +381,19 @@ export const handleNotification = async (req, res) => {
                 .from('products')
                 .update({ stock_quantity: product.stock_quantity - deductionUnits })
                 .eq('id', item.product_id);
-              console.log(`📦 Inventory Sync: Deducted ${deductionUnits} units (250g/unit) from product ${item.product_id}`);
+              logInfo('inventory.deducted', { productId: item.product_id, deductionUnits, orderId: orderData.id });
             }
           }
         }
       } catch (invError) {
-        console.error('❌ Inventory Sync Error:', invError);
+        logError('inventory.sync.failed', invError, { orderId: orderData.id });
       }
       // ----------------------
 
       // --- BITESHIP CONFIRMATION ---
       if (orderData.biteship_order_id) {
         try {
-          console.log(`🔔 Confirming Biteship Draft: ${orderData.biteship_order_id}`);
           const confirmRes = await axios.post(`${BITESHIP_URL}/draft_orders/${orderData.biteship_order_id}/confirm`, {}, { headers: biteshipHeaders });
-          console.log('📦 Biteship Confirm Response:', JSON.stringify(confirmRes.data, null, 2));
 
           const finalOrderId = confirmRes.data.id;
           const waybillId = confirmRes.data.courier.waybill_id;
@@ -414,10 +413,10 @@ export const handleNotification = async (req, res) => {
             })
             .eq('xendit_invoice_id', external_id);
 
-          console.log(`✅ Biteship Order Confirmed. Resi: ${waybillId} | Label: ${labelUrl}`);
+          logInfo('shipping.order.confirmed', { orderId: orderData.id, finalOrderId, waybillId });
           publishEvent('orders', 'order_updated', { id: orderData.id, status: 'READY_TO_SHIP', awb: waybillId });
         } catch (bsError) {
-          console.error('❌ Biteship Confirm Error:', bsError.response?.data || bsError.message);
+          logError('shipping.order.confirm_failed', bsError, { orderId: orderData.id });
         }
       }
       // ----------------------------
@@ -426,7 +425,7 @@ export const handleNotification = async (req, res) => {
       try {
         await generateInvoicePDF(orderData.id);
       } catch (pdfError) {
-        console.error('Invoice PDF Generation Error:', pdfError);
+        logError('invoice.generate.failed', pdfError, { orderId: orderData.id });
       }
 
       // --- 3. AUTO-EVALUATE B2B TIER ---
@@ -473,8 +472,6 @@ export const handleNotification = async (req, res) => {
                    }
                  });
 
-                 console.log(`📊 B2B Partner Evaluation: Profile ${orderProfile.profile_id} has ${totalVolumeKg}kg in last 30 days.`);
-
                  // Upgrade Rules: Silver (50kg+), Gold (100kg+)
                  let newTier = partner.tier_name;
                  if (totalVolumeKg >= 100 && partner.tier_name !== 'Gold') {
@@ -485,13 +482,13 @@ export const handleNotification = async (req, res) => {
 
                  if (newTier !== partner.tier_name) {
                     await supabase.from('b2b_partners').update({ tier_name: newTier }).eq('profile_id', orderProfile.profile_id);
-                    console.log(`🚀 AUTO UPGRADE: Partner ${orderProfile.profile_id} upgraded from ${partner.tier_name} to ${newTier}!`);
+                    logInfo('b2b.partner.auto_upgrade', { profileId: orderProfile.profile_id, from: partner.tier_name, to: newTier });
                  }
               }
            }
         }
       } catch (tierError) {
-        console.error('❌ Tier Auto-Upgrade Error:', tierError);
+        logError('b2b.partner.auto_upgrade_failed', tierError, { orderId: orderData.id });
       }
 
     } else if (status === 'EXPIRED') {
@@ -499,13 +496,13 @@ export const handleNotification = async (req, res) => {
         .from('orders')
         .update({ status: 'CANCELLED', updated_at: new Date() })
         .eq('xendit_invoice_id', external_id);
-      console.log(`❌ Order with invoice ${external_id} marked as CANCELLED via Webhook.`);
+      logInfo('payment.webhook.expired', { externalId: external_id });
     }
 
     res.status(200).send("OK");
   } catch (error) {
-    console.error('Webhook Processing Error:', error);
-    res.status(500).send("Internal Server Error");
+    logError('payment.webhook.failed', error, { externalId: external_id, status });
+    res.status(500).json(sanitizeError(error, "Internal Server Error"));
   }
 };
 
@@ -585,7 +582,7 @@ export const createManualInvoice = async (req, res) => {
         const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
         biteshipDraftId = draftRes.data.id;
       } catch (bsError) {
-        console.error('Manual Biteship Draft Error:', bsError.response?.data || bsError.message);
+        logError('shipping.manual_draft.failed', bsError, { profileId });
       }
     }
 
@@ -630,7 +627,7 @@ export const createManualInvoice = async (req, res) => {
     try {
       await generateInvoicePDF(orderData.id);
     } catch (pdfError) {
-      console.error('Manual Invoice PDF Generation Error:', pdfError);
+      logError('invoice.manual_generate.failed', pdfError, { orderId: orderData.id });
     }
 
     res.status(200).json({
@@ -640,7 +637,7 @@ export const createManualInvoice = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Manual Payment Error:', error);
-    res.status(500).json({ message: "Failed to create manual invoice", error: error.message });
+    logError('payment.manual_invoice.failed', error, { profileId });
+    res.status(500).json(sanitizeError(error, "Failed to create manual invoice"));
   }
 };

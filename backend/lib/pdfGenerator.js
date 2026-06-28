@@ -6,6 +6,16 @@ import { supabase } from './supabase.js';
 const INVOICE_BUCKET = 'order_invoices';
 
 const getInvoiceStoragePath = (order) => `orders/${order.id}.pdf`;
+const getInvoiceNumber = (order) => `INV-${String(order.id).replace(/-/g, '').slice(0, 12).toUpperCase()}`;
+const formatInvoiceDate = (date) =>
+  new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
 
 const resolvePaymentMethod = (order) => {
   if (order.payment_method) return order.payment_method;
@@ -17,7 +27,8 @@ const resolvePaymentMethod = (order) => {
 const createInvoiceBuffer = async (order) => {
   const doc = new PDFDocument({ margin: 48, size: 'A4' });
   const chunks = [];
-  const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
+  const invoiceNumber = getInvoiceNumber(order);
+  const fileName = `${invoiceNumber}.pdf`;
   const logoPath = path.join(process.cwd(), '../frontend/public/fermion-logo.png');
   const paymentMethod = resolvePaymentMethod(order);
   const createdAt = new Date(order.created_at || order.updated_at || Date.now());
@@ -39,7 +50,7 @@ const createInvoiceBuffer = async (order) => {
   doc.text('hello@fermionroastery.com', 48, doc.y + 4);
 
   doc.fillColor('#CBD5E1').font('Helvetica-BoldOblique').fontSize(38).text('Invoice.', 360, 46, { align: 'right' });
-  doc.fillColor('#0F172A').font('Courier-Bold').fontSize(12).text(order.id.slice(0, 8).toUpperCase(), 360, 92, { align: 'right' });
+  doc.fillColor('#0F172A').font('Courier-Bold').fontSize(12).text(invoiceNumber, 320, 92, { align: 'right', width: 230 });
 
   const badgeWidth = 120;
   doc.roundedRect(430, 108, badgeWidth, 22, 11)
@@ -60,11 +71,11 @@ const createInvoiceBuffer = async (order) => {
     .text(order.customer_phone || '-', 48, doc.y + 4);
 
   doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('TANGGAL INVOICE', 350, 170, { align: 'right', width: 200 });
-  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(createdAt.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 188, { align: 'right', width: 200 });
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(formatInvoiceDate(createdAt), 350, 188, { align: 'right', width: 200 });
 
   if (paymentMethod === 'TEMPO') {
     doc.fillColor('#DC2626').font('Helvetica-Bold').fontSize(9).text('JATUH TEMPO (NET-30)', 350, 220, { align: 'right', width: 200 });
-    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 238, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(formatInvoiceDate(dueDate), 350, 238, { align: 'right', width: 200 });
   } else if (paymentMethod === 'OFFLINE_CASH') {
     doc.fillColor('#059669').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 220, { align: 'right', width: 200 });
     doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Tunai (Offline)', 350, 238, { align: 'right', width: 200 });
@@ -118,7 +129,7 @@ const createInvoiceBuffer = async (order) => {
   doc.fillColor('#64748B').font('Helvetica').fontSize(10);
 
   if (paymentMethod === 'TEMPO') {
-    doc.text(`Harap lakukan pembayaran sebelum tanggal jatuh tempo. Jika memilih transfer manual, silakan transfer ke rekening BCA 1234567890 a/n Fermion Roastery dan sertakan nomor invoice ${order.id.slice(0, 8).toUpperCase()}.`, 48, footerY + 18, { width: 499, align: 'left' });
+    doc.text(`Harap lakukan pembayaran sebelum tanggal jatuh tempo. Jika memilih transfer manual, silakan transfer ke rekening BCA 1234567890 a/n Fermion Roastery dan sertakan nomor invoice ${invoiceNumber}.`, 48, footerY + 18, { width: 499, align: 'left' });
   } else if (paymentMethod === 'OFFLINE_CASH') {
     doc.text('Pembayaran tunai akan dilakukan secara langsung saat pengambilan atau pengiriman barang oleh kurir Fermion.', 48, footerY + 18, { width: 499, align: 'left' });
   } else {

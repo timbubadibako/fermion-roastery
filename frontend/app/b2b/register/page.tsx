@@ -16,6 +16,8 @@ import { useAuthStore } from "@/lib/store";
 import { Sticker } from "@/components/ui/sticker";
 import { useI18n } from "@/lib/i18n";
 
+const sanitizePhoneNumber = (value: string) => value.replace(/[^\d+]/g, "");
+
 export default function B2BRegisterPageV2() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
@@ -123,7 +125,7 @@ export default function B2BRegisterPageV2() {
                        </div>
                        <div className="space-y-1">
                           <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">{t.b2bRegister.form.phoneLabel}</label>
-                          <Input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder={t.b2bRegister.form.phonePlaceholder} className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
+                          <Input required inputMode="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: sanitizePhoneNumber(e.target.value)})} placeholder={t.b2bRegister.form.phonePlaceholder} className="h-12 rounded-sm bg-stone-50 border border-black/5 font-bold" />
                        </div>
                        <div className="md:col-span-2 space-y-1">
                           <label className="text-[9px] font-black text-stone-400 uppercase tracking-widest">{t.b2bRegister.form.addressLabel}</label>

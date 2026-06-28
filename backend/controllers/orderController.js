@@ -1,5 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { generateInvoicePDF } from '../lib/pdfGenerator.js';
+import { logError } from '../lib/logger.js';
+import { sanitizeError } from '../lib/security.js';
 
 const getRequestRole = async (userId) => {
   const { data: profile, error } = await supabase
@@ -51,8 +53,8 @@ export const getMyOrders = async (req, res) => {
     
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error fetching user orders:', error);
-    res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+    logError('orders.mine.fetch_failed', error, { profileId });
+    res.status(500).json(sanitizeError(error, "Failed to fetch orders"));
   }
 };
 
@@ -93,8 +95,8 @@ export const getOrderDetail = async (req, res) => {
 
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error fetching order detail:', error);
-    res.status(500).json({ message: "Failed to fetch order detail", error: error.message });
+    logError('orders.detail.fetch_failed', error, { orderId: id, profileId });
+    res.status(500).json(sanitizeError(error, "Failed to fetch order detail"));
   }
 };
 
@@ -119,7 +121,7 @@ export const downloadOrderInvoice = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="${generated.fileName}"`);
     return res.send(generated.buffer);
   } catch (error) {
-    console.error('Error downloading order invoice:', error);
-    res.status(500).json({ message: "Failed to download invoice", error: error.message });
+    logError('orders.invoice.download_failed', error, { orderId: id, profileId });
+    res.status(500).json(sanitizeError(error, "Failed to download invoice"));
   }
 };

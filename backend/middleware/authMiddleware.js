@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase.js';
+import { logError } from '../lib/logger.js';
+import { sanitizeError } from '../lib/security.js';
 
 export const verifyAuth = async (req, res, next) => {
   try {
@@ -16,20 +18,14 @@ export const verifyAuth = async (req, res, next) => {
     const { data: { user }, error } = await supabase.auth.getUser(token);
 
     if (error || !user) {
-      // 🎯 PRINT ERROR ASLI SUPABASE KE TERMINAL BACKEND LU
-      console.log("========================================");
-      console.log("❌ JET ENGINE AUTH ERROR:");
-      console.log("Pesan Error:", error ? error.message : "User tidak ditemukan");
-      console.log("Status Error:", error ? error.status : "401");
-      console.log("========================================");
-
       return res.status(401).json({ message: "Invalid or expired token." });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(500).json({ message: "Internal server error during authentication.", error: error.message });
+    logError('auth.verify.failed', error);
+    res.status(500).json(sanitizeError(error, "Internal server error during authentication."));
   }
 };
 
@@ -52,6 +48,7 @@ export const verifyAdmin = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(500).json({ message: "Internal server error during role verification.", error: error.message });
+    logError('auth.verify_admin.failed', error, { userId: req.user?.id });
+    res.status(500).json(sanitizeError(error, "Internal server error during role verification."));
   }
 };

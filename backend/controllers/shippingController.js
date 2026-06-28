@@ -2,6 +2,8 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import { supabase } from '../lib/supabase.js';
 import { generateShippingLabelsBatch } from '../lib/pdfGenerator.js';
+import { logError, logInfo } from '../lib/logger.js';
+import { sanitizeError, verifyStaticWebhookSecret } from '../lib/security.js';
 
 dotenv.config();
 
@@ -41,8 +43,8 @@ export const searchAreas = async (req, res) => {
 
     res.status(200).json(response.data.areas || []);
   } catch (error) {
-    console.error('Biteship Area Search Error:', error.response?.data || error.message);
-    res.status(500).json({ message: "Failed to search areas", error: error.message });
+    logError('shipping.areas.search_failed', error);
+    res.status(500).json(sanitizeError(error, "Failed to search areas"));
   }
 };
 
@@ -76,17 +78,12 @@ export const getRates = async (req, res) => {
     if (destination_area_id) payload.destination_area_id = destination_area_id;
     if (destination_postal_code) payload.destination_postal_code = Number(destination_postal_code);
 
-    console.log('📦 Fetching Rates with payload:', JSON.stringify(payload, null, 2));
-
     const response = await axios.post(`${BITESHIP_URL}/rates/couriers`, payload, { headers });
     
     res.status(200).json(response.data.pricing || []);
   } catch (error) {
-    console.error('Biteship Rates Error:', JSON.stringify(error.response?.data, null, 2) || error.message);
-    res.status(500).json({ 
-      message: "Failed to fetch shipping rates", 
-      error: error.response?.data?.error || error.message 
-    });
+    logError('shipping.rates.fetch_failed', error);
+    res.status(500).json(sanitizeError(error, "Failed to fetch shipping rates"));
   }
 };
 
@@ -116,8 +113,8 @@ export const getTracking = async (req, res) => {
     if (error) throw error;
     res.status(200).json({ history: data });
   } catch (error) {
-    console.error('Local Tracking Fetch Error:', error);
-    res.status(500).json({ message: "Failed to fetch tracking info" });
+    logError('shipping.tracking.fetch_failed', error, { id });
+    res.status(500).json(sanitizeError(error, "Failed to fetch tracking info"));
   }
 };
 
@@ -125,12 +122,15 @@ export const getTracking = async (req, res) => {
  * Handle Webhook from Biteship for tracking updates
  */
 export const handleBiteshipWebhook = async (req, res) => {
-  console.log('🚚 Biteship Webhook Received:', JSON.stringify(req.body, null, 2));
-
   const { event, order_id, status, courier, note } = req.body;
   const waybill_id = courier?.waybill_id;
 
   try {
+    const providedSecret = req.headers['x-biteship-secret'] || req.headers['x-webhook-secret'];
+    if (!verifyStaticWebhookSecret(providedSecret, process.env.BITESHIP_WEBHOOK_SECRET)) {
+      return res.status(401).json({ message: 'Unauthorized webhook request' });
+    }
+
     // 1. Find the internal order ID
     const { data: orderData, error: lookupError } = await supabase
       .from('orders')
@@ -139,7 +139,7 @@ export const handleBiteshipWebhook = async (req, res) => {
       .maybeSingle();
 
     if (lookupError || !orderData) {
-      console.log(`⚠️ Webhook received for unknown order: ${order_id} / ${waybill_id}`);
+      logInfo('shipping.webhook.unknown_order', { order_id, waybill_id, event, status });
       return res.status(200).send('OK');
     }
 
@@ -187,15 +187,15 @@ export const handleBiteshipWebhook = async (req, res) => {
         .eq('id', internalOrderId);
       
       if (updateError) throw updateError;
-      console.log(`✅ Order ${internalOrderId} updated to ${newStatus} and history recorded.`);
+      logInfo('shipping.webhook.order_updated', { internalOrderId, newStatus, event, status });
     } else {
-      console.log(`ℹ️ History recorded for order ${internalOrderId}, status ${status} (No main status update).`);
+      logInfo('shipping.webhook.history_recorded', { internalOrderId, event, status });
     }
 
     res.status(200).send('Webhook Processed');
   } catch (error) {
-    console.error('❌ Biteship Webhook Error:', error);
-    res.status(500).send('Internal Server Error');
+    logError('shipping.webhook.failed', error, { order_id, status });
+    res.status(500).json(sanitizeError(error, 'Internal Server Error'));
   }
 };
 
@@ -215,7 +215,7 @@ export const getBatchLabels = async (req, res) => {
     
     await generateShippingLabelsBatch(orderIds, res);
   } catch (error) {
-    console.error('Batch Label Fetch Error:', error);
-    res.status(500).json({ message: "Failed to generate batch labels" });
+    logError('shipping.labels.batch_failed', error, { orderIdsCount: orderIds.length });
+    res.status(500).json(sanitizeError(error, "Failed to generate batch labels"));
   }
 };

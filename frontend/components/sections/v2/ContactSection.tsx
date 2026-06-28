@@ -134,7 +134,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[-2deg]">{content.name}</label>
                     <input 
                       type="text" required
-                      placeholder="John Doe"
+                      placeholder="Nama lengkap"
                       value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})}
                       className="w-full bg-transparent border-b border-black/40 py-4 outline-none text-xl font-display italic text-black placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors relative z-0"
                     />
@@ -143,7 +143,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[2deg]">{content.email}</label>
                     <input 
                       type="email" required
-                      placeholder="john@example.com"
+                      placeholder="email@bisnisanda.com"
                       value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
                       className="w-full bg-transparent border-b border-black/40 py-4 outline-none text-xl font-display italic text-black placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors relative z-0"
                     />
@@ -154,7 +154,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute top-2 left-2 z-10 border border-black/10 rotate-[-1deg]">{content.message}</label>
                     <textarea 
                       required rows={5}
-                      placeholder="Tell us about your roasting needs..."
+                      placeholder="Ceritakan kebutuhan roasting atau kerja sama yang Anda butuhkan"
                       value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
                       className="w-full bg-transparent border border-black/40 p-4 pt-8 outline-none text-xl font-display italic text-black resize-none placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors shadow-[inset_4px_4px_0px_rgba(0,0,0,0.02)]"
                     />
