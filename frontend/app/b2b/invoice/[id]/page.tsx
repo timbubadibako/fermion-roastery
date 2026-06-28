@@ -42,7 +42,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
           const blob = await invoiceRes.blob();
           objectUrl = window.URL.createObjectURL(blob);
           setPdfUrl(objectUrl);
-          setPdfPreviewUrl(`${objectUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`);
+          setPdfPreviewUrl(`${objectUrl}#toolbar=0&navpanes=0&scrollbar=0&zoom=page-fit&view=FitV&pagemode=none`);
         }
       } catch (error) {
         console.error(error);
@@ -122,12 +122,12 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
           </div>
         </div>
 
-        <div className="bg-white rounded-sm border border-slate-100 shadow-2xl overflow-hidden print:shadow-none print:border-none">
+        <div className="bg-[#2b2b2b] rounded-[2rem] border border-slate-100 shadow-2xl overflow-hidden print:shadow-none print:border-none p-1 md:p-2">
           <iframe
             ref={iframeRef}
             src={pdfPreviewUrl}
             title={`Invoice ${unwrappedParams.id}`}
-            className="w-full min-h-[85vh] bg-white"
+            className="w-full h-[88vh] bg-white rounded-[1.5rem]"
           />
         </div>
       </div>
