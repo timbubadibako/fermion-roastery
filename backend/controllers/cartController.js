@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { createSignedAssetUrl } from '../lib/storage.js';
+import crypto from 'crypto';
 
 // 1. Sync / Save Cart
 export const syncCart = async (req, res) => {
@@ -18,7 +19,7 @@ export const syncCart = async (req, res) => {
 
     if (items.length > 0) {
       const cartData = items.map(item => ({
-        id: item.lineItemId,
+        id: item.lineItemId || crypto.randomUUID(),
         profile_id: profileId,
         product_id: item.id,
         weight: item.weight,

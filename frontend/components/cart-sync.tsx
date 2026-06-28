@@ -5,9 +5,13 @@ import { useAuthStore, useCartStore } from '@/lib/store';
 
 export function CartSync() {
   const { user } = useAuthStore();
-  const { items, setItems } = useCartStore();
+  const { items, setItems, ensureIds } = useCartStore();
 
   // 1. Fetch cart from DB on login or refresh
+  useEffect(() => {
+    ensureIds();
+  }, [ensureIds, items.length]);
+
   useEffect(() => {
     const fetchCart = async () => {
       if (!user) return;
@@ -27,12 +31,13 @@ export function CartSync() {
     };
 
     fetchCart();
-  }, [user?.id]);
+  }, [user?.id, setItems]);
 
   // 2. Sync cart to DB whenever items change and user is logged in
   useEffect(() => {
     const syncCart = async () => {
       if (!user) return;
+      ensureIds();
 
       try {
         await fetch('/api/cart/sync', {
@@ -48,7 +53,7 @@ export function CartSync() {
     // Debounce or just sync
     const timeout = setTimeout(syncCart, 1000);
     return () => clearTimeout(timeout);
-  }, [items, user?.id]);
+  }, [items, user?.id, ensureIds]);
 
   return null; // Renderless component
 }
