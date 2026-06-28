@@ -12,6 +12,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
   const { removeItems } = useCartStore();
   const [order, setOrder] = useState<any>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -41,6 +42,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
           const blob = await invoiceRes.blob();
           objectUrl = window.URL.createObjectURL(blob);
           setPdfUrl(objectUrl);
+          setPdfPreviewUrl(`${objectUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`);
         }
       } catch (error) {
         console.error(error);
@@ -94,7 +96,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
   };
 
   if (loading) return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Loading Invoice...</div>;
-  if (!order || !pdfUrl) return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Invoice not found.</div>;
+  if (!order || !pdfUrl || !pdfPreviewUrl) return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Invoice not found.</div>;
 
   return (
     <div className="font-sans text-slate-900 w-full">
@@ -123,7 +125,7 @@ export default function InvoiceTemplate({ params, searchParams }: { params: Prom
         <div className="bg-white rounded-sm border border-slate-100 shadow-2xl overflow-hidden print:shadow-none print:border-none">
           <iframe
             ref={iframeRef}
-            src={pdfUrl}
+            src={pdfPreviewUrl}
             title={`Invoice ${unwrappedParams.id}`}
             className="w-full min-h-[85vh] bg-white"
           />
