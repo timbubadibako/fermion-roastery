@@ -21,7 +21,9 @@ export default function ShippingTracker() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const activeStatuses = ['UNPAID', 'NET30', 'PENDING_CASH', 'PAID', 'PROCESSING', 'ROASTING', 'READY_TO_SHIP', 'SHIPPED', 'DELIVERED'];
+  const itemsPerPage = 4;
 
   useEffect(() => {
     if (user) {
@@ -40,7 +42,31 @@ export default function ShippingTracker() {
     o.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
     (o.shipping_awb && o.shipping_awb.toLowerCase().includes(searchQuery.toLowerCase()))
   );
-  const visibleOrders = filteredOrders.slice(0, 4);
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * itemsPerPage;
+  const visibleOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (currentPage !== safePage) {
+      setCurrentPage(safePage);
+    }
+  }, [currentPage, safePage]);
+
+  useEffect(() => {
+    if (visibleOrders.length === 0) {
+      return;
+    }
+
+    const selectedStillVisible = visibleOrders.some(order => order.id === selectedOrderId);
+    if (!selectedStillVisible) {
+      setSelectedOrderId(visibleOrders[0].id);
+    }
+  }, [selectedOrderId, visibleOrders]);
 
   if (loading) return (
     <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
@@ -105,6 +131,30 @@ export default function ShippingTracker() {
                 })
               )}
            </div>
+
+           {filteredOrders.length > itemsPerPage && (
+             <div className="flex items-center justify-between gap-3 pt-2">
+               <Button
+                 onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                 disabled={safePage === 1}
+                 variant="outline"
+                 className="h-11 px-4 rounded-sm border-black/10 bg-white text-[9px] font-black uppercase tracking-widest text-slate-600 shadow-none hover:bg-stone-50"
+               >
+                 Sebelumnya
+               </Button>
+               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                 Halaman {safePage} / {totalPages}
+               </p>
+               <Button
+                 onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                 disabled={safePage === totalPages}
+                 variant="outline"
+                 className="h-11 px-4 rounded-sm border-black/10 bg-white text-[9px] font-black uppercase tracking-widest text-slate-600 shadow-none hover:bg-stone-50"
+               >
+                 Berikutnya
+               </Button>
+             </div>
+           )}
         </div>
 
         {/* TRACKING TIMELINE */}
