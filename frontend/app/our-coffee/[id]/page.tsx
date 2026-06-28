@@ -36,6 +36,8 @@ interface CoffeeProduct {
   description: string;
   farm: string;
   image: string;
+  image_url?: string;
+  image_url_storage_path?: string | null;
 }
 
 function CharacterLevel({ label, level }: { label: string; level: number }) {
@@ -111,12 +113,19 @@ export default function ProductPage() {
         const res = await fetch(`/api/products/${id}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
-        setProduct(data);
+        setProduct({
+          ...data,
+          image: data.image || data.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE",
+        });
 
         const allRes = await fetch(`/api/products`);
         if (allRes.ok) {
           const allData = await allRes.json();
           const filtered = allData
+            .map((p: CoffeeProduct & { image_url?: string }) => ({
+              ...p,
+              image: p.image || p.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE",
+            }))
             .filter((p: CoffeeProduct) => p.roast_profile === data.roast_profile && p.id !== data.id)
             .slice(0, 4);
           setRelatedProducts(filtered);
@@ -188,7 +197,7 @@ export default function ProductPage() {
                   </div>
                   <div className="absolute bottom-6 left-8 right-8 flex justify-between items-end">
                      <div className="space-y-1">
-                        <p className="font-cloude text-[#367F4D] text-3xl opacity-30 italic">#EST-2026</p>
+                        <p className="font-display text-[#367F4D] text-3xl opacity-30 italic">#EST-2026</p>
                         <p className="text-[9px] font-black uppercase tracking-widest text-stone-300">{tDetail.specimenRecord}</p>
                      </div>
                      <div className="w-16 h-16 bg-[#2A1619] rounded-full flex flex-col items-center justify-center text-white border-4 border-white shadow-xl rotate-12">
