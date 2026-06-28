@@ -7,7 +7,7 @@ import { debugError } from '@/lib/debug';
 
 export function CartSync() {
   const { user } = useAuthStore();
-  const { items, setItems, ensureIds } = useCartStore();
+  const { items, setItems, ensureIds, removeItems } = useCartStore();
 
   // 1. Fetch cart from DB on login or refresh
   useEffect(() => {
@@ -58,7 +58,18 @@ export function CartSync() {
           body: JSON.stringify({ profileId: user.id, items: sanitizedItems }),
         });
 
-        if (!res.ok) {
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          if (Array.isArray(data?.removedItemIds) && data.removedItemIds.length > 0) {
+            const invalidLineItemIds = items
+              .filter((item) => data.removedItemIds.includes(item.id))
+              .map((item) => item.lineItemId);
+
+            if (invalidLineItemIds.length > 0) {
+              removeItems(invalidLineItemIds);
+            }
+          }
+        } else {
           debugError("Cart Sync HTTP Error:", await res.text());
         }
       } catch (error) {
@@ -69,7 +80,7 @@ export function CartSync() {
     // Debounce or just sync
     const timeout = setTimeout(syncCart, 1000);
     return () => clearTimeout(timeout);
-  }, [items, user?.id, ensureIds]);
+  }, [items, user?.id, ensureIds, removeItems]);
 
   return null; // Renderless component
 }

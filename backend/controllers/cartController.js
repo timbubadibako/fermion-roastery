@@ -28,7 +28,29 @@ export const syncCart = async (req, res) => {
     if (deleteError) throw deleteError;
 
     if (items.length > 0) {
-      const cartData = items.map(item => ({
+      const requestedProductIds = Array.from(
+        new Set(
+          items
+            .map((item) => item.id)
+            .filter(Boolean)
+        )
+      );
+
+      const { data: existingProducts, error: productLookupError } = await supabase
+        .from('products')
+        .select('id')
+        .in('id', requestedProductIds);
+
+      if (productLookupError) throw productLookupError;
+
+      const existingProductIds = new Set((existingProducts || []).map((product) => product.id));
+
+      const validItems = items.filter((item) => existingProductIds.has(item.id));
+      const removedItemIds = items
+        .filter((item) => item.id && !existingProductIds.has(item.id))
+        .map((item) => item.id);
+
+      const cartData = validItems.map(item => ({
         id: item.lineItemId || crypto.randomUUID(),
         profile_id: profileId,
         product_id: item.id,
@@ -38,11 +60,18 @@ export const syncCart = async (req, res) => {
         selected: item.selected ?? true
       }));
 
-      const { error: insertError } = await supabase
-        .from('cart_items')
-        .insert(cartData);
+      if (cartData.length > 0) {
+        const { error: insertError } = await supabase
+          .from('cart_items')
+          .insert(cartData);
 
-      if (insertError) throw insertError;
+        if (insertError) throw insertError;
+      }
+
+      return res.status(200).json({
+        message: "Cart synced successfully",
+        removedItemIds,
+      });
     }
 
     res.status(200).json({ message: "Cart synced successfully" });
