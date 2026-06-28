@@ -31,6 +31,7 @@ interface Product {
   price_retail: number;
   origin: string;
   notes: string;
+  image_url?: string | null;
   price?: number; // Backend dynamic price
   priceType?: string;
   category?: string;
@@ -76,7 +77,7 @@ export default function WholesaleShopPage() {
       name: product.name,
       price: finalPrice,
       quantity: 1,
-      image: "https://placehold.co/800x1000/367f4d/ffffff?text=FERMION+COFFEE",
+      image: product.image_url || "https://placehold.co/800x1000/367f4d/ffffff?text=FERMION+COFFEE",
       weight: "1000g", // B2B Default is 1KG
       grind: "Whole Bean",
       priceType: product.priceType || 'tier',
@@ -199,10 +200,7 @@ export default function WholesaleShopPage() {
                         {subProducts.map((product, i) => {
                           const wholesalePrice = product.price || product.price_retail;
                           const isDiscounted = wholesalePrice < product.price_retail;
-                          // Placeholder image logic based on category
-                          const imgUrl = mainCat === 'Espresso'
-                            ? "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=800&q=80"
-                            : "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=800&q=80";
+                          const imgUrl = product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE";
 
                           return (
                             <div key={product.id} className="w-[300px] md:w-[360px] shrink-0 snap-start">
