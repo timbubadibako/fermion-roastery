@@ -25,8 +25,7 @@ export const syncCart = async (req, res) => {
         weight: item.weight,
         grind: item.grind,
         quantity: item.quantity,
-        selected: item.selected ?? true,
-        updated_at: new Date().toISOString()
+        selected: item.selected ?? true
       }));
 
       const { error: insertError } = await supabase
