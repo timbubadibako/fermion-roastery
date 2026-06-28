@@ -1,7 +1,36 @@
 import { supabase } from '../lib/supabase.js';
-import fs from 'fs';
-import path from 'path';
-import { generateInvoicePDF } from '../lib/pdfGenerator.js';
+import { generateInvoicePDF, INVOICE_BUCKET, getInvoiceStoragePath } from '../lib/pdfGenerator.js';
+
+const getRequestRole = async (userId) => {
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  if (error) throw error;
+  return profile?.role || 'RETAIL';
+};
+
+const getAuthorizedOrder = async (orderId, userId) => {
+  const role = await getRequestRole(userId);
+  let query = supabase
+    .from('orders')
+    .select('id, profile_id')
+    .eq('id', orderId);
+
+  if (role !== 'ADMIN') {
+    query = query.eq('profile_id', userId);
+  }
+
+  const { data, error } = await query.single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return { order: data, role };
+};
 
 // 1. Get User's Own Orders
 export const getMyOrders = async (req, res) => {
@@ -37,11 +66,21 @@ export const getOrderDetail = async (req, res) => {
   }
 
   try {
-    const query = supabase
+    const authorized = await getAuthorizedOrder(id, profileId);
+    const role = authorized?.role;
+
+    if (!role) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    let query = supabase
       .from('orders')
       .select('*, items:order_items(id, name:product_name, quantity, price:unit_price, weight:variant_weight, grind:variant_grind)')
-      .eq('id', id)
-      .eq('profile_id', profileId);
+      .eq('id', id);
+
+    if (role !== 'ADMIN') {
+      query = query.eq('profile_id', profileId);
+    }
 
     const { data, error } = await query.single();
 
@@ -68,25 +107,31 @@ export const downloadOrderInvoice = async (req, res) => {
   }
 
   try {
-    const { data: order, error } = await supabase
-      .from('orders')
-      .select('id, profile_id')
-      .eq('id', id)
-      .eq('profile_id', profileId)
-      .single();
+    const authorized = await getAuthorizedOrder(id, profileId);
 
-    if (error || !order) {
+    if (!authorized?.order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    const { order } = authorized;
     const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
-    const filePath = path.join(process.cwd(), 'invoices', fileName);
+    const storagePath = getInvoiceStoragePath(order);
 
-    const resolvedPath = fs.existsSync(filePath)
-      ? filePath
-      : await generateInvoicePDF(order.id);
+    let { data: fileData, error: downloadError } = await supabase.storage
+      .from(INVOICE_BUCKET)
+      .download(storagePath);
 
-    return res.download(resolvedPath, fileName);
+    if (downloadError || !fileData) {
+      const generated = await generateInvoicePDF(order.id);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${generated.fileName}"`);
+      return res.send(generated.buffer);
+    }
+
+    const fileBuffer = Buffer.from(await fileData.arrayBuffer());
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    return res.send(fileBuffer);
   } catch (error) {
     console.error('Error downloading order invoice:', error);
     res.status(500).json({ message: "Failed to download invoice", error: error.message });

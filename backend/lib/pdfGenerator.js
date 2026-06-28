@@ -1,12 +1,139 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-import os from 'os';
 import { supabase } from './supabase.js';
+
+const INVOICE_BUCKET = 'order_invoices';
+
+const getInvoiceStoragePath = (order) => `orders/${order.id}.pdf`;
+
+const resolvePaymentMethod = (order) => {
+  if (order.payment_method) return order.payment_method;
+  if (order.status === 'NET30') return 'TEMPO';
+  if (order.status === 'PENDING_CASH') return 'OFFLINE_CASH';
+  return 'ONLINE';
+};
+
+const createInvoiceBuffer = async (order) => {
+  const doc = new PDFDocument({ margin: 48, size: 'A4' });
+  const chunks = [];
+  const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
+  const logoPath = path.join(process.cwd(), '../frontend/public/fermion-logo.png');
+  const paymentMethod = resolvePaymentMethod(order);
+  const createdAt = new Date(order.created_at || order.updated_at || Date.now());
+  const dueDate = new Date(createdAt);
+  dueDate.setDate(dueDate.getDate() + 30);
+
+  doc.on('data', (chunk) => chunks.push(chunk));
+
+  const finished = new Promise((resolve, reject) => {
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+  });
+
+  if (fs.existsSync(logoPath)) {
+    doc.image(logoPath, 48, 42, { width: 58 });
+  }
+
+  doc.fillColor('#64748B').font('Helvetica-Bold').fontSize(10).text('FERMION ROASTERY', 120, 50);
+  doc.font('Helvetica').fontSize(9).text('Jl. Kesambi No. 202, Cirebon, Jawa Barat 45133', 120, 66);
+  doc.text('hello@fermionroastery.com', 120, 79);
+
+  doc.fillColor('#CBD5E1').font('Helvetica-BoldOblique').fontSize(38).text('Invoice.', 360, 46, { align: 'right' });
+  doc.fillColor('#0F172A').font('Courier-Bold').fontSize(12).text(order.id.slice(0, 8).toUpperCase(), 360, 92, { align: 'right' });
+
+  const badgeWidth = 120;
+  doc.roundedRect(430, 112, badgeWidth, 22, 11)
+    .fillAndStroke(['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#DCFCE7' : '#FEF3C7', ['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#DCFCE7' : '#FEF3C7');
+  doc.fillColor(['PAID', 'READY_TO_SHIP', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? '#15803D' : '#B45309')
+    .font('Helvetica-Bold')
+    .fontSize(9)
+    .text(order.status, 430, 119, { width: badgeWidth, align: 'center' });
+
+  doc.moveTo(48, 145).lineTo(547, 145).strokeColor('#E2E8F0').stroke();
+
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('DITAGIHKAN KEPADA', 48, 170);
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(14).text(order.customer_name || '-', 48, 188);
+  doc.fillColor('#64748B').font('Helvetica').fontSize(10)
+    .text(order.shipping_address || '-', 48, 208, { width: 220 })
+    .text(order.shipping_city || '-', 48, doc.y + 4)
+    .text(order.customer_email || '-', 48, doc.y + 4)
+    .text(order.customer_phone || '-', 48, doc.y + 4);
+
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('TANGGAL INVOICE', 350, 170, { align: 'right', width: 200 });
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(createdAt.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 188, { align: 'right', width: 200 });
+
+  if (paymentMethod === 'TEMPO') {
+    doc.fillColor('#DC2626').font('Helvetica-Bold').fontSize(9).text('JATUH TEMPO (NET-30)', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(dueDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }), 350, 238, { align: 'right', width: 200 });
+  } else if (paymentMethod === 'OFFLINE_CASH') {
+    doc.fillColor('#059669').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Tunai (Offline)', 350, 238, { align: 'right', width: 200 });
+  } else {
+    doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('METODE PEMBAYARAN', 350, 220, { align: 'right', width: 200 });
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text('Transfer / E-Wallet', 350, 238, { align: 'right', width: 200 });
+  }
+
+  doc.moveTo(48, 280).lineTo(547, 280).strokeColor('#E2E8F0').stroke();
+
+  const tableTop = 302;
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9);
+  doc.text('DESKRIPSI BARANG', 48, tableTop, { width: 240 });
+  doc.text('KUANTITAS', 318, tableTop, { width: 70, align: 'right' });
+  doc.text('HARGA SATUAN', 388, tableTop, { width: 80, align: 'right' });
+  doc.text('TOTAL', 468, tableTop, { width: 79, align: 'right' });
+  doc.moveTo(48, tableTop + 18).lineTo(547, tableTop + 18).strokeColor('#CBD5E1').stroke();
+
+  let y = tableTop + 30;
+  order.items.forEach((item) => {
+    const lineTotal = Number(item.unit_price) * Number(item.quantity);
+    doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(10).text(item.product_name, 48, y, { width: 230 });
+    doc.fillColor('#94A3B8').font('Helvetica').fontSize(8).text(`${item.variant_grind} / ${item.variant_weight}`, 48, y + 14, { width: 230 });
+    doc.fillColor('#0F172A').font('Courier').fontSize(10).text(String(item.quantity), 318, y + 4, { width: 70, align: 'right' });
+    doc.text(`Rp ${Number(item.unit_price).toLocaleString('id-ID')}`, 388, y + 4, { width: 80, align: 'right' });
+    doc.font('Courier-Bold').text(`Rp ${lineTotal.toLocaleString('id-ID')}`, 468, y + 4, { width: 79, align: 'right' });
+    y += 42;
+    doc.moveTo(48, y - 8).lineTo(547, y - 8).strokeColor('#F1F5F9').stroke();
+  });
+
+  const subtotal = Number(order.total_amount || 0) - Number(order.shipping_fee || 0);
+  const shippingFee = Number(order.shipping_fee || 0);
+  const totalAmount = Number(order.total_amount || 0);
+  const totalsX = 330;
+  const totalsWidth = 217;
+
+  y += 16;
+  doc.fillColor('#64748B').font('Helvetica').fontSize(10).text('Subtotal', totalsX, y, { width: 110 });
+  doc.font('Courier').text(`Rp ${subtotal.toLocaleString('id-ID')}`, totalsX + 107, y, { width: 110, align: 'right' });
+  y += 20;
+  doc.fillColor('#64748B').font('Helvetica').fontSize(10).text('Pengiriman', totalsX, y, { width: 110 });
+  doc.font('Courier').text(`Rp ${shippingFee.toLocaleString('id-ID')}`, totalsX + 107, y, { width: 110, align: 'right' });
+  y += 24;
+  doc.moveTo(totalsX, y - 8).lineTo(totalsX + totalsWidth, y - 8).strokeColor('#CBD5E1').stroke();
+  doc.fillColor('#0F172A').font('Helvetica-Bold').fontSize(14).text('Total Tagihan', totalsX, y, { width: 110 });
+  doc.font('Courier-Bold').text(`Rp ${totalAmount.toLocaleString('id-ID')}`, totalsX + 107, y, { width: 110, align: 'right' });
+
+  const footerY = Math.max(y + 60, 690);
+  doc.moveTo(48, footerY - 18).lineTo(547, footerY - 18).strokeColor('#E2E8F0').stroke();
+  doc.fillColor('#94A3B8').font('Helvetica-Bold').fontSize(9).text('INSTRUKSI PEMBAYARAN', 48, footerY);
+  doc.fillColor('#64748B').font('Helvetica').fontSize(10);
+
+  if (paymentMethod === 'TEMPO') {
+    doc.text(`Harap lakukan pembayaran sebelum tanggal jatuh tempo. Jika memilih transfer manual, silakan transfer ke rekening BCA 1234567890 a/n Fermion Roastery dan sertakan nomor invoice ${order.id.slice(0, 8).toUpperCase()}.`, 48, footerY + 18, { width: 499, align: 'left' });
+  } else if (paymentMethod === 'OFFLINE_CASH') {
+    doc.text('Pembayaran tunai akan dilakukan secara langsung saat pengambilan atau pengiriman barang oleh kurir Fermion.', 48, footerY + 18, { width: 499, align: 'left' });
+  } else {
+    doc.text('Silakan selesaikan pembayaran melalui link Xendit yang telah disediakan agar pesanan Anda segera diproses.', 48, footerY + 18, { width: 499, align: 'left' });
+  }
+
+  doc.end();
+
+  const buffer = await finished;
+  return { buffer, fileName };
+};
 
 const generateInvoicePDF = async (orderId) => {
   try {
-    // 1. Fetch complete order details with items
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select(`
@@ -24,109 +151,21 @@ const generateInvoicePDF = async (orderId) => {
 
     if (orderError || !order) throw new Error("Order not found or error fetching order");
 
-    // 2. Setup PDF Document
-    const doc = new PDFDocument({ margin: 50 });
-    const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
-    const invoicesDir = path.join(os.tmpdir(), 'fermion-invoices');
-    if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir, { recursive: true });
-    const filePath = path.join(invoicesDir, fileName);
-    
-    const writeStream = fs.createWriteStream(filePath);
-    doc.pipe(writeStream);
+    const { buffer, fileName } = await createInvoiceBuffer(order);
+    const storagePath = getInvoiceStoragePath(order);
 
-    // --- Header ---
-    const logoPath = path.join(process.cwd(), '../frontend/public/fermion-logo.png');
-    if (fs.existsSync(logoPath)) {
-      // Draw Logo on the left
-      doc.image(logoPath, 50, 40, { width: 60 });
-      // Text on the right
-      doc.fontSize(24).font('Helvetica-Bold').text('FERMION ROASTERY', 120, 45);
-      doc.fontSize(10).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', 120, 70);
-      doc.text('hello@fermion.com | +62 812 3456 7890', 120, 85);
-      doc.y = 120; // reset y position after header
-    } else {
-      doc.fontSize(24).font('Helvetica-Bold').text('FERMION ROASTERY', { align: 'center' });
-      doc.fontSize(10).font('Helvetica').text('Jl. Kesambi No. 202, Cirebon, Jawa Barat', { align: 'center' });
-      doc.text('hello@fermion.com | +62 812 3456 7890', { align: 'center' });
-      doc.moveDown(2);
+    const { error: uploadError } = await supabase.storage
+      .from(INVOICE_BUCKET)
+      .upload(storagePath, buffer, {
+        contentType: 'application/pdf',
+        upsert: true
+      });
+
+    if (uploadError) {
+      console.error('Invoice Storage Upload Error:', uploadError);
     }
 
-    // --- Invoice Info ---
-    doc.fontSize(20).font('Helvetica-Bold').text('INVOICE');
-    doc.fontSize(10).font('Helvetica')
-       .text(`Invoice No: INV-${order.id.split('-')[0].toUpperCase()}`)
-       .text(`Date: ${new Date(order.updated_at).toLocaleDateString('id-ID')}`)
-       .text(`Status: ${order.status}`);
-    doc.moveDown();
-
-    // --- Customer Info ---
-    doc.font('Helvetica-Bold').text('Bill To:');
-    doc.font('Helvetica')
-       .text(order.customer_name)
-       .text(order.customer_email)
-       .text(order.customer_phone)
-       .text(order.shipping_address)
-       .text(`${order.shipping_city} ${order.shipping_notes ? '('+order.shipping_notes+')' : ''}`);
-    doc.moveDown(2);
-
-    // --- Items Table ---
-    const tableTop = doc.y;
-    doc.font('Helvetica-Bold');
-    doc.text('Item Description', 50, tableTop);
-    doc.text('Qty', 350, tableTop, { width: 50, align: 'right' });
-    doc.text('Price', 400, tableTop, { width: 70, align: 'right' });
-    doc.text('Total', 470, tableTop, { width: 70, align: 'right' });
-    
-    // Draw line
-    doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
-    
-    let y = tableTop + 25;
-    doc.font('Helvetica');
-    
-    order.items.forEach(item => {
-      const itemTotal = item.unit_price * item.quantity;
-      doc.text(`${item.product_name} (${item.variant_weight} - ${item.variant_grind})`, 50, y, { width: 280 });
-      doc.text(item.quantity.toString(), 350, y, { width: 50, align: 'right' });
-      doc.text(Number(item.unit_price).toLocaleString('id-ID'), 400, y, { width: 70, align: 'right' });
-      doc.text(itemTotal.toLocaleString('id-ID'), 470, y, { width: 70, align: 'right' });
-      y += 20;
-    });
-
-    // Draw line
-    doc.moveTo(50, y + 10).lineTo(550, y + 10).stroke();
-    y += 20;
-
-    // --- Totals ---
-    doc.font('Helvetica-Bold');
-    doc.text('Subtotal:', 350, y, { width: 120, align: 'right' });
-    doc.font('Helvetica').text(`Rp ${(order.total_amount - order.shipping_fee).toLocaleString('id-ID')}`, 470, y, { width: 70, align: 'right' });
-    y += 20;
-
-    doc.font('Helvetica-Bold');
-    doc.text(`Shipping (${order.shipping_courier || 'Kurir'}):`, 350, y, { width: 120, align: 'right' });
-    doc.font('Helvetica').text(`Rp ${Number(order.shipping_fee).toLocaleString('id-ID')}`, 470, y, { width: 70, align: 'right' });
-    y += 20;
-
-    // Draw line
-    doc.moveTo(350, y + 10).lineTo(550, y + 10).stroke();
-    y += 20;
-
-    doc.fontSize(14).font('Helvetica-Bold');
-    doc.text('Grand Total:', 350, y, { width: 120, align: 'right' });
-    doc.text(`Rp ${Number(order.total_amount).toLocaleString('id-ID')}`, 470, y, { width: 70, align: 'right' });
-
-    // --- Footer ---
-    doc.fontSize(10).font('Helvetica-Oblique');
-    doc.text('Thank you for choosing Fermion Roastery.', 50, 700, { align: 'center' });
-
-    doc.end();
-    await new Promise((resolve, reject) => {
-      writeStream.on('finish', resolve);
-      writeStream.on('error', reject);
-      doc.on('error', reject);
-    });
-
-    return filePath;
+    return { buffer, fileName, storagePath, uploaded: !uploadError };
   } catch (error) {
     console.error('PDF Generation Error:', error);
     throw error;
@@ -187,4 +226,4 @@ const generateShippingLabelsBatch = async (orderIds, res) => {
   }
 };
 
-export { generateInvoicePDF, generateShippingLabelsBatch };
+export { INVOICE_BUCKET, getInvoiceStoragePath, generateInvoicePDF, generateShippingLabelsBatch };

@@ -195,6 +195,8 @@ CREATE TABLE IF NOT EXISTS orders (
     shipping_city TEXT NOT NULL,
     shipping_notes TEXT,
     type TEXT DEFAULT 'retail',
+    payment_method TEXT, -- 'TEMPO', 'OFFLINE_CASH', 'ONLINE'
+    invoice_storage_path TEXT, -- e.g. 'orders/<order-id>.pdf' in Supabase Storage
     
     -- QC Sensory Feedback (Saved during ROASTING phase)
     qc_sweetness NUMERIC(2,1),
@@ -207,6 +209,15 @@ CREATE TABLE IF NOT EXISTS orders (
 
 DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS invoice_storage_path TEXT;
+
+-- Supabase Storage reference for invoices (private bucket, accessed via backend service role)
+-- Run in Supabase SQL Editor if the bucket does not exist yet:
+-- insert into storage.buckets (id, name, public)
+-- values ('order_invoices', 'order_invoices', false)
+-- on conflict (id) do nothing;
 
 -- 9. Order Items Table
 CREATE TABLE IF NOT EXISTS order_items (
