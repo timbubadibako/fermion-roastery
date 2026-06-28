@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { supabase } from './supabase.js';
 
 const generateInvoicePDF = async (orderId) => {
@@ -26,8 +27,8 @@ const generateInvoicePDF = async (orderId) => {
     // 2. Setup PDF Document
     const doc = new PDFDocument({ margin: 50 });
     const fileName = `INV-${order.id.split('-')[0].toUpperCase()}.pdf`;
-    const invoicesDir = path.join(process.cwd(), 'invoices');
-    if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir);
+    const invoicesDir = path.join(os.tmpdir(), 'fermion-invoices');
+    if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir, { recursive: true });
     const filePath = path.join(invoicesDir, fileName);
     
     const writeStream = fs.createWriteStream(filePath);

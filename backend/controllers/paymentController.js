@@ -422,8 +422,12 @@ export const handleNotification = async (req, res) => {
       }
       // ----------------------------
 
-      // 2. Generate PDF Invoice automatically
-      await generateInvoicePDF(orderData.id);
+      // 2. Generate PDF invoice without blocking payment flow on serverless file errors
+      try {
+        await generateInvoicePDF(orderData.id);
+      } catch (pdfError) {
+        console.error('Invoice PDF Generation Error:', pdfError);
+      }
 
       // --- 3. AUTO-EVALUATE B2B TIER ---
       try {
@@ -623,8 +627,11 @@ export const createManualInvoice = async (req, res) => {
 
     publishEvent('orders', 'order_updated', { id: orderData.id, status: orderData.status });
 
-    // PDF Generation
-    await generateInvoicePDF(orderData.id);
+    try {
+      await generateInvoicePDF(orderData.id);
+    } catch (pdfError) {
+      console.error('Manual Invoice PDF Generation Error:', pdfError);
+    }
 
     res.status(200).json({
       invoiceUrl: `/b2b/ledger`, // Redirect them straight to ledger

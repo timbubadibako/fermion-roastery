@@ -296,19 +296,19 @@ export default function B2BCheckoutPage() {
                  <div className="flex gap-2 mb-6 p-1 bg-white/5 rounded-xl border border-white/10">
                     <button 
                        onClick={() => setPaymentType('tempo')}
-                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'tempo' ? 'bg-periwinkle text-white hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${paymentType === 'tempo' ? 'bg-periwinkle text-white border-periwinkle hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 border-transparent hover:bg-white hover:text-slate-950 hover:border-white'}`}
                     >
                        {t.b2bCheckout.payment.net30}
                     </button>
                     <button 
                        onClick={() => setPaymentType('cash_offline')}
-                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'cash_offline' ? 'bg-periwinkle text-white hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${paymentType === 'cash_offline' ? 'bg-periwinkle text-white border-periwinkle hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 border-transparent hover:bg-white hover:text-slate-950 hover:border-white'}`}
                     >
                        {t.b2bCheckout.payment.cashOffline}
                     </button>
                     <button 
                        onClick={() => setPaymentType('cash')}
-                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${paymentType === 'cash' ? 'bg-periwinkle text-white hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                       className={`flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all ${paymentType === 'cash' ? 'bg-periwinkle text-white border-periwinkle hover:bg-periwinkle/90 hover:text-white' : 'text-slate-400 border-transparent hover:bg-white hover:text-slate-950 hover:border-white'}`}
                     >
                        {t.b2bCheckout.payment.gateway}
                     </button>
