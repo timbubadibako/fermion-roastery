@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { useAuthStore, useCartStore } from '@/lib/store';
+import { apiFetch } from '@/lib/api';
+import { debugError } from '@/lib/debug';
 
 export function CartSync() {
   const { user } = useAuthStore();
@@ -17,16 +19,18 @@ export function CartSync() {
       if (!user) return;
       
       try {
-        const res = await fetch(`/api/cart?profileId=${user.id}`);
+        const res = await apiFetch(`/api/cart?profileId=${user.id}`);
         if (res.ok) {
           const dbItems = await res.json();
           // Merge or override? We'll override with DB state for security and consistency
           if (dbItems.length > 0) {
             setItems(dbItems);
           }
+        } else {
+          debugError("Cart Fetch HTTP Error:", await res.text());
         }
       } catch (error) {
-        console.error("Cart Fetch Error:", error);
+        debugError("Cart Fetch Error:", error);
       }
     };
 
@@ -40,13 +44,25 @@ export function CartSync() {
       ensureIds();
 
       try {
-        await fetch('/api/cart/sync', {
+        const sanitizedItems = items.map((item) => ({
+          lineItemId: item.lineItemId,
+          id: item.id,
+          weight: item.weight,
+          grind: item.grind,
+          quantity: item.quantity,
+          selected: item.selected,
+        }));
+
+        const res = await apiFetch('/api/cart/sync', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: user.id, items }),
+          body: JSON.stringify({ profileId: user.id, items: sanitizedItems }),
         });
+
+        if (!res.ok) {
+          debugError("Cart Sync HTTP Error:", await res.text());
+        }
       } catch (error) {
-        console.error("Cart Sync Error:", error);
+        debugError("Cart Sync Error:", error);
       }
     };
 
