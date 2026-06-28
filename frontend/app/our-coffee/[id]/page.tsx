@@ -115,6 +115,10 @@ export default function ProductPage() {
         const data = await res.json();
         setProduct({
           ...data,
+          fermentation: Number(data.fermentation ?? 0),
+          sweetness: Number(data.sweetness ?? 0),
+          acidity: Number(data.acidity ?? 0),
+          body: Number(data.body ?? 0),
           image: data.image || data.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE",
         });
 
@@ -261,7 +265,7 @@ export default function ProductPage() {
               <div className="inline-block px-4 py-1.5 bg-white border border-black/5 rotate-[-1deg] text-[9px] font-black tracking-[0.4em] text-[#367F4D] uppercase shadow-sm">
                  {tDetail.authenticRecord} / {product.origin}
               </div>
-              <h1 className="text-7xl md:text-8xl lg:text-9xl font-cloude tracking-tighter text-slate-900 leading-[0.8] italic uppercase">
+              <h1 className="text-7xl md:text-8xl lg:text-9xl font-display tracking-tighter text-slate-900 leading-[0.8] italic uppercase">
                 {product.name}
               </h1>
               <div className="flex items-center gap-4">
@@ -411,7 +415,7 @@ export default function ProductPage() {
                    <Star size={20} fill="currentColor" />
                    <p className="text-[10px] font-black tracking-[0.4em] uppercase">{tDetail.labSuggestions}</p>
                 </div>
-                <h2 className="text-6xl font-cloude tracking-tighter text-slate-900 italic leading-none">{tDetail.completeArchive}</h2>
+                <h2 className="text-6xl font-display tracking-tighter text-slate-900 italic leading-none">{tDetail.completeArchive}</h2>
               </div>
               <Link href="/our-coffee" className="inline-block text-[11px] font-black tracking-[0.4em] text-stone-400 hover:text-slate-900 border-b-2 border-black/5 pb-2 transition-all uppercase">
                 {tDetail.browseFullCollection}

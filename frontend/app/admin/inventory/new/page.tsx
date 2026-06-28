@@ -96,6 +96,7 @@ export default function ProductFormPage() {
     linked_journal_id: "",
     b2b_discount_enabled: true,
     is_active: true,
+    fermentation: 3,
     sweetness: 3,
     acidity: 3,
     body: 3,
@@ -156,7 +157,7 @@ export default function ProductFormPage() {
               description: textValue(data.description),
               farm: textValue(data.farm),
               image_url: textValue(data.image_url_storage_path || data.image_url),
-              fermentation: textValue(data.fermentation),
+              fermentation: numberValue(data.fermentation, 3),
               sweetness: numberValue(data.sweetness, 3),
               acidity: numberValue(data.acidity, 3),
               body: numberValue(data.body, 3),
@@ -382,6 +383,7 @@ export default function ProductFormPage() {
 
             <div className="space-y-10">
               {[
+                { id: 'fermentation', label: 'Intensitas Fermentasi' },
                 { id: 'sweetness', label: 'Intensitas Sweetness' },
                 { id: 'acidity', label: 'Brightness Acidity' },
                 { id: 'body', label: 'Mouthfeel / Body' }
