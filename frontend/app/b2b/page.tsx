@@ -152,7 +152,7 @@ export default function B2BOverview() {
                         <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest italic leading-none">Total Penghematan</p>
                         <TrendingUp size={14} className="text-[#367F4D]" />
                      </div>
-                     <h4 className="text-4xl font-bold tracking-tight text-slate-900">Rp {stats.savings.toLocaleString('id-ID')}</h4>
+                     <h4 className="text-4xl font-bold tracking-tight text-slate-900">Rp {Number(stats.savings || 0).toLocaleString('id-ID')}</h4>
                      <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Kalkulasi vs Harga Retail</p>
                   </div>
                   <div className="bg-white border border-black/5 p-10 rounded-sm space-y-4 shadow-sm group hover:shadow-xl transition-all duration-300">

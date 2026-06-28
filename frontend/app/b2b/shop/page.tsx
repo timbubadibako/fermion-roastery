@@ -198,8 +198,9 @@ export default function WholesaleShopPage() {
                     ) : (
                       <div className="flex overflow-x-auto gap-6 pb-8 pt-4 px-2 -mx-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {subProducts.map((product, i) => {
-                          const wholesalePrice = product.price || product.price_retail;
-                          const isDiscounted = wholesalePrice < product.price_retail;
+                          const retailPrice = Number(product.price_retail || 0);
+                          const wholesalePrice = Number(product.price ?? retailPrice ?? 0);
+                          const isDiscounted = wholesalePrice < retailPrice;
                           const imgUrl = product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE";
 
                           return (
@@ -232,13 +233,13 @@ export default function WholesaleShopPage() {
                                   <div className="pt-8 mt-8 border-t border-black/5 flex items-end justify-between">
                                     <div className="space-y-1">
                                       {isDiscounted && (
-                                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest line-through">{t.b2bShop.retailLabel} {Number(product.price_retail).toLocaleString('id-ID')}</p>
+                                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest line-through">{t.b2bShop.retailLabel} {retailPrice.toLocaleString('id-ID')}</p>
                                       )}
                                       {product.b2b_discount_enabled === false && (
                                         <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest">No B2B discount</p>
                                       )}
                                       <p className="text-2xl font-bold text-slate-900 tracking-tight">
-                                        Rp {Number(wholesalePrice).toLocaleString('id-ID')}
+                                        Rp {wholesalePrice.toLocaleString('id-ID')}
                                         <span className="text-[9px] text-slate-400 ml-1 font-black tracking-widest uppercase">{t.b2bShop.unitLabel}</span>
                                       </p>
                                     </div>

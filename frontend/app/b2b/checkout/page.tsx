@@ -315,15 +315,18 @@ export default function B2BCheckoutPage() {
                  </div>
 
                  <div className="space-y-4">
-                    {items.map(item => (
+                    {items.map(item => {
+                       const itemPrice = Number(item.price || 0);
+                       const itemQuantity = Number(item.quantity || 0);
+                       return (
                        <div key={item.id} className="flex justify-between items-start border-b border-white/10 pb-4">
                           <div className="space-y-1">
                              <p className="font-black uppercase italic text-sm text-slate-200">{item.name}</p>
-                             <p className="text-[10px] font-bold text-slate-500 font-mono">{t.b2bCheckout.summary.itemCalculation.replace('{{quantity}}', String(item.quantity)).replace('{{price}}', item.price.toLocaleString('id-ID'))}</p>
+                             <p className="text-[10px] font-bold text-slate-500 font-mono">{t.b2bCheckout.summary.itemCalculation.replace('{{quantity}}', String(itemQuantity)).replace('{{price}}', itemPrice.toLocaleString('id-ID'))}</p>
                           </div>
-                          <p className="font-black font-mono text-white">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
+                          <p className="font-black font-mono text-white">Rp {(itemPrice * itemQuantity).toLocaleString('id-ID')}</p>
                        </div>
-                    ))}
+                    )})}
                  </div>
 
                  <div className="bg-white/10 border border-white/20 rounded-2xl p-4 flex items-start gap-3">
