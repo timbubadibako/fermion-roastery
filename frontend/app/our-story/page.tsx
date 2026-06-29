@@ -13,6 +13,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function StoryPageV2() {
   const t = useI18n();
+  const storyHero = {
+    badge: "The Roastery Manifesto",
+    title1: "Small things.",
+    title2: "Everything tasted.",
+  };
   const heroRef = useRef<HTMLElement>(null);
   const philosophyRef = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
@@ -68,34 +73,41 @@ export default function StoryPageV2() {
       <section ref={heroRef} className="pt-48 pb-40 px-6 relative z-10 bg-[#E8F1F8]">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
            
-           <div className="flex-1 space-y-10 order-2 lg:order-1">
+           <div className="flex-1 space-y-10 order-2 lg:order-1 lg:min-h-[42rem] flex flex-col justify-center items-start">
               <div className="inline-block px-4 py-1.5 bg-white border border-[#8CADD8]/30 shadow-[4px_4px_0_rgba(140,173,216,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#0F3A8D] uppercase story-hero-text">
-                 <Archive size={12} className="inline mr-2" /> {t.ourStory.badge}
+                 <Archive size={12} className="inline mr-2" /> {storyHero.badge}
               </div>
-              <h1 className="text-5xl md:text-9xl font-cloude tracking-tighter text-slate-900 leading-[0.8] story-hero-text">
-                 {t.ourStory.title1} <br/> <span className="font-display italic text-[#8CADD8]">{t.ourStory.title2}</span>
+              <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-cloude tracking-tighter text-slate-900 leading-[0.82] story-hero-text">
+                 {storyHero.title1} <br/> <span className="font-display italic text-[#8CADD8]">{storyHero.title2}</span>
               </h1>
-              <div className="space-y-6 text-stone-600 font-medium text-lg md:text-lg leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
+              <div className="w-full min-h-[13rem] space-y-6 text-stone-600 font-medium text-lg md:text-lg leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
                  <p>{t.ourStory.desc1}</p>
                  <p className="italic">{t.ourStory.desc2}</p>
               </div>
            </div>
 
            <div className="w-full lg:w-[500px] relative aspect-[4/5] order-1 lg:order-2 hero-polaroid">
-              <div className="bg-white p-4 pb-16 border border-black/10 shadow-[20px_20px_0px_rgba(0,0,0,0.02)] rotate-[3deg] relative z-20">
+              <div className="absolute top-2 right-0 w-[88%] bg-white p-4 pb-20 border border-black/10 shadow-[20px_20px_0px_rgba(0,0,0,0.02)] rotate-[3deg] relative z-20">
                  <div className="absolute top-[-15px] left-1/2 -translate-x-1/2 w-32 h-8 bg-white/60 border border-black/5 rotate-[-2deg] z-30 backdrop-blur-sm shadow-sm opacity-80"></div>
-                 
-                 <div className="relative w-full h-full bg-[#E8F1F8] overflow-hidden border border-black/5">
+
+                 <div className="relative aspect-[4/3] w-full bg-[#E8F1F8] overflow-hidden border border-black/5">
                     <Image 
-                      src="https://placehold.co/800x1000/0f3a8d/e8f1f8?text=GARAGE+ERA" 
-                      alt="Origins" fill className="object-cover grayscale contrast-125"
+                      src="https://placehold.co/1200x900/d8e3ef/1a2b40?text=FIRST+ROAST+SETUP" 
+                      alt="Early Fermion Roastery setup"
+                      fill
+                      className="object-cover grayscale-[0.2] contrast-110"
                     />
                  </div>
-                 <div className="absolute bottom-4 right-6 text-right">
-                    <p className="font-cloude text-[#0F3A8D] text-4xl opacity-20 italic">{t.ourStory.est}</p>
+
+                 <div className="absolute left-6 right-6 bottom-6 flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.28em] text-[#0F3A8D]">Bandung, 2026</p>
+                      <p className="mt-2 text-2xl font-display italic text-slate-800">First roast setup.</p>
+                    </div>
+                    <p className="font-cloude text-[#8CADD8] text-xl opacity-80 uppercase">{t.ourStory.est}</p>
                  </div>
               </div>
-              <Sticker rotate={-12} className="absolute -top-6 -left-6 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
+              <Sticker rotate={-12} className="absolute top-0 left-10 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
            </div>
         </div>
       </section>
@@ -110,21 +122,39 @@ export default function StoryPageV2() {
             <h2 className="text-4xl md:text-6xl font-cloude tracking-tighter text-slate-900 leading-[0.9]">
               {t.ourStory.philTitle1}
             </h2>
+            <div className="relative pt-4">
+              <div className="relative aspect-[4/5] max-w-md bg-white border border-black/10 shadow-[12px_16px_0_rgba(0,0,0,0.03)] overflow-hidden">
+                <Image
+                  src="https://placehold.co/800x1000/e8f1f8/1a2b40?text=ROASTING+NOTES"
+                  alt="Roasting notes and cupping archive"
+                  fill
+                  className="object-cover grayscale-[0.15] contrast-110"
+                />
+              </div>
+              <div className="absolute -bottom-4 -right-2 md:right-10 bg-[#F4F0E6] border border-black/10 shadow-sm px-4 py-3 rotate-[2deg] max-w-[220px]">
+                <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#367F4D] mb-2">
+                  Archive Notes
+                </p>
+                <p className="text-sm leading-relaxed text-stone-600 font-medium">
+                  Setiap batch dibangun dari catatan kecil yang akhirnya membentuk rasa besar.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-7 space-y-8">
-            <div className="space-y-5 text-stone-600 font-medium text-base md:text-lg leading-relaxed">
+            <div className="space-y-5 text-stone-600 font-medium text-base md:text-lg leading-relaxed max-w-3xl">
               {t.ourStory.identityParagraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-              <div className="bg-white border border-black/10 p-8 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <div className="bg-white border border-black/10 p-8 shadow-sm md:min-h-[20rem]">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#367F4D] mb-5">{t.ourStory.filterTitle}</p>
                 <p className="text-stone-600 leading-relaxed font-medium">{t.ourStory.filterDesc}</p>
               </div>
-              <div className="bg-[#1A2B40] border border-black/10 p-8 shadow-sm text-white">
+              <div className="bg-[#1A2B40] border border-black/10 p-8 shadow-sm text-white md:min-h-[20rem]">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8CADD8] mb-5">{t.ourStory.espressoTitle}</p>
                 <p className="text-white/70 leading-relaxed font-medium">{t.ourStory.espressoDesc}</p>
               </div>

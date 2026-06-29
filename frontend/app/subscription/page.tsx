@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Footer } from "@/components/sections/Footer";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useLangStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { debugError } from "@/lib/debug";
@@ -23,11 +23,17 @@ const planVisuals: any = {
 export default function SubscriptionPageV2() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { language } = useLangStore();
   const [mounted, setMounted] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
 
   const t = useI18n();
   const tSub = t.subscription;
+  const subscriptionHero = {
+    badge: "Exclusive Subscription Club",
+    title1: "Don't choose.",
+    title2: "Let the Master decide.",
+  };
 
   const steps = [
     { title: tSub.step1Title, desc: tSub.step1Desc },
@@ -152,17 +158,17 @@ export default function SubscriptionPageV2() {
       />
 
       <section ref={heroRef} className="pt-48 pb-24 px-6 relative z-10 text-center bg-[#FFFBEB]">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-5xl mx-auto space-y-8 min-h-[28rem] flex flex-col justify-center items-center">
           <div className="inline-block px-4 py-1.5 bg-white border border-[#F1B941]/30 shadow-[4px_4px_0_rgba(241,185,65,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#92400E] uppercase sub-hero-text">
-            {tSub.badge}
+            {subscriptionHero.badge}
           </div>
 
-          <h1 id="tour-sub-hero" className="text-5xl md:text-9xl font-cloude tracking-tighter text-[#2A1619] leading-[0.8] sub-hero-text">
-            {tSub.heroTitle1} <br />
-            <span className="font-display italic text-[#F1B941]">{tSub.heroTitle2}</span>
+          <h1 id="tour-sub-hero" className="text-5xl md:text-8xl lg:text-[7rem] font-cloude tracking-tighter text-[#2A1619] leading-[0.82] sub-hero-text">
+            {subscriptionHero.title1} <br />
+            <span className="font-display italic text-[#F1B941]">{subscriptionHero.title2}</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-stone-600 font-medium text-lg md:text-xl leading-relaxed bg-white/40 p-5 border-l-4 border-[#F1B941]/40 backdrop-blur-sm shadow-sm sub-hero-text">
+          <p className="w-full min-h-[8.5rem] max-w-2xl mx-auto text-stone-600 font-medium text-lg md:text-xl leading-relaxed bg-white/40 p-5 border-l-4 border-[#F1B941]/40 backdrop-blur-sm shadow-sm sub-hero-text">
             {tSub.heroDesc}
           </p>
         </div>
@@ -193,9 +199,13 @@ export default function SubscriptionPageV2() {
             <Sticker rotate={12} className="absolute -bottom-6 -right-6 z-30 border border-white/10 shadow-sm" color="#F1B941">{tSub.sensoryExpert}</Sticker>
           </div>
 
-          <div id="tour-sub-master" className="w-full md:w-[55%] space-y-10 master-quote">
+          <div id="tour-sub-master" className="w-full md:w-[55%] space-y-10 master-quote md:min-h-[42rem] flex flex-col justify-center">
             <Quote size={60} className="text-[#F1B941]/10" />
-            <h3 className="text-4xl md:text-6xl font-display font-black tracking-tighter italic leading-tight text-[#FFFBEB] relative z-10">
+            <h3 className={`min-h-[20rem] md:min-h-[24rem] font-display font-black tracking-tighter italic leading-tight text-[#FFFBEB] relative z-10 ${
+              language === "id"
+                ? "text-4xl md:text-[3.5rem] md:max-w-[40rem]"
+                : "text-4xl md:text-[4.2rem] md:max-w-[34rem]"
+            }`}>
               {tSub.quote}
             </h3>
             <div className="flex items-center gap-6 pt-6 border-t border-white/10">
@@ -220,7 +230,7 @@ export default function SubscriptionPageV2() {
 
           <div id="tour-sub-steps" className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
             {steps.map((step, i) => (
-              <div key={i} className="step-note bg-white p-10 border border-black/10 shadow-lg shadow-black/5 relative flex flex-col items-center text-center gap-6"
+              <div key={i} className="step-note bg-white p-10 border border-black/10 shadow-lg shadow-black/5 relative flex flex-col items-center text-center gap-6 md:min-h-[16rem]"
                 style={{ transform: `rotate(${i % 2 === 0 ? -0.5 : 0.5}deg)`, borderRadius: "2px" }}
               >
                 <div className="absolute top-[-5px] left-10 w-10 h-3 bg-[#F1B941]/30 border border-black/10 rotate-[-5deg]"></div>

@@ -26,6 +26,11 @@ export default function WholesalePageV2() {
 
   const t = useI18n();
   const tWholesale = t.wholesale;
+  const wholesaleHero = {
+    badge: "B2B Roastery Partnership",
+    title1: "Scale Your",
+    title2: "Business.",
+  };
 
   const benefits = [
     { icon: <ShieldCheck size={20} />, title: tWholesale.benefits.qualityTitle, desc: tWholesale.benefits.qualityDesc },
@@ -141,15 +146,15 @@ export default function WholesalePageV2() {
 
       <section ref={heroRef} className="pt-32 pb-16 px-6 relative z-10 bg-[#E2DACB]/30">
         <div className="max-w-7xl mx-auto flex flex-col gap-12 items-center text-center lg:text-left lg:flex-row">
-          <div className="w-full space-y-6">
+          <div className="w-full space-y-6 lg:min-h-[30rem] flex flex-col justify-center items-center lg:items-start">
             <div className="inline-block px-4 py-1.5 bg-white border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.02)] rotate-[-1deg] text-[9px] font-black tracking-[0.3em] text-[#367F4D] uppercase wholesale-hero-text">
-               {tWholesale.heroBadge}
+               {wholesaleHero.badge}
             </div>
-            <h1 className="text-5xl md:text-9xl lg:text-9xl font-cloude tracking-tighter leading-[0.9] text-slate-900 wholesale-hero-text">
-              {tWholesale.heroTitle1} <br/>
-              <span className="font-display italic text-[#367F4D]">{tWholesale.heroTitle2}</span>
+            <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-cloude tracking-tighter leading-[0.86] text-slate-900 wholesale-hero-text">
+              {wholesaleHero.title1} <br/>
+              <span className="font-display italic text-[#367F4D]">{wholesaleHero.title2}</span>
             </h1>
-            <p className="max-w-lg mx-auto lg:mx-0 text-stone-600 font-medium text-base leading-relaxed bg-white/40 p-4 border-l-4 border-[#367F4D]/20 backdrop-blur-sm shadow-sm wholesale-hero-text">
+            <p className="w-full min-h-[7.5rem] max-w-lg mx-auto lg:mx-0 text-stone-600 font-medium text-base leading-relaxed bg-white/40 p-4 border-l-4 border-[#367F4D]/20 backdrop-blur-sm shadow-sm wholesale-hero-text">
               {tWholesale.heroDesc}
             </p>
             <div className="pt-2 wholesale-hero-text">
@@ -168,11 +173,11 @@ export default function WholesalePageV2() {
                </div>
             </div>
             <div className="grid grid-cols-2 gap-6">
-              <div className="bento-item bg-[#FDFBF7] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.02)] flex flex-col justify-center gap-2">
+              <div className="bento-item bg-[#FDFBF7] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.02)] flex flex-col justify-center gap-2 md:min-h-[10.5rem]">
                  <h3 className="text-xl font-display font-black uppercase tracking-tighter leading-none text-slate-900">{tWholesale.dedicated}<br/><span className="text-[#367F4D] italic">{tWholesale.facility}</span></h3>
                  <p className="text-[8px] font-bold text-stone-400 uppercase tracking-widest italic border-t border-black/5 pt-2">{tWholesale.centralizedOps}</p>
               </div>
-              <div className="bento-item bg-[#1A2B20] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.1)] flex flex-col justify-center gap-2 text-white">
+              <div className="bento-item bg-[#1A2B20] p-6 border border-black/10 shadow-[6px_6px_0px_rgba(0,0,0,0.1)] flex flex-col justify-center gap-2 text-white md:min-h-[10.5rem]">
                  <h3 className="text-xl font-cloude tracking-widest leading-none text-[#EBA294]">{tWholesale.trusted}<br/>{tWholesale.partner}</h3>
                  <div className="flex items-center gap-2 mt-1">
                     <Handshake size={12} className="text-[#EBA294]" />
