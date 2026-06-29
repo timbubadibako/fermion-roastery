@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -113,10 +114,12 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
                       {/* Left: Huge Image */}
                       <div className="w-full lg:w-3/5 aspect-square lg:aspect-[4/3] relative overflow-hidden bg-stone-100 border border-black/5">
                          {posts[0].featured_image ? (
-                            <img 
-                              src={posts[0].featured_image} 
+                            <Image
+                              src={posts[0].featured_image}
                               alt={posts[0].title}
-                              className="w-full h-full object-cover filter contrast-110 sepia-[0.1] group-hover:sepia-0 group-hover:scale-105 transition-all duration-1000"
+                              fill
+                              sizes="(max-width: 1024px) 100vw, 60vw"
+                              className="object-cover filter contrast-110 sepia-[0.1] group-hover:sepia-0 group-hover:scale-105 transition-all duration-1000"
                             />
                          ) : (
                             <div className="w-full h-full flex items-center justify-center text-slate-300">

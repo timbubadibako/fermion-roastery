@@ -26,12 +26,6 @@ interface CustomNavLink {
   activeColor: string;
 }
 
-interface BrandConfig {
-  name: string;
-  tagline: string;
-  subTagline: string;
-}
-
 function HeaderComponent() {
   const pathname = usePathname();
   const router = useRouter();
@@ -48,13 +42,10 @@ function HeaderComponent() {
   // --- States ---
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [promotedProducts, setPromotedProducts] = useState<any[]>([]);
-  const [filteredResults, setFilteredResults] = useState<any[]>([]);
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [brand, setBrand] = useState<BrandConfig | null>(null);
   const [hasLoadedSearchCatalog, setHasLoadedSearchCatalog] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -106,18 +97,13 @@ function HeaderComponent() {
     fetchAll();
   }, [isSearchOpen, hasLoadedSearchCatalog]);
 
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      const filtered = allProducts.filter(p =>
+  const filteredResults = searchQuery.trim().length > 0
+    ? allProducts.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.origin && p.origin.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (p.notes && p.notes.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 5);
-      setFilteredResults(filtered);
-    } else {
-      setFilteredResults([]);
-    }
-  }, [searchQuery, allProducts]);
+      ).slice(0, 5)
+    : [];
 
   // 🟢 PERBAIKAN 1: HILANGKAN DELAY SCROLL DENGAN THRESHOLD YANG REALISTIS DAN SINKRON
   useEffect(() => {
@@ -251,9 +237,9 @@ function HeaderComponent() {
             <div className={`flex-shrink-0 transition-opacity duration-300 ${isSearchOpen ? "opacity-0 md:opacity-100" : "opacity-100"}`}>
               <Link href="/" className="block hover:opacity-70 transition-opacity duration-300">
                 {/* 🟢 FIXED: Filter invert agar logo menyesuaikan dengan kondisi background hero */}
-                <Image
-                  src="/fermion-logo.png"
-                  alt={brand?.name || "Fermion Roastery"}
+                  <Image
+                    src="/fermion-logo.png"
+                    alt="Fermion Roastery"
                   width={88}
                   height={35}
                   className={`object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}

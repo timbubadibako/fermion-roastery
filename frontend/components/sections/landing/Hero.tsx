@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,13 +14,31 @@ export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   
   const t = useI18n();
   const fallbackContent = t.landing.hero;
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) return;
+
+    const scheduleVideoLoad = () => setShouldLoadVideo(true);
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(scheduleVideoLoad, { timeout: 2000 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = window.setTimeout(scheduleVideoLoad, 1200);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !shouldLoadVideo) return;
 
     let ctx: gsap.Context;
 
@@ -83,7 +101,7 @@ export function Hero() {
       video.removeEventListener('loadedmetadata', initGSAP);
       if (ctx) ctx.revert();
     };
-  }, []);
+  }, [shouldLoadVideo]);
 
   return (
     <div ref={containerRef} className="relative w-full overflow-hidden bg-black h-screen">
@@ -94,13 +112,14 @@ export function Hero() {
           ref={videoRef}
           muted
           playsInline
-          preload="none"
-          autoPlay
+          preload="metadata"
+          autoPlay={shouldLoadVideo}
           loop
+          poster="/hero-bg.jpg"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
           style={{ willChange: "contents" }}
         >
-          <source src="/watermarked_preview.mp4" type="video/mp4" />
+          {shouldLoadVideo ? <source src="/watermarked_preview.mp4" type="video/mp4" /> : null}
         </video>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.8)_85%)] pointer-events-none" />
       </div>

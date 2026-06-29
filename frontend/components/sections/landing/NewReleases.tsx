@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Sticker } from "@/components/ui/sticker";
 import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
@@ -166,7 +167,13 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
                 {/* Image Container */}
                 <div className="aspect-[4/3] bg-stone-200 relative overflow-hidden mb-0 border-b border-dashed border-black/10">
                   {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700" />
+                    <Image
+                      src={product.image_url}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">Kopi</div>
                   )}
