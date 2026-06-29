@@ -47,6 +47,7 @@ export function ClientWrapper({
   // Portal detection
   const isAdmin = pathname.startsWith('/admin');
   const isB2BPortal = pathname.startsWith('/b2b') && !pathname.startsWith('/b2b/register');
+  const isLandingPage = pathname === "/";
   const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || isAdmin || isB2BPortal;
 
   // Final role determination for sidebar
@@ -55,7 +56,7 @@ export function ClientWrapper({
   return (
     <>
       <LoadingCover />
-      <CartSync />
+      {!isLandingPage && <CartSync />}
 
       {mounted && activeRole && <UnifiedSidebar role={activeRole} />}
 
@@ -70,8 +71,8 @@ export function ClientWrapper({
       {/* Temporarily hidden chat feature */}
       {/* {!hideMainLayout && <ChatFloating />} */}
 
-      <SpotlightGuide />
-      <SpotlightFAB />
+      {!isLandingPage && <SpotlightGuide />}
+      {!isLandingPage && <SpotlightFAB />}
 
       <Toaster
         position="top-center"

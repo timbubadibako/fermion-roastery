@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Check, Loader2, ArrowRight, FlaskConical, Sprout, Quote, Microscope, Star } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
 import { toast } from "sonner";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Footer } from "@/components/sections/Footer";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAuthStore } from "@/lib/store";
@@ -279,7 +279,7 @@ export default function SubscriptionPageV2() {
         </div>
       </section>
 
-      <FooterV2 />
+      <Footer />
     </div>
   );
 }

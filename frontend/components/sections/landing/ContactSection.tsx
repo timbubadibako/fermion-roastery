@@ -22,7 +22,7 @@ export function ContactSection() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       gsap.from(textRef.current, {
         x: -50,
         opacity: 0,
@@ -96,7 +96,7 @@ export function ContactSection() {
               </svg>
               
               <p className="text-stone-700 max-w-xl text-lg font-medium leading-relaxed bg-white/40 p-4 border-l-2 border-black/20 backdrop-blur-sm shadow-sm">
-                Let's discuss precision roasting, wholesale partnerships, or technical inquiries. Our team is ready to engineer your perfect brew.
+                Let&apos;s discuss precision roasting, wholesale partnerships, or technical inquiries. Our team is ready to engineer your perfect brew.
               </p>
             </div>
 

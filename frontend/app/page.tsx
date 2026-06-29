@@ -1,17 +1,65 @@
 import React from "react";
-import { HeroV2 } from "@/components/sections/v2/HeroV2";
-import { PartnerRibbonV2 } from "@/components/sections/v2/PartnerRibbonV2";
-import { SeriesV2 } from "@/components/sections/v2/SeriesV2";
-import { TheWayV2 } from "@/components/sections/v2/TheWayV2";
-import { NewReleasesV2 } from "@/components/sections/v2/RecordsAndShopV2";
-import { JournalSectionV2 } from "@/components/sections/v2/JournalSectionV2";
-import { FAQSection } from "@/components/sections/v2/FAQSection";
-import { ContactSection } from "@/components/sections/v2/ContactSection";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Hero } from "@/components/sections/landing/Hero";
+import { PartnerRibbon } from "@/components/sections/landing/PartnerRibbon";
+import { Series } from "@/components/sections/landing/Series";
+import { TheWay } from "@/components/sections/landing/TheWay";
+import { NewReleases } from "@/components/sections/landing/NewReleases";
+import { JournalSection } from "@/components/sections/landing/JournalSection";
+import { FAQSection } from "@/components/sections/landing/FAQSection";
+import { ContactSection } from "@/components/sections/landing/ContactSection";
+import { Footer } from "@/components/sections/Footer";
 
 export const revalidate = 300;
 
-export default function LandingPageV2() {
+interface LandingProduct {
+  id: string;
+  is_new_release?: boolean;
+}
+
+interface LandingJournalPost {
+  id: string;
+}
+
+interface LandingFaq {
+  id: string;
+}
+
+const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+
+async function fetchJson<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${apiBaseUrl}${path}`, {
+      next: { revalidate: 300 },
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+export default async function LandingPage() {
+  const [products, posts, faqs] = await Promise.all([
+    fetchJson<LandingProduct[]>("/products"),
+    fetchJson<LandingJournalPost[]>("/journal?status=published"),
+    fetchJson<LandingFaq[]>("/content/faqs"),
+  ]);
+
+  const newReleaseProducts = Array.isArray(products)
+    ? (() => {
+        const tagged = products.filter((product) => product.is_new_release === true);
+        return (tagged.length > 0 ? tagged : products).slice(0, 3);
+      })()
+    : [];
+
+  const journalPosts = Array.isArray(posts) ? posts.slice(0, 3) : [];
+  const faqItems = Array.isArray(faqs) ? faqs : [];
+
   return (
     <main className="relative min-h-screen">
       
@@ -25,15 +73,15 @@ export default function LandingPageV2() {
       <div className="fixed bottom-[-100px] left-[-100px] w-[700px] h-[700px] bg-fermion-horizon/30 rounded-full blur-[120px] z-[-1]" />
 
       {/* Sections */}
-      <HeroV2 />
-      <PartnerRibbonV2 />
-      <SeriesV2 />
-      <TheWayV2 />
-      <NewReleasesV2 />
-      <JournalSectionV2 />
-      <FAQSection />
+      <Hero />
+      <PartnerRibbon />
+      <Series />
+      <TheWay />
+      <NewReleases initialProducts={newReleaseProducts} />
+      <JournalSection initialPosts={journalPosts} />
+      <FAQSection initialFaqs={faqItems} />
       <ContactSection />
-      <FooterV2 />
+      <Footer />
 
     </main>
   );

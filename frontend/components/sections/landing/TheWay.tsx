@@ -23,7 +23,7 @@ const layout = [
 /**
  * SECTION 4: THE FERMION WAY (SCRAPBOOK AESTHETIC)
  */
-function TheWayV2Component() {
+function TheWayComponent() {
   const t = useI18n();
   const content = t.landing.theWay;
   const sectionRef = useRef<HTMLElement>(null);
@@ -47,7 +47,7 @@ function TheWayV2Component() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const notes = gsap.utils.toArray<HTMLElement>('.scrapbook-note');
       
       notes.forEach((note, i) => {
@@ -84,7 +84,7 @@ function TheWayV2Component() {
       });
 
       // Pin the section to create a delayed curtain effect ONLY on desktop
-      let mm = gsap.matchMedia();
+      const mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         ScrollTrigger.create({
           trigger: sectionRef.current,
@@ -188,4 +188,4 @@ function TheWayV2Component() {
   );
 }
 
-export const TheWayV2 = memo(TheWayV2Component);
+export const TheWay = memo(TheWayComponent);

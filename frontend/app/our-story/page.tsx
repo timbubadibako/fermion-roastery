@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Activity, Globe2, Quote, Microscope, Archive } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Footer } from "@/components/sections/Footer";
 import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -226,7 +226,7 @@ export default function StoryPageV2() {
          </div>
       </section>
 
-      <FooterV2 />
+      <Footer />
     </div>
   );
 }

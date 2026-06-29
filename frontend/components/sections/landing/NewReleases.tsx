@@ -7,17 +7,28 @@ import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function NewReleasesV2() {
+interface NewReleaseProduct {
+  id: string;
+  image_url?: string | null;
+  name: string;
+  origin?: string | null;
+  category?: string | null;
+  notes?: string | null;
+  price_retail?: number | null;
+}
+
+interface NewReleasesProps {
+  initialProducts: NewReleaseProduct[];
+}
+
+export function NewReleases({ initialProducts }: NewReleasesProps) {
   const isMobile = useIsMobile();
   const t = useI18n();
   const content = t.landing.newReleases;
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
+  const [products] = useState(initialProducts);
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -31,35 +42,7 @@ export function NewReleasesV2() {
     : "polygon(0 -20%, 100% -20%, 100% 98%, 95% 100%, 90% 98%, 85% 100%, 80% 98%, 75% 100%, 70% 98%, 65% 100%, 60% 98%, 55% 100%, 50% 98%, 45% 100%, 40% 98%, 35% 100%, 30% 98%, 25% 100%, 20% 98%, 15% 100%, 10% 98%, 5% 100%, 0 98%)";
 
   useEffect(() => {
-    const fetchNewReleases = async () => {
-      try {
-        const res = await fetch("/api/products");
-        if (res.ok) {
-          const data = await res.json();
-
-          // 🟢 1. Filter produk yang emang dicentang is_new_release === true
-          let filtered = data.filter((p: any) => p.is_new_release === true);
-
-          // 🟢 2. FALLBACK: Kalau admin lupa nyentang, otomatis ambil 3 teratas biar etalase gak kosong
-          if (filtered.length === 0) {
-            filtered = data.slice(0, 3);
-          } else {
-            filtered = filtered.slice(0, 3);
-          }
-
-          setProducts(filtered);
-        }
-      } catch (error) {
-        debugError("Failed to fetch products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNewReleases();
-  }, []);
-
-  useEffect(() => {
-    if (!sectionRef.current || loading) return;
+    if (!sectionRef.current) return;
 
     let ctx: gsap.Context;
 
@@ -81,7 +64,7 @@ export function NewReleasesV2() {
 
         const cards = gsap.utils.toArray<HTMLElement>('.product-card');
 
-        let mm = gsap.matchMedia();
+        const mm = gsap.matchMedia();
 
         mm.add("(min-width: 1024px)", () => {
           if (cards.length > 0) {
@@ -108,7 +91,7 @@ export function NewReleasesV2() {
       clearTimeout(timer);
       if (ctx) ctx.revert();
     };
-  }, [loading]);
+  }, []);
 
   return (
     <section
@@ -145,7 +128,7 @@ export function NewReleasesV2() {
           <div className="absolute left-[-50vw] right-[-50vw] h-[3px] bg-gradient-to-r from-transparent via-stone-500/50 to-transparent z-30 hidden lg:block"></div>
           <div className="absolute left-[-50vw] right-[-50vw] h-[1px] bg-white/10 z-30 hidden lg:block"></div>
 
-          {loading ? (
+          {products.length === 0 ? (
             [1, 2, 3].map(i => <div key={i} className="aspect-[3/4] bg-white/10 animate-pulse border border-black/5" style={{ transform: `rotate(1deg)` }} />)
           ) : products.map((product, idx) => (
             <div

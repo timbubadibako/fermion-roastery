@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Search, ArrowRight, BookOpen, Quote, PenTool, Calendar, Microscope } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sticker } from "@/components/ui/sticker";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Footer } from "@/components/sections/Footer";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { debugError } from "@/lib/debug";
@@ -264,7 +264,7 @@ export default function JournalPageV2() {
             </div>
          </section>
 
-         <FooterV2 />
+         <Footer />
       </div>
    );
 }

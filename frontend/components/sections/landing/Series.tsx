@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n";
  * Reverted to the 50/50 split layout, but optimized with the new font (Cloude)
  * and cleaner background textures instead of generic placeholder images.
  */
-export function SeriesV2() {
+export function Series() {
   const t = useI18n();
   const content = t.landing.series;
   const [isScrolling, setIsScrolling] = useState(false);

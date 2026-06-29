@@ -9,7 +9,7 @@ import {
   Factory, Handshake, Microscope, FileText
 } from "lucide-react";
 import { Sticker } from "@/components/ui/sticker";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Footer } from "@/components/sections/Footer";
 import { useI18n } from "@/lib/i18n";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -310,7 +310,7 @@ export default function WholesalePageV2() {
         </div>
       </section>
 
-      <FooterV2 />
+      <Footer />
     </div>
   );
 }

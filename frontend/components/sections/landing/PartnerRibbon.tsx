@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, memo } from "react";
 import { useI18n } from "@/lib/i18n";
-import { PartnerCard, PartnerCardProps } from "./PartnerCard";
+import { PartnerCard } from "./PartnerCard";
 
 /**
  * SECTION 2: PARTNER RIBBON
@@ -26,7 +26,7 @@ const staticPartners = [
   { id: 'lovu', name: 'Lovu', url: '/lovu-cafe-partner.jpeg', scale: 1.5 },
 ];
 
-function PartnerRibbonV2Component() {
+function PartnerRibbonComponent() {
   const [isScrolling, setIsScrolling] = useState(false);
   const t = useI18n();
   const content = t.landing.partnerRibbon;
@@ -101,4 +101,4 @@ function PartnerRibbonV2Component() {
   );
 }
 
-export const PartnerRibbonV2 = memo(PartnerRibbonV2Component);
+export const PartnerRibbon = memo(PartnerRibbonComponent);

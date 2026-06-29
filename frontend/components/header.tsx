@@ -55,6 +55,7 @@ function HeaderComponent() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [brand, setBrand] = useState<BrandConfig | null>(null);
+  const [hasLoadedSearchCatalog, setHasLoadedSearchCatalog] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +88,8 @@ function HeaderComponent() {
 
   // --- Effects ---
   useEffect(() => {
+    if (!isSearchOpen || hasLoadedSearchCatalog) return;
+
     const fetchAll = async () => {
       try {
         const res = await fetch("/api/products");
@@ -94,13 +97,14 @@ function HeaderComponent() {
           const data = await res.json();
           setAllProducts(data);
           setPromotedProducts(data.slice(0, 2));
+          setHasLoadedSearchCatalog(true);
         }
       } catch (e) {
         debugError("Failed to fetch products for search:", e);
       }
     };
     fetchAll();
-  }, []);
+  }, [isSearchOpen, hasLoadedSearchCatalog]);
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {

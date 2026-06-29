@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AddressSelection } from "@/components/address-selection";
 import { Header } from "@/components/header";
-import { FooterV2 } from "@/components/sections/v2/FooterV2";
+import { Footer } from "@/components/sections/Footer";
 import { AddressValue } from "@/components/address-input";
 import { useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
@@ -296,7 +296,7 @@ export default function SubscriptionCheckoutPage() {
           </div>
         </div>
       </main>
-      <FooterV2 />
+      <Footer />
     </div>
   );
 }

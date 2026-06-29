@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
 /**
  * SECTION 7: ARTISAN FOOTER (Dark Scrapbook)
  */
-export function FooterV2() {
+export function Footer() {
   const isMobile = useIsMobile();
   const t = useI18n();
   const content = t.landing.footer;
@@ -25,7 +25,7 @@ export function FooterV2() {
     : "polygon(0 3%, 5% 0%, 15% 2%, 25% 0%, 35% 3%, 45% 0%, 55% 2%, 65% 0%, 75% 3%, 85% 0%, 95% 2%, 100% 0%, 100% 100%, 0 100%)";
   
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       gsap.from(".footer-reveal", {
         y: 50,
         opacity: 0,

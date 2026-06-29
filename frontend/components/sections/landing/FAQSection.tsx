@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef, memo } from "react";
-import axios from "axios";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Plus, Minus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useLangStore } from "@/lib/store";
 import { Sticker } from "@/components/ui/sticker";
-import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,10 +18,14 @@ interface FAQ {
   answer_en: string;
 }
 
-function FAQSectionComponent() {
+interface FAQSectionProps {
+  initialFaqs: FAQ[];
+}
+
+function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
   const { language: lang } = useLangStore();
   const t = useI18n();
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [faqs] = useState<FAQ[]>(initialFaqs);
   const [openId, setOpenId] = useState<string | null>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   
@@ -47,15 +49,9 @@ function FAQSectionComponent() {
   }, []);
 
   useEffect(() => {
-    axios.get("/api/content/faqs")
-      .then(res => setFaqs(res.data))
-      .catch(err => debugError("Failed to load FAQs", err));
-  }, []);
-
-  useEffect(() => {
     if (!sectionRef.current) return;
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       gsap.from(titleRef.current, {
         x: -50,
         opacity: 0,
@@ -84,7 +80,7 @@ function FAQSectionComponent() {
       }
 
       // Pin the section to create a delayed curtain effect ONLY on desktop
-      let mm = gsap.matchMedia();
+      const mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         ScrollTrigger.create({
           trigger: sectionRef.current,

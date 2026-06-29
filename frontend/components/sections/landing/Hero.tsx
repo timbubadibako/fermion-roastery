@@ -1,46 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useI18n } from "@/lib/i18n";
-import { apiFetch } from "@/lib/api"; // Pastikan apiFetch di-import
-import { supabase } from "@/lib/supabase"; // Pastikan supabase di-import
-import { debugError } from "@/lib/debug";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function HeroV2() {
-  const [settings, setSettings] = useState<any>(null);
+const HERO_WORDS = ["CURATED", "ROASTED", "REVERED"];
+
+export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
   
   const t = useI18n();
   const fallbackContent = t.landing.hero;
-
-  const words = ["CURATED", "ROASTED", "REVERED"];
-
- useEffect(() => {
-  const getHeroSettings = async () => {
-    try {
-      // 1. Paksa nunggu Supabase selesai inisialisasi session dari storage
-      await supabase.auth.getSession();
-
-      // 2. Gunakan apiFetch (bukan fetch mentah) agar Bearer token nempel otomatis
-      const res = await apiFetch('/api/admin/settings');
-      if (res && res.ok) {
-        const data = await res.json();
-        setSettings(data);
-      }
-    } catch (err) {
-      debugError("Failed to load hero settings", err);
-    }
-  };
-
-  getHeroSettings();
-}, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -65,7 +41,7 @@ export function HeroV2() {
         }, 0);
 
         // 3. Persistent Typewriter Logic
-        words.forEach((word, wordIdx) => {
+        HERO_WORDS.forEach((word, wordIdx) => {
           const charSelector = `.word-${wordIdx} .char`;
           const chars = gsap.utils.toArray(charSelector);
           const segmentStart = 0.2 + (wordIdx * 0.8); // Slower stagger between words
@@ -163,7 +139,7 @@ export function HeroV2() {
 
                  {/* Vertical Stack Typewriter Container */}
                  <div className="relative z-10 w-full h-full flex flex-col items-center justify-center gap-6">
-                    {words.map((word, wordIdx) => (
+                    {HERO_WORDS.map((word, wordIdx) => (
                       <div key={wordIdx} className={`word-${wordIdx} flex items-center justify-center gap-1 md:gap-3`}>
                         {word.split('').map((char, charIdx) => (
                             <span key={charIdx} className="char opacity-0 text-5xl md:text-7xl font-display font-black italic tracking-tighter text-slate-900 uppercase leading-none inline-block">

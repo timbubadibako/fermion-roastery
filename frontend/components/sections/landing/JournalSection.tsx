@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { BookOpen, Calendar, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Sticker } from "@/components/ui/sticker";
@@ -19,27 +19,18 @@ interface Post {
   created_at?: string;
 }
 
-export function JournalSectionV2() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+interface JournalSectionProps {
+  initialPosts: Post[];
+}
+
+export function JournalSection({ initialPosts }: JournalSectionProps) {
+  const [posts] = useState<Post[]>(initialPosts);
 
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/journal?status=published")
-      .then(res => res.ok ? res.json() : [])
-      .then(data => {
-        setPosts(data.slice(0, 3));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (loading) return;
-    
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       gsap.from(".journal-header", {
         x: -50,
         opacity: 0,
@@ -65,9 +56,9 @@ export function JournalSectionV2() {
       });
     }, sectionRef);
     return () => ctx.revert();
-  }, [loading, posts]);
+  }, [posts]);
 
-  if (!loading && posts.length === 0) return null;
+  if (posts.length === 0) return null;
 
   return (
     <section 
@@ -110,10 +101,7 @@ export function JournalSectionV2() {
           </Link>
         </div>
 
-        {loading ? (
-           <div className="w-full aspect-[21/9] bg-white border border-black/5 animate-pulse shadow-sm" />
-        ) : (
-           posts.length > 0 && (
+        {posts.length > 0 && (
              <div className="relative">
                 {/* Decorative Tape */}
                 <div className="absolute -top-4 right-10 w-32 h-10 bg-white/40 border border-black/5 rotate-[3deg] backdrop-blur-sm shadow-sm z-30"></div>
@@ -156,7 +144,7 @@ export function JournalSectionV2() {
                          </h3>
                          
                          <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed max-w-lg pt-4 border-t border-black/5">
-                            "{posts[0].excerpt}"
+                            &quot;{posts[0].excerpt}&quot;
                          </p>
 
                          <div className="pt-6">
@@ -170,7 +158,6 @@ export function JournalSectionV2() {
                    </div>
                 </Link>
              </div>
-           )
         )}
 
       </div>
