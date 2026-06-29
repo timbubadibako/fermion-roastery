@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Plus, SlidersHorizontal, ArrowUpDown,
-  Loader2, Sparkles, Beaker, Search, Edit3, X, ArrowLeft, ArrowRight, Microscope, FlaskConical, Archive
+  Search, ArrowLeft, ArrowRight, Archive
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -247,9 +247,6 @@ export function RetailCatalog() {
       {/* Action Bar - Solid Paper Strip */}
       <div className="sticky top-20 md:top-28 z-40 mb-12 md:mb-16 px-4 md:px-10">
         <div className="max-w-7xl mx-auto relative group">
-          {/* Tape on top */}
-          <div className="absolute top-[-10px] left-[15%] w-20 h-5 bg-[#367F4D]/10 border border-white/20 rotate-[-2deg] z-50 transition-transform duration-300 group-hover:rotate-0"></div>
-
           <motion.div className="bg-white border border-black/5 rounded-sm h-14 md:h-16 flex items-center justify-between px-6 md:px-8 shadow-lg shadow-black/[0.02] relative">
             <div className="flex items-center gap-6 md:gap-10 relative z-10">
               <div className="relative">
@@ -371,7 +368,7 @@ export function RetailCatalog() {
             }`}>
             {currentItems.map((product, index) => (
               <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-kopi-card will-change-transform opacity-0 translate-y-8">
-                <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow] duration-500 shadow-md shadow-black/[0.02] hover:shadow-xl hover:shadow-black/5 border border-black/[0.03] h-full rounded-sm relative">
+                <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow,border-color] duration-500 shadow-md shadow-black/[0.02] group-hover:-translate-y-1 group-hover:shadow-xl group-hover:shadow-black/5 group-hover:border-black/10 border border-black/[0.03] h-full rounded-sm relative">
 
                   <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/[0.03]">
                     {(() => {
@@ -388,18 +385,9 @@ export function RetailCatalog() {
                       src={product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE"}
                       alt={product.name}
                       fill
-                      className="object-cover transition-[transform,filter] duration-700 grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-[1.02]"
+                      className="object-cover transition-[transform,filter] duration-700 grayscale-[0.12] group-hover:grayscale-0 group-hover:scale-[1.035]"
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
-
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <div className="bg-white/90 px-3 py-2 border border-black/5 shadow-sm flex items-center justify-between">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-900 truncate pr-2">
-                          {product.notes || tCat.batchRecord}
-                        </p>
-                        <Microscope size={12} className="text-[#367F4D]" strokeWidth={3} />
-                      </div>
-                    </div>
                   </div>
 
                   <div className="space-y-4 px-1 flex-1 flex flex-col">
@@ -407,9 +395,14 @@ export function RetailCatalog() {
                       <p className="text-[8px] font-black tracking-[0.2em] text-[#367F4D] uppercase">
                         {product.origin}
                       </p>
-                      <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tighter text-slate-900 leading-tight italic">
+                      <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tighter text-slate-900 leading-tight italic transition-colors duration-300 group-hover:text-[#367F4D]">
                         {product.name}
                       </h3>
+                      {product.notes ? (
+                        <p className="text-[10px] font-medium leading-relaxed text-stone-500 line-clamp-2 min-h-[2.5rem] px-2">
+                          {product.notes}
+                        </p>
+                      ) : null}
                     </div>
 
                     <div className="flex flex-col items-center pt-2 mt-auto gap-6">
