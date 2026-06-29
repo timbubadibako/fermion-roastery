@@ -124,7 +124,7 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
             </h2>
             
             <p className="text-sm text-[#E2DACB]/80 font-bold tracking-widest uppercase mt-8 border-l-2 border-[#F1B941] pl-4">
-              Scientific clarity behind every roast.
+              {t.landing.faq.subtitle}
             </p>
           </div>
 

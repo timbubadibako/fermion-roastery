@@ -537,28 +537,28 @@ export const translations = {
       hero: {
         badge: "Exclusive Coffee Roastery",
         title: "CURATED, ROASTED, | REVERED",
-        subtitle: "Precision processes to produce unforgettable, high-quality coffee.",
-        description: "Precision roasting meets artisan passion. Built for the perfect morning.",
-        cta_primary: "Shop Now",
+        subtitle: "Thoughtfully roasted coffees shaped by small variables that make a clear, memorable cup.",
+        description: "Warm, expressive coffees for daily brewing and deeper sensory exploration.",
+        cta_primary: "Explore Our Coffee",
         cta_secondary: "View Products",
-        stickers: { origin: "Origin", quality: "100% PRO" }
+        stickers: { origin: "Origin", quality: "Roasted Fresh" }
       },
-      partnerRibbon: { placeholder: "Cafe Partner" },
+      partnerRibbon: { placeholder: "Cafe Partners" },
       series: {
-        espresso: { title: "Espresso Series.", subtitle: "Rich • Syrupy • Bold", cta: "Explore Bold Beans", sticker: "Adventure Ready" },
-        filter: { title: "Filter Series.", subtitle: "Clean • Tea-like • Vibrant", cta: "Explore Vibrant Beans", sticker: "Eco Conscious" }
+        espresso: { title: "Espresso Series.", subtitle: "Consistent • Easy to Dial • Cafe Ready", cta: "Explore Espresso Roasts", sticker: "Dial-In Ready" },
+        filter: { title: "Filter Series.", subtitle: "Curated • Expressive • Evolving Monthly", cta: "Explore Filter Releases", sticker: "Monthly Curated" }
       },
       theWay: {
-        titleMain: "The", titleSub: "Fermion Way.", description: "6 Pillars of Scientific Happiness",
+        titleMain: "The", titleSub: "Fermion Way.", description: "Small variables. Clean, precise, memorable cups.",
         pillars: [
-          { id: "01", title: "Precision", desc: "Extreme control over every thermal cycle." },
-          { id: "02", title: "Direct", desc: "Sourcing directly from Java's finest farms." },
-          { id: "03", title: "Sensory", desc: "Mathematically scored cup profiles." },
-          { id: "04", title: "Eco Pack", desc: "Compostable materials only." },
-          { id: "05", title: "Artisan", desc: "Blended for complexity and joy." },
-          { id: "06", title: "Tracking", desc: "Real-time roasting-to-door data." }
+          { id: "01", title: "Variety", desc: "Each coffee starts with a distinct character worth protecting in the cup." },
+          { id: "02", title: "Fermentation", desc: "Processing choices are treated as flavor-shaping decisions, not background details." },
+          { id: "03", title: "Moisture", desc: "Water activity and stability help determine how a roast develops and rests." },
+          { id: "04", title: "Density", desc: "Bean density guides heat application, development pace, and cup structure." },
+          { id: "05", title: "Development", desc: "Roast profile decisions are composed for clarity, sweetness, and balance." },
+          { id: "06", title: "Consistency", desc: "We roast so the final brew feels reliable, expressive, and easy to return to." }
         ],
-        stickers: { roastery: "Science Roastery", map: "Happiness Map" }
+        stickers: { roastery: "Invisible Variables", map: "Taste Memory" }
       },
       labRecords: {
         title: "Roastery Records.", subtitle: "Real-time QC Data", ctaExplore: "Explore Roastery",
@@ -567,23 +567,53 @@ export const translations = {
       },
       newReleases: {
         title: "Latest Roasts.",
-        subtitle: "Freshly roasted, ready to brew",
+        subtitle: "Freshly roasted selections from our current lineup",
         cta: "Add to Cart",
         ctaViewDetails: "View Details"
       },
       faq: {
         title: "Frequently Asked Questions",
+        subtitle: "A quick guide to our coffee, roasting rhythm, and ordering flow.",
       },
       contact: {
-        title: "Contact Us",
+        badge: "Direct Access",
+        title: "Get in",
+        accent: "touch.",
+        description: "Talk to us about coffee selection, wholesale supply, or the right roast direction for your bar.",
         name: "Full Name",
         email: "Email Address",
         message: "Your Message",
         submit: "Send Message",
+        namePlaceholder: "Your full name",
+        emailPlaceholder: "name@business.com",
+        messagePlaceholder: "Tell us what you are brewing, building, or looking for.",
+        emailAction: "Lab Notes",
+        whatsappAction: "WhatsApp"
       },
       footer: {
-        titleMain: "Fermion", titleSub: "Roastery.",
-        navTitle: "Navigation", copyright: "© 2026 Fermion. Engineered for Joy.", signature: "STAY HAPPY!",
+        statementTop: "CRAFTED",
+        statementMiddle: "FOR THE",
+        statementAccent: "CURIOUS.",
+        statementNote: "Specialty coffee, roasted with care.",
+        groups: {
+          roastery: "Roastery",
+          knowledge: "Knowledge",
+          contact: "Contact",
+          support: "Support",
+          social: "Follow Us"
+        },
+        links: {
+          ourCoffee: "Our Coffee",
+          wholesale: "B2B Wholesale",
+          journal: "Journal",
+          faq: "FAQ",
+          maps: "Google Maps",
+          whatsapp: "WhatsApp",
+          admin: "Admin Portal",
+          instagram: "Instagram"
+        },
+        copyright: "© 2026 Fermion. Because what is invisible often shapes everything we can taste.",
+        signature: "ROASTED WITH INTENTION",
         socials: ["Instagram", "YouTube", "WhatsApp"]
       }
     },
@@ -1429,28 +1459,28 @@ export const translations = {
       hero: {
         badge: "Roastery Kopi Eksklusif",
         title: "TERKURASI, DIPANGGANG, | DIHORMATI",
-        subtitle: "Proses presisi untuk menghasilkan kopi yang tak terlupakan dan berkualitas tinggi.",
-        description: "Roasting presisi dipadukan dengan hasrat artisan. Dibuat untuk pagi yang sempurna.",
-        cta_primary: "Belanja Sekarang",
+        subtitle: "Kopi yang disangrai dengan perhatian pada variabel kecil yang membentuk cangkir bersih dan berkesan.",
+        description: "Hangat, terkurasi, dan dibuat untuk seduhan harian maupun eksplorasi rasa yang lebih jauh.",
+        cta_primary: "Jelajahi Kopi Kami",
         cta_secondary: "Lihat Produk",
-        stickers: { origin: "Asal", quality: "100% PRO" }
+        stickers: { origin: "Origin", quality: "Fresh Roast" }
       },
       partnerRibbon: { placeholder: "Mitra Kafe" },
       series: {
-        espresso: { title: "Seri Espresso.", subtitle: "Kaya • Kental • Berani", cta: "Jelajahi Biji Kopi Bold", sticker: "Siap Berpetualang" },
-        filter: { title: "Seri Filter.", subtitle: "Bersih • Seperti Teh • Cerah", cta: "Jelajahi Biji Kopi Cerah", sticker: "Ramah Lingkungan" }
+        espresso: { title: "Seri Espresso.", subtitle: "Konsisten • Mudah Dial-In • Siap untuk Kafe", cta: "Jelajahi Espresso Roast", sticker: "Siap Dial-In" },
+        filter: { title: "Seri Filter.", subtitle: "Terkurasi • Ekspresif • Berganti Setiap Bulan", cta: "Jelajahi Rilis Filter", sticker: "Kurasi Bulanan" }
       },
       theWay: {
-        titleMain: "Cara", titleSub: "Fermion.", description: "6 Pilar Kebahagiaan Ilmiah",
+        titleMain: "Cara", titleSub: "Fermion.", description: "Variabel kecil. Cangkir yang bersih, presisi, dan mudah diingat.",
         pillars: [
-          { id: "01", title: "Presisi", desc: "Kontrol ekstrem di setiap siklus suhu." },
-          { id: "02", title: "Langsung", desc: "Sumber langsung dari perkebunan terbaik di Jawa." },
-          { id: "03", title: "Sensori", desc: "Profil cangkir yang dinilai secara matematis." },
-          { id: "04", title: "Kemasan Ramah", desc: "Hanya menggunakan bahan yang dapat dikomposkan." },
-          { id: "05", title: "Artisan", desc: "Dicampur untuk kompleksitas dan kebahagiaan." },
-          { id: "06", title: "Pelacakan", desc: "Data real-time dari mesin roasting ke pintu Anda." }
+          { id: "01", title: "Varietas", desc: "Setiap kopi dimulai dari karakter asal yang layak dijaga sampai ke cangkir." },
+          { id: "02", title: "Fermentasi", desc: "Metode proses diperlakukan sebagai penentu rasa, bukan sekadar detail belakang layar." },
+          { id: "03", title: "Moisture", desc: "Kestabilan kadar air membantu menentukan arah perkembangan roasting dan resting." },
+          { id: "04", title: "Density", desc: "Kepadatan biji memandu cara panas bekerja dan struktur rasa terbentuk." },
+          { id: "05", title: "Development", desc: "Profil sangrai disusun untuk kejernihan rasa, sweetness, dan keseimbangan." },
+          { id: "06", title: "Consistency", desc: "Kami menyangrai agar seduhan terasa stabil, ekspresif, dan mudah diulang." }
         ],
-        stickers: { roastery: "Roastery Sains", map: "Peta Kebahagiaan" }
+        stickers: { roastery: "Variabel Tak Terlihat", map: "Memori Rasa" }
       },
       labRecords: {
         title: "Catatan Roastery.", subtitle: "Data QC Real-time", ctaExplore: "Jelajahi Roastery",
@@ -1459,23 +1489,53 @@ export const translations = {
       },
       newReleases: {
         title: "Roast Terbaru.",
-        subtitle: "Baru disangrai, siap diseduh",
+        subtitle: "Pilihan segar dari lineup roasting kami saat ini",
         cta: "Tambah ke Keranjang",
         ctaViewDetails: "Lihat Detail"
       },
       faq: {
         title: "Pertanyaan yang Sering Diajukan",
+        subtitle: "Panduan singkat tentang kopi kami, ritme roasting, dan alur pemesanan.",
       },
       contact: {
-        title: "Hubungi Kami",
+        badge: "Akses Langsung",
+        title: "Mari",
+        accent: "terhubung.",
+        description: "Diskusikan pilihan kopi, kebutuhan suplai wholesale, atau arah roasting yang paling cocok untuk bar Anda.",
         name: "Nama Lengkap",
         email: "Alamat Email",
         message: "Pesan Anda",
         submit: "Kirim Pesan",
+        namePlaceholder: "Nama lengkap Anda",
+        emailPlaceholder: "nama@bisnisanda.com",
+        messagePlaceholder: "Ceritakan kebutuhan seduh, bisnis, atau roast yang sedang Anda cari.",
+        emailAction: "Catatan Lab",
+        whatsappAction: "WhatsApp"
       },
       footer: {
-        titleMain: "Fermion", titleSub: "Roastery.",
-        navTitle: "Navigasi", copyright: "© 2026 Fermion. Diciptakan untuk Kebahagiaan.", signature: "TETAP BAHAGIA!",
+        statementTop: "DIRACIK",
+        statementMiddle: "UNTUK MEREKA",
+        statementAccent: "YANG PENASARAN.",
+        statementNote: "Specialty coffee yang disangrai dengan perhatian penuh.",
+        groups: {
+          roastery: "Roastery",
+          knowledge: "Pengetahuan",
+          contact: "Kontak",
+          support: "Bantuan",
+          social: "Ikuti Kami"
+        },
+        links: {
+          ourCoffee: "Kopi Kami",
+          wholesale: "Grosir B2B",
+          journal: "Jurnal",
+          faq: "FAQ",
+          maps: "Google Maps",
+          whatsapp: "WhatsApp",
+          admin: "Portal Admin",
+          instagram: "Instagram"
+        },
+        copyright: "© 2026 Fermion. Karena yang tak terlihat sering membentuk semua yang kita cicipi.",
+        signature: "DISANGRAI DENGAN NIAT",
         socials: ["Instagram", "YouTube", "WhatsApp"]
       }
     },

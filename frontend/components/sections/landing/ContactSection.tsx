@@ -82,12 +82,12 @@ export function ContactSection() {
               <div className="absolute -top-10 -left-6 w-24 h-24 bg-rose-200/50 rounded-full blur-xl -z-10"></div>
               
               <div className="inline-block px-4 py-1 border border-black/10 bg-white shadow-[4px_4px_0px_rgba(0,0,0,0.03)] rotate-[-3deg] text-[9px] font-black uppercase tracking-[0.3em]">
-                Direct Access
+                {content.badge}
               </div>
               
               <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-black leading-[0.8] relative">
-                Get in<br />
-                <span className="font-display italic text-[#367F4D]">touch.</span>
+                {content.title}<br />
+                <span className="font-display italic text-[#367F4D]">{content.accent}</span>
               </h2>
               
               {/* Squiggly line separator */}
@@ -96,7 +96,7 @@ export function ContactSection() {
               </svg>
               
               <p className="text-stone-700 max-w-xl text-lg font-medium leading-relaxed bg-white/40 p-4 border-l-2 border-black/20 backdrop-blur-sm shadow-sm">
-                Let&apos;s discuss precision roasting, wholesale partnerships, or technical inquiries. Our team is ready to engineer your perfect brew.
+                {content.description}
               </p>
             </div>
 
@@ -104,12 +104,12 @@ export function ContactSection() {
             <div className="flex gap-6 relative">
                 <Sticker rotate={-5} className="relative !absolute-none scale-100 border border-black/10 shadow-[4px_4px_0px_rgba(0,0,0,0.03)]" color="#fef3c7" variant="solid">
                     <a href="mailto:roastery@fermion.co" className="flex items-center gap-2 font-sans font-bold">
-                        <Mail size={16} /> LAB NOTES
+                        <Mail size={16} /> {content.emailAction}
                     </a>
                 </Sticker>
                 <Sticker rotate={3} className="relative !absolute-none scale-100 border border-black/10 shadow-[4px_4px_0px_rgba(0,0,0,0.03)]" color="#367F4D" variant="solid">
                     <a href="https://wa.me/628123456789" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-sans font-bold text-white">
-                        <MessageSquare size={16} /> 24/7 SUPPORT
+                        <MessageSquare size={16} /> {content.whatsappAction}
                     </a>
                 </Sticker>
             </div>
@@ -134,7 +134,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[-2deg]">{content.name}</label>
                     <input 
                       type="text" required
-                      placeholder="Nama lengkap"
+                      placeholder={content.namePlaceholder}
                       value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})}
                       className="w-full bg-transparent border-b border-black/40 py-4 outline-none text-xl font-display italic text-black placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors relative z-0"
                     />
@@ -143,7 +143,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute -top-3 left-2 z-10 border border-black/10 rotate-[2deg]">{content.email}</label>
                     <input 
                       type="email" required
-                      placeholder="email@bisnisanda.com"
+                      placeholder={content.emailPlaceholder}
                       value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
                       className="w-full bg-transparent border-b border-black/40 py-4 outline-none text-xl font-display italic text-black placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors relative z-0"
                     />
@@ -154,7 +154,7 @@ export function ContactSection() {
                     <label className="text-[12px] font-black tracking-widest uppercase text-black bg-white px-2 absolute top-2 left-2 z-10 border border-black/10 rotate-[-1deg]">{content.message}</label>
                     <textarea 
                       required rows={5}
-                      placeholder="Ceritakan kebutuhan roasting atau kerja sama yang Anda butuhkan"
+                      placeholder={content.messagePlaceholder}
                       value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
                       className="w-full bg-transparent border border-black/40 p-4 pt-8 outline-none text-xl font-display italic text-black resize-none placeholder:text-stone-300 focus:border-fermion-french-blue transition-colors shadow-[inset_4px_4px_0px_rgba(0,0,0,0.02)]"
                     />

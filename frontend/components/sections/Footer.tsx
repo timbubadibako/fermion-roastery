@@ -61,13 +61,13 @@ export function Footer() {
             <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-16 h-4 bg-white/20 border border-white/5 rotate-3"></div>
             
             <h2 className="text-4xl font-cloude leading-[0.9] text-white relative z-10">
-              CRAFTED<br />
-              <span className="text-[#8CADD8]">FOR THE</span><br />
-              <span className="italic font-display text-fermion-coral text-5xl">CURIOUS.</span>
+              {content.statementTop}<br />
+              <span className="text-[#8CADD8]">{content.statementMiddle}</span><br />
+              <span className="italic font-display text-fermion-coral text-5xl">{content.statementAccent}</span>
             </h2>
             
             <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[#E2DACB]/60 border-l-2 border-fermion-coral pl-3">
-              100% Artisan Roasted
+              {content.statementNote}
             </p>
           </div>
 
@@ -79,14 +79,14 @@ export function Footer() {
         {/* Dynamic Link Groups */}
         <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-5 gap-8 pt-4">
           {[
-            { title: "ROASTERY", links: [{ name: "Our Coffee", url: "/products" }, { name: "B2B Wholesale", url: "/wholesale" }] },
-            { title: "KNOWLEDGE", links: [{ name: "Journal", url: "/journal" }, { name: "FAQ", url: "/#faq" }] },
-            { title: "CONTACT", links: [
-                { name: "Google Maps", url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" },
-                { name: "WhatsApp", url: "https://wa.me/628" }
+            { title: content.groups.roastery, links: [{ name: content.links.ourCoffee, url: "/our-coffee" }, { name: content.links.wholesale, url: "/wholesale" }] },
+            { title: content.groups.knowledge, links: [{ name: content.links.journal, url: "/journal" }, { name: content.links.faq, url: "/#faq" }] },
+            { title: content.groups.contact, links: [
+                { name: content.links.maps, url: "https://maps.app.goo.gl/of51q75TqzTckWfV8" },
+                { name: content.links.whatsapp, url: "https://wa.me/628" }
             ]},
-            { title: "SUPPORT", links: [{ name: "Admin Portal", url: "/admin" }] },
-            { title: "FOLLOW US", links: [{ name: "Instagram", url: "https://instagram.com/fermionroastery" }] },
+            { title: content.groups.support, links: [{ name: content.links.admin, url: "/admin" }] },
+            { title: content.groups.social, links: [{ name: content.links.instagram, url: "https://instagram.com/fermionroastery" }] },
           ].map((group, idx) => (
             <div key={idx} className="space-y-6 footer-reveal" style={{ transform: `rotate(${idx % 2 === 0 ? 1 : -1}deg)` }}>
               <div className="inline-block border-b-2 border-fermion-gold/50 pb-1">
