@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin, User, Phone } from "lucide-react";
+import { MapPin, User, Phone, Mail } from "lucide-react";
 import { AddressInput, AddressValue } from "@/components/address-input";
 import { Input } from "@/components/ui/input";
 
@@ -80,6 +80,20 @@ export const AddressSelection = ({ address, setAddress, shippingData, setShippin
                                 <div className="space-y-2">
                                     <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nama Lengkap</label>
                                     <Input required value={shippingData.name || ""} onChange={e => setShippingData({ ...shippingData, name: e.target.value })} className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 focus:ring-[#367F4D]" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Email</label>
+                                    <div className="relative">
+                                        <Input
+                                            required
+                                            type="email"
+                                            value={shippingData.email || ""}
+                                            onChange={e => setShippingData({ ...shippingData, email: e.target.value })}
+                                            placeholder="email@anda.com"
+                                            className="h-11 bg-stone-50 border-black/5 text-xs font-medium text-stone-600 placeholder:text-stone-300 rounded-sm px-4 pl-10 focus:ring-[#367F4D]"
+                                        />
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[8px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nomor WhatsApp</label>

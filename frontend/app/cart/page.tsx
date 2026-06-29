@@ -184,7 +184,7 @@ export default function CartPage() {
           amount: total,
           items: items.map(item => ({
             id: item.id,
-            name: `${item.name} (250g)`,
+            name: `${item.name} (${item.weight})`,
             price: item.price,
             quantity: item.quantity,
             grind: item.grind
@@ -419,11 +419,13 @@ export default function CartPage() {
                     }))}
                     shippingData={{
                       name: shippingData.name,
+                      email: shippingData.email,
                       phone: shippingData.phone
                     }}
                     setShippingData={(data) => setShippingData(prev => ({
                       ...prev,
                       name: data.name,
+                      email: data.email,
                       phone: data.phone
                     }))}
                     savedAddresses={addresses}

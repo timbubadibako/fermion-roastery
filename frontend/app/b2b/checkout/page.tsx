@@ -54,6 +54,7 @@ export default function B2BCheckoutPage() {
 
   const [shippingData, setShippingData] = useState({
     name: "",
+    email: user?.email || "",
     phone: "",
   });
 
@@ -68,7 +69,7 @@ export default function B2BCheckoutPage() {
           const p = Array.isArray(data) ? data.find((p: any) => p.profile_id === user.id) : data;
           setPartner(p);
           if (p) {
-             setShippingData({ name: p.company_name, phone: p.phone });
+             setShippingData({ name: p.company_name, email: user?.email || "", phone: p.phone });
           }
         });
         
@@ -102,6 +103,7 @@ export default function B2BCheckoutPage() {
     } as any);
     setShippingData({
       name: addr.name || addr.recipientName || shippingData.name,
+      email: shippingData.email || user?.email || "",
       phone: addr.phone || addr.recipientPhone || shippingData.phone
     });
   };
@@ -130,7 +132,7 @@ export default function B2BCheckoutPage() {
             })),
             customerDetails: {
               name: shippingData.name || partner?.company_name || user?.full_name,
-              email: user?.email,
+              email: shippingData.email || user?.email,
               phone: shippingData.phone || partner?.phone || "-"
             },
             paymentType,
@@ -178,7 +180,7 @@ export default function B2BCheckoutPage() {
           })),
           customerDetails: {
             name: shippingData.name || partner?.company_name || user?.full_name,
-            email: user?.email,
+            email: shippingData.email || user?.email,
             phone: shippingData.phone || partner?.phone || "-"
           },
           metadata: {
