@@ -6,8 +6,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import {
   Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp,
-  Coffee, Beaker, MapPin, ShoppingBag, Loader2, Microscope,
-  FlaskConical, Globe2, Quote, Archive, Star
+  Beaker, ShoppingBag, Loader2, Globe2, FlaskConical, MapPin
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, useAuthStore } from "@/lib/store";
@@ -38,6 +37,15 @@ interface CoffeeProduct {
   image: string;
   image_url?: string;
   image_url_storage_path?: string | null;
+  category?: string | null;
+  product_variants?: ProductVariant[];
+}
+
+interface ProductVariant {
+  id?: string;
+  weight: string;
+  price: number;
+  stock_quantity?: number;
 }
 
 function CharacterLevel({ label, level }: { label: string; level: number }) {
@@ -69,8 +77,7 @@ export default function ProductPage() {
   const tDetail = t.productDetail;
 
   const [quantity, setQuantity] = useState(1);
-  const [weight, setWeight] = useState("250g");
-  const [grind, setGrind] = useState("Whole Beans");
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>("description");
 
   const productHeroRef = useRef<HTMLDivElement>(null);
@@ -79,21 +86,21 @@ export default function ProductPage() {
   useEffect(() => { setMounted(true); }, []);
 
   const handleAddToCart = (silent: boolean = false) => {
-    if (!product) return;
+    if (!product || !selectedVariant) return;
 
     addItem({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: Number(selectedVariant.price),
       quantity: quantity,
       image: product.image,
-      weight: weight,
-      grind: grind
+      weight: selectedVariant.weight,
+      grind: "Whole Beans"
     }, silent);
 
     if (!silent) {
       toast.success(`${product.name} added to cart!`, {
-        description: `${weight} • ${grind}`,
+        description: selectedVariant.weight,
       });
     }
   };
@@ -113,6 +120,19 @@ export default function ProductPage() {
         const res = await fetch(`/api/products/${id}`);
         if (!res.ok) throw new Error('Product not found');
         const data = await res.json();
+        const variants = Array.isArray(data.product_variants)
+          ? [...data.product_variants]
+              .filter((variant) => variant && variant.weight && Number.isFinite(Number(variant.price)))
+              .sort((first, second) => {
+                const parseWeight = (weightValue: string) => {
+                  const match = String(weightValue).toLowerCase().match(/(\d+(?:\.\d+)?)(g|kg)/);
+                  if (!match) return Number.POSITIVE_INFINITY;
+                  const numericWeight = Number(match[1]);
+                  return match[2] === "kg" ? numericWeight * 1000 : numericWeight;
+                };
+                return parseWeight(first.weight) - parseWeight(second.weight);
+              })
+          : [];
         setProduct({
           ...data,
           fermentation: Number(data.fermentation ?? 0),
@@ -120,7 +140,9 @@ export default function ProductPage() {
           acidity: Number(data.acidity ?? 0),
           body: Number(data.body ?? 0),
           image: data.image || data.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE",
+          product_variants: variants,
         });
+        setSelectedVariant(variants[0] ?? null);
 
         const allRes = await fetch(`/api/products`);
         if (allRes.ok) {
@@ -189,7 +211,7 @@ export default function ProductPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-start relative">
 
-          {/* Left Column: Polaroid & Brewing (STICKY) */}
+          {/* Left Column: Product Visuals (STICKY) */}
           <div className="lg:sticky lg:top-32 space-y-16 h-fit">
             <div className="product-polaroid relative will-change-transform">
               {/* Tape Accents */}
@@ -199,71 +221,73 @@ export default function ProductPage() {
                 <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/5">
                   <Image src={product.image} alt={product.name} fill className="object-cover grayscale-[0.1]" priority />
                 </div>
-                <div className="absolute bottom-6 left-8 right-8 flex justify-between items-end">
+                <div className="absolute bottom-6 left-8 right-8 flex justify-start items-end">
                   <div className="space-y-1">
-                    <p className="font-display text-[#367F4D] text-3xl opacity-30 italic">#EST-2026</p>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-stone-300">{tDetail.specimenRecord}</p>
-                  </div>
-                  <div className="w-16 h-16 bg-[#2A1619] rounded-full flex flex-col items-center justify-center text-white border-4 border-white shadow-xl rotate-12">
-                    <span className="text-[8px] font-black tracking-tighter opacity-70 uppercase">{tDetail.score}</span>
-                    <span className="text-sm font-black italic">86.5</span>
-                  </div>
-                </div>
-              </div>
-              <Sticker rotate={-12} className="absolute -bottom-6 -left-6 z-40 border border-black/10 shadow-md" color="#F1B941">MICRO-LOT PASS</Sticker>
-            </div>
-
-            {/* Brewing Guide - Irregular Roastery Note */}
-            <div className="bg-white p-10 border border-black/5 shadow-lg relative overflow-hidden product-reveal will-change-transform"
-              style={{ clipPath: "polygon(2% 0%, 98% 1%, 100% 98%, 1% 100%)" }}
-            >
-              {/* Dot Grid */}
-              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1.5px, transparent 1.5px)', backgroundSize: '32px 32px' }} />
-
-              <div className="relative z-10 space-y-10">
-                <div className="flex items-center gap-5">
-                  <div className="p-4 bg-[#FAF9F6] border border-black/5 rotate-[-3deg] shadow-sm">
-                    <Microscope size={28} className="text-[#367F4D]" />
-                  </div>
-                  <div>
-                    <h3 className="text-[10px] font-black tracking-[0.4em] uppercase text-[#367F4D]">{tDetail.extractionProtocol}</h3>
-                    <p className="text-2xl font-display font-black italic tracking-tighter text-slate-900 uppercase">{tDetail.brewingGuide}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-black/5 pt-10">
-                  <div className="space-y-6">
-                    <p className="text-[10px] font-black text-slate-900 tracking-[0.3em] uppercase flex items-center gap-3">
-                      <span className="w-2 h-2 bg-[#EBA294] rotate-45" /> {tDetail.forEspresso}
+                    <p className="text-[9px] font-black uppercase tracking-widest text-stone-300">
+                      {product.origin} / {product.process}
                     </p>
-                    <div className="space-y-3 text-[11px] font-black text-stone-500 uppercase tracking-widest">
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.dose}</span> <span className="text-slate-900">18 - 20g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.yield}</span> <span className="text-slate-900">32 - 36g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.time}</span> <span className="text-slate-900">22 - 26s</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.ratio}</span> <span className="text-slate-900">1 : 1.8</span></div>
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <p className="text-[10px] font-black text-slate-900 tracking-[0.3em] uppercase flex items-center gap-3">
-                      <span className="w-2 h-2 bg-[#8CADD8] rotate-45" /> {tDetail.withMilk}
-                    </p>
-                    <div className="space-y-3 text-[11px] font-black text-stone-500 uppercase tracking-widest">
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.dose}</span> <span className="text-slate-900">18 - 20g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.yield}</span> <span className="text-slate-900">27 - 30g</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.time}</span> <span className="text-slate-900">20 - 24s</span></div>
-                      <div className="flex justify-between border-b border-black/[0.03] pb-2"><span>{tDetail.ratio}</span> <span className="text-slate-900">1 : 1.5</span></div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            <div className="bg-white p-8 border border-black/5 shadow-sm product-reveal will-change-transform">
+              <div className="grid grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <Globe2 size={18} className="text-stone-300" />
+                  <p className="text-[9px] font-black text-stone-400 uppercase tracking-[0.24em]">{tDetail.origin}</p>
+                  <p className="text-sm font-black text-slate-900 uppercase italic leading-tight">{product.origin}</p>
+                </div>
+                <div className="space-y-2">
+                  <FlaskConical size={18} className="text-stone-300" />
+                  <p className="text-[9px] font-black text-stone-400 uppercase tracking-[0.24em]">{tDetail.process}</p>
+                  <p className="text-sm font-black text-slate-900 uppercase italic leading-tight">{product.process}</p>
+                </div>
+                <div className="space-y-2">
+                  <MapPin size={18} className="text-stone-300" />
+                  <p className="text-[9px] font-black text-stone-400 uppercase tracking-[0.24em]">{tDetail.altitude}</p>
+                  <p className="text-sm font-black text-slate-900 uppercase italic leading-tight">{product.altitude}</p>
+                </div>
+              </div>
+            </div>
+
+            {relatedProducts.length > 0 ? (
+              <div className="space-y-5 product-reveal will-change-transform">
+                <p className="text-[10px] font-black tracking-[0.32em] uppercase text-stone-400">
+                  {tDetail.relatedProducts}
+                </p>
+                <div className="grid grid-cols-3 gap-4">
+                  {relatedProducts.slice(0, 3).map((relatedProduct) => (
+                    <Link
+                      key={relatedProduct.id}
+                      href={`/our-coffee/${relatedProduct.id}`}
+                      className="group bg-white border border-black/5 p-3 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    >
+                      <div className="relative aspect-square overflow-hidden bg-stone-50 border border-black/5">
+                        <Image
+                          src={relatedProduct.image}
+                          alt={relatedProduct.name}
+                          fill
+                          className="object-cover grayscale-[0.1] group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700"
+                        />
+                      </div>
+                      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-900 line-clamp-2">
+                        {relatedProduct.name}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* TODO: Bring brewing guide back once recipe data exists per category/variant. */}
           </div>
 
           {/* Right Column: Information & Selection */}
           <div className="flex flex-col space-y-16">
             <div className="space-y-6 product-reveal">
               <div className="inline-block px-4 py-1.5 bg-white border border-black/5 rotate-[-1deg] text-[9px] font-black tracking-[0.4em] text-[#367F4D] uppercase shadow-sm">
-                {tDetail.authenticRecord} / {product.origin}
+                {product.origin} / {product.process}
               </div>
               <h1 className="text-7xl md:text-8xl lg:text-9xl font-display tracking-tighter text-slate-900 leading-[0.8] italic uppercase">
                 {product.name}
@@ -276,9 +300,11 @@ export default function ProductPage() {
               </div>
               <div className="pt-6">
                 <span className="text-5xl font-sans font-bold text-slate-900 tracking-tighter">
-                  Rp {product.price.toLocaleString('id-ID')}
+                  Rp {Number(selectedVariant?.price ?? product.price).toLocaleString('id-ID')}
                 </span>
-                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-4">{tDetail.valuation} / {weight}</span>
+                {selectedVariant ? (
+                  <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest ml-4">{tDetail.valuation} / {selectedVariant.weight}</span>
+                ) : null}
               </div>
             </div>
 
@@ -290,99 +316,83 @@ export default function ProductPage() {
                   <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.specimenAnalysis}</span>
                   {activeTab === 'description' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </button>
-                {activeTab === 'description' && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="space-y-10 overflow-hidden">
-                    <p className="text-lg text-stone-600 font-medium leading-relaxed italic text-balance border-l-4 border-[#EBA294] pl-8">
-                      "{product.description}"
-                    </p>
-                    <div className="grid grid-cols-1 gap-6 bg-white p-10 border border-black/5 shadow-inner rounded-sm rotate-[0.5deg]">
-                      <CharacterLevel label={tDetail.fermentation} level={product.fermentation} />
-                      <CharacterLevel label={tDetail.sweetness} level={product.sweetness} />
-                      <CharacterLevel label={tDetail.acidity} level={product.acidity} />
-                      <CharacterLevel label={tDetail.body} level={product.body} />
-                    </div>
-                  </motion.div>
-                )}
+                <AnimatePresence initial={false}>
+                  {activeTab === 'description' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <p className="text-lg text-stone-600 font-medium leading-relaxed italic text-balance border-l-4 border-[#EBA294] pl-8">
+                        "{product.description}"
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <div className="h-[1px] bg-black/[0.05]" />
 
-              {/* Coffee & Process */}
               <div className="space-y-6">
-                <button onClick={() => toggleTab('process')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
-                  <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.originsProcessing}</span>
-                  {activeTab === 'process' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                <button onClick={() => toggleTab('levels')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
+                  <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.characterLevels}</span>
+                  {activeTab === 'levels' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </button>
-                {activeTab === 'process' && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-3 gap-8 overflow-hidden pb-4">
-                    <div className="space-y-2">
-                      <Globe2 size={24} className="text-stone-300 mb-2" />
-                      <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.origin}</p>
-                      <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.origin}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <FlaskConical size={24} className="text-stone-300 mb-2" />
-                      <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.process}</p>
-                      <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.process}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <MapPin size={24} className="text-stone-300 mb-2" />
-                      <p className="text-[9px] font-black text-stone-400 uppercase">{tDetail.altitude}</p>
-                      <p className="text-sm font-black text-slate-900 uppercase italic tracking-tight">{product.altitude}</p>
-                    </div>
-                  </motion.div>
-                )}
+                <AnimatePresence initial={false}>
+                  {activeTab === 'levels' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="grid grid-cols-1 gap-6 bg-white p-10 border border-black/5 shadow-inner rounded-sm rotate-[0.5deg]">
+                        <CharacterLevel label={tDetail.fermentation} level={product.fermentation} />
+                        <CharacterLevel label={tDetail.sweetness} level={product.sweetness} />
+                        <CharacterLevel label={tDetail.acidity} level={product.acidity} />
+                        <CharacterLevel label={tDetail.body} level={product.body} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
             </div>
 
             {/* Selectors */}
             <div className="space-y-12 pt-10 border-t border-black/10 product-reveal">
-              <div className="flex items-center gap-8">
+              <div className="space-y-4">
+                <div className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{tDetail.selectQuantity}</div>
                 <div className="flex items-center bg-white border border-black/5 shadow-sm p-1 rounded-sm">
                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-12 flex items-center justify-center hover:bg-[#FAF9F6] transition-all"><Minus size={16} strokeWidth={3} /></button>
                   <span className="w-12 text-center text-sm font-black tabular-nums">{quantity}</span>
                   <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 flex items-center justify-center hover:bg-[#FAF9F6] transition-all"><Plus size={16} strokeWidth={3} /></button>
                 </div>
-                <div className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{tDetail.selectQuantity}</div>
               </div>
 
+              {Array.isArray(product.product_variants) && product.product_variants.length > 0 ? (
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-stone-400 tracking-[0.3em] uppercase flex items-center gap-3">
-                  <Archive size={14} /> {tDetail.packaging} | <span className="text-slate-900">{weight}</span>
-                </p>
-                <div className="flex gap-4">
-                  {["250g", "500g"].map(w => (
-                    <button
-                      key={w} onClick={() => setWeight(w)}
-                      className={`px-12 py-5 rounded-sm text-[10px] font-black tracking-[0.4em] transition-all duration-500 uppercase ${weight === w
-                        ? "bg-slate-900 text-white shadow-xl translate-y-[-4px]"
-                        : "bg-white border border-black/5 text-stone-300 hover:border-slate-900 hover:text-slate-900"
-                        }`}
-                    >
-                      {w}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <p className="text-[10px] font-black text-stone-400 tracking-[0.3em] uppercase flex items-center gap-3">
-                  <Coffee size={14} /> {tDetail.preparation} | <span className="text-slate-900">{grind}</span>
+                  {tDetail.packaging} | <span className="text-slate-900">{selectedVariant?.weight}</span>
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  {["Whole Beans", "Espresso Grind", "Filter Grind"].map(g => (
+                  {product.product_variants.map((variant) => (
                     <button
-                      key={g} onClick={() => setGrind(g)}
-                      className={`px-10 py-5 rounded-sm text-[10px] font-black tracking-[0.3em] transition-all duration-500 uppercase ${grind === g
+                      key={`${product.id}-${variant.weight}`} onClick={() => setSelectedVariant(variant)}
+                      className={`px-12 py-5 rounded-sm text-[10px] font-black tracking-[0.4em] transition-all duration-500 uppercase ${selectedVariant?.weight === variant.weight
                         ? "bg-slate-900 text-white shadow-xl translate-y-[-4px]"
                         : "bg-white border border-black/5 text-stone-300 hover:border-slate-900 hover:text-slate-900"
                         }`}
                     >
-                      {g}
+                      {variant.weight}
                     </button>
                   ))}
                 </div>
               </div>
+              ) : null}
             </div>
 
             {/* CTA Buttons */}
@@ -391,7 +401,7 @@ export default function ProductPage() {
                 onClick={() => handleAddToCart(false)}
                 className="w-full h-20 bg-white border-2 border-slate-900 text-slate-900 font-black tracking-[0.4em] hover:bg-slate-900 hover:text-white transition-all duration-700 active:scale-[0.98] rounded-sm flex items-center justify-center gap-4 uppercase"
               >
-                {tDetail.addToOrder} • Rp {(product.price * quantity).toLocaleString('id-ID')}
+                {tDetail.addToOrder} • Rp {(Number(selectedVariant?.price ?? product.price) * quantity).toLocaleString('id-ID')}
               </button>
               <button
                 onClick={handleBuyNow}
@@ -404,48 +414,6 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Related Products - Scrapbook Stack */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-60 space-y-20 border-t border-black/5 pt-32">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-[#367F4D]">
-                  <Star size={20} fill="currentColor" />
-                  <p className="text-[10px] font-black tracking-[0.4em] uppercase">{tDetail.labSuggestions}</p>
-                </div>
-                <h2 className="text-6xl font-display tracking-tighter text-slate-900 italic leading-none">{tDetail.completeArchive}</h2>
-              </div>
-              <Link href="/our-coffee" className="inline-block text-[11px] font-black tracking-[0.4em] text-stone-400 hover:text-slate-900 border-b-2 border-black/5 pb-2 transition-all uppercase">
-                {tDetail.browseFullCollection}
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-              {relatedProducts.map((p, idx) => (
-                <Link key={p.id} href={`/our-coffee/${p.id}`}
-                  className="group space-y-8 bg-white p-6 border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  style={{ transform: `rotate(${idx % 2 === 0 ? -1 : 1}deg)` }}
-                >
-                  <div className="relative aspect-square bg-stone-50 overflow-hidden border border-black/5">
-                    <Image src={p.image} alt={p.name} fill className="object-cover transition-all duration-1000 grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-110" />
-                    <div className="absolute top-4 right-4 z-10">
-                      <div className="px-3 py-1 bg-white border border-black/5 text-[9px] font-black tracking-widest text-slate-900 shadow-sm uppercase italic">
-                        {p.roast_profile.split(' ')[0]}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-display font-black tracking-tighter text-slate-900 uppercase italic leading-none group-hover:text-[#367F4D] transition-colors">{p.name}</h3>
-                    <div className="flex justify-between items-center">
-                      <p className="text-[10px] font-black text-stone-300 tracking-[0.3em] uppercase">{p.process}</p>
-                      <p className="text-sm font-sans font-bold text-slate-900">Rp {p.price.toLocaleString('id-ID')}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
