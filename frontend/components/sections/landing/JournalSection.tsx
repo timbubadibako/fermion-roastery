@@ -6,6 +6,7 @@ import Image from "next/image";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -25,6 +26,8 @@ interface JournalSectionProps {
 }
 
 export function JournalSection({ initialPosts }: JournalSectionProps) {
+  const t = useI18n();
+  const content = t.landing.journal;
   const [posts] = useState<Post[]>(initialPosts);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -97,7 +100,7 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
           </div>
           
           <Link href="/journal" className="group flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] text-black hover:text-[#367F4D] transition-all duration-300 pb-2 bg-white px-6 py-3 border border-black/10 shadow-sm rotate-[1deg] hover:-translate-y-1 hover:scale-105 active:scale-95">
-             <span>Lihat Semua</span>
+             <span>{content.viewAll}</span>
              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -152,7 +155,7 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
 
                          <div className="pt-6">
                             <div className="inline-flex items-center justify-center gap-3 bg-white border border-black/10 px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-900 group-hover:bg-[#2E2140] group-hover:text-white group-hover:border-transparent transition-all duration-300">
-                               <span>Baca Laporan</span>
+                               <span>{content.readReport}</span>
                                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </div>
                          </div>

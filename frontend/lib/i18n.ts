@@ -571,6 +571,10 @@ export const translations = {
         cta: "Add to Cart",
         ctaViewDetails: "View Details"
       },
+      journal: {
+        viewAll: "View All",
+        readReport: "Read Report"
+      },
       faq: {
         title: "Frequently Asked Questions",
         subtitle: "A quick guide to our coffee, roasting rhythm, and ordering flow.",
@@ -625,7 +629,7 @@ export const translations = {
       tools: "Category",
       bestSeller: "BEST SELLER",
       batchRecord: "Batch Record",
-      perWeight: "Rp / 250G",
+      perWeight: "Starting From",
       addToCart: "Add to Cart",
       emptyStateTitle: "Produk Tidak Ditemukan",
       emptyStateDesc: "Belum ada kopi yang cocok dengan filter saat ini. Coba ganti proses atau kategorinya.",
@@ -678,8 +682,8 @@ export const translations = {
       trusted: "Trusted",
       partner: "Partner.",
       est: "Est. 2026",
-      ecoTest: "Economic Feasibility Test",
-      growthEngine: "Your Growth Engine.",
+      ecoTest: "Partnership Calculator",
+      growthEngine: "Plan Your Roastery Scale.",
       monthlyVol: "Monthly Kopi Volume",
       min: "MIN 10 KG",
       scale: "SCALE 200+ KG",
@@ -1493,6 +1497,10 @@ export const translations = {
         cta: "Tambah ke Keranjang",
         ctaViewDetails: "Lihat Detail"
       },
+      journal: {
+        viewAll: "Lihat Semua",
+        readReport: "Baca Laporan"
+      },
       faq: {
         title: "Pertanyaan yang Sering Diajukan",
         subtitle: "Panduan singkat tentang kopi kami, ritme roasting, dan alur pemesanan.",
@@ -1547,7 +1555,7 @@ export const translations = {
       tools: "Category",
       bestSeller: "TERLARIS",
       batchRecord: "Catatan Batch",
-      perWeight: "Rp / 250G",
+      perWeight: "Mulai Dari",
       addToCart: "Tambah ke Keranjang",
       emptyStateTitle: "Produk Tidak Ditemukan",
       emptyStateDesc: "Kami tidak dapat menemukan kopi yang sesuai dengan filter Anda. Cobalah memilih proses atau kategori yang berbeda.",
@@ -1600,8 +1608,8 @@ export const translations = {
       trusted: "Mitra",
       partner: "Terpercaya.",
       est: "Est. 2026",
-      ecoTest: "Uji Kelayakan Ekonomi",
-      growthEngine: "Mesin Pertumbuhan Anda.",
+      ecoTest: "Kalkulator Kemitraan",
+      growthEngine: "Rencanakan Skala Roastery Anda.",
       monthlyVol: "Volume Kopi Bulanan",
       min: "MIN 10 KG",
       scale: "SKALA 200+ KG",
@@ -1640,7 +1648,7 @@ export const translations = {
       heroDesc: "Buka akses ke kopi terbaik dari roastery kami. Pilihan kurasi dikirim otomatis, tepat ketika jiwa Anda paling membutuhkannya.",
       premiumAccess: "#AKSES-LAB",
       sensoryExpert: "AHLI SENSORI",
-      quote: "\"Saya mencicipi lebih dari 50 cangkir sehari. Kotak Berlangganan ini adalah tempat saya menaruh 2 cangkir yang membuat saya tersenyum.\"",
+      quote: "\"Saya mencicipi lebih dari 50 cangkir sehari. Subscription box ini berisi 2 cangkir yang membuat saya berhenti dan tersenyum.\"",
       headRoaster: "Kepala Roaster & Q-Grader",
       stepsBadge: "Langkah Berlangganan",
       stepsTitle: "Siklus Roastery.",

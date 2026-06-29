@@ -95,7 +95,7 @@ export function ContactSection() {
                 <path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="3" strokeLinecap="round" />
               </svg>
               
-              <p className="text-stone-700 max-w-xl text-lg font-medium leading-relaxed bg-white/40 p-4 border-l-2 border-black/20 backdrop-blur-sm shadow-sm">
+              <p className="min-h-[8.5rem] text-stone-700 max-w-xl text-lg font-medium leading-relaxed bg-white/40 p-4 border-l-2 border-black/20 backdrop-blur-sm shadow-sm">
                 {content.description}
               </p>
             </div>
