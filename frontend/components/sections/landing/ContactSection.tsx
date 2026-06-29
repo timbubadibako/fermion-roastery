@@ -86,8 +86,8 @@ export function ContactSection() {
               </div>
               
               <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-black leading-[0.8] relative">
-                {content.title}<br />
-                <span className="font-display italic text-[#367F4D]">{content.accent}</span>
+                Get in<br />
+                <span className="font-display italic text-[#367F4D]">Touch</span>
               </h2>
               
               {/* Squiggly line separator */}

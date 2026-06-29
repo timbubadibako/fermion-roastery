@@ -620,9 +620,9 @@ export const translations = {
     catalog: {
       badge: "Katalog Retail",
       titleMain: "Our Coffee",
-      titleSub: "Koleksi.",
-      description: "Jelajahi koleksi biji kopi yang dipanggang presisi dan dikurasi dari origin terbaik.",
-      tools: "Alat Katalog",
+      titleSub: "Collection.",
+      description: "Explore our curated batches, from consistent espresso roasts to clean, vibrant, and character-rich filter coffees.",
+      tools: "Category",
       bestSeller: "BEST SELLER",
       batchRecord: "Batch Record",
       perWeight: "Rp / 250G",
@@ -1471,7 +1471,7 @@ export const translations = {
         filter: { title: "Seri Filter.", subtitle: "Terkurasi • Ekspresif • Berganti Setiap Bulan", cta: "Jelajahi Rilis Filter", sticker: "Kurasi Bulanan" }
       },
       theWay: {
-        titleMain: "Cara", titleSub: "Fermion.", description: "Variabel kecil. Cangkir yang bersih, presisi, dan mudah diingat.",
+        titleMain: "The", titleSub: "Fermion Way.", description: "Variabel kecil. Cangkir yang bersih, presisi, dan mudah diingat.",
         pillars: [
           { id: "01", title: "Varietas", desc: "Setiap kopi dimulai dari karakter asal yang layak dijaga sampai ke cangkir." },
           { id: "02", title: "Fermentasi", desc: "Metode proses diperlakukan sebagai penentu rasa, bukan sekadar detail belakang layar." },
@@ -1513,10 +1513,10 @@ export const translations = {
         whatsappAction: "WhatsApp"
       },
       footer: {
-        statementTop: "DIRACIK",
-        statementMiddle: "UNTUK MEREKA",
-        statementAccent: "YANG PENASARAN.",
-        statementNote: "Specialty coffee yang disangrai dengan perhatian penuh.",
+        statementTop: "CRAFTED",
+        statementMiddle: "FOR THE",
+        statementAccent: "CURIOUS.",
+        statementNote: "Specialty coffee, roasted with care",
         groups: {
           roastery: "Roastery",
           knowledge: "Pengetahuan",
@@ -1534,17 +1534,17 @@ export const translations = {
           admin: "Portal Admin",
           instagram: "Instagram"
         },
-        copyright: "© 2026 Fermion. Karena yang tak terlihat sering membentuk semua yang kita cicipi.",
-        signature: "DISANGRAI DENGAN NIAT",
+        copyright: "© 2026 Fermion. because what is invisible often shapes everything we can taste.",
+        signature: "ROASTED WITH INTENTION",
         socials: ["Instagram", "YouTube", "WhatsApp"]
       }
     },
     catalog: {
       badge: "Katalog Ritel",
-      titleMain: "Kopi Kami",
-      titleSub: "Koleksi.",
-      description: "Jelajahi koleksi biji kopi yang dipanggang secara presisi, dikurasi dari ketinggian terbaik.",
-      tools: "Alat Katalog",
+      titleMain: "Our Coffee",
+      titleSub: "Collection.",
+      description: "Jelajahi curated batch kami, dari espresso roast yang konsisten hingga filter coffee yang clean, vibrant, dan penuh karakter.",
+      tools: "Category",
       bestSeller: "TERLARIS",
       batchRecord: "Catatan Batch",
       perWeight: "Rp / 250G",

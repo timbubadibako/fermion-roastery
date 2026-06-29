@@ -91,8 +91,8 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
                 </span>
              </div>
              <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter text-slate-900 leading-[0.85] pt-4">
-                Catatan dari <br/>
-                <span className="font-display italic text-[#367F4D]">lapangan.</span>
+                Stories <br/>
+                <span className="font-display italic text-[#367F4D]">from the field.</span>
              </h2>
           </div>
           
