@@ -13,15 +13,31 @@ export const revalidate = 300;
 
 interface LandingProduct {
   id: string;
+  image_url?: string | null;
+  name: string;
+  origin?: string | null;
+  category?: string | null;
+  notes?: string | null;
+  price_retail?: number | null;
   is_new_release?: boolean;
 }
 
 interface LandingJournalPost {
   id: string;
+  title: string;
+  excerpt: string;
+  slug: string;
+  featured_image: string;
+  published_at: string;
+  created_at?: string;
 }
 
 interface LandingFaq {
   id: string;
+  question_id: string;
+  answer_id: string;
+  question_en: string;
+  answer_en: string;
 }
 
 const apiBaseUrl =

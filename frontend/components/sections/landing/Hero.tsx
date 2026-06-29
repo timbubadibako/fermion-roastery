@@ -26,10 +26,17 @@ export function Hero() {
     if (mediaQuery.matches) return;
 
     const scheduleVideoLoad = () => setShouldLoadVideo(true);
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (
+        callback: IdleRequestCallback,
+        options?: IdleRequestOptions
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
 
-    if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(scheduleVideoLoad, { timeout: 2000 });
-      return () => window.cancelIdleCallback(idleId);
+    if (typeof idleWindow.requestIdleCallback === "function") {
+      const idleId = idleWindow.requestIdleCallback(scheduleVideoLoad, { timeout: 2000 });
+      return () => idleWindow.cancelIdleCallback?.(idleId);
     }
 
     const timeoutId = window.setTimeout(scheduleVideoLoad, 1200);
