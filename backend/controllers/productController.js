@@ -1,6 +1,95 @@
 import { supabase } from '../lib/supabase.js';
 import { buildStorageReference, createSignedAssetUrl, resolveSignedAssetUrls } from '../lib/storage.js';
 
+const parseWeightToGrams = (value) => {
+  if (value == null) return Number.POSITIVE_INFINITY;
+  const match = String(value).trim().toLowerCase().match(/(\d+(?:\.\d+)?)(g|kg)/);
+  if (!match) return Number.POSITIVE_INFINITY;
+
+  const numericWeight = Number(match[1]);
+  if (!Number.isFinite(numericWeight) || numericWeight <= 0) return Number.POSITIVE_INFINITY;
+
+  return match[2] === 'kg' ? numericWeight * 1000 : numericWeight;
+};
+
+const applyPartnerPricing = ({ basePrice, partner, category, discountEnabled, weight }) => {
+  const normalizedPrice = Number(basePrice || 0);
+  const normalizedWeightInKg = (() => {
+    const weightInGrams = parseWeightToGrams(weight);
+    if (!Number.isFinite(weightInGrams) || weightInGrams <= 0 || weightInGrams === Number.POSITIVE_INFINITY) {
+      return 1;
+    }
+    return weightInGrams / 1000;
+  })();
+
+  if (!partner || discountEnabled === false) {
+    return Math.max(0, normalizedPrice);
+  }
+
+  const normalizedCategory = String(category || '').toLowerCase();
+
+  if (partner.tier_name === 'Silver') {
+    if (normalizedCategory === 'filter') return Math.max(0, normalizedPrice * 0.85);
+    return Math.max(0, normalizedPrice - (15000 * normalizedWeightInKg));
+  }
+
+  if (partner.tier_name === 'Bronze' || partner.status === 'approved') {
+    if (normalizedCategory === 'filter') return Math.max(0, normalizedPrice * 0.90);
+    return Math.max(0, normalizedPrice - (10000 * normalizedWeightInKg));
+  }
+
+  if (partner.status === 'pending' || partner.status === 'onboarding') {
+    return Math.max(0, normalizedPrice - (5000 * normalizedWeightInKg));
+  }
+
+  return Math.max(0, normalizedPrice);
+};
+
+const resolvePriceType = (partner, discountEnabled) => {
+  if (!partner || discountEnabled === false) return 'retail';
+  if (partner.tier_name === 'Silver') return 'tier_silver';
+  if (partner.tier_name === 'Bronze' || partner.status === 'approved') return 'tier_bronze';
+  if (partner.status === 'pending' || partner.status === 'onboarding') return 'introductory';
+  return 'retail';
+};
+
+const mapProductWithResolvedVariants = (product, partner) => {
+  const retailPrice = Number(product.price_retail || 0);
+  const sortedVariants = Array.isArray(product.product_variants)
+    ? [...product.product_variants].sort((first, second) => parseWeightToGrams(first.weight) - parseWeightToGrams(second.weight))
+    : [];
+
+  const resolvedVariants = sortedVariants.map((variant) => {
+    const variantBasePrice = Number(variant.price ?? retailPrice);
+    return {
+      ...variant,
+      original_price: variantBasePrice,
+      price: applyPartnerPricing({
+        basePrice: variantBasePrice,
+        partner,
+        category: product.category,
+        discountEnabled: product.b2b_discount_enabled,
+        weight: variant.weight
+      })
+    };
+  });
+
+  return {
+    ...product,
+    product_variants: resolvedVariants,
+    original_price: retailPrice,
+    price: resolvedVariants[0]?.price ?? applyPartnerPricing({
+      basePrice: retailPrice,
+      partner,
+      category: product.category,
+      discountEnabled: product.b2b_discount_enabled,
+      weight: resolvedVariants[0]?.weight
+    }),
+    priceType: resolvePriceType(partner, product.b2b_discount_enabled),
+    isLocked: false
+  };
+};
+
 /**
  * Get all products with dynamic tiered pricing & marketing flags
  */
@@ -31,35 +120,7 @@ export const getAllProducts = async (req, res) => {
       }
     }
 
-    const pricedProducts = products.map(product => {
-      const retailPrice = parseFloat(product.price_retail);
-      let finalPrice = retailPrice;
-      let priceType = 'retail';
-      let discountAmount = 0;
-
-      if (partner && product.b2b_discount_enabled !== false) {
-        if (partner.tier_name === 'Silver') {
-          discountAmount = 15000;
-          priceType = 'tier_silver';
-        } else if (partner.tier_name === 'Bronze' || partner.status === 'approved') {
-          discountAmount = 10000;
-          priceType = 'tier_bronze';
-        } else if (partner.status === 'pending' || partner.status === 'onboarding') {
-          discountAmount = 5000;
-          priceType = 'introductory';
-        }
-
-        finalPrice = Math.max(0, retailPrice - discountAmount);
-      }
-
-      return {
-        ...product,
-        price: finalPrice,
-        original_price: retailPrice,
-        priceType,
-        isLocked: false
-      };
-    });
+    const pricedProducts = products.map((product) => mapProductWithResolvedVariants(product, partner));
 
     const resolvedProducts = await resolveSignedAssetUrls(pricedProducts, 'image_url');
     res.status(200).json(resolvedProducts);
@@ -88,43 +149,26 @@ export const getProductById = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const retailPrice = parseFloat(product.price_retail);
-    let finalPrice = retailPrice;
-    let priceType = 'retail';
-    let discountAmount = 0;
-
+    let partner = null;
     if (profileId) {
-      const { data: partner, error: partnerError } = await supabase
+      const { data: partnerData, error: partnerError } = await supabase
         .from('b2b_partners')
         .select('status, tier_name')
         .eq('profile_id', profileId)
         .single();
 
-      if (!partnerError && partner && product.b2b_discount_enabled !== false) {
-        if (partner.tier_name === 'Silver') {
-          discountAmount = 15000;
-          priceType = 'tier_silver';
-        } else if (partner.tier_name === 'Bronze' || partner.status === 'approved') {
-          discountAmount = 10000;
-          priceType = 'tier_bronze';
-        } else if (partner.status === 'pending' || partner.status === 'onboarding') {
-          discountAmount = 5000;
-          priceType = 'introductory';
-        }
-        finalPrice = Math.max(0, retailPrice - discountAmount);
+      if (!partnerError) {
+        partner = partnerData;
       }
     }
 
     const signedImageUrl = await createSignedAssetUrl(product.image_url);
+    const resolvedProduct = mapProductWithResolvedVariants(product, partner);
 
     res.status(200).json({
-      ...product,
+      ...resolvedProduct,
       image_url: signedImageUrl,
       image_url_storage_path: product.image_url || null,
-      price: finalPrice,
-      original_price: retailPrice,
-      priceType,
-      isLocked: false
     });
   } catch (error) {
     console.error('GetProductById Error:', error);

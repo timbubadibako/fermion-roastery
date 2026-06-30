@@ -30,6 +30,31 @@ const ORIGIN_DETAILS = {
   postal_code: 45131
 };
 
+const parseWeightToKg = (value) => {
+  if (value == null) return 0.25;
+  const match = String(value).trim().toLowerCase().match(/(\d+(?:\.\d+)?)(g|kg)/);
+  if (!match) return 0.25;
+
+  const numericWeight = Number(match[1]);
+  if (!Number.isFinite(numericWeight) || numericWeight <= 0) return 0.25;
+
+  return match[2] === 'kg' ? numericWeight : numericWeight / 1000;
+};
+
+const parseWeightToGrams = (value) => Math.round(parseWeightToKg(value) * 1000);
+
+const extractItemWeight = (item) => {
+  if (item?.weight) return String(item.weight).trim();
+
+  const match = String(item?.name || '').match(/\(([^)]+)\)/);
+  return match?.[1]?.trim() || '250g';
+};
+
+const extractCleanItemName = (item) => {
+  const rawName = String(item?.name || '').trim();
+  return rawName.replace(/\s*\([^)]+\)\s*$/, '').trim();
+};
+
 export const createInvoice = async (req, res) => {
   const { amount, items, customerDetails, metadata } = req.body;
   const shipping = metadata?.shipping || {};
@@ -67,14 +92,7 @@ export const createInvoice = async (req, res) => {
 
           items.forEach(item => {
              submittedTotal += Number(item.price) * Number(item.quantity);
-             const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
-             let itemWeightKg = 0.25; // default 250g
-             if (weightMatch) {
-               const val = parseFloat(weightMatch[1]);
-               const unit = weightMatch[2].toLowerCase();
-               itemWeightKg = unit === 'kg' ? val : val / 1000;
-             }
-             totalVolumeKg += itemWeightKg * Number(item.quantity);
+             totalVolumeKg += parseWeightToKg(extractItemWeight(item)) * Number(item.quantity);
           });
 
          calculatedAmount = submittedTotal;
@@ -106,21 +124,12 @@ export const createInvoice = async (req, res) => {
           courier_type: courier.courier_service_code,
           delivery_type: "now",
           items: items.map(item => {
-            // Parse weight from "(250g)" or "(500g)"
-            const weightMatch = item.name.match(/\((\d+)(g|kg)\)/i);
-            let itemWeight = 250;
-            if (weightMatch) {
-              const val = parseInt(weightMatch[1]);
-              const unit = weightMatch[2].toLowerCase();
-              itemWeight = unit === 'kg' ? val * 1000 : val;
-            }
-
             return {
-              name: item.name,
+              name: extractCleanItemName(item),
               description: item.name, // Required by some Biteship endpoints
               value: Math.round(Number(item.price)),
               quantity: Math.round(Number(item.quantity)),
-              weight: itemWeight
+              weight: parseWeightToGrams(extractItemWeight(item))
             };
           })
         };
@@ -162,16 +171,11 @@ export const createInvoice = async (req, res) => {
 
     // Insert into order_items
     const orderItemsToInsert = items.map(item => {
-      // Try to parse weight from "Name (Weight)"
-      const nameParts = item.name.match(/(.*)\s\((.*?)\)/);
-      const cleanName = nameParts ? nameParts[1].trim() : item.name;
-      const weight = nameParts ? nameParts[2] : '250g';
-
       return {
         order_id: orderId,
         product_id: item.id || null,
-        product_name: cleanName,
-        variant_weight: weight,
+        product_name: extractCleanItemName(item),
+        variant_weight: extractItemWeight(item),
         variant_grind: item.grind || 'Whole Bean',
         quantity: item.quantity,
         unit_price: item.price
@@ -349,25 +353,7 @@ export const handleNotification = async (req, res) => {
         if (itemsError) throw itemsError;
 
         for (const item of items) {
-          let deductionUnits = 0;
-          const weightLower = (item.variant_weight || "250g").toLowerCase();
-
-          if (weightLower.includes('250g')) {
-            deductionUnits = item.quantity * 1;
-          } else if (weightLower.includes('500g')) {
-            deductionUnits = item.quantity * 2;
-          } else if (weightLower.includes('1kg') || weightLower.includes('1000g')) {
-            deductionUnits = item.quantity * 4;
-          } else {
-            // Fallback dynamic parser
-            const match = weightLower.match(/(\d+)(g|kg)/);
-            if (match) {
-              const val = parseInt(match[1]);
-              const unit = match[2];
-              const grams = unit === 'kg' ? val * 1000 : val;
-              deductionUnits = item.quantity * (grams / 250);
-            }
-          }
+          const deductionUnits = item.quantity * (parseWeightToGrams(item.variant_weight) / 250);
 
           if (deductionUnits > 0) {
             const { data: product } = await supabase
@@ -459,17 +445,12 @@ export const handleNotification = async (req, res) => {
                  const orderIds = recentOrders.map(o => o.id);
                  const { data: recentItems } = await supabase
                    .from('order_items')
-                   .select('variant_weight, quantity')
+                 .select('variant_weight, quantity')
                    .in('order_id', orderIds);
                  
                  let totalVolumeKg = 0;
                  recentItems?.forEach(item => {
-                   const weightStr = (item.variant_weight || "250g").toLowerCase();
-                   const match = weightStr.match(/(\d+)(g|kg)/);
-                   if (match) {
-                     const val = parseInt(match[1]);
-                     totalVolumeKg += (match[2] === 'kg' ? val : val / 1000) * item.quantity;
-                   }
+                   totalVolumeKg += parseWeightToKg(item.variant_weight) * item.quantity;
                  });
 
                  // Upgrade Rules: Silver (50kg+), Gold (100kg+)
@@ -535,14 +516,7 @@ export const createManualInvoice = async (req, res) => {
 
           items.forEach(item => {
              submittedTotal += Number(item.price) * Number(item.quantity);
-             const weightMatch = String(item.name).match(/\((\d+)(g|kg)\)/i);
-             let itemWeightKg = 0.25;
-             if (weightMatch) {
-               const val = parseFloat(weightMatch[1]);
-               const unit = weightMatch[2].toLowerCase();
-               itemWeightKg = unit === 'kg' ? val : val / 1000;
-             }
-             totalVolumeKg += itemWeightKg * Number(item.quantity);
+             totalVolumeKg += parseWeightToKg(extractItemWeight(item)) * Number(item.quantity);
           });
 
           calculatedAmount = submittedTotal;
@@ -572,11 +546,11 @@ export const createManualInvoice = async (req, res) => {
           courier_type: "ez",
           delivery_type: "now",
           items: items.map(item => ({
-            name: item.name,
+            name: extractCleanItemName(item),
             description: `Grind: ${item.grind || 'Whole Bean'}`,
             value: item.price,
             quantity: item.quantity,
-            weight: 250
+            weight: parseWeightToGrams(extractItemWeight(item))
           }))
         };
         const draftRes = await axios.post(`${BITESHIP_URL}/draft_orders`, draftPayload, { headers: biteshipHeaders });
@@ -612,8 +586,8 @@ export const createManualInvoice = async (req, res) => {
     const orderItems = items.map(item => ({
       order_id: orderData.id,
       product_id: item.id,
-      product_name: item.name,
-      variant_weight: item.name.match(/\((.*?)\)/)?.[1] || '1KG',
+      product_name: extractCleanItemName(item),
+      variant_weight: extractItemWeight(item),
       variant_grind: item.grind || 'Whole Bean',
       quantity: item.quantity,
       unit_price: item.price

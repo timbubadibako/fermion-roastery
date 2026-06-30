@@ -1,6 +1,17 @@
 import cron from 'node-cron';
 import { supabase } from './supabase.js';
 
+const parseWeightToKg = (value) => {
+  if (value == null) return 0.25;
+  const match = String(value).trim().toLowerCase().match(/(\d+(?:\.\d+)?)(g|kg)/);
+  if (!match) return 0.25;
+
+  const numericWeight = Number(match[1]);
+  if (!Number.isFinite(numericWeight) || numericWeight <= 0) return 0.25;
+
+  return match[2] === 'kg' ? numericWeight : numericWeight / 1000;
+};
+
 /**
  * Monthly Volume & Tier Evaluation
  * Runs on the 1st of every month at 00:01
@@ -46,20 +57,7 @@ export const startMonthlyEvaluation = () => {
         orders.forEach(order => {
           order.items.forEach(item => {
             const quantity = item.quantity || 0;
-            const weightStr = (item.variant_weight || "250g").toLowerCase();
-            
-            let weightInKg = 0.25; // Default 250g
-            if (weightStr.includes('500g')) weightInKg = 0.5;
-            else if (weightStr.includes('1kg') || weightStr.includes('1000g')) weightInKg = 1;
-            else {
-              const match = weightStr.match(/(\d+)(g|kg)/);
-              if (match) {
-                const val = parseInt(match[1]);
-                const unit = match[2];
-                weightInKg = unit === 'kg' ? val : val / 1000;
-              }
-            }
-            totalKg += quantity * weightInKg;
+            totalKg += quantity * parseWeightToKg(item.variant_weight);
           });
         });
 

@@ -12,6 +12,16 @@ const parseWeightToKg = (value) => {
   return numeric / 1000;
 };
 
+const parseWeightToGrams = (value) => {
+  if (value == null) return 250;
+  const raw = String(value).trim().toLowerCase();
+  const numeric = Number(raw.replace(/[^\d.]/g, ''));
+
+  if (!Number.isFinite(numeric) || numeric <= 0) return 250;
+  if (raw.includes('kg')) return numeric * 1000;
+  return numeric;
+};
+
 // 1. Sync / Save Cart
 export const syncCart = async (req, res) => {
   const { profileId, items } = req.body;
@@ -111,7 +121,8 @@ export const getCart = async (req, res) => {
           name,
           price_retail,
           image_url,
-          category
+          category,
+          product_variants(weight, price)
         )
       `)
       .eq('profile_id', profileId);
@@ -119,7 +130,12 @@ export const getCart = async (req, res) => {
     if (error) throw error;
 
     const formattedData = await Promise.all(data.map(async (item) => {
-      const basePrice = item.products?.price_retail || 0;
+      const variants = Array.isArray(item.products?.product_variants)
+        ? item.products.product_variants
+        : [];
+      const matchedVariant = variants.find((variant) => String(variant.weight).toLowerCase() === String(item.weight).toLowerCase());
+      const fallbackVariant = [...variants].sort((first, second) => parseWeightToGrams(first.weight) - parseWeightToGrams(second.weight))[0];
+      const basePrice = Number(matchedVariant?.price ?? fallbackVariant?.price ?? item.products?.price_retail ?? 0);
       const category = (item.products?.category || '').toLowerCase(); // 'espresso' atau 'filter'
       let finalPrice = basePrice;
 

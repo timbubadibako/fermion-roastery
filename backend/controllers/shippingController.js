@@ -21,6 +21,17 @@ const ORIGIN_DETAILS = {
   postal_code: 45131
 };
 
+const parseWeightToGrams = (value) => {
+  if (value == null) return 250;
+  const match = String(value).trim().toLowerCase().match(/(\d+(?:\.\d+)?)(g|kg)/);
+  if (!match) return 250;
+
+  const numericWeight = Number(match[1]);
+  if (!Number.isFinite(numericWeight) || numericWeight <= 0) return 250;
+
+  return match[2] === 'kg' ? numericWeight * 1000 : numericWeight;
+};
+
 /**
  * Search for areas using Biteship Maps API
  */
@@ -68,7 +79,7 @@ export const getRates = async (req, res) => {
         description: item.description || item.name,
         value: Number(item.price) * Number(item.quantity),
         quantity: Number(item.quantity),
-        weight: Number(item.weight) || 250,
+        weight: parseWeightToGrams(item.weight),
         length: 10,
         width: 10,
         height: 10
