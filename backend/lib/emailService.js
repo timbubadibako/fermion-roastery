@@ -1,88 +1,168 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { getMailConfig } from './runtimeConfig.js';
+import { logError, logInfo } from './logger.js';
 
-dotenv.config();
+const mailConfig = getMailConfig();
 
-// Create a generic transporter
-// For Gmail: use service: 'gmail', auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-// The SMTP_PASS should be an "App Password", not the actual account password.
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your custom SMTP like Hostinger/Niagahoster
-  auth: {
-    user: process.env.SMTP_USER || 'fermiom.test@gmail.com', 
-    pass: process.env.SMTP_PASS || 'placeholder_app_password_here',
-  },
-});
+const createSmtpTransporter = () => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
 
-export const sendWelcomeB2BEmail = async (partnerEmail, partnerName) => {
-  const mailOptions = {
-    from: `"Fermion Roastery" <${process.env.SMTP_USER || 'hello@fermion.com'}>`,
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || undefined,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
+    service: !process.env.SMTP_HOST ? 'gmail' : undefined,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
+
+const smtpTransporter = createSmtpTransporter();
+
+const sendViaResend = async ({ to, subject, html, attachments = [] }) => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is missing');
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `${mailConfig.fromName} <${mailConfig.fromEmail}>`,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+      attachments: attachments.map((attachment) => ({
+        filename: attachment.filename,
+        content: attachment.content.toString('base64'),
+      })),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Resend failed: ${errorText}`);
+  }
+};
+
+const sendViaSmtp = async ({ to, subject, html, attachments = [] }) => {
+  if (!smtpTransporter) {
+    throw new Error('SMTP transporter is not configured');
+  }
+
+  await smtpTransporter.sendMail({
+    from: `"${mailConfig.fromName}" <${mailConfig.fromEmail}>`,
+    to,
+    subject,
+    html,
+    attachments,
+  });
+};
+
+export const sendEmail = async ({ to, subject, html, attachments = [] }) => {
+  try {
+    if (mailConfig.provider === 'resend') {
+      await sendViaResend({ to, subject, html, attachments });
+    } else {
+      await sendViaSmtp({ to, subject, html, attachments });
+    }
+
+    logInfo('mailer.sent', { to, subject, provider: mailConfig.provider });
+    return true;
+  } catch (error) {
+    logError('mailer.failed', error, { to, subject, provider: mailConfig.provider });
+    return false;
+  }
+};
+
+const renderShell = ({ title, body, ctaLabel, ctaHref, secondaryLabel, secondaryHref }) => `
+  <div style="font-family: Helvetica, Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #1c1917; line-height: 1.6;">
+    <h1 style="color: #0f172a; font-style: italic; margin-bottom: 12px;">${title}</h1>
+    <div style="font-size: 14px; color: #44403c;">${body}</div>
+    ${ctaHref ? `<div style="margin-top: 28px;"><a href="${ctaHref}" style="display: inline-block; background-color: #1c1917; color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">${ctaLabel}</a></div>` : ''}
+    ${secondaryHref ? `<div style="margin-top: 14px;"><a href="${secondaryHref}" style="display: inline-block; color: #367F4D; text-decoration: none; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px;">${secondaryLabel}</a></div>` : ''}
+    <p style="margin-top: 32px; color: #78716c;">Salam,<br/>Fermion Roastery</p>
+  </div>
+`;
+
+export const sendWelcomeB2BEmail = async (partnerEmail, partnerName, dashboardUrl) =>
+  sendEmail({
     to: partnerEmail,
-    subject: 'Selamat Datang di Jaringan B2B Fermion Roastery! ☕',
-    html: `
-      <div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1c1917;">
-        <h1 style="color: #367F4D; font-style: italic;">Welcome, ${partnerName}!</h1>
-        <p>Aplikasi kemitraan B2B Anda telah kami terima dan <strong>disetujui</strong>.</p>
-        <p>Sekarang Anda dapat masuk ke Dashboard Mitra menggunakan akun yang telah Anda daftarkan. Di sana Anda bisa langsung memesan biji kopi dengan harga grosir (tiering), melacak riwayat pengiriman, dan mengunduh invoice secara otomatis.</p>
-        <br/>
-        <a href="https://fermion-roastery.vercel.app/auth" style="display: inline-block; background-color: #1c1917; color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Masuk ke Dashboard</a>
-        <br/><br/>
-        <p>Mari tingkatkan standar kopi Anda bersama kami.</p>
-        <p style="font-weight: bold;">Salam hangat,<br/>Tim Fermion Roastery</p>
-      </div>
-    `,
-  };
+    subject: 'Akses B2B Fermion Roastery Anda Sudah Aktif',
+    html: renderShell({
+      title: `Welcome, ${partnerName}!`,
+      body: `<p>Aplikasi kemitraan B2B Anda sudah disetujui. Anda sekarang bisa mengakses harga partner, ledger invoice, dan panel pengiriman.</p>`,
+      ctaLabel: 'Buka Dashboard',
+      ctaHref: dashboardUrl,
+    }),
+  });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('B2B Welcome email sent: ' + info.response);
-    return true;
-  } catch (error) {
-    console.error('Error sending B2B Welcome email:', error);
-    return false;
-  }
-};
+export const sendOrderCreatedEmail = async ({ order, portalUrl, invoiceUrl, paymentUrl, invoiceAttachment }) =>
+  sendEmail({
+    to: order.customer_email,
+    subject: `Pesanan Fermion #${String(order.id).slice(0, 8).toUpperCase()} Dibuat`,
+    html: renderShell({
+      title: 'Pesanan Anda sudah tercatat.',
+      body: `
+        <p>Halo ${order.customer_name}, pesanan Anda sudah masuk ke sistem kami.</p>
+        <p>Nomor pesanan: <strong>${order.id}</strong></p>
+        ${paymentUrl ? '<p>Silakan lanjutkan pembayaran melalui link yang kami sediakan.</p>' : '<p>Invoice pesanan Anda kami lampirkan pada email ini.</p>'}
+      `,
+      ctaLabel: order.profile_id ? 'Buka Detail Pesanan' : 'Lacak Pesanan',
+      ctaHref: portalUrl,
+      secondaryLabel: paymentUrl ? 'Bayar Sekarang' : 'Unduh Invoice',
+      secondaryHref: paymentUrl || invoiceUrl,
+    }),
+    attachments: invoiceAttachment ? [invoiceAttachment] : [],
+  });
 
-export const sendOrderShippedEmail = async (customerEmail, customerName, orderId, courier, resi) => {
-  const isInternal = resi === 'INTERNAL';
-  const mailOptions = {
-    from: `"Fermion Roastery" <${process.env.SMTP_USER || 'hello@fermion.com'}>`,
-    to: customerEmail,
-    subject: `Pesanan #${orderId.split('-')[0].toUpperCase()} Sedang Dikirim! 🚀`,
-    html: `
-      <div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1c1917;">
-        <h2 style="color: #367F4D; font-style: italic;">Pesanan Anda dalam perjalanan!</h2>
-        <p>Halo ${customerName},</p>
-        <p>Kabar baik! Kopi pesanan Anda (Order ID: <strong>${orderId.split('-')[0].toUpperCase()}</strong>) baru saja diserahkan ke bagian logistik.</p>
-        
-        <div style="background-color: #f5f5f4; padding: 20px; border-radius: 4px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716c;">Ekspedisi</p>
-          <h3 style="margin: 5px 0 15px 0;">${courier}</h3>
-          
-          ${!isInternal ? `
-            <p style="margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716c;">Nomor Resi (AWB)</p>
-            <h3 style="margin: 5px 0 0 0; font-family: monospace; font-size: 18px;">${resi}</h3>
-          ` : `
-            <p style="margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716c;">Status</p>
-            <h3 style="margin: 5px 0 0 0;">Dikirim Langsung oleh Kurir Internal/Mandiri</h3>
-          `}
-        </div>
+export const sendPaymentPaidEmail = async ({ order, portalUrl, invoiceUrl, invoiceAttachment }) =>
+  sendEmail({
+    to: order.customer_email,
+    subject: `Pembayaran Diterima untuk Pesanan #${String(order.id).slice(0, 8).toUpperCase()}`,
+    html: renderShell({
+      title: 'Pembayaran Anda sudah kami terima.',
+      body: `<p>Pesanan Anda sedang kami proses untuk roasting dan pengiriman.</p>`,
+      ctaLabel: order.profile_id ? 'Lihat Pesanan' : 'Lacak Pesanan',
+      ctaHref: portalUrl,
+      secondaryLabel: 'Unduh Invoice',
+      secondaryHref: invoiceUrl,
+    }),
+    attachments: invoiceAttachment ? [invoiceAttachment] : [],
+  });
 
-        <a href="https://fermion-roastery.vercel.app/b2b/shipping" style="display: inline-block; background-color: #1c1917; color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Lacak Pesanan</a>
-        <br/><br/>
-        <p>Terima kasih telah memilih Fermion Roastery.</p>
-      </div>
-    `,
-  };
+export const sendOrderShippedEmail = async ({ order, portalUrl, invoiceUrl }) =>
+  sendEmail({
+    to: order.customer_email,
+    subject: `Pesanan #${String(order.id).slice(0, 8).toUpperCase()} Sedang Dikirim`,
+    html: renderShell({
+      title: 'Pesanan Anda sedang dalam perjalanan.',
+      body: `
+        <p>Kurir: <strong>${order.shipping_courier || '-'}</strong></p>
+        <p>Nomor resi: <strong>${order.shipping_awb || 'Internal Delivery'}</strong></p>
+      `,
+      ctaLabel: order.profile_id ? 'Buka Status Pengiriman' : 'Lacak Pengiriman',
+      ctaHref: portalUrl,
+      secondaryLabel: 'Unduh Invoice',
+      secondaryHref: invoiceUrl,
+    }),
+  });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Order Shipped email sent: ' + info.response);
-    return true;
-  } catch (error) {
-    console.error('Error sending Order Shipped email:', error);
-    return false;
-  }
-};
+export const sendOrderDeliveredEmail = async ({ order, portalUrl, invoiceUrl }) =>
+  sendEmail({
+    to: order.customer_email,
+    subject: `Pesanan #${String(order.id).slice(0, 8).toUpperCase()} Sudah Terkirim`,
+    html: renderShell({
+      title: 'Pesanan Anda sudah sampai.',
+      body: `<p>Terima kasih. Semoga batch ini sampai dengan aman dan siap diseduh.</p>`,
+      ctaLabel: order.profile_id ? 'Buka Riwayat Pesanan' : 'Unduh Invoice',
+      ctaHref: order.profile_id ? portalUrl : invoiceUrl,
+      secondaryLabel: order.profile_id ? 'Unduh Invoice' : '',
+      secondaryHref: order.profile_id ? invoiceUrl : '',
+    }),
+  });

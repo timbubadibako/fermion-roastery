@@ -1,11 +1,13 @@
 import { supabase } from '../lib/supabase.js';
 import { publishEvent } from '../lib/ably.js';
-import { sendWelcomeB2BEmail, sendOrderShippedEmail } from '../lib/emailService.js';
+import { sendWelcomeB2BEmail, sendOrderDeliveredEmail, sendOrderShippedEmail } from '../lib/emailService.js';
 import { subDays, startOfDay, endOfDay, differenceInDays, format } from 'date-fns';
 import { logError, logInfo } from '../lib/logger.js';
 import { sanitizeError } from '../lib/security.js';
 import { recordAuditEvent } from '../lib/audit.js';
 import { mapInvoicesExport, mapOrdersExport, mapPartnersExport, toCsv } from '../lib/exporters.js';
+import { getAppUrl } from '../lib/runtimeConfig.js';
+import { buildOrderInvoiceUrl, buildOrderPortalUrl } from '../lib/orderLinks.js';
 
 // 0. Get Admin Stats for Dashboard Overview
 export const getAdminStats = async (req, res) => {
@@ -215,7 +217,11 @@ export const updatePartnerStatus = async (req, res) => {
         
       if (profile && profile.email) {
         // Run in background
-        sendWelcomeB2BEmail(profile.email, data.company_name || profile.full_name || 'Mitra B2B').catch(e => console.error(e));
+        sendWelcomeB2BEmail(
+          profile.email,
+          data.company_name || profile.full_name || 'Mitra B2B',
+          `${getAppUrl()}/b2b`
+        ).catch(e => console.error(e));
       }
     }
 
@@ -459,13 +465,19 @@ export const updateOrder = async (req, res) => {
 
     // Email hook
     if (status === 'SHIPPED' && data.customer_email) {
-      sendOrderShippedEmail(
-        data.customer_email,
-        data.customer_name || 'Coffee Lover',
-        data.id,
-        data.shipping_courier,
-        data.shipping_awb
-      ).catch(e => console.error("Email Error:", e));
+      sendOrderShippedEmail({
+        order: data,
+        portalUrl: buildOrderPortalUrl(data),
+        invoiceUrl: buildOrderInvoiceUrl(data),
+      }).catch(e => console.error("Email Error:", e));
+    }
+
+    if (status === 'DELIVERED' && data.customer_email) {
+      sendOrderDeliveredEmail({
+        order: data,
+        portalUrl: buildOrderPortalUrl(data),
+        invoiceUrl: buildOrderInvoiceUrl(data),
+      }).catch(e => console.error("Email Error:", e));
     }
 
     await recordAuditEvent({

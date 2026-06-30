@@ -175,6 +175,11 @@ const generateInvoicePDF = async (orderId) => {
       console.error('Invoice Storage Upload Error:', uploadError);
     }
 
+    await supabase
+      .from('orders')
+      .update({ invoice_storage_path: storagePath, updated_at: new Date().toISOString() })
+      .eq('id', orderId);
+
     return { buffer, fileName, storagePath, uploaded: !uploadError };
   } catch (error) {
     console.error('PDF Generation Error:', error);

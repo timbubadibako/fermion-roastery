@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase.js';
 import { generateShippingLabelsBatch } from '../lib/pdfGenerator.js';
 import { logError, logInfo } from '../lib/logger.js';
 import { sanitizeError, verifyStaticWebhookSecret } from '../lib/security.js';
+import { getBiteshipOrigin } from '../lib/runtimeConfig.js';
 
 dotenv.config();
 
@@ -16,10 +17,7 @@ const headers = {
 };
 
 // Default Origin (Fermion Roastery Cirebon - Kesambi)
-const ORIGIN_DETAILS = {
-  area_id: "IDNP9IDNC105IDND151IDZ45131",
-  postal_code: 45131
-};
+const ORIGIN_DETAILS = getBiteshipOrigin();
 
 const parseWeightToGrams = (value) => {
   if (value == null) return 250;
