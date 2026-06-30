@@ -37,6 +37,13 @@ interface Product {
   category?: string;
   sub_category?: string;
   b2b_discount_enabled?: boolean;
+  product_variants?: Array<{
+    id?: string;
+    weight: string;
+    price: number;
+    original_price?: number;
+    stock_quantity?: number;
+  }>;
 }
 
 export default function WholesaleShopPage() {
@@ -71,17 +78,26 @@ export default function WholesaleShopPage() {
   };
 
   const handleAddToCart = (product: Product) => {
-    const finalPrice = product.price || Number(product.price_retail);
+    const preferredVariant = Array.isArray(product.product_variants) && product.product_variants.length > 0
+      ? (
+          product.product_variants.find((variant) => {
+            const normalizedWeight = String(variant.weight).toLowerCase();
+            return normalizedWeight === "1kg" || normalizedWeight === "1000g";
+          }) || product.product_variants[0]
+        )
+      : null;
+
+    const finalPrice = Number(preferredVariant?.price ?? product.price ?? product.price_retail);
     addItem({
       id: product.id,
       name: product.name,
       price: finalPrice,
       quantity: 1,
       image: product.image_url || "https://placehold.co/800x1000/367f4d/ffffff?text=FERMION+COFFEE",
-      weight: "1000g", // B2B Default is 1KG
+      weight: preferredVariant?.weight || "1000g",
       grind: "Whole Bean",
       priceType: product.priceType || 'tier',
-      original_price: Number(product.price_retail),
+      original_price: Number(preferredVariant?.original_price ?? product.price_retail),
       b2b_discount_enabled: product.b2b_discount_enabled !== false,
       isB2B: true
     });

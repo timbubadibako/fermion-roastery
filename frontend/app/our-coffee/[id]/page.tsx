@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import {
   Minus, Plus, Heart, Share2, ArrowLeft, ChevronDown, ChevronUp,
-  Beaker, ShoppingBag, Loader2, Globe2, FlaskConical, MapPin
+  Beaker, ShoppingBag, Loader2, Globe2, FlaskConical, MapPin, Package
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, useAuthStore } from "@/lib/store";
@@ -95,7 +95,7 @@ export default function ProductPage() {
       quantity: quantity,
       image: product.image,
       weight: selectedVariant.weight,
-      grind: "Whole Beans"
+      grind: "Whole Bean"
     }, silent);
 
     if (!silent) {
@@ -175,6 +175,8 @@ export default function ProductPage() {
   }, [mounted, product]);
 
   const toggleTab = (tab: string) => setActiveTab(activeTab === tab ? null : tab);
+  const shouldShowLevels = [product?.fermentation, product?.sweetness, product?.acidity, product?.body]
+    .some((value) => Number(value) > 0);
 
   if (!mounted || loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
@@ -335,30 +337,32 @@ export default function ProductPage() {
 
               <div className="h-[1px] bg-black/[0.05]" />
 
-              <div className="space-y-6">
-                <button onClick={() => toggleTab('levels')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
-                  <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.characterLevels}</span>
-                  {activeTab === 'levels' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </button>
-                <AnimatePresence initial={false}>
-                  {activeTab === 'levels' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="grid grid-cols-1 gap-6 bg-white p-10 border border-black/5 shadow-inner rounded-sm rotate-[0.5deg]">
-                        <CharacterLevel label={tDetail.fermentation} level={product.fermentation} />
-                        <CharacterLevel label={tDetail.sweetness} level={product.sweetness} />
-                        <CharacterLevel label={tDetail.acidity} level={product.acidity} />
-                        <CharacterLevel label={tDetail.body} level={product.body} />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              {shouldShowLevels ? (
+                <div className="space-y-6">
+                  <button onClick={() => toggleTab('levels')} className="w-full flex items-center justify-between text-[11px] font-black tracking-[0.4em] uppercase py-2 group">
+                    <span className="group-hover:text-[#367F4D] transition-colors">{tDetail.characterLevels}</span>
+                    {activeTab === 'levels' ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {activeTab === 'levels' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid grid-cols-1 gap-6 bg-white p-10 border border-black/5 shadow-inner rounded-sm rotate-[0.5deg]">
+                          <CharacterLevel label={tDetail.fermentation} level={product.fermentation} />
+                          <CharacterLevel label={tDetail.sweetness} level={product.sweetness} />
+                          <CharacterLevel label={tDetail.acidity} level={product.acidity} />
+                          <CharacterLevel label={tDetail.body} level={product.body} />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : null}
 
             </div>
 
@@ -376,13 +380,14 @@ export default function ProductPage() {
               {Array.isArray(product.product_variants) && product.product_variants.length > 0 ? (
               <div className="space-y-6">
                 <p className="text-[10px] font-black text-stone-400 tracking-[0.3em] uppercase flex items-center gap-3">
+                  <Package size={14} className="text-stone-300" />
                   {tDetail.packaging} | <span className="text-slate-900">{selectedVariant?.weight}</span>
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {product.product_variants.map((variant) => (
                     <button
                       key={`${product.id}-${variant.weight}`} onClick={() => setSelectedVariant(variant)}
-                      className={`px-12 py-5 rounded-sm text-[10px] font-black tracking-[0.4em] transition-all duration-500 uppercase ${selectedVariant?.weight === variant.weight
+                      className={`min-w-[132px] px-8 py-5 rounded-sm text-[10px] font-black tracking-[0.4em] transition-all duration-500 uppercase ${selectedVariant?.weight === variant.weight
                         ? "bg-slate-900 text-white shadow-xl translate-y-[-4px]"
                         : "bg-white border border-black/5 text-stone-300 hover:border-slate-900 hover:text-slate-900"
                         }`}

@@ -54,13 +54,17 @@ function HeaderComponent() {
   const handleQuickAdd = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
     e.stopPropagation();
+    const defaultVariant = Array.isArray(product.product_variants) && product.product_variants.length > 0
+      ? product.product_variants[0]
+      : null;
+
     addItem({
       id: product.id,
       name: product.name,
-      price: Number(product.price_retail),
+      price: Number(defaultVariant?.price ?? product.price ?? product.price_retail),
       quantity: 1,
       image: product.image_url || "https://placehold.co/200x200/7a9cff/ffffff?text=FERMION",
-      weight: "250g",
+      weight: defaultVariant?.weight || "250g",
       grind: "Whole Bean"
     });
     toast.success(`${product.name} added to cart!`);
@@ -329,7 +333,7 @@ function HeaderComponent() {
                                 </div>
                                 <div className="flex-1">
                                   <p className="text-[11px] font-display font-black text-stone-900 leading-tight mb-0.5 uppercase truncate">{product.name}</p>
-                                  <p className="text-[10px] font-cloude text-[#367F4D]">Rp {Number(product.price_retail).toLocaleString('id-ID')}</p>
+                                  <p className="text-[10px] font-cloude text-[#367F4D]">Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}</p>
                                 </div>
                                 <button
                                   onClick={(e) => handleQuickAdd(e, product)}

@@ -152,7 +152,7 @@ export default function CartPage() {
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            weight: 250
+            weight: item.weight
           }))
         })
       });

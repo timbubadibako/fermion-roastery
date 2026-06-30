@@ -24,6 +24,7 @@ interface CoffeeProduct {
   process: string;
   altitude: string;
   price_retail: number;
+  price?: number;
   original_price?: number;
   image_url: string;
   notes: string;
@@ -32,6 +33,13 @@ interface CoffeeProduct {
   sub_category?: string;
   discount_percent?: number;
   created_at?: string;
+  product_variants?: Array<{
+    id?: string;
+    weight: string;
+    price: number;
+    original_price?: number;
+    stock_quantity?: number;
+  }>;
 }
 
 export function RetailCatalog() {
@@ -143,6 +151,10 @@ export function RetailCatalog() {
 
   useEffect(() => {
     let result = [...products];
+    const getDisplayPrice = (product: CoffeeProduct) => Number(
+      product.product_variants?.[0]?.price ?? product.price ?? product.price_retail
+    );
+
     if (activeFilter !== "ALL") {
       if (activeFilter === "ESPRESSO" || activeFilter === "FILTER") {
         result = result.filter(p => p.category && p.category.toUpperCase() === activeFilter);
@@ -151,9 +163,9 @@ export function RetailCatalog() {
       }
     }
     if (sortBy === "PRICE_HIGH") {
-      result.sort((a, b) => Number(b.price_retail) - Number(a.price_retail));
+      result.sort((a, b) => getDisplayPrice(b) - getDisplayPrice(a));
     } else if (sortBy === "PRICE_LOW") {
-      result.sort((a, b) => Number(a.price_retail) - Number(b.price_retail));
+      result.sort((a, b) => getDisplayPrice(a) - getDisplayPrice(b));
     }
     setDisplayProducts(result);
     setCurrentPage(1);
@@ -188,9 +200,18 @@ export function RetailCatalog() {
 
   const handleAddToCart = (e: React.MouseEvent, product: CoffeeProduct) => {
     e.preventDefault(); e.stopPropagation();
+    const defaultVariant = Array.isArray(product.product_variants) && product.product_variants.length > 0
+      ? product.product_variants[0]
+      : null;
+
     addItem({
-      id: product.id, name: product.name, price: Number(product.price_retail),
-      quantity: 1, image: product.image_url, weight: "250g", grind: "Whole Bean"
+      id: product.id,
+      name: product.name,
+      price: Number(defaultVariant?.price ?? product.price ?? product.price_retail),
+      quantity: 1,
+      image: product.image_url,
+      weight: defaultVariant?.weight || "250g",
+      grind: "Whole Bean"
     });
     toast.success(`${product.name} added to cart!`);
   };
@@ -409,7 +430,7 @@ export function RetailCatalog() {
                       <div className="text-center">
                         <span className="text-[8px] font-black text-stone-300 uppercase tracking-[0.2em] block mb-1">{tCat.perWeight}</span>
                         <span className="text-xl font-sans font-bold text-slate-900 tabular-nums">
-                          Rp {Number(product.price_retail).toLocaleString('id-ID')}
+                          Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}
                         </span>
                       </div>
 
