@@ -197,6 +197,8 @@ CREATE TABLE IF NOT EXISTS orders (
     type TEXT DEFAULT 'retail',
     payment_method TEXT, -- 'TEMPO', 'OFFLINE_CASH', 'ONLINE'
     invoice_storage_path TEXT, -- e.g. 'orders/<order-id>.pdf' in Supabase Storage
+    created_email_scheduled_for TIMESTAMP WITH TIME ZONE,
+    created_email_sent_at TIMESTAMP WITH TIME ZONE,
     
     -- QC Sensory Feedback (Saved during ROASTING phase)
     qc_sweetness NUMERIC(2,1),
@@ -212,6 +214,8 @@ CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXE
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS invoice_storage_path TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS created_email_scheduled_for TIMESTAMP WITH TIME ZONE;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS created_email_sent_at TIMESTAMP WITH TIME ZONE;
 
 -- Supabase Storage reference for invoices (private bucket, accessed via backend service role)
 -- Run in Supabase SQL Editor if the bucket does not exist yet:

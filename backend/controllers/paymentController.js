@@ -8,8 +8,9 @@ import { publishEvent } from '../lib/ably.js';
 import { sendOrderNotification } from '../lib/notifications.js';
 import { logError, logInfo } from '../lib/logger.js';
 import { sanitizeError, verifyStaticWebhookSecret } from '../lib/security.js';
-// TODO: [MAILER] Integrate Resend / Nodemailer here for email notifications
-// Example: import { sendEmail } from '../lib/mailer.js';
+import { getAppUrl, getBiteshipOrigin } from '../lib/runtimeConfig.js';
+import { buildGuestTrackingUrl, buildOrderInvoiceUrl, buildOrderPortalUrl } from '../lib/orderLinks.js';
+import { sendOrderCreatedEmail, sendPaymentPaidEmail } from '../lib/emailService.js';
 
 dotenv.config();
 
@@ -24,11 +25,7 @@ const biteshipHeaders = {
   'Content-Type': 'application/json'
 };
 
-// Default Origin (Fermion Roastery Cirebon - Kesambi)
-const ORIGIN_DETAILS = {
-  area_id: "IDNP9IDNC105IDND151IDZ45131",
-  postal_code: 45131
-};
+const ORIGIN_DETAILS = getBiteshipOrigin();
 
 const parseWeightToKg = (value) => {
   if (value == null) return 0.25;
@@ -54,6 +51,8 @@ const extractCleanItemName = (item) => {
   const rawName = String(item?.name || '').trim();
   return rawName.replace(/\s*\([^)]+\)\s*$/, '').trim();
 };
+
+const CREATED_EMAIL_DEBOUNCE_MINUTES = 2;
 
 export const createInvoice = async (req, res) => {
   const { amount, items, customerDetails, metadata } = req.body;
@@ -160,7 +159,10 @@ export const createInvoice = async (req, res) => {
           customer_phone: customerDetails?.phone || '-',
           shipping_address: shipping.address || 'Pickup',
           shipping_city: shipping.city || 'Cirebon',
-          shipping_notes: shipping.notes || ''
+          shipping_notes: shipping.notes || '',
+          created_email_scheduled_for: isB2bOrder
+            ? null
+            : new Date(Date.now() + CREATED_EMAIL_DEBOUNCE_MINUTES * 60 * 1000).toISOString()
         }
       ])
       .select()
@@ -189,7 +191,7 @@ export const createInvoice = async (req, res) => {
     if (itemsError) throw itemsError;
 
     // 3. Generate Xendit Invoice
-    const origin = req.headers.origin || 'https://fermionroastery.com';
+    const origin = req.headers.origin || getAppUrl();
     const successUrl = metadata?.b2b 
       ? `${origin}/b2b/invoice/${orderId}`
       : `${origin}/retail/success`;
@@ -213,10 +215,27 @@ export const createInvoice = async (req, res) => {
 
     const response = await xendit.Invoice.createInvoice({ data });
 
+    try {
+      await generateInvoicePDF(orderId);
+    } catch (pdfError) {
+      logError('invoice.generate_after_create.failed', pdfError, { orderId });
+    }
+
+    const createdOrder = {
+      ...orderData,
+      profile_id: profileId,
+      type: metadata?.b2b ? 'b2b' : 'retail',
+    };
+    const orderPortalUrl = buildOrderPortalUrl(createdOrder);
+    const guestTrackingUrl = !profileId ? buildGuestTrackingUrl(createdOrder) : null;
+    const invoiceDownloadUrl = buildOrderInvoiceUrl(createdOrder);
+
     res.status(200).json({
       invoiceUrl: response.invoiceUrl,
       externalId: response.externalId,
-      orderId: orderId
+      orderId: orderId,
+      guestTrackingUrl,
+      orderPortalUrl,
     });
     logInfo('payment.invoice.created', { orderId, externalId: response.externalId, amount: calculatedAmount, orderType: isB2bOrder ? 'b2b' : 'retail' });
   } catch (error) {
@@ -301,7 +320,7 @@ export const handleNotification = async (req, res) => {
     // 0. Flexible Lookup: Try xendit_invoice_id first, then fallback to internal order id
     let { data: orderData, error: lookupError } = await supabase
       .from('orders')
-      .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
+      .select('status, id, profile_id, type, biteship_order_id, customer_name, customer_email, customer_phone, created_email_sent_at')
       .eq('xendit_invoice_id', external_id)
       .maybeSingle();
 
@@ -311,7 +330,7 @@ export const handleNotification = async (req, res) => {
 
       const { data: fallbackData } = await supabase
         .from('orders')
-        .select('status, id, biteship_order_id, customer_name, customer_email, customer_phone')
+        .select('status, id, profile_id, type, biteship_order_id, customer_name, customer_email, customer_phone, created_email_sent_at')
         .eq('id', cleanId)
         .maybeSingle();
 
@@ -333,7 +352,7 @@ export const handleNotification = async (req, res) => {
     if (status === 'PAID' || status === 'SETTLED') {
       const { error: updateError } = await supabase
         .from('orders')
-        .update({ status: 'PAID', updated_at: new Date() })
+        .update({ status: 'PAID', updated_at: new Date(), created_email_scheduled_for: null })
         .eq('xendit_invoice_id', external_id);
 
       if (updateError) throw updateError;
@@ -409,7 +428,16 @@ export const handleNotification = async (req, res) => {
 
       // 2. Generate PDF invoice without blocking payment flow on serverless file errors
       try {
-        await generateInvoicePDF(orderData.id);
+        const generatedInvoice = await generateInvoicePDF(orderData.id);
+        const orderForEmail = { ...orderData, status: 'PAID' };
+        const orderPortalUrl = buildOrderPortalUrl(orderForEmail);
+        const invoiceDownloadUrl = buildOrderInvoiceUrl(orderForEmail);
+        await sendPaymentPaidEmail({
+          order: orderForEmail,
+          portalUrl: orderPortalUrl,
+          invoiceUrl: invoiceDownloadUrl,
+          invoiceAttachment: { filename: generatedInvoice.fileName, content: generatedInvoice.buffer },
+        });
       } catch (pdfError) {
         logError('invoice.generate.failed', pdfError, { orderId: orderData.id });
       }
@@ -599,7 +627,14 @@ export const createManualInvoice = async (req, res) => {
     publishEvent('orders', 'order_updated', { id: orderData.id, status: orderData.status });
 
     try {
-      await generateInvoicePDF(orderData.id);
+      const generatedInvoice = await generateInvoicePDF(orderData.id);
+      await sendOrderCreatedEmail({
+        order: orderData,
+        portalUrl: buildOrderPortalUrl(orderData),
+        invoiceUrl: buildOrderInvoiceUrl(orderData),
+        paymentUrl: null,
+        invoiceAttachment: { filename: generatedInvoice.fileName, content: generatedInvoice.buffer },
+      });
     } catch (pdfError) {
       logError('invoice.manual_generate.failed', pdfError, { orderId: orderData.id });
     }

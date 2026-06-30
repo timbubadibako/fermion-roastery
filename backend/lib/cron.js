@@ -1,5 +1,9 @@
 import cron from 'node-cron';
 import { supabase } from './supabase.js';
+import { generateInvoicePDF } from './pdfGenerator.js';
+import { sendOrderCreatedEmail } from './emailService.js';
+import { buildOrderInvoiceUrl, buildOrderPortalUrl } from './orderLinks.js';
+import { logError, logInfo } from './logger.js';
 
 const parseWeightToKg = (value) => {
   if (value == null) return 0.25;
@@ -89,6 +93,54 @@ export const startMonthlyEvaluation = () => {
       console.log('🎉 Monthly B2B Evaluation Complete.');
     } catch (error) {
       console.error('❌ Monthly Evaluation Error:', error);
+    }
+  });
+};
+
+export const startDeferredOrderEmailDispatch = () => {
+  cron.schedule('* * * * *', async () => {
+    try {
+      const nowIso = new Date().toISOString();
+      const { data: dueOrders, error } = await supabase
+        .from('orders')
+        .select('id, profile_id, type, status, customer_name, customer_email, customer_phone, shipping_address, shipping_city, total_amount, created_at, updated_at, invoice_storage_path')
+        .eq('status', 'UNPAID')
+        .is('created_email_sent_at', null)
+        .not('created_email_scheduled_for', 'is', null)
+        .lte('created_email_scheduled_for', nowIso);
+
+      if (error) throw error;
+      if (!dueOrders?.length) return;
+
+      for (const order of dueOrders) {
+        try {
+          const generatedInvoice = await generateInvoicePDF(order.id);
+          await sendOrderCreatedEmail({
+            order,
+            portalUrl: buildOrderPortalUrl(order),
+            invoiceUrl: buildOrderInvoiceUrl(order),
+            paymentUrl: null,
+            invoiceAttachment: generatedInvoice
+              ? { filename: generatedInvoice.fileName, content: generatedInvoice.buffer }
+              : null,
+          });
+
+          await supabase
+            .from('orders')
+            .update({
+              created_email_sent_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', order.id)
+            .is('created_email_sent_at', null);
+
+          logInfo('mailer.order_created.deferred_sent', { orderId: order.id });
+        } catch (dispatchError) {
+          logError('mailer.order_created.deferred_failed', dispatchError, { orderId: order.id });
+        }
+      }
+    } catch (error) {
+      logError('mailer.order_created.deferred_cron_failed', error);
     }
   });
 };

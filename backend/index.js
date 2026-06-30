@@ -16,7 +16,7 @@ import shippingRoutes from './routes/shippingRoutes.js';
 import journalRoutes from './routes/journalRoutes.js';
 import b2bRoutes from './routes/b2bRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
-import { startMonthlyEvaluation } from './lib/cron.js';
+import { startDeferredOrderEmailDispatch, startMonthlyEvaluation } from './lib/cron.js';
 import { corsMiddleware, sanitizeError } from './lib/security.js';
 import { logError, logInfo } from './lib/logger.js';
 
@@ -25,6 +25,7 @@ const app = express();
 
 // Start Background Services
 startMonthlyEvaluation();
+startDeferredOrderEmailDispatch();
 
 // Middleware
 app.use(corsMiddleware);
