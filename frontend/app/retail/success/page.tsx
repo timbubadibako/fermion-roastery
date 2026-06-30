@@ -138,9 +138,15 @@ export default function OrderSuccessPage() {
             <p className="text-[9px] text-stone-400 font-bold uppercase tracking-[0.2em] italic">
               Konfirmasi lengkap dikirim ke email Anda.
             </p>
-            <Link href="/account" className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-300 hover:text-slate-900 transition-colors underline underline-offset-4">
-              Cek Dashboard
-            </Link>
+            {orderSummary?.guestTrackingUrl ? (
+              <a href={orderSummary.guestTrackingUrl} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-300 hover:text-slate-900 transition-colors underline underline-offset-4">
+                Lacak Pesanan Guest
+              </a>
+            ) : (
+              <Link href={orderSummary?.orderPortalUrl || "/account?tab=orders"} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-300 hover:text-slate-900 transition-colors underline underline-offset-4">
+                Cek Dashboard
+              </Link>
+            )}
           </div>
 
           {/* Actions */}

@@ -222,7 +222,10 @@ export default function CartPage() {
           subtotal: subtotal,
           shippingFee: shippingFee,
           total: subtotal + shippingFee,
-          items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price, weight: i.weight, grind: i.grind }))
+          items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price, weight: i.weight, grind: i.grind })),
+          guestTrackingUrl: data.guestTrackingUrl || null,
+          orderPortalUrl: data.orderPortalUrl || null,
+          isGuestOrder: !user
         };
         localStorage.setItem('latestOrderSummary', JSON.stringify(orderSummary));
 

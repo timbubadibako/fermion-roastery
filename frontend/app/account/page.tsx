@@ -17,6 +17,7 @@ import {
   Download, Upload, FileText, AlertTriangle
 } from "lucide-react";
 import { AddressInput } from "@/components/address-input";
+import { OrderTrackingTimeline } from "@/components/order-tracking-timeline";
 import { apiFetch } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { debugError, debugLog } from "@/lib/debug";
@@ -641,48 +642,13 @@ function AccountContent() {
                               {activeTrackingId === order.id && (
                                 <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="border-t border-black/5 bg-stone-50/50 overflow-hidden">
                                   <div className="p-8 space-y-8">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-4">
-                                        <Truck size={18} className="text-[#367F4D]" />
-                                        <div>
-                                          <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">{t.account.tracking.courierAndAwb}</p>
-                                          <p className="text-xs font-bold text-slate-900 uppercase">{order.shipping_courier || t.account.tracking.pending} • {order.shipping_awb || t.account.tracking.awaitingAwb}</p>
-                                        </div>
-                                      </div>
-                                      {isTrackingLoading && <Loader2 size={14} className="animate-spin text-stone-300" />}
-                                    </div>
-
-                                    {/* Status Timeline */}
-                                    <div className="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-stone-200">
-                                      <div className="relative flex items-start gap-4">
-                                        <div className={`w-[11px] h-[11px] rounded-full mt-1.5 z-10 border-2 border-white shadow-sm ${['PAID', 'ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? 'bg-[#367F4D]' : 'bg-stone-200'}`} />
-                                        <div>
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-tight">{t.account.tracking.status.confirmed.title}</p>
-                                          <p className="text-[8px] font-bold text-stone-400 uppercase mt-0.5">{t.account.tracking.status.confirmed.desc}</p>
-                                        </div>
-                                      </div>
-                                      <div className="relative flex items-start gap-4">
-                                        <div className={`w-[11px] h-[11px] rounded-full mt-1.5 z-10 border-2 border-white shadow-sm ${['ROASTING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? 'bg-[#367F4D]' : 'bg-stone-200'}`} />
-                                        <div>
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-tight">{t.account.tracking.status.roasting.title}</p>
-                                          <p className="text-[8px] font-bold text-stone-400 uppercase mt-0.5">{t.account.tracking.status.roasting.desc}</p>
-                                        </div>
-                                      </div>
-                                      <div className="relative flex items-start gap-4">
-                                        <div className={`w-[11px] h-[11px] rounded-full mt-1.5 z-10 border-2 border-white shadow-sm ${['SHIPPED', 'DELIVERED'].includes(order.status) ? 'bg-[#367F4D]' : 'bg-stone-200'}`} />
-                                        <div>
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-tight">{t.account.tracking.status.shipped.title}</p>
-                                          <p className="text-[8px] font-bold text-stone-400 uppercase mt-0.5">{t.account.tracking.status.shipped.desc}</p>
-                                        </div>
-                                      </div>
-                                      <div className="relative flex items-start gap-4">
-                                        <div className={`w-[11px] h-[11px] rounded-full mt-1.5 z-10 border-2 border-white shadow-sm ${order.status === 'DELIVERED' ? 'bg-[#367F4D]' : 'bg-stone-200'}`} />
-                                        <div>
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-tight">{t.account.tracking.status.delivered.title}</p>
-                                          <p className="text-[8px] font-bold text-stone-400 uppercase mt-0.5">{t.account.tracking.status.delivered.desc}</p>
-                                        </div>
-                                      </div>
-                                    </div>
+                                    <OrderTrackingTimeline
+                                      status={order.status}
+                                      shippingCourier={order.shipping_courier}
+                                      shippingAwb={order.shipping_awb}
+                                      trackingHistory={[]}
+                                      isLoading={isTrackingLoading}
+                                    />
                                   </div>
                                 </motion.div>
                               )}
