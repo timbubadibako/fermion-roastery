@@ -1,4 +1,5 @@
 import React from "react";
+import { headers } from "next/headers";
 import { Hero } from "@/components/sections/landing/Hero";
 import { PartnerRibbon } from "@/components/sections/landing/PartnerRibbon";
 import { Series } from "@/components/sections/landing/Series";
@@ -41,30 +42,55 @@ interface LandingFaq {
   answer_en: string;
 }
 
-const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const apiBaseUrl = rawApiBaseUrl.endsWith("/api")
-  ? rawApiBaseUrl
-  : `${rawApiBaseUrl.replace(/\/$/, "")}/api`;
+const normalizeApiBaseUrl = (baseUrl: string) =>
+  baseUrl.endsWith("/api") ? baseUrl : `${baseUrl.replace(/\/$/, "")}/api`;
 
-async function fetchJson<T>(path: string): Promise<T | null> {
+async function getApiBaseUrl() {
+  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const isLocalConfiguredApi =
+    configuredApiUrl && /(^|\/\/)(localhost|127\.0\.0\.1)(:|\/|$)/.test(configuredApiUrl);
+
+  if (configuredApiUrl && (process.env.NODE_ENV !== "production" || !isLocalConfiguredApi)) {
+    return normalizeApiBaseUrl(configuredApiUrl);
+  }
+
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
+
+  if (host) {
+    const protocol =
+      requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
+    return `${protocol}://${host}/api`;
+  }
+
+  return normalizeApiBaseUrl(configuredApiUrl || "http://localhost:3001");
+}
+
+async function fetchJson<T>(apiBaseUrl: string, path: string): Promise<T | null> {
   try {
     const res = await fetch(`${apiBaseUrl}${path}`, { cache: "no-store" });
 
     if (!res.ok) {
+      console.error("Landing data fetch failed", { path, status: res.status });
       return null;
     }
 
     return (await res.json()) as T;
-  } catch {
+  } catch (error) {
+    console.error("Landing data fetch error", {
+      path,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return null;
   }
 }
 
 export default async function LandingPage() {
+  const apiBaseUrl = await getApiBaseUrl();
   const [products, posts, faqs] = await Promise.all([
-    fetchJson<LandingProduct[]>("/products"),
-    fetchJson<LandingJournalPost[]>("/journal?status=published"),
-    fetchJson<LandingFaq[]>("/content/faqs"),
+    fetchJson<LandingProduct[]>(apiBaseUrl, "/products"),
+    fetchJson<LandingJournalPost[]>(apiBaseUrl, "/journal?status=published"),
+    fetchJson<LandingFaq[]>(apiBaseUrl, "/content/faqs"),
   ]);
 
   const newReleaseProducts = Array.isArray(products)
