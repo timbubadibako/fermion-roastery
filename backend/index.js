@@ -23,6 +23,10 @@ import { logError, logInfo } from './lib/logger.js';
 
 const app = express();
 
+// Next.js ISR owns homepage data caching. Express ETags can return 304 with
+// no body, which server-side fetch treats as a failed data response.
+app.set('etag', false);
+
 // Start Background Services
 startMonthlyEvaluation();
 startDeferredOrderEmailDispatch();
@@ -30,6 +34,10 @@ startDeferredOrderEmailDispatch();
 // Middleware
 app.use(corsMiddleware);
 app.use(express.json({ limit: '10mb' }));
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
 // Minimal request logging to keep production noise down.
 app.use((req, res, next) => {
