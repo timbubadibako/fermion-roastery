@@ -183,7 +183,7 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
                 {/* Details written like a Kitchen Receipt */}
                 <div className="p-8 space-y-6 flex-1 flex flex-col text-slate-800 font-mono">
                   <div className="space-y-1">
-                    <div className="flex justify-between items-center text-[9px] font-bold text-stone-400 uppercase tracking-tighter">
+                    <div className="flex justify-between items-center text-[9px] font-bold text-stone-600 uppercase tracking-tighter">
                       <span>{product.origin || 'Roastery Grade'}</span>
                       <span>#{idx + 1024}</span>
                     </div>

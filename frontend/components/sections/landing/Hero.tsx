@@ -106,17 +106,6 @@ export function Hero() {
           2.5
         );
 
-        mainTl.from(
-          ".hero-final-reveal",
-          {
-            opacity: 0,
-            y: 20,
-            duration: 0.5,
-            ease: "power2.out",
-            force3D: true,
-          },
-          "<+=0.1"
-        );
       }, containerRef.current);
 
       cleanup = () => ctx.revert();
@@ -209,7 +198,7 @@ export function Hero() {
                       <span
                         key={charIdx}
                         className={`char inline-block text-5xl font-display font-black uppercase leading-none tracking-tighter text-slate-900 italic md:text-7xl ${
-                          canEnhanceHero ? "opacity-0" : "opacity-100"
+                            "opacity-100"
                         }`}
                       >
                         {char}

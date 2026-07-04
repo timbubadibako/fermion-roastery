@@ -149,7 +149,7 @@ function TheWayComponent() {
                {/* Masking tape effect */}
                <div className={`absolute w-16 h-6 bg-white/60 backdrop-blur-sm border border-white/40 shadow-sm opacity-80 z-20 pointer-events-none ${layout[idx].tape}`}></div>
                
-               <p aria-hidden="true" className="text-[3.5rem] font-cloude text-black/10 absolute -top-4 right-4 pointer-events-none">{p.id}</p>
+               <p aria-hidden="true" className="text-[3.5rem] font-cloude text-black/60 absolute -top-4 right-4 pointer-events-none">{p.id}</p>
                
                <h3 className="text-xl font-display font-black uppercase tracking-wide mb-3 text-black relative z-10 pointer-events-none">{p.title}</h3>
                
@@ -176,7 +176,7 @@ function TheWayComponent() {
               }}
             >
                <div className="absolute top-[-10px] left-[50%] -translate-x-1/2 w-12 h-4 bg-white/50 border border-black/5 rotate-2"></div>
-               <p aria-hidden="true" className="text-4xl font-cloude text-black/10 absolute top-2 right-4">{p.id}</p>
+               <p aria-hidden="true" className="text-4xl font-cloude text-black/60 absolute top-2 right-4">{p.id}</p>
                <h3 className="text-lg font-display font-black uppercase tracking-widest mb-2">{p.title}</h3>
                <p className="text-sm text-black/70 font-medium">{p.desc}</p>
             </div>

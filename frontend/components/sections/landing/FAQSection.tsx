@@ -149,7 +149,7 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
 
                   <div className="flex gap-4 items-start justify-between">
                     <div className="flex gap-4 items-start">
-                      <span className="text-2xl font-cloude text-black/20 mt-1 pointer-events-none">
+                    <span aria-hidden="true" className="text-2xl font-cloude text-black/60 mt-1 pointer-events-none">
                         {(idx + 1).toString().padStart(2, '0')}
                       </span>
                       <h3 className="text-xl font-display font-bold text-black group-hover:text-[#367F4D] transition-colors pointer-events-none">
