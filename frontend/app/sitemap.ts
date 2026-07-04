@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 import { debugError } from '@/lib/debug';
+import { getConfiguredApiBaseUrl } from '@/lib/server-api';
+import { siteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,8 +17,8 @@ type SitemapJournalPost = {
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fermionroastery.com';
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  const baseUrl = siteUrl;
+  const apiUrl = getConfiguredApiBaseUrl(baseUrl);
 
   // Base static routes
   const routes: MetadataRoute.Sitemap = [
@@ -66,8 +68,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const [productsRes, journalRes] = await Promise.all([
-      fetch(`${apiUrl}/products`, { next: { revalidate: 3600 } }),
-      fetch(`${apiUrl}/journal`, { next: { revalidate: 3600 } }),
+      fetch(`${apiUrl}/products`, { cache: 'no-store' }),
+      fetch(`${apiUrl}/journal`, { cache: 'no-store' }),
     ]);
 
     if (productsRes.ok) {

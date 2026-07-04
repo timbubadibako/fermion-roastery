@@ -286,13 +286,14 @@ export const createSubscription = async (req, res) => {
 
     if (subError) throw subError;
 
+    const appUrl = getAppUrl().replace(/\/$/, '');
     const data = {
       externalId: referenceId, // Or use orderId
       amount: amount,
       payerEmail: customerDetails?.email || 'subscriber@example.com',
       description: `Fermion Subscription: ${planName} (Auto-renews)`,
-      successRedirectUrl: 'https://fermionroastery.com/subscription/success',
-      failureRedirectUrl: 'https://fermionroastery.com/subscription/failure',
+      successRedirectUrl: `${appUrl}/subscription/success`,
+      failureRedirectUrl: `${appUrl}/subscription/failure`,
     };
 
     const response = await xendit.Invoice.createInvoice({ data });

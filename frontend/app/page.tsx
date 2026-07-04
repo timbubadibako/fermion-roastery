@@ -1,5 +1,4 @@
 import React from "react";
-import { headers } from "next/headers";
 import { Hero } from "@/components/sections/landing/Hero";
 import { PartnerRibbon } from "@/components/sections/landing/PartnerRibbon";
 import { Series } from "@/components/sections/landing/Series";
@@ -9,6 +8,7 @@ import { JournalSection } from "@/components/sections/landing/JournalSection";
 import { FAQSection } from "@/components/sections/landing/FAQSection";
 import { ContactSection } from "@/components/sections/landing/ContactSection";
 import { Footer } from "@/components/sections/Footer";
+import { getServerApiBaseUrl } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -42,30 +42,6 @@ interface LandingFaq {
   answer_en: string;
 }
 
-const normalizeApiBaseUrl = (baseUrl: string) =>
-  baseUrl.endsWith("/api") ? baseUrl : `${baseUrl.replace(/\/$/, "")}/api`;
-
-async function getApiBaseUrl() {
-  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const isLocalConfiguredApi =
-    configuredApiUrl && /(^|\/\/)(localhost|127\.0\.0\.1)(:|\/|$)/.test(configuredApiUrl);
-
-  if (configuredApiUrl && (process.env.NODE_ENV !== "production" || !isLocalConfiguredApi)) {
-    return normalizeApiBaseUrl(configuredApiUrl);
-  }
-
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
-
-  if (host) {
-    const protocol =
-      requestHeaders.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-    return `${protocol}://${host}/api`;
-  }
-
-  return normalizeApiBaseUrl(configuredApiUrl || "http://localhost:3001");
-}
-
 async function fetchJson<T>(apiBaseUrl: string, path: string): Promise<T | null> {
   try {
     const res = await fetch(`${apiBaseUrl}${path}`, { cache: "no-store" });
@@ -86,7 +62,7 @@ async function fetchJson<T>(apiBaseUrl: string, path: string): Promise<T | null>
 }
 
 export default async function LandingPage() {
-  const apiBaseUrl = await getApiBaseUrl();
+  const apiBaseUrl = await getServerApiBaseUrl();
   const [products, posts, faqs] = await Promise.all([
     fetchJson<LandingProduct[]>(apiBaseUrl, "/products"),
     fetchJson<LandingJournalPost[]>(apiBaseUrl, "/journal?status=published"),

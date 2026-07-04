@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { debugError } from '@/lib/debug';
+import { getServerApiBaseUrl } from '@/lib/server-api';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -7,11 +8,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const canonical = `/journal/${id}`;
   
   try {
-    if (process.env.VERCEL && !process.env.NEXT_PUBLIC_API_URL) {
-      throw new Error("Skipping fetch during Vercel build");
-    }
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/journal/${id}`);
+    const apiBaseUrl = await getServerApiBaseUrl();
+    const res = await fetch(`${apiBaseUrl}/journal/${id}`, { cache: 'no-store' });
     if (res.ok) {
       const post = await res.json();
       return {

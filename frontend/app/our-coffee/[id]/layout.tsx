@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { debugError } from '@/lib/debug';
+import { getServerApiBaseUrl } from '@/lib/server-api';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -7,12 +8,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const canonical = `/our-coffee/${id}`;
   
   try {
-    if (process.env.VERCEL && !process.env.NEXT_PUBLIC_API_URL) {
-      // Fallback during build if API is unreachable
-      throw new Error("Skipping fetch during Vercel build");
-    }
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products/${id}`);
+    const apiBaseUrl = await getServerApiBaseUrl();
+    const res = await fetch(`${apiBaseUrl}/products/${id}`, { cache: 'no-store' });
     if (res.ok) {
       const product = await res.json();
       return {

@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { ClientWrapper } from './client-wrapper';
 import { Analytics } from '@vercel/analytics/react';
+import { siteUrl } from '@/lib/site';
 import './globals.css';
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fermionroastery.com';
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -12,7 +11,7 @@ const organizationJsonLd = {
   url: siteUrl,
   logo: `${siteUrl}/fermion-logo.png`,
   description: 'Specialty coffee roastery dari Indonesia dengan fokus pada presisi roasting, filter coffee, dan espresso roast.',
-  sameAs: ['https://fermionroastery.com'],
+  sameAs: ['https://www.fermionroastery.com'],
 };
 
 const websiteJsonLd = {

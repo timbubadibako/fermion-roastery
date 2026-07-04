@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
+import { siteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fermionroastery.com';
-
   return {
     rules: {
       userAgent: '*',
@@ -23,6 +22,6 @@ export default function robots(): MetadataRoute.Robots {
         '/b2b/',
       ],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }
