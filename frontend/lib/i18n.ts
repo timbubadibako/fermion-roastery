@@ -537,19 +537,19 @@ export const translations = {
       hero: {
         badge: "Exclusive Coffee Roastery",
         title: "CURATED, ROASTED, | REVERED",
-        subtitle: "Thoughtfully roasted coffees shaped by small variables that make a clear, memorable cup.",
-        description: "Warm, expressive coffees for daily brewing and deeper sensory exploration.",
+        subtitle: "Specialty coffee shaped by invisible variables, roasted for clarity, balance, and repeatable pleasure.",
+        description: "Fermion Roastery builds an owned coffee experience for people who want precise filter releases, dependable espresso roasts, and a brand worth returning to.",
         cta_primary: "Explore Our Coffee",
-        cta_secondary: "View Products",
+        cta_secondary: "View Current Lineup",
         stickers: { origin: "Origin", quality: "Roasted Fresh" }
       },
       partnerRibbon: { placeholder: "Cafe Partners" },
       series: {
-        espresso: { title: "Espresso Series.", subtitle: "Consistent • Easy to Dial • Cafe Ready", cta: "Explore Espresso Roasts", sticker: "Dial-In Ready" },
-        filter: { title: "Filter Series.", subtitle: "Curated • Expressive • Evolving Monthly", cta: "Explore Filter Releases", sticker: "Monthly Curated" }
+        espresso: { title: "Espresso Series.", subtitle: "Consistent • Easy to Dial • Built for daily service", cta: "Explore Espresso Roasts", sticker: "Dial-In Ready" },
+        filter: { title: "Filter Series.", subtitle: "Curated • Expressive • Updated with fresh lots", cta: "Explore Filter Releases", sticker: "Monthly Curated" }
       },
       theWay: {
-        titleMain: "The", titleSub: "Fermion Way.", description: "Small variables. Clean, precise, memorable cups.",
+        titleMain: "The", titleSub: "Fermion Way.", description: "Small variables. Cleaner cups. More deliberate flavor.",
         pillars: [
           { id: "01", title: "Variety", desc: "Each coffee starts with a distinct character worth protecting in the cup." },
           { id: "02", title: "Fermentation", desc: "Processing choices are treated as flavor-shaping decisions, not background details." },
@@ -567,7 +567,7 @@ export const translations = {
       },
       newReleases: {
         title: "Latest Roasts.",
-        subtitle: "Freshly roasted selections from our current lineup",
+        subtitle: "Freshly roasted coffees from the current Fermion lineup",
         cta: "Add to Cart",
         ctaViewDetails: "View Details"
       },
@@ -577,13 +577,13 @@ export const translations = {
       },
       faq: {
         title: "Frequently Asked Questions",
-        subtitle: "A quick guide to our coffee, roasting rhythm, and ordering flow.",
+        subtitle: "A quick guide to our coffees, roasting rhythm, shipping flow, and buying process.",
       },
       contact: {
         badge: "Direct Access",
         title: "Get in",
         accent: "touch.",
-        description: "Talk to us about coffee selection, wholesale supply, or the right roast direction for your bar.",
+        description: "Talk to us about coffee selection, wholesale supply, subscription questions, or the right roast direction for your bar or daily brewing routine.",
         name: "Full Name",
         email: "Email Address",
         message: "Your Message",
@@ -1466,19 +1466,19 @@ export const translations = {
       hero: {
         badge: "Roastery Kopi Eksklusif",
         title: "TERKURASI, DIPANGGANG, | DIHORMATI",
-        subtitle: "Kopi yang disangrai dengan perhatian pada variabel kecil yang membentuk cangkir bersih dan berkesan.",
-        description: "Hangat, terkurasi, dan dibuat untuk seduhan harian maupun eksplorasi rasa yang lebih jauh.",
+        subtitle: "Specialty coffee yang dibentuk oleh variabel tak terlihat, lalu disangrai untuk kejernihan rasa, keseimbangan, dan kenikmatan yang mudah diulang.",
+        description: "Fermion Roastery membangun pengalaman kopi milik brand sendiri untuk penikmat yang mencari rilis filter yang presisi, espresso roast yang konsisten, dan brand yang layak dipercaya kembali.",
         cta_primary: "Jelajahi Kopi Kami",
-        cta_secondary: "Lihat Produk",
+        cta_secondary: "Lihat Lineup Saat Ini",
         stickers: { origin: "Origin", quality: "Fresh Roast" }
       },
       partnerRibbon: { placeholder: "Mitra Kafe" },
       series: {
-        espresso: { title: "Seri Espresso.", subtitle: "Konsisten • Mudah Dial-In • Siap untuk Kafe", cta: "Jelajahi Espresso Roast", sticker: "Siap Dial-In" },
-        filter: { title: "Seri Filter.", subtitle: "Terkurasi • Ekspresif • Berganti Setiap Bulan", cta: "Jelajahi Rilis Filter", sticker: "Kurasi Bulanan" }
+        espresso: { title: "Seri Espresso.", subtitle: "Konsisten • Mudah Dial-In • Siap untuk service harian", cta: "Jelajahi Espresso Roast", sticker: "Siap Dial-In" },
+        filter: { title: "Seri Filter.", subtitle: "Terkurasi • Ekspresif • Diperbarui dengan lot segar", cta: "Jelajahi Rilis Filter", sticker: "Kurasi Bulanan" }
       },
       theWay: {
-        titleMain: "The", titleSub: "Fermion Way.", description: "Variabel kecil. Cangkir yang bersih, presisi, dan mudah diingat.",
+        titleMain: "The", titleSub: "Fermion Way.", description: "Variabel kecil. Cangkir lebih bersih. Rasa yang lebih disengaja.",
         pillars: [
           { id: "01", title: "Varietas", desc: "Setiap kopi dimulai dari karakter asal yang layak dijaga sampai ke cangkir." },
           { id: "02", title: "Fermentasi", desc: "Metode proses diperlakukan sebagai penentu rasa, bukan sekadar detail belakang layar." },
@@ -1496,7 +1496,7 @@ export const translations = {
       },
       newReleases: {
         title: "Roast Terbaru.",
-        subtitle: "Pilihan segar dari lineup roasting kami saat ini",
+        subtitle: "Pilihan kopi yang baru disangrai dari lineup Fermion saat ini",
         cta: "Tambah ke Keranjang",
         ctaViewDetails: "Lihat Detail"
       },
@@ -1506,13 +1506,13 @@ export const translations = {
       },
       faq: {
         title: "Pertanyaan yang Sering Diajukan",
-        subtitle: "Panduan singkat tentang kopi kami, ritme roasting, dan alur pemesanan.",
+        subtitle: "Panduan singkat tentang kopi kami, ritme roasting, alur pengiriman, dan proses pembelian.",
       },
       contact: {
         badge: "Akses Langsung",
         title: "Mari",
         accent: "terhubung.",
-        description: "Diskusikan pilihan kopi, kebutuhan suplai wholesale, atau arah roasting yang paling cocok untuk bar Anda.",
+        description: "Diskusikan pilihan kopi, kebutuhan suplai wholesale, pertanyaan subscription, atau arah roasting yang paling cocok untuk bar maupun seduhan harian Anda.",
         name: "Nama Lengkap",
         email: "Alamat Email",
         message: "Pesan Anda",
