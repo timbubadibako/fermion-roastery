@@ -9,7 +9,8 @@ import { FAQSection } from "@/components/sections/landing/FAQSection";
 import { ContactSection } from "@/components/sections/landing/ContactSection";
 import { Footer } from "@/components/sections/Footer";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface LandingProduct {
   id: string;
@@ -47,9 +48,7 @@ const apiBaseUrl = rawApiBaseUrl.endsWith("/api")
 
 async function fetchJson<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${apiBaseUrl}${path}`, {
-      next: { revalidate: 300 },
-    });
+    const res = await fetch(`${apiBaseUrl}${path}`, { cache: "no-store" });
 
     if (!res.ok) {
       return null;
