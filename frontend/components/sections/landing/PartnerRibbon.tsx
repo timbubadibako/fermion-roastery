@@ -64,7 +64,7 @@ function PartnerRibbonComponent() {
     <section className={`py-12 bg-[#FAF9F6] relative z-30 overflow-hidden border-y-2 border-dashed border-black/5 ${isScrolling ? "pointer-events-none" : ""}`}>
       {/* Label for the ribbon */}
       <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40">
-         <div className="bg-white px-3 py-1 border border-black/10 shadow-sm rounded-sm text-[6px] font-black uppercase tracking-[0.3em] text-stone-400 rotate-[-1deg]">
+        <div className="bg-white px-3 py-1 border border-black/10 shadow-sm rounded-sm text-[6px] font-black uppercase tracking-[0.3em] text-stone-600 rotate-[-1deg]">
            {content.placeholder}
          </div>
       </div>

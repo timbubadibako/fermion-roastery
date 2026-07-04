@@ -244,11 +244,11 @@ function HeaderComponent() {
                   <Image
                     src="/fermion-logo.png"
                     alt="Fermion Roastery"
-                  width={88}
-                  height={35}
-                  className={`object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}
-                  priority
-                />
+                    width={88}
+                    height={35}
+                    className={`h-auto object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}
+                    priority
+                  />
               </Link>
             </div>
 
@@ -281,7 +281,13 @@ function HeaderComponent() {
               <div className="relative hidden lg:block">
                 {/* 🟢 FIXED: Memperbaiki background wrapper search button agar sewarna teman-temannya */}
                 <div className={`flex items-center transition-all duration-500 ease-out h-10`}>
-                  <button id="tour-search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)} className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none flex items-center justify-center hover:scale-110`}>
+                    <button
+                      id="tour-search-btn"
+                      type="button"
+                      aria-label={isSearchOpen ? "Close search" : "Open search"}
+                      onClick={() => setIsSearchOpen(!isSearchOpen)}
+                      className={`${currentTextColor} transition-colors flex-shrink-0 focus:outline-none flex items-center justify-center hover:scale-110`}
+                    >
                     <Search size={20} strokeWidth={1.8} />
                   </button>
                   <input
@@ -294,10 +300,12 @@ function HeaderComponent() {
                     tabIndex={isSearchOpen ? 0 : -1}
                   />
                   {isSearchOpen && (
-                    <button
-                      onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
-                      className={`${isDarkHero ? 'text-white/60 hover:text-white' : 'text-stone-400 hover:text-stone-900'} transition-colors ml-2`}
-                    >
+                      <button
+                        type="button"
+                        aria-label={searchQuery ? "Clear search" : "Close search"}
+                        onClick={() => { if (searchQuery) setSearchQuery(""); else setIsSearchOpen(false); }}
+                        className={`${isDarkHero ? 'text-white/60 hover:text-white' : 'text-stone-400 hover:text-stone-900'} transition-colors ml-2`}
+                      >
                       <X size={16} strokeWidth={2} />
                     </button>
                   )}
@@ -336,6 +344,8 @@ function HeaderComponent() {
                                   <p className="text-[10px] font-cloude text-[#367F4D]">Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}</p>
                                 </div>
                                 <button
+                                  type="button"
+                                  aria-label={`Add ${product.name} to cart`}
                                   onClick={(e) => handleQuickAdd(e, product)}
                                   className="p-2.5 bg-stone-900 text-white rounded-lg hover:bg-[#367F4D] transition-colors duration-500 shadow-md group-hover:scale-110 transition-transform"
                                 >
@@ -395,8 +405,10 @@ function HeaderComponent() {
 
               {/* 🟢 FIXED: Menerapkan currentTextColor dinamis ke semua icon pendukung agar sewarna */}
               <div className="flex items-center gap-3 md:gap-4">
-                <button 
+                <button
                   id="tour-lang-btn"
+                  type="button"
+                  aria-label={language === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'}
                   onClick={handleLanguageToggle} 
                   title={language === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'}
                   className={`${currentTextColor} transition-all flex items-center justify-center hover:scale-110`}
@@ -437,7 +449,13 @@ function HeaderComponent() {
                 </div>
               )}
 
-              <button type="button" onClick={() => setIsMenuOpen(!isMenuOpen)} className={`transition-colors lg:hidden ${currentTextColor}`}>
+              <button
+                type="button"
+                aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={isMenuOpen}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`transition-colors lg:hidden ${currentTextColor}`}
+              >
                 {isMenuOpen ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
               </button>
             </div>

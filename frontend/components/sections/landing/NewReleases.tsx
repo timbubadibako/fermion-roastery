@@ -187,9 +187,9 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
                       <span>{product.origin || 'Roastery Grade'}</span>
                       <span>#{idx + 1024}</span>
                     </div>
-                    <h4 className="text-2xl font-display font-black uppercase tracking-tight leading-tight text-slate-900 border-b border-stone-200 pb-2">
+                    <h3 className="text-2xl font-display font-black uppercase tracking-tight leading-tight text-slate-900 border-b border-stone-200 pb-2">
                       {product.name}
-                    </h4>
+                    </h3>
                   </div>
 
                   <div className="space-y-2 text-[11px] font-medium leading-relaxed opacity-80 uppercase">

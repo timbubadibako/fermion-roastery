@@ -40,8 +40,10 @@ interface LandingFaq {
   answer_en: string;
 }
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const apiBaseUrl = rawApiBaseUrl.endsWith("/api")
+  ? rawApiBaseUrl
+  : `${rawApiBaseUrl.replace(/\/$/, "")}/api`;
 
 async function fetchJson<T>(path: string): Promise<T | null> {
   try {

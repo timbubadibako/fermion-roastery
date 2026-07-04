@@ -78,3 +78,5 @@ backend/invoices/*.pdf
 .env*
 *.log
 backend/invoices/*.pdf
+.tokensave
+.codegraph/

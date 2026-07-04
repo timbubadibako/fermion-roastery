@@ -31,33 +31,36 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
   const [posts] = useState<Post[]>(initialPosts);
 
   const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const featureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".journal-header", {
-        x: -50,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-        }
-      });
+      if (headerRef.current) {
+        gsap.from(headerRef.current, {
+          x: -50,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+          }
+        });
+      }
 
-      const cards = gsap.utils.toArray<HTMLElement>('.journal-card');
-      gsap.from(cards, {
-        y: 50,
-        rotation: (idx) => idx % 2 === 0 ? 1 : -2,
-        stagger: 0.15,
-        duration: 1,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: "top 80%",
-        }
-      });
+      if (featureRef.current) {
+        gsap.from(featureRef.current, {
+          y: 50,
+          rotation: 1,
+          duration: 1,
+          ease: "back.out(1.2)",
+          scrollTrigger: {
+            trigger: featureRef.current,
+            start: "top 80%",
+          }
+        });
+      }
     }, sectionRef);
     return () => ctx.revert();
   }, [posts]);
@@ -81,7 +84,7 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 my-20 journal-header">
+        <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between gap-8 my-20">
           <div className="space-y-4 relative">
              <Sticker rotate={15} className="-top-12 -left-8 hidden md:block border border-black/10 shadow-sm" color="#8CADD8" variant="dashed">
                Baca
@@ -106,7 +109,7 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
         </div>
 
         {posts.length > 0 && (
-             <div className="relative">
+             <div ref={featureRef} className="relative">
                 {/* Decorative Tape */}
                 <div className="absolute -top-4 right-10 w-32 h-10 bg-white/40 border border-black/5 rotate-[3deg] backdrop-blur-sm shadow-sm z-30"></div>
                 <div className="absolute -bottom-6 left-12 w-24 h-8 bg-fermion-french-blue/10 border border-black/5 rotate-[-5deg] backdrop-blur-sm shadow-sm z-30"></div>

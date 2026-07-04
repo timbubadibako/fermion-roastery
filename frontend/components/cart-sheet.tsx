@@ -58,13 +58,15 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
     >
       {!hideTrigger && (
         <SheetTrigger asChild>
-          <button 
+          <button
+            type="button"
+            aria-label={`Open cart${selectedCount > 0 ? ` with ${selectedCount} selected item${selectedCount === 1 ? "" : "s"}` : ""}`}
             onClick={handleTriggerClick}
             className={`${textColor || (isScrolled ? 'text-stone-900' : 'text-stone-400')} hover:text-[#367F4D] transition-all flex items-center justify-center relative group z-[200] hover:scale-110`}
           >
             <ShoppingCart size={20} strokeWidth={1.8} />
             {items.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
+              <span aria-hidden="true" className="absolute -top-1 -right-1 bg-[#367F4D] text-white text-[7px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white group-hover:scale-110 transition-transform">
                 {items.reduce((acc, item) => acc + item.quantity, 0)}
               </span>
             )}
@@ -100,7 +102,9 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
               {items.map((item) => (
                   <div key={item.lineItemId} className={cn("flex gap-4 p-4 bg-white border border-black/5 shadow-sm rounded-sm transition-all", item.selected === false && "opacity-50 grayscale")}>
                     
-                    <button 
+                    <button
+                      type="button"
+                      aria-label={`${item.selected === false ? "Select" : "Deselect"} ${item.name}`}
                       onClick={() => toggleSelection(item.lineItemId)}
                       className={cn(
                         "w-5 h-5 rounded-sm border border-black/10 flex items-center justify-center transition-all mt-1",
@@ -133,11 +137,11 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
                       
                       <div className="flex items-center gap-3 pt-2">
                         <div className="flex items-center border border-black/5 rounded-sm px-1 py-0.5">
-                          <button onClick={() => updateQuantity(item.lineItemId, item.quantity - 1)} className="p-1 hover:bg-stone-50"><Minus size={10} /></button>
+                          <button type="button" aria-label={`Decrease quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity - 1)} className="p-1 hover:bg-stone-50"><Minus size={10} /></button>
                           <span className="text-[10px] font-black w-6 text-center">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="p-1 hover:bg-stone-50"><Plus size={10} /></button>
+                          <button type="button" aria-label={`Increase quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="p-1 hover:bg-stone-50"><Plus size={10} /></button>
                         </div>
-                        <button onClick={() => removeItem(item.lineItemId)} className="text-stone-300 hover:text-red-500 transition-colors">
+                        <button type="button" aria-label={`Remove ${item.name} from cart`} onClick={() => removeItem(item.lineItemId)} className="text-stone-300 hover:text-red-500 transition-colors">
                           <Trash2 size={12} />
                         </button>
                       </div>
