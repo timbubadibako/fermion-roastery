@@ -89,11 +89,11 @@ export default function OrderSuccessPage() {
             <div className="bg-stone-50 border border-black/5 rounded-sm p-6 text-left space-y-4">
                <div className="flex justify-between items-center pb-4 border-b border-black/5">
                  <div>
-                   <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400">Order ID</p>
+                   <p className="text-[8px] font-bold uppercase tracking-widest text-stone-600">Order ID</p>
                    <p className="text-[10px] font-mono font-bold text-slate-900 mt-1">{orderSummary.orderId}</p>
                  </div>
                  <div className="text-right">
-                   <p className="text-[8px] font-bold uppercase tracking-widest text-stone-400">Status</p>
+                   <p className="text-[8px] font-bold uppercase tracking-widest text-stone-600">Status</p>
                    <p className="text-[10px] font-bold text-[#367F4D] mt-1 uppercase tracking-widest">Lunas</p>
                  </div>
                </div>
@@ -103,7 +103,7 @@ export default function OrderSuccessPage() {
                    <div key={i} className="flex justify-between items-start text-sm">
                      <div className="flex-1">
                        <p className="font-black text-slate-900 text-[10px] uppercase tracking-wider">{item.name}</p>
-                       <p className="text-[8px] text-stone-400 font-bold uppercase tracking-widest mt-0.5">{item.quantity}x • {item.weight} • {item.grind}</p>
+                       <p className="text-[8px] text-stone-600 font-bold uppercase tracking-widest mt-0.5">{item.quantity}x • {item.weight} • {item.grind}</p>
                      </div>
                      <span className="font-mono text-[10px] font-bold text-slate-900 whitespace-nowrap ml-4">
                        Rp {(item.price * item.quantity).toLocaleString('id-ID')}
@@ -113,11 +113,11 @@ export default function OrderSuccessPage() {
                </div>
 
                <div className="pt-4 border-t border-dashed border-black/10 space-y-2">
-                 <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-stone-400">
+                 <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-stone-600">
                    <span>Subtotal</span>
                    <span className="font-mono text-slate-600">Rp {orderSummary.subtotal.toLocaleString('id-ID')}</span>
                  </div>
-                 <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-stone-400">
+                 <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-stone-600">
                    <span>Ongkos Kirim</span>
                    <span className="font-mono text-slate-600">Rp {orderSummary.shippingFee.toLocaleString('id-ID')}</span>
                  </div>
@@ -130,20 +130,20 @@ export default function OrderSuccessPage() {
           ) : (
              <div className="bg-stone-50 p-6 flex flex-col items-center text-center border border-black/5 rounded-sm">
                 <Package size={24} className="text-[#367F4D] mb-3 opacity-50" />
-                <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">Pesanan Diproses</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-stone-600">Pesanan Diproses</p>
              </div>
           )}
 
           <div className="pt-2 space-y-4">
-            <p className="text-[9px] text-stone-400 font-bold uppercase tracking-[0.2em] italic">
+            <p className="text-[9px] text-stone-600 font-bold uppercase tracking-[0.2em] italic">
               Konfirmasi lengkap dikirim ke email Anda.
             </p>
             {orderSummary?.guestTrackingUrl ? (
-              <a href={orderSummary.guestTrackingUrl} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-300 hover:text-slate-900 transition-colors underline underline-offset-4">
+              <a href={orderSummary.guestTrackingUrl} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-600 hover:text-slate-900 transition-colors underline underline-offset-4">
                 Lacak Pesanan Guest
               </a>
             ) : (
-              <Link href={orderSummary?.orderPortalUrl || "/account?tab=orders"} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-300 hover:text-slate-900 transition-colors underline underline-offset-4">
+              <Link href={orderSummary?.orderPortalUrl || "/account?tab=orders"} className="block text-[8px] font-black uppercase tracking-[0.3em] text-stone-600 hover:text-slate-900 transition-colors underline underline-offset-4">
                 Cek Dashboard
               </Link>
             )}

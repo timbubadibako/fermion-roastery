@@ -176,7 +176,7 @@ export function Hero() {
           <div className="relative min-h-[350px] w-[90%] max-w-4xl">
             <div className="absolute inset-0 rotate-[1deg] border border-black/5 bg-[#E2DACB] shadow-sm" />
 
-            <div className="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#FDFBF7] p-12 shadow-[10px_10px_0px_rgba(0,0,0,0.05)]">
+            <div className="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-12 shadow-sm md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)]" style={{ transform: "translateZ(0)" }}>
               <div className="absolute -top-6 left-1/2 z-50 h-8 w-24 -translate-x-1/2 rotate-[-2deg] border border-black/5 bg-white/50 shadow-sm backdrop-blur-sm" />
 
               <div

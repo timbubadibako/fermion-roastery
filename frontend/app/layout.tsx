@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ClientWrapper } from './client-wrapper';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { siteUrl } from '@/lib/site';
 import './globals.css';
 
@@ -77,7 +78,9 @@ export default function RootLayout({
           {children}
         </ClientWrapper>
         <Analytics />
+        <SpeedInsights />
       </body>
+
     </html>
   );
 }

@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import Image from "next/image";
 
 export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }: { isScrolled?: boolean, textColor?: string, hideTrigger?: boolean }) {
   const t = useI18n();
@@ -114,13 +115,13 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
                       {item.selected !== false && <Check size={10} />}
                     </button>
 
-                    <div className="w-16 h-20 bg-stone-50 overflow-hidden border border-black/5 rounded-sm">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    <div className="relative w-16 h-20 bg-stone-50 overflow-hidden border border-black/5 rounded-sm">
+                      <Image src={item.image} alt={item.name} fill className="object-cover" sizes="64px" />
                     </div>
                     
                     <div className="flex-1 space-y-1">
                       <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 leading-tight">{item.name}</h4>
-                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-stone-400 uppercase tracking-widest">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-stone-600 uppercase tracking-widest">
                         {item.weight && (
                           <div className="flex items-center gap-0.5">
                             <span>{item.weight.replace(/g|kg/i, '').trim()}</span>

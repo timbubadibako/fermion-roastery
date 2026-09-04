@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Minus, Plus, Trash2, ArrowLeft, ArrowRight,
@@ -300,7 +301,7 @@ export default function CartPage() {
                         {idx === 0 && <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-stone-100/80 border border-black/5 rotate-[-2deg] z-10 backdrop-blur-sm" />}
 
                         <div className="w-28 h-32 bg-stone-50 rounded-sm overflow-hidden border border-black/5 flex-shrink-0 relative group-hover:scale-[1.02] transition-transform">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <Image src={item.image} alt={item.name} fill className="object-cover" sizes="112px" />
                         </div>
                         <div className="flex-1 flex flex-col justify-between py-1">
                           <div className="flex justify-between items-start">
@@ -308,9 +309,10 @@ export default function CartPage() {
                               <h4 className="text-xl font-black uppercase italic tracking-tight text-slate-900 group-hover:text-[#367F4D] transition-colors leading-tight">{item.name}</h4>
                               <div className="flex items-center gap-2 mt-2">
                                 <span className="text-[9px] font-black text-white bg-slate-900 px-2 py-0.5 rounded-full uppercase tracking-widest">{item.weight}</span>
-                                <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest italic">{item.grind}</span>
+                                <span className="text-[9px] font-bold text-stone-600 uppercase tracking-widest italic">{item.grind}</span>
                               </div>
                             </div>
+
                             <button onClick={() => removeItem(item.lineItemId)} className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 text-stone-300 hover:bg-red-50 hover:text-red-500 transition-all border border-black/5"><Trash2 size={14} /></button>
                           </div>
                           <div className="flex justify-between items-end mt-4">

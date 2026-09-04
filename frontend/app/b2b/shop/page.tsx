@@ -1,6 +1,7 @@
 "use client";
 
 import { apiFetch } from "@/lib/api";
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import {
   ShoppingCart,
@@ -228,10 +229,12 @@ export default function WholesaleShopPage() {
                                 className="bg-white rounded-2xl border border-black/5 flex flex-col group hover:border-[#367F4D]/30 transition-all shadow-sm hover:shadow-xl overflow-hidden h-full"
                               >
                                 <div className="h-48 bg-stone-100 relative overflow-hidden">
-                                  <img
+                                  <Image
                                     src={imgUrl}
                                     alt={product.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                                   />
                                   <div className="absolute top-4 left-4">
                                     <span className="text-[8px] font-black bg-white px-3 py-1 rounded-sm border border-black/5 uppercase tracking-widest text-slate-500 shadow-sm">{product.origin || t.b2bShop.originBlend}</span>
