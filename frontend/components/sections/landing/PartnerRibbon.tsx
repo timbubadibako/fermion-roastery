@@ -61,15 +61,21 @@ function PartnerRibbonComponent() {
   };
 
   return (
-    <section className={`py-12 bg-[#FAF9F6] relative z-30 overflow-hidden border-y-2 border-dashed border-black/5 ${isScrolling ? "pointer-events-none" : ""}`}>
-      {/* Label for the ribbon */}
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40">
-        <div className="bg-white px-3 py-1 border border-black/10 shadow-sm rounded-sm text-[6px] font-black uppercase tracking-[0.3em] text-stone-600 rotate-[-1deg]">
-           {content.placeholder}
-         </div>
+    <section className={`py-6 md:py-8 bg-white relative z-30 overflow-hidden border-b border-black/5 ${isScrolling ? "pointer-events-none" : ""}`}>
+      
+      {/* Header Badge */}
+      <div className="text-center mb-4 px-4">
+        <span className="inline-block px-4 py-1.5 bg-[#FAF9F6] border border-black/10 rounded-sm text-[9px] font-black uppercase tracking-[0.35em] text-stone-500 shadow-sm">
+          {content.placeholder || "DIPERCAYA OLEH KAFE & PARTNER B2B PILIHAN"}
+        </span>
       </div>
 
-      <div className="flex overflow-hidden opacity-100 transition-opacity duration-700">
+      {/* Edge Gradient Fade Masks */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20" />
+
+      {/* Infinite Scrolling Ticker */}
+      <div className="flex overflow-hidden opacity-100 transition-opacity duration-700 py-2 md:py-3">
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes ribbonScroll {
             from { transform: translateX(0); }
@@ -78,25 +84,28 @@ function PartnerRibbonComponent() {
           .ribbon-container {
             display: flex;
             width: max-content;
-            animation: ribbonScroll 40s linear infinite;
+            animation: ribbonScroll 35s linear infinite;
             will-change: transform;
+          }
+          .ribbon-container:hover {
+            animation-play-state: paused;
           }
         `}} />
         
         <div className="ribbon-container">
           {/* First Set */}
-          <div className="flex gap-20 items-center px-10">
+          <div className="flex gap-0 items-center px-0">
             {renderPartners()}
           </div>
           {/* Second Set (Duplicate for seamless loop) */}
-          <div className="flex gap-20 items-center px-10">
+          <div className="flex gap-0 items-center px-0">
             {renderPartners()}
           </div>
         </div>
       </div>
 
-      {/* Subtle bottom shadow to separate from Series */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-black/5"></div>
+      {/* Bottom Subtle Border */}
+      <div className="absolute bottom-0 left-0 w-full h-px bg-black/5" />
     </section>
   );
 }

@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Sticker } from "@/components/ui/sticker";
 import { useI18n } from "@/lib/i18n";
 
 /**
- * SECTION 3: SERIES SELECTION
- * Reverted to the 50/50 split layout, but optimized with the new font (Cloude)
- * and cleaner background textures instead of generic placeholder images.
+ * SECTION 3: SERIES SELECTION (50/50 SPLIT WITH REAL COFFEE PHOTOGRAPHY)
+ * High-craft split layout between Espresso Series and Filter Series with real photo overlays
  */
 export function Series() {
   const t = useI18n();
@@ -23,7 +23,7 @@ export function Series() {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 150); // Delay before re-enabling hover
+      }, 150);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -35,62 +35,94 @@ export function Series() {
 
   return (
     <section 
-      className={`flex flex-col lg:flex-row min-h-[700px] relative group/section z-40 border-y border-black/5 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
+      className={`flex flex-col lg:flex-row min-h-[650px] relative group/section z-40 border-b border-black/5 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
     >
       
-      {/* Espresso Panel */}
+      {/* Espresso Series Panel (Dark Coffee Roast Theme with Rich Espresso Extraction Photo Overlay) */}
       <motion.div 
-        whileHover={{ flex: 1.4 }}
+        whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="flex-1 bg-[#1A1A1A] flex items-center justify-center p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black"
+        className="flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[440px]"
       >
-        {/* Subtle texture instead of placehold.co */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent z-0"></div>
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
-
-        <div className="text-center space-y-6 z-10 transition-transform duration-700 group-hover:scale-105">
-           <h3 className="text-6xl md:text-8xl font-cloude text-white leading-[0.85]">
-             Espresso<br/>
-             <span className="font-display italic text-[#EBA294]">Series.</span>
-           </h3>
-           <p className="text-[#EBA294]/80 text-xs font-black tracking-[0.3em] uppercase">{content.espresso.subtitle}</p>
-           <Link href="/our-coffee?type=espresso">
-              <button className="mt-8 px-10 py-3 bg-white text-black border border-black/10 rounded-none text-[10px] font-black tracking-widest uppercase hover:bg-[#EBA294] transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-sm">
-                 {content.espresso.cta}
-              </button>
-           </Link>
+        {/* Real Espresso Extraction Photography Background Overlay */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <Image
+            src="https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=1200&q=80"
+            alt="Rich Golden Espresso Extraction with Crema"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover opacity-40 group-hover:scale-105 group-hover:opacity-50 transition-all duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#14110F] via-[#14110F]/70 to-transparent" />
         </div>
 
-        <Sticker rotate={-8} className="top-12 left-12 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/5 shadow-sm" color="#EBA294" variant="solid">
-           {content.espresso.sticker}
+        <div className="relative z-10 space-y-4 max-w-md">
+          <span className="px-3.5 py-1.5 bg-[#F1B941] text-black text-[9px] font-black uppercase tracking-widest rounded-sm inline-block shadow-sm">
+            ESPRESSO SERIES
+          </span>
+          <h3 className="text-4xl md:text-6xl font-cloude text-white leading-[0.95] relative">
+            Espresso<br />
+            <span className="text-[#F1B941]">Series.</span>
+          </h3>
+          <p className="text-stone-300 text-xs font-medium leading-relaxed pt-2">
+            {content.espresso.subtitle}
+          </p>
+        </div>
+
+        <div className="relative z-10 pt-8">
+          <Link href="/our-coffee?type=espresso">
+            <button className="px-8 py-4 bg-white text-black rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#F1B941] transition-all duration-300 active:scale-95 shadow-xl">
+              {content.espresso.cta} ➔
+            </button>
+          </Link>
+        </div>
+
+        <Sticker rotate={-8} className="top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/10 shadow-md" color="#F1B941" variant="solid">
+          {content.espresso.sticker}
         </Sticker>
       </motion.div>
 
-      {/* Filter Panel */}
+      {/* Filter Series Panel (Warm Paper Theme with V60 Pour-Over Coffee Photo Overlay) */}
       <motion.div 
-        whileHover={{ flex: 1.4 }}
+        whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="flex-1 bg-[#FDFBF7] flex items-center justify-center p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out"
+        className="flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[440px]"
       >
-        {/* Subtle texture instead of placehold.co */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-black/5 to-transparent z-0"></div>
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
-
-        <div className="text-center space-y-6 z-10 transition-transform duration-700 group-hover:scale-105">
-           <h3 className="text-6xl md:text-8xl font-cloude text-slate-900 leading-[0.85]">
-             Filter<br/>
-             <span className="font-display italic text-[#367F4D]">Series.</span>
-           </h3>
-           <p className="text-[#367F4D]/80 text-xs font-black tracking-[0.3em] uppercase">{content.filter.subtitle}</p>
-           <Link href="/our-coffee?type=filter">
-              <button className="mt-8 px-10 py-3 bg-black text-white border border-black/10 rounded-none text-[10px] font-black tracking-widest uppercase hover:bg-[#367F4D] transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-sm">
-                 {content.filter.cta}
-              </button>
-           </Link>
+        {/* Real Filter Pour-Over Coffee Photography Background Overlay */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <Image
+            src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80"
+            alt="Manual Pour-Over V60 Filter Coffee"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover opacity-25 group-hover:scale-105 group-hover:opacity-35 transition-all duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-[#FAF9F6]/75 to-transparent" />
         </div>
 
-        <Sticker rotate={12} className="bottom-12 right-12 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/5 shadow-sm" color="#8CADD8" variant="solid">
-           {content.filter.sticker}
+        <div className="relative z-10 space-y-4 max-w-md">
+          <span className="px-3.5 py-1.5 bg-[#367F4D] text-white text-[9px] font-black uppercase tracking-widest rounded-sm inline-block shadow-sm">
+            FILTER SERIES
+          </span>
+          <h3 className="text-4xl md:text-6xl font-cloude text-slate-900 leading-[0.95] relative">
+            Filter<br />
+            <span className="text-[#367F4D]">Series.</span>
+          </h3>
+          <p className="text-stone-600 text-xs font-medium leading-relaxed pt-2">
+            {content.filter.subtitle}
+          </p>
+        </div>
+
+        <div className="relative z-10 pt-8">
+          <Link href="/our-coffee?type=filter">
+            <button className="px-8 py-4 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#367F4D] transition-all duration-300 active:scale-95 shadow-xl">
+              {content.filter.cta} ➔
+            </button>
+          </Link>
+        </div>
+
+        <Sticker rotate={10} className="top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/10 shadow-md" color="#8CADD8" variant="solid">
+          {content.filter.sticker}
         </Sticker>
       </motion.div>
 

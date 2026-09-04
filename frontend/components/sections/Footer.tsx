@@ -44,7 +44,7 @@ export function Footer() {
   return (
     <footer 
       ref={footerRef}
-      className="w-full bg-[#1A202C] text-[#E2DACB] pt-32 pb-16 px-6 font-sans relative z-60 -mt-20 overflow-hidden"
+      className="w-full bg-[#1A202C] text-[#E2DACB] pt-32 pb-16 px-6 font-sans relative z-60 mt-2 md:mt-4 overflow-hidden"
       style={{
         // Torn paper edge effect for the top border
         clipPath: footerClip

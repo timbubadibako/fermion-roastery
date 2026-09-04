@@ -64,8 +64,7 @@ export function ContactSection() {
   return (
     <section 
       ref={sectionRef}
-      // Light side of the zig-zag
-      className="py-32 px-6 bg-[#FDFBF7] text-stone-900 font-sans relative z-50 -mt-20 overflow-hidden"
+      className="py-24 px-6 bg-[#FAF8F3] text-stone-900 font-sans relative z-20 overflow-hidden border-b border-black/5"
     >
       {/* Background Flourish (Ink stains/Watercolor) */}
       <div className="absolute top-0 -right-20 w-[600px] h-[600px] bg-amber-100 rounded-full blur-[120px] -z-0 opacity-60 mix-blend-multiply" />
@@ -85,9 +84,9 @@ export function ContactSection() {
                 {content.badge}
               </div>
               
-              <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-black leading-[0.8] relative">
+              <h2 className="text-5xl md:text-7xl font-cloude text-slate-900 leading-[0.9] relative">
                 Get in<br />
-                <span className="font-display italic text-[#367F4D]">Touch</span>
+                <span className="text-[#367F4D]">Touch.</span>
               </h2>
               
               {/* Squiggly line separator */}

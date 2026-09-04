@@ -1,15 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Sticker } from "@/components/ui/sticker";
 import { useI18n } from "@/lib/i18n";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface NewReleaseProduct {
   id: string;
@@ -26,196 +20,109 @@ interface NewReleasesProps {
 }
 
 export function NewReleases({ initialProducts }: NewReleasesProps) {
-  const isMobile = useIsMobile();
   const t = useI18n();
   const content = t.landing.newReleases;
   const [products] = useState(initialProducts);
-  const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-
-  // Smooth/Remove zigzag on mobile
-  const sectionClip = isMobile
-    ? "polygon(0 0, 100% 0, 100% 99%, 0 100%)"
-    : "polygon(0 0, 100% 0, 100% 98%, 90% 100%, 80% 98%, 70% 100%, 60% 98%, 50% 100%, 40% 98%, 30% 100%, 20% 98%, 10% 100%, 0 98%)";
-
-  const cardClip = isMobile
-    ? "none"
-    : "polygon(0 -20%, 100% -20%, 100% 98%, 95% 100%, 90% 98%, 85% 100%, 80% 98%, 75% 100%, 70% 98%, 65% 100%, 60% 98%, 55% 100%, 50% 98%, 45% 100%, 40% 98%, 35% 100%, 30% 98%, 25% 100%, 20% 98%, 15% 100%, 10% 98%, 5% 100%, 0 98%)";
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    let ctx: gsap.Context;
-
-    const runAnimations = () => {
-      ctx = gsap.context(() => {
-        const title = gsap.utils.toArray(".release-title");
-        if (title.length > 0) {
-          gsap.from(title, {
-            y: 60,
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 75%",
-            }
-          });
-        }
-
-        const cards = gsap.utils.toArray<HTMLElement>('.product-card');
-
-        const mm = gsap.matchMedia();
-
-        mm.add("(min-width: 1024px)", () => {
-          if (cards.length > 0) {
-            gsap.from(cards, {
-              y: 100,
-              rotation: (i) => i % 2 === 0 ? -2 : 3,
-              stagger: 0.2,
-              duration: 1.2,
-              ease: "back.out(1.2)",
-              scrollTrigger: {
-                trigger: cardsRef.current,
-                start: "top 80%",
-              }
-            });
-          }
-        });
-      }, sectionRef.current || undefined);
-    };
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(runAnimations, 100);
-
-    return () => {
-      clearTimeout(timer);
-      if (ctx) ctx.revert();
-    };
-  }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      // Dark Maroon side
-      className="bg-[#2A1619] py-32 relative z-20 overflow-hidden text-[#E2DACB]"
-      style={{
-        clipPath: sectionClip
-      }}
-    >
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+    <section id="new-releases" className="py-24 px-6 border-b border-black/5 bg-[#FDFBF7] relative z-20">
+      <div className="max-w-7xl mx-auto space-y-12">
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/10 pb-6">
+          <div className="space-y-2">
+            <span className="inline-block px-3.5 py-1.5 bg-white border border-black/10 text-[9px] font-black uppercase tracking-[0.35em] text-[#367F4D] rounded-sm shadow-sm">
+              KOLEKSI RILIS TERBARU
+            </span>
+            <h2 className="font-cloude text-4xl md:text-6xl text-slate-900 leading-[0.95] relative">
+              Single Origin <span className="text-[#367F4D]">Pilihan.</span>
+            </h2>
+          </div>
 
-      <div className="max-w-7xl mx-auto space-y-24 relative z-10 px-6">
-
-        <div className="text-center lg:text-left lg:ml-12 space-y-6 release-title relative">
-          <Sticker rotate={-10} className="-top-8 -left-4 hidden lg:block border border-black/10 shadow-sm scale-110" color="#F1B941" variant="solid">
-            Fresh Roast
-          </Sticker>
-
-          <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter leading-[0.8] text-white">
-            {content.title.split(' ')[0]} <br />
-            <span className="font-display italic text-[#EBA294]">{content.title.split(' ')[1]}</span>
-          </h2>
-
-          <div className="w-32 h-1 bg-[#EBA294] mx-auto lg:mx-0 rotate-1"></div>
-
-          <p className="text-[#EBA294] font-bold uppercase tracking-[0.4em] text-xs font-sans bg-black/40 inline-block px-4 border border-black/20 rotate-[-1deg]">
-            {content.subtitle}
-          </p>
+          <div className="flex items-center gap-3 text-xs font-bold text-stone-600 uppercase tracking-wider bg-white/80 px-4 py-2 border border-black/5 rounded-sm shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#367F4D] animate-pulse"></span>
+            <span>Sangrai Segar • Bebas Fee Marketplace</span>
+          </div>
         </div>
 
-        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-12 relative">
-          {/* FULL WIDTH HANGING WIRE - Relative to the cards to prevent misalignment. Without pt-12, the hole is ~58px above the grid top. */}
-          <div className="absolute left-[-50vw] right-[-50vw] h-[3px] bg-gradient-to-r from-transparent via-stone-500/50 to-transparent z-30 hidden lg:block"></div>
-          <div className="absolute left-[-50vw] right-[-50vw] h-[1px] bg-white/10 z-30 hidden lg:block"></div>
-
+        {/* Product Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.length === 0 ? (
-            [1, 2, 3].map(i => <div key={i} className="aspect-[3/4] bg-white/10 animate-pulse border border-black/5" style={{ transform: `rotate(1deg)` }} />)
-          ) : products.map((product, idx) => (
-            <div
-              key={product.id}
-              className={`product-card group relative bg-[#FDFBF7] p-0 shadow-[10px_10px_30px_rgba(0,0,0,0.2)] border-x border-black/5 transition-all duration-500 cursor-pointer flex flex-col will-change-transform hover:shadow-[15px_15px_40px_rgba(0,0,0,0.3)] ${idx % 2 === 0 ? 'lg:-rotate-[1.5deg]' : 'lg:rotate-[1.5deg]'}`}
-              style={{
-                clipPath: cardClip
-              }}
-            >
-              {/* Desktop: Kitchen Clip | Mobile: Clear Tape */}
-              {!isMobile ? (
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-28 h-16 bg-gradient-to-b from-zinc-300 to-zinc-500 rounded-t-lg z-40 shadow-[0_6px_15px_rgba(0,0,0,0.4)] flex items-center justify-center border-t border-white/20">
-                  {/* Metal Texture Detail */}
-                  <div className="w-20 h-2 bg-zinc-600/30 rounded-full blur-[1px]"></div>
-                  {/* The Hanger Hole - Positioned exactly on the wire */}
-                  <div className="absolute -top-4 w-7 h-7 bg-zinc-600 rounded-full border-2 border-zinc-400 shadow-inner flex items-center justify-center">
-                    <div className="w-3.5 h-3.5 bg-black/60 rounded-full"></div>
-                  </div>
-                  {/* The Pressure Plate */}
-                  <div className="absolute bottom-0 w-full h-6 bg-zinc-400 border-t border-zinc-500 rounded-b-sm shadow-sm flex items-center justify-center">
-                    <div className="w-16 h-1 bg-zinc-500/40 rounded-full"></div>
-                  </div>
-                </div>
-              ) : (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-8 bg-white/40 backdrop-blur-[2px] border border-white/30 shadow-sm z-40 rotate-[-2deg] opacity-80"></div>
-              )}
-
-              {/* Punched Hole in Paper - Hide on mobile since we use tape */}
-              {!isMobile && (
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-[#2A1619] rounded-full z-20 shadow-inner opacity-60"></div>
-              )}
-
-              {/* Internal Content Wrapper - Only this moves on hover to avoid wire clash */}
-              <div className="flex-1 flex flex-col group-hover:scale-[1.02] transition-transform duration-500 origin-top">
-                {/* Image Container */}
-                <div className="aspect-[4/3] bg-stone-200 relative overflow-hidden mb-0 border-b border-dashed border-black/10">
+            [1, 2, 3].map((i) => (
+              <div key={i} className="aspect-[3/4] bg-stone-100 animate-pulse border border-black/5 rounded-sm" />
+            ))
+          ) : (
+            products.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white border border-black/10 p-6 rounded-sm space-y-5 transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] hover:border-black/20 group flex flex-col justify-between"
+              >
+                {/* Product Image Container */}
+                <div className="aspect-square bg-[#FAF9F6] rounded-sm overflow-hidden relative border border-black/5 group">
                   {product.image_url ? (
                     <Image
                       src={product.image_url}
                       alt={product.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">Kopi</div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60"></div>
-                </div>
-
-                {/* Details written like a Kitchen Receipt */}
-                <div className="p-8 space-y-6 flex-1 flex flex-col text-slate-800 font-mono">
-                  <div className="space-y-1">
-                    <div className="flex justify-between items-center text-[9px] font-bold text-stone-600 uppercase tracking-tighter">
-                      <span>{product.origin || 'Roastery Grade'}</span>
-                      <span>#{idx + 1024}</span>
+                    <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 p-6 text-center space-y-2">
+                      <span className="font-display font-black text-2xl uppercase tracking-widest text-slate-800">FERMION</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">SPECIALTY COFFEE</span>
                     </div>
-                    <h3 className="text-2xl font-display font-black uppercase tracking-tight leading-tight text-slate-900 border-b border-stone-200 pb-2">
-                      {product.name}
-                    </h3>
-                  </div>
+                  )}
 
-                  <div className="space-y-2 text-[11px] font-medium leading-relaxed opacity-80 uppercase">
-                    <p className="flex justify-between"><span>TYPE:</span> <span className="font-bold">{product.category || 'WHOLE BEAN'}</span></p>
-                    <p className="flex justify-between"><span>NOTES:</span> <span className="font-bold truncate ml-4">{product.notes || 'CURATED'}</span></p>
-                    <p className="flex justify-between border-t border-dashed border-stone-300 pt-2 text-sm">
-                      <span>TOTAL PRICE:</span>
-                      <span className="font-black text-slate-900">RP{Number(product.price_retail).toLocaleString('id-ID')}</span>
-                    </p>
-                  </div>
-
-                  <div className="mt-auto pt-6">
-                    <Link href={`/our-coffee/${product.id}`} className="block">
-                      <button className="w-full bg-slate-900 text-white py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-fermion-coral transition-all duration-300 hover:tracking-[0.4em] active:scale-95 shadow-xl">
-                        {content.ctaViewDetails}
-                      </button>
-                    </Link>
+                  {/* Category Pill Tag */}
+                  <div className="absolute top-3 left-3">
+                    <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-black/10 text-[8px] font-black uppercase tracking-widest text-slate-900 rounded-sm shadow-sm">
+                      {product.category || "WHOLE BEAN"}
+                    </span>
                   </div>
                 </div>
 
-                {/* Vertical Receipt Line/Punching */}
-                <div className="absolute top-0 left-4 bottom-0 w-px border-l border-dashed border-black/5"></div>
+                {/* Product Meta & Title */}
+                <div className="space-y-3 flex-1">
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-[#367F4D]">
+                    <span>{product.origin || "INDONESIA SINGLE ORIGIN"}</span>
+                    <span>FRESH ROAST</span>
+                  </div>
+
+                  <h3 className="font-display font-black text-2xl uppercase tracking-tight text-slate-900 leading-tight">
+                    {product.name}
+                  </h3>
+
+                  {product.notes && (
+                    <p className="text-xs text-stone-600 font-medium line-clamp-2 leading-relaxed bg-[#FAF9F6] p-2.5 border border-black/5 rounded-sm">
+                      <span className="font-bold text-slate-900 uppercase text-[9px] tracking-wider">NOTES: </span>
+                      {product.notes}
+                    </p>
+                  )}
+                </div>
+
+                {/* Price & Action Button */}
+                <div className="pt-4 border-t border-black/5 space-y-3">
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">HARGA RETAIL</span>
+                    <span className="font-display font-black text-xl text-slate-900">
+                      Rp {Number(product.price_retail || 0).toLocaleString("id-ID")}
+                    </span>
+                  </div>
+
+                  <Link href={`/our-coffee/${product.id}`} className="block">
+                    <button className="w-full bg-slate-900 text-white py-3.5 px-6 rounded-full text-[10px] font-black uppercase tracking-[0.25em] hover:bg-[#367F4D] transition-all duration-300 active:scale-95 shadow-md flex items-center justify-center gap-2">
+                      <span>LIHAT DETAIL &amp; BELI</span>
+                      <span>➔</span>
+                    </button>
+                  </Link>
+                </div>
+
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
+
       </div>
     </section>
   );
