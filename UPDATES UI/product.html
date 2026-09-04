@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Highland Honey · Fermion Roastery</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  .pdp { display:grid; grid-template-columns: 1fr 1fr; gap: clamp(32px,5vw,64px); align-items:start; }
+  .gallery__main { aspect-ratio: 1/1; border-radius: var(--r-xl); background:linear-gradient(150deg,#F3D9C6,#D8552B); display:grid;place-items:center; box-shadow:var(--sh-lg); position:relative; overflow:hidden; }
+  .gallery__main span { font-size: 9rem; }
+  .gallery__main .badge { position:absolute; top:20px; left:20px; }
+  .thumbs { display:flex; gap:12px; margin-top:14px; }
+  .thumb { width:74px;height:74px;border-radius:var(--r-md);border:2px solid transparent;display:grid;place-items:center;font-size:1.6rem;cursor:pointer; }
+  .thumb.active { border-color:var(--ember); }
+  .pdp-info { position: sticky; top: 90px; }
+  .opt-row { display:flex; gap:10px; flex-wrap:wrap; }
+  .opt { padding:.7em 1.1em; border:1.5px solid var(--border); border-radius:var(--r-md); cursor:pointer; font-size:.9rem; font-weight:500; background:var(--white); transition:all .15s; }
+  .opt.active { border-color:var(--ink); background:var(--ink); color:var(--cream); }
+  .opt small { display:block; font-size:.72rem; opacity:.7; font-weight:400; }
+  .flavor-bar { display:grid; grid-template-columns: 90px 1fr; gap:14px; align-items:center; padding:7px 0; font-size:.9rem; }
+  .flavor-bar .track { height:8px; background:var(--sand); border-radius:99px; overflow:hidden; }
+  .flavor-bar .fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--ember)); border-radius:99px; }
+  .spec-table { width:100%; border-collapse:collapse; }
+  .spec-table td { padding:12px 0; border-bottom:1px solid var(--border); font-size:.92rem; }
+  .spec-table td:first-child { color:var(--text-muted); width:45%; }
+  .spec-table td:last-child { font-weight:600; }
+  .trust { display:flex; gap:22px; flex-wrap:wrap; }
+  .trust div { display:flex; gap:8px; align-items:center; font-size:.85rem; color:var(--text-muted); }
+  @media (max-width:860px){ .pdp{grid-template-columns:1fr} .pdp-info{position:static} }
+</style>
+</head>
+<body>
+
+<div class="announce">✦ Gratis ongkir untuk order di atas Rp 250.000 · <a href="shop.html">Belanja sekarang</a></div>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="index.html"><span class="brand__dot"></span>Fermion</a>
+    <nav class="nav__links">
+      <a href="shop.html">Shop</a>
+      <a href="home.html#story">Our Story</a>
+      <a href="home.html#sub">Subscription</a>
+      <a href="home.html#journal">Journal</a>
+      <a href="design-system.html">System</a>
+    </nav>
+    <div class="row gap-sm">
+      <a class="btn btn-ghost btn-sm hide-sm" href="checkout.html">Masuk</a>
+      <a class="btn btn-primary btn-sm cart-btn" href="checkout.html">Cart <span class="cart-btn__count">2</span></a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:24px">
+  <p class="muted" style="font-size:.85rem"><a href="home.html">Home</a> / <a href="shop.html">Shop</a> / <span class="text-ember">Highland Honey</span></p>
+</div>
+
+<section class="wrap pdp" style="padding-top:12px">
+  <!-- GALLERY -->
+  <div>
+    <div class="gallery__main"><span class="badge badge-solid">Best seller</span><span>☕</span></div>
+    <div class="thumbs">
+      <div class="thumb active" style="background:linear-gradient(150deg,#F3D9C6,#E8B48C)">☕</div>
+      <div class="thumb" style="background:linear-gradient(150deg,#EAD6B8,#CDA06A)">🫘</div>
+      <div class="thumb" style="background:linear-gradient(150deg,#D4E0D6,#7FA88C)">🏔️</div>
+      <div class="thumb" style="background:linear-gradient(150deg,#E7B9A0,#C56B4A)">📦</div>
+    </div>
+    <!-- flavor profile -->
+    <div class="card card-pad mt-4">
+      <span class="eyebrow">Profil rasa</span>
+      <div class="flavor-bar"><span>Manis</span><div class="track"><div class="fill" style="width:80%"></div></div></div>
+      <div class="flavor-bar"><span>Asam</span><div class="track"><div class="fill" style="width:55%"></div></div></div>
+      <div class="flavor-bar"><span>Body</span><div class="track"><div class="fill" style="width:60%"></div></div></div>
+      <div class="flavor-bar"><span>Floral</span><div class="track"><div class="fill" style="width:70%"></div></div></div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="pdp-info">
+    <div class="row gap-sm" style="margin-bottom:12px">
+      <span class="badge badge-ember">Single origin</span>
+      <span class="stars">★★★★★ <span class="muted" style="font-size:.8rem;font-family:var(--font-sans)">4.9 · 128 ulasan</span></span>
+    </div>
+    <span class="pcard__origin">Gayo Highlands · Aceh</span>
+    <h1 style="margin:.1em 0">Highland Honey</h1>
+    <p class="lead" style="font-size:1.05rem">Honey process dengan sweetness tebal dan aroma bunga. Cocok untuk V60 pagi hari — bersih, manis, dan berkarakter.</p>
+    <p class="script" style="font-size:1.9rem">peach · brown sugar · jasmine</p>
+
+    <div class="row" style="margin:18px 0"><span class="price" style="font-size:2rem">Rp 128.000</span><span class="muted">/ 200 gram</span></div>
+
+    <!-- options -->
+    <label class="label">Ukuran</label>
+    <div class="opt-row">
+      <div class="opt">100g <small>Rp 72k</small></div>
+      <div class="opt active">200g <small>Rp 128k</small></div>
+      <div class="opt">500g <small>Rp 290k</small></div>
+    </div>
+
+    <label class="label mt-3">Grind</label>
+    <div class="opt-row">
+      <div class="opt active">Whole bean</div>
+      <div class="opt">Espresso</div>
+      <div class="opt">V60</div>
+      <div class="opt">French press</div>
+    </div>
+
+    <div class="row gap-sm mt-4" style="align-items:stretch">
+      <div class="stepper"><button>−</button><span>1</span><button>+</button></div>
+      <button class="btn btn-primary flex-1">Tambah ke keranjang · Rp 128k</button>
+    </div>
+    <button class="btn btn-ghost btn-block mt-2">♡ Simpan ke wishlist</button>
+
+    <div class="card card-pad mt-3" style="background:var(--ember-tint);border-color:transparent">
+      <div class="row"><span style="font-size:1.4rem">↻</span><div><strong>Langganan & hemat 15%</strong><br><span class="muted" style="font-size:.88rem">Kirim tiap 2/4 minggu · batal kapan saja</span></div><a class="btn btn-pine btn-sm" style="margin-left:auto" href="home.html#sub">Pilih</a></div>
+    </div>
+
+    <div class="trust mt-3">
+      <div>🔥 Roasted 5 Jul 2026</div>
+      <div>🚚 Kirim &lt;48 jam</div>
+      <div>🌱 Petani: Pak Ridwan</div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS + STORY -->
+<section class="wrap band-cream" style="border-radius:var(--r-xl);margin-inline:var(--gutter)">
+  <div class="wrap grid cols-2" style="padding-inline:0;gap:48px;align-items:start">
+    <div>
+      <span class="eyebrow">Detail lot</span>
+      <h2>Data lengkap, tanpa disembunyikan</h2>
+      <table class="spec-table">
+        <tr><td>Origin</td><td>Gayo Highlands, Aceh</td></tr>
+        <tr><td>Ketinggian</td><td>1.400–1.600 mdpl</td></tr>
+        <tr><td>Varietas</td><td>Ateng · Timtim</td></tr>
+        <tr><td>Proses</td><td>Honey</td></tr>
+        <tr><td>Roast level</td><td>Light–Medium</td></tr>
+        <tr><td>Petani</td><td>Kelompok Tani Pak Ridwan</td></tr>
+      </table>
+    </div>
+    <div>
+      <span class="eyebrow">Cerita di balik biji</span>
+      <h2 class="serif-italic">Dari 1.500 mdpl</h2>
+      <p>Ditanam di lereng Gayo yang sejuk, ceri kopi dipetik selektif hanya saat merah penuh. Proses honey menyisakan sebagian lendir manis selama pengeringan, menghasilkan sweetness khas dan aroma bunga yang lembut.</p>
+      <p>Kami me-roast lot ini light-to-medium untuk menjaga keasaman buah tetap hidup tanpa kehilangan body. Terbaik diseduh manual dalam 2–4 minggu setelah roast.</p>
+      <div class="card card-pad" style="background:var(--pine)">
+        <div style="color:#EDE4D4"><span class="script text-gold" style="font-size:1.6rem">brew tip</span><p style="color:#C9D6CC;margin:.3em 0 0">V60 · 15g kopi : 250ml air · suhu 92°C · total 2:45 menit.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="wrap">
+  <div class="between" style="align-items:flex-end"><div><span class="eyebrow">Ulasan</span><h2 style="margin:0">Apa kata peminum</h2></div><span class="stars" style="font-size:1.3rem">★★★★★ <span class="muted" style="font-size:1rem;font-family:var(--font-sans)">4.9 / 5</span></span></div>
+  <div class="grid cols-3 mt-4">
+    <div class="card card-pad"><span class="stars">★★★★★</span><p style="margin:.6em 0">"Manisnya beneran kerasa tanpa gula. Aroma bunganya juara buat pagi hari."</p><strong style="font-size:.9rem">Rara P.</strong><br><span class="muted" style="font-size:.8rem">Verified buyer</span></div>
+    <div class="card card-pad"><span class="stars">★★★★★</span><p style="margin:.6em 0">"Packaging rapi, roast date jelas. Fresh banget pas nyampe. Repeat order."</p><strong style="font-size:.9rem">Damar S.</strong><br><span class="muted" style="font-size:.8rem">Verified buyer</span></div>
+    <div class="card card-pad"><span class="stars">★★★★☆</span><p style="margin:.6em 0">"Enak buat V60. Buat espresso agak terlalu bright menurutku, tapi tetap bersih."</p><strong style="font-size:.9rem">Intan W.</strong><br><span class="muted" style="font-size:.8rem">Verified buyer</span></div>
+  </div>
+</section>
+
+<!-- RELATED -->
+<section class="wrap" style="padding-top:0">
+  <h2>Mungkin kamu suka juga</h2>
+  <div class="grid cols-4 mt-3">
+    <article class="card pcard pcard-hover card-hover"><a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#D9C3A2,#B98E5E)"><span style="font-size:2.6rem">☕</span></a><div class="pcard__body"><span class="pcard__origin">Toraja</span><span class="pcard__name">Sapan Natural</span><div class="pcard__foot"><span class="price">Rp 135k</span><button class="btn btn-primary btn-sm">+</button></div></div></article>
+    <article class="card pcard pcard-hover card-hover"><a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#E4C8B0,#C98A63)"><span style="font-size:2.6rem">☕</span></a><div class="pcard__body"><span class="pcard__origin">Bali</span><span class="pcard__name">Citrus Volcano</span><div class="pcard__foot"><span class="price">Rp 110k</span><button class="btn btn-primary btn-sm">+</button></div></div></article>
+    <article class="card pcard pcard-hover card-hover"><a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#EAD6B8,#CDA06A)"><span style="font-size:2.6rem">☕</span></a><div class="pcard__body"><span class="pcard__origin">Flores</span><span class="pcard__name">Golden Terrace</span><div class="pcard__foot"><span class="price">Rp 122k</span><button class="btn btn-primary btn-sm">+</button></div></div></article>
+    <article class="card pcard pcard-hover card-hover"><a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#E7B9A0,#C56B4A)"><span style="font-size:2.6rem">☕</span></a><div class="pcard__body"><span class="pcard__origin">Gayo</span><span class="pcard__name">Red Wine Natural</span><div class="pcard__foot"><span class="price">Rp 148k</span><button class="btn btn-primary btn-sm">+</button></div></div></article>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap grid cols-4" style="gap:32px">
+    <div><div class="brand" style="color:#fff"><span class="brand__dot"></span>Fermion</div><p style="color:#9DB0A2;margin-top:12px;max-width:26ch">Specialty coffee roastery dari Cirebon. Roasted with precision, served with heart.</p></div>
+    <div><h4>Belanja</h4><a href="shop.html">Single origin</a><br><a href="shop.html">Espresso</a><br><a href="home.html#sub">Subscription</a><br><a href="shop.html">Gift set</a></div>
+    <div><h4>Fermion</h4><a href="home.html#story">Our story</a><br><a href="home.html#journal">Journal</a><br><a href="#">Wholesale</a><br><a href="#">Kontak</a></div>
+    <div><h4>Bantuan</h4><a href="#">Lacak order</a><br><a href="#">Pengiriman</a><br><a href="#">FAQ</a><br><a href="#">Kebijakan</a></div>
+  </div>
+  <div class="wrap footer__bottom between"><span>© 2026 Fermion Roastery. Mockup design.</span><span>Warm Editorial · v1</span></div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System · Fermion Roastery</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  .swatch { border-radius: var(--r-md); overflow: hidden; border:1px solid var(--border); box-shadow: var(--sh-sm); }
+  .swatch__color { height: 96px; }
+  .swatch__meta { padding: 12px 14px; background: var(--white); }
+  .swatch__name { font-weight: 600; font-size: .9rem; }
+  .swatch__hex { font-size: .78rem; color: var(--text-muted); font-family: ui-monospace, monospace; text-transform: uppercase; }
+  .spec { display:flex; align-items:baseline; gap:16px; padding: 14px 0; border-bottom:1px dashed var(--border); }
+  .spec__tag { font-family: ui-monospace, monospace; font-size:.72rem; color:var(--text-muted); width:120px; flex:none; }
+  .demo-grid { display:grid; gap: 18px; }
+  .sec-label { font-family: ui-monospace,monospace; font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ember-deep); margin-bottom: 20px; }
+  .box { background: var(--white); border:1px solid var(--border); border-radius: var(--r-lg); padding: 28px; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="index.html"><span class="brand__dot"></span>Fermion</a>
+    <nav class="nav__links">
+      <a href="home.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="product.html">Product</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="design-system.html" style="color:var(--ember-deep)">System</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="shop.html">Belanja</a>
+  </div>
+</header>
+
+<section class="wrap">
+  <span class="eyebrow reveal">Design language</span>
+  <h1 class="display reveal d1" style="max-width:16ch">The Fermion <span class="serif-italic text-ember">system</span></h1>
+  <p class="lead reveal d2">Warm editorial meets confident color. Setiap komponen dibuat untuk terasa <em>hangat, presisi, dan berani</em> — playful tanpa kehilangan kredibilitas marketplace.</p>
+</section>
+
+<!-- PALETTE -->
+<section class="wrap" style="padding-top:0">
+  <div class="sec-label">01 — Palette</div>
+  <div class="grid cols-4">
+    <div class="swatch"><div class="swatch__color" style="background:var(--cream)"></div><div class="swatch__meta"><div class="swatch__name">Cream / Base</div><div class="swatch__hex">#F7F1E7</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--ink)"></div><div class="swatch__meta"><div class="swatch__name">Ink / Espresso</div><div class="swatch__hex">#241C15</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--ember)"></div><div class="swatch__meta"><div class="swatch__name">Ember / Primary</div><div class="swatch__hex">#D8552B</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--pine)"></div><div class="swatch__meta"><div class="swatch__name">Pine / Ground</div><div class="swatch__hex">#1F3D30</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--gold)"></div><div class="swatch__meta"><div class="swatch__name">Gold / Accent</div><div class="swatch__hex">#E4A02C</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--berry)"></div><div class="swatch__meta"><div class="swatch__name">Berry / Promo</div><div class="swatch__hex">#8A3B54</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--sky)"></div><div class="swatch__meta"><div class="swatch__name">Sky / Info</div><div class="swatch__hex">#6C93B8</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:var(--sand)"></div><div class="swatch__meta"><div class="swatch__name">Sand / Border</div><div class="swatch__hex">#E8DAC3</div></div></div>
+  </div>
+</section>
+
+<!-- TYPE -->
+<section class="wrap band-cream" style="border-radius:var(--r-xl); margin-inline:var(--gutter);">
+  <div class="wrap" style="padding-inline:0">
+    <div class="sec-label">02 — Typography</div>
+    <div class="grid cols-2" style="align-items:center">
+      <div>
+        <div class="spec"><span class="spec__tag">Display · Fraunces</span><span class="display" style="font-size:3rem">Roasted daily</span></div>
+        <div class="spec"><span class="spec__tag">H2 · Fraunces</span><h2 style="margin:0">Single origin, honest</h2></div>
+        <div class="spec"><span class="spec__tag">Italic</span><span class="serif-italic" style="font-size:1.8rem">from farm to cup</span></div>
+        <div class="spec"><span class="spec__tag">Script · Caveat</span><span class="script" style="font-size:2.4rem">freshly ground</span></div>
+        <div class="spec"><span class="spec__tag">Body · Inter</span><span>Specialty coffee, dijelaskan dengan bahasa yang jelas dan jujur.</span></div>
+        <div class="spec"><span class="spec__tag">Eyebrow</span><span class="eyebrow">Since 2021 · Cirebon</span></div>
+      </div>
+      <div class="box center">
+        <span class="eyebrow" style="justify-content:center">Type in context</span>
+        <p class="display" style="font-size:clamp(2.4rem,5vw,3.6rem); margin:.3em 0">Brew<br><span class="serif-italic text-ember">bolder.</span></p>
+        <p class="muted" style="max-width:32ch;margin-inline:auto">Perpaduan serif berkarakter & sans yang bersih menjaga keseimbangan playful–professional.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUTTONS -->
+<section class="wrap">
+  <div class="sec-label">03 — Buttons</div>
+  <div class="box">
+    <div class="row" style="flex-wrap:wrap; gap:16px">
+      <button class="btn btn-primary">Add to cart</button>
+      <button class="btn btn-pine">Checkout</button>
+      <button class="btn btn-gold">Subscribe</button>
+      <button class="btn btn-ghost">Learn more</button>
+      <button class="btn btn-primary btn-lg">Big CTA →</button>
+      <button class="btn btn-primary btn-sm">Small</button>
+      <button class="btn btn-icon btn-pine" aria-label="fav">♥</button>
+    </div>
+    <hr class="hr mt-3">
+    <div class="row mt-3" style="flex-wrap:wrap; gap:12px">
+      <span class="chip active">All</span>
+      <span class="chip">Filter</span>
+      <span class="chip">Espresso</span>
+      <span class="chip">Single Origin</span>
+    </div>
+  </div>
+</section>
+
+<!-- BADGES -->
+<section class="wrap">
+  <div class="sec-label">04 — Badges & status</div>
+  <div class="box row" style="flex-wrap:wrap; gap:12px">
+    <span class="badge badge-ember">Best seller</span>
+    <span class="badge badge-pine badge-dot">In stock</span>
+    <span class="badge badge-gold">New roast</span>
+    <span class="badge badge-berry">–20%</span>
+    <span class="badge badge-solid">Limited</span>
+    <span class="badge">Decaf</span>
+    <span class="stars">★★★★★ <span class="muted" style="font-size:.8rem;font-family:var(--font-sans)">4.9 (128)</span></span>
+  </div>
+</section>
+
+<!-- CARDS -->
+<section class="wrap">
+  <div class="sec-label">05 — Cards</div>
+  <div class="grid cols-3">
+    <!-- product card -->
+    <article class="card pcard pcard-hover card-hover">
+      <div class="pcard__media" style="background:linear-gradient(150deg,#F3D9C6,#E8B48C)">
+        <div class="pcard__tags"><span class="badge badge-solid">Best seller</span></div>
+        <button class="pcard__fav">♡</button>
+        <span class="display" style="font-size:3rem;color:#fff;opacity:.85">☕</span>
+      </div>
+      <div class="pcard__body">
+        <span class="pcard__origin">Gayo · Aceh</span>
+        <span class="pcard__name">Highland Honey</span>
+        <span class="pcard__notes">Peach · brown sugar · floral</span>
+        <div class="pcard__foot">
+          <span class="price">Rp 128k <small>/ 200g</small></span>
+          <button class="btn btn-primary btn-sm">+ Cart</button>
+        </div>
+      </div>
+    </article>
+    <!-- editorial card -->
+    <article class="card card-pad card-hover" style="background:var(--pine)">
+      <div style="color:#EDE4D4">
+        <span class="eyebrow on-dark">Journal</span>
+        <h3 style="color:#fff;margin-top:.6em">Kenapa roast date lebih penting dari expiry?</h3>
+        <p style="color:#C9D6CC">Panduan singkat memilih kopi segar dan menyimpannya benar.</p>
+        <a class="btn btn-ghost on-dark btn-sm" href="#">Baca →</a>
+      </div>
+    </article>
+    <!-- info card -->
+    <article class="card card-pad">
+      <span class="badge badge-gold">Subscription</span>
+      <h3 style="margin-top:.6em">Kopi rutin, tanpa ribet</h3>
+      <p class="muted">Kirim setiap 2 atau 4 minggu. Ganti, skip, atau batalkan kapan saja.</p>
+      <div class="between mt-2">
+        <span class="price text-ember">Rp 115k<small>/bulan</small></span>
+        <button class="btn btn-pine btn-sm">Mulai</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- FORMS -->
+<section class="wrap">
+  <div class="sec-label">06 — Form elements</div>
+  <div class="box grid cols-2">
+    <div>
+      <label class="label">Nama lengkap</label>
+      <input class="input" placeholder="cth. Rara Prakoso">
+      <label class="label mt-2">Email</label>
+      <input class="input" type="email" placeholder="kamu@email.com">
+      <label class="label mt-2">Metode grind</label>
+      <select class="select"><option>Whole bean</option><option>Espresso</option><option>V60</option><option>French press</option></select>
+    </div>
+    <div>
+      <label class="label">Catatan</label>
+      <textarea class="textarea" rows="4" placeholder="Preferensi rasa, dll."></textarea>
+      <label class="label mt-2">Jumlah</label>
+      <div class="stepper mt-1"><button>−</button><span>2</span><button>+</button></div>
+      <div class="mt-3">
+        <button class="btn btn-primary btn-block">Simpan</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap grid cols-4" style="gap:32px">
+    <div>
+      <div class="brand" style="color:#fff"><span class="brand__dot"></span>Fermion</div>
+      <p style="color:#9DB0A2;margin-top:12px;max-width:26ch">Specialty coffee roastery dari Cirebon. Roasted with precision, served with heart.</p>
+    </div>
+    <div><h4>Belanja</h4><a href="#">Single origin</a><br><a href="#">Espresso</a><br><a href="#">Subscription</a><br><a href="#">Gift set</a></div>
+    <div><h4>Fermion</h4><a href="#">Our story</a><br><a href="#">Journal</a><br><a href="#">Wholesale</a><br><a href="#">Kontak</a></div>
+    <div><h4>Bantuan</h4><a href="#">Lacak order</a><br><a href="#">Pengiriman</a><br><a href="#">FAQ</a><br><a href="#">Kebijakan</a></div>
+  </div>
+  <div class="wrap footer__bottom between">
+    <span>© 2026 Fermion Roastery. Mockup design.</span>
+    <span>Warm Editorial · v1</span>
+  </div>
+</footer>
+
+</body>
+</html>

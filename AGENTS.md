@@ -35,7 +35,8 @@
 
 ## 5. Antigravity Configuration & Token Efficiency
 - **Project Customizations**: Tersimpan di `.agents/`
-  - Skills: `.agents/skills/` (`cavecrew`, `caveman`, `caveman-commit`, `caveman-review`, dll)
+  - Skills: `.agents/skills/` (`frontend-design`, `cavecrew`, `caveman`, `caveman-commit`, `caveman-review`, dll)
+
 - **CodeGraph**: Selalu utamakan pengindeksan `.codegraph/` (via MCP tool `codegraph_explore`) saat mencari simbol/relasi fungsi sebelum melakukan `grep` atau membaca banyak file manual.
 - **Token Efficiency**: Respon dibuat ringkas, langsung ke poin utama, dan menghindari penjelasan berulang atau bertele-tele (mendukung gaya *Caveman mode* saat diminta atau untuk riset mendalam).
 

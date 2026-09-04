@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout · Fermion Roastery</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  .co { display:grid; grid-template-columns: 1fr 400px; gap: 40px; align-items:start; }
+  .summary { position: sticky; top: 90px; }
+  .steps { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .step { display:flex; align-items:center; gap:8px; font-size:.85rem; font-weight:600; color:var(--text-muted); }
+  .step .n { width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--sand);font-size:.8rem; }
+  .step.active { color:var(--ember-deep); }
+  .step.active .n { background:var(--ember); color:#fff; }
+  .step.done .n { background:var(--pine); color:#fff; }
+  .steps .line { flex:1; height:2px; background:var(--border); border-radius:2px; }
+  .citem { display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--border); }
+  .citem__img { width:88px;height:100px;border-radius:var(--r-md);flex:none;display:grid;place-items:center;font-size:2rem; }
+  .citem__mid { flex:1; }
+  .pay-opt { display:flex; align-items:center; gap:14px; padding:16px; border:1.5px solid var(--border); border-radius:var(--r-md); cursor:pointer; margin-bottom:10px; transition:border-color .15s,background .15s; }
+  .pay-opt.active { border-color:var(--ember); background:var(--ember-tint); }
+  .pay-opt .radio { width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex:none; display:grid;place-items:center; }
+  .pay-opt.active .radio { border-color:var(--ember); }
+  .pay-opt.active .radio::after { content:'';width:10px;height:10px;border-radius:50%;background:var(--ember); }
+  .pay-opt .logo { margin-left:auto; font-weight:700; font-size:.8rem; color:var(--text-muted); }
+  .srow { display:flex; justify-content:space-between; padding:7px 0; font-size:.95rem; }
+  .srow.total { font-family:var(--font-display); font-size:1.4rem; font-weight:600; padding-top:16px; border-top:2px solid var(--ink); margin-top:8px; }
+  @media (max-width:880px){ .co{grid-template-columns:1fr} .summary{position:static} }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="index.html"><span class="brand__dot"></span>Fermion</a>
+    <span class="muted row gap-sm" style="font-size:.85rem">🔒 Checkout aman</span>
+    <a class="btn btn-ghost btn-sm" href="shop.html">← Lanjut belanja</a>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:28px">
+  <div class="steps">
+    <div class="step done"><span class="n">✓</span>Keranjang</div>
+    <span class="line"></span>
+    <div class="step active"><span class="n">2</span>Pengiriman & bayar</div>
+    <span class="line"></span>
+    <div class="step"><span class="n">3</span>Selesai</div>
+  </div>
+</div>
+
+<section class="wrap co" style="padding-top:24px">
+  <!-- LEFT: forms -->
+  <div>
+    <!-- cart items -->
+    <div class="card card-pad">
+      <h3>Keranjang <span class="muted" style="font-size:1rem;font-weight:400">(2 item)</span></h3>
+      <div class="citem">
+        <div class="citem__img" style="background:linear-gradient(150deg,#F3D9C6,#E8B48C)">☕</div>
+        <div class="citem__mid">
+          <strong>Highland Honey</strong>
+          <div class="muted" style="font-size:.85rem">200g · Whole bean · Gayo</div>
+          <div class="stepper mt-1" style="transform:scale(.85);transform-origin:left"><button>−</button><span>1</span><button>+</button></div>
+        </div>
+        <div style="text-align:right"><span class="price">Rp 128k</span><br><a href="#" class="muted" style="font-size:.8rem">Hapus</a></div>
+      </div>
+      <div class="citem" style="border-bottom:0">
+        <div class="citem__img" style="background:linear-gradient(150deg,#3B2A1E,#241C15)">☕</div>
+        <div class="citem__mid">
+          <strong>Midnight Pull</strong>
+          <div class="muted" style="font-size:.85rem">200g · Espresso · House blend</div>
+          <div class="stepper mt-1" style="transform:scale(.85);transform-origin:left"><button>−</button><span>1</span><button>+</button></div>
+        </div>
+        <div style="text-align:right"><span class="price">Rp 118k</span><br><a href="#" class="muted" style="font-size:.8rem">Hapus</a></div>
+      </div>
+    </div>
+
+    <!-- contact + address -->
+    <div class="card card-pad mt-3">
+      <h3>Kontak & pengiriman</h3>
+      <div class="grid cols-2" style="gap:16px">
+        <div><label class="label">Nama depan</label><input class="input" value="Rara"></div>
+        <div><label class="label">Nama belakang</label><input class="input" value="Prakoso"></div>
+      </div>
+      <div class="grid cols-2 mt-2" style="gap:16px">
+        <div><label class="label">Email</label><input class="input" value="rara@email.com"></div>
+        <div><label class="label">No. HP</label><input class="input" value="0812-3456-7890"></div>
+      </div>
+      <label class="label mt-2">Alamat lengkap</label>
+      <textarea class="textarea" rows="2">Jl. Kenanga No. 12, RT 03/RW 05, Kel. Babakan</textarea>
+      <div class="grid cols-3 mt-2" style="gap:16px">
+        <div><label class="label">Kota</label><input class="input" value="Cirebon"></div>
+        <div><label class="label">Provinsi</label><input class="input" value="Jawa Barat"></div>
+        <div><label class="label">Kode pos</label><input class="input" value="45611"></div>
+      </div>
+    </div>
+
+    <!-- shipping method -->
+    <div class="card card-pad mt-3">
+      <h3>Metode pengiriman</h3>
+      <div class="pay-opt active"><span class="radio"></span><div><strong>JNE Reguler</strong><div class="muted" style="font-size:.85rem">Estimasi 2–3 hari</div></div><span class="logo">Rp 18.000</span></div>
+      <div class="pay-opt"><span class="radio"></span><div><strong>SiCepat BEST</strong><div class="muted" style="font-size:.85rem">Estimasi 1–2 hari</div></div><span class="logo">Rp 25.000</span></div>
+      <div class="pay-opt"><span class="radio"></span><div><strong>Ambil di roastery</strong><div class="muted" style="font-size:.85rem">Babakan, Cirebon · gratis</div></div><span class="logo">Gratis</span></div>
+    </div>
+
+    <!-- payment -->
+    <div class="card card-pad mt-3">
+      <h3>Pembayaran</h3>
+      <div class="pay-opt active"><span class="radio"></span><div><strong>QRIS</strong><div class="muted" style="font-size:.85rem">Semua e-wallet & bank</div></div><span class="logo">QRIS</span></div>
+      <div class="pay-opt"><span class="radio"></span><div><strong>Virtual Account</strong><div class="muted" style="font-size:.85rem">BCA · Mandiri · BNI · BRI</div></div><span class="logo">VA</span></div>
+      <div class="pay-opt"><span class="radio"></span><div><strong>Kartu kredit / debit</strong><div class="muted" style="font-size:.85rem">Visa · Mastercard</div></div><span class="logo">CARD</span></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: summary -->
+  <aside class="summary">
+    <div class="card card-pad">
+      <h3>Ringkasan</h3>
+      <div class="row" style="margin-bottom:14px">
+        <input class="input flex-1" placeholder="Kode promo">
+        <button class="btn btn-pine btn-sm">Pakai</button>
+      </div>
+      <div class="srow"><span class="muted">Subtotal (2 item)</span><span>Rp 246.000</span></div>
+      <div class="srow"><span class="muted">Ongkir · JNE</span><span>Rp 18.000</span></div>
+      <div class="srow"><span class="text-pine" style="font-weight:600">Diskon FRESH10</span><span class="text-pine" style="font-weight:600">– Rp 24.600</span></div>
+      <div class="srow total"><span>Total</span><span class="text-ember">Rp 239.400</span></div>
+      <button class="btn btn-primary btn-block btn-lg mt-3">Bayar sekarang →</button>
+      <p class="muted center mt-2" style="font-size:.78rem">🔒 Pembayaran diproses aman. Dengan lanjut kamu setuju pada <a href="#" style="text-decoration:underline">syarat & ketentuan</a>.</p>
+    </div>
+    <div class="card card-pad mt-3" style="background:var(--gold-tint);border-color:transparent">
+      <div class="row"><span style="font-size:1.4rem">🎁</span><div style="font-size:.88rem"><strong>Tinggal Rp 4.000 lagi</strong><br><span class="muted">untuk gratis ongkir!</span></div></div>
+    </div>
+    <div class="trust card card-pad mt-3" style="flex-direction:column;gap:10px;align-items:flex-start">
+      <div class="row gap-sm" style="font-size:.85rem;color:var(--text-muted)">🔥 Semua kopi roasted &lt;48 jam</div>
+      <div class="row gap-sm" style="font-size:.85rem;color:var(--text-muted)">↩️ Garansi kepuasan rasa</div>
+      <div class="row gap-sm" style="font-size:.85rem;color:var(--text-muted)">💬 CS via WhatsApp</div>
+    </div>
+  </aside>
+</section>
+
+<footer class="footer" style="margin-top:60px">
+  <div class="wrap footer__bottom between" style="border-top:0"><span>© 2026 Fermion Roastery. Mockup design.</span><span>Warm Editorial · v1</span></div>
+</footer>
+
+</body>
+</html>

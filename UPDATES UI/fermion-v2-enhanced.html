@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fermion Roastery — Enhanced Client UI (Offical Brand)</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            fermion: {
+              paper: '#FAF9F6',
+              surface: '#FDFBF7',
+              dark: '#111827',
+              muted: '#4B5563',
+              green: '#367F4D',
+              gold: '#F1B941',
+              blue: '#8CADD8',
+              border: 'rgba(0, 0, 0, 0.08)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAF9F6;
+      color: #111827;
+    }
+    .ticket-shadow {
+      box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.05);
+    }
+    .card-hover-lift {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 12px 12px 0px rgba(54, 127, 77, 0.08);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-[#367F4D] selection:text-white">
+
+  <!-- HEADER NAV (OFFICIAL FERMION LOGO) -->
+  <header class="sticky top-0 z-50 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-black/5">
+    <div class="max-w-[1400px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between">
+      
+      <!-- Official Logo Image -->
+      <a href="#" class="block hover:opacity-70 transition-opacity">
+        <img src="/fermion-logo.png" alt="Fermion Roastery Logo" style="width: auto; height: 35px;" class="object-contain" />
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-10 text-xs font-black uppercase tracking-widest text-slate-900">
+        <a href="#series" class="hover:text-[#367F4D] transition-colors">Series</a>
+        <a href="#the-way" class="hover:text-[#367F4D] transition-colors">Nilai Kami</a>
+        <a href="#new-releases" class="hover:text-[#367F4D] transition-colors">Rilis Terbaru</a>
+        <a href="#journal" class="hover:text-[#367F4D] transition-colors">Jurnal</a>
+        <a href="#contact" class="hover:text-[#367F4D] transition-colors">Kontak</a>
+      </nav>
+
+      <!-- Action Button -->
+      <div class="flex items-center gap-4">
+        <a href="#new-releases" class="px-6 py-3 bg-[#367F4D] text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-sm active:scale-95">
+          Beli Kopi
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- HERO SECTION (ENHANCED OFFICIAL CLIENT BRAND CONCEPT) -->
+  <div class="relative min-h-[90vh] w-full overflow-hidden bg-black flex items-center justify-center py-20">
+    <!-- Hero Background Poster Image -->
+    <div class="absolute inset-0 overflow-hidden">
+      <img src="/hero-video-poster.jpg" alt="Roasted coffee beans from Fermion Roastery" class="w-full h-full object-cover opacity-75" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.85)_85%)] pointer-events-none"></div>
+    </div>
+
+    <section class="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center w-full max-w-5xl">
+      
+      <!-- Central Ticket/Paper Badge Card -->
+      <div class="relative flex min-h-[420px] w-full items-center justify-center">
+        <div class="relative min-h-[340px] w-[92%] max-w-4xl">
+          
+          <!-- Background Layer Stamp -->
+          <div class="absolute inset-0 rotate-[1deg] border border-black/5 bg-[#E2DACB] shadow-sm rounded-sm"></div>
+
+          <!-- Main Paper Card -->
+          <div class="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#FDFBF7] p-8 md:p-12 ticket-shadow rounded-sm" style="transform: translateZ(0)">
+            <!-- Decorative Tape -->
+            <div class="absolute -top-5 left-1/2 z-50 h-8 w-24 -translate-x-1/2 rotate-[-2deg] border border-black/5 bg-white/60 shadow-sm backdrop-blur-sm"></div>
+
+            <!-- Content Grid Words -->
+            <div class="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-6">
+              <div class="font-display font-black text-5xl md:text-7xl uppercase text-slate-900 italic tracking-tighter">
+                CURATED
+              </div>
+              <div class="font-display font-black text-5xl md:text-7xl uppercase text-slate-900 italic tracking-tighter text-[#367F4D]">
+                ROASTED
+              </div>
+              <div class="font-display font-black text-5xl md:text-7xl uppercase text-slate-900 italic tracking-tighter">
+                REVERED
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tagline & Dual CTAs -->
+      <div class="relative z-30 mt-10 space-y-8">
+        <p class="mx-auto max-w-3xl text-[10px] font-black uppercase tracking-[0.4em] text-[#8CADD8] md:tracking-[0.5em]">
+          SPECIALTY COFFEE ROASTERY • INDONESIA
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#new-releases" class="rounded-full bg-[#F1B941] px-10 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-black shadow-xl transition-all hover:bg-white active:scale-95">
+            JELAJAHI KOPI KAMI ➔
+          </a>
+          <a href="#contact" class="rounded-full bg-white/10 border border-white/30 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white backdrop-blur-sm transition-all hover:bg-white hover:text-slate-900 active:scale-95">
+            KEMITRAAN B2B
+          </a>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+
+  <!-- PARTNER RIBBON (CLIENT MITRA LIST ENHANCED) -->
+  <section class="py-10 bg-white border-b border-black/5 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 text-center space-y-4">
+      <p class="text-[10px] font-black uppercase tracking-[0.35em] text-stone-400">DIPERCAYA OLEH KAFE &amp; PARTNER B2B PILIHAN</p>
+      
+      <!-- Styled Partner Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-4 md:gap-8 pt-2">
+        <span class="px-5 py-2.5 bg-[#FAF9F6] border border-black/10 rounded-sm font-display font-black text-xs uppercase tracking-widest text-slate-800 shadow-sm">Toko Kopi Senja</span>
+        <span class="px-5 py-2.5 bg-[#FAF9F6] border border-black/10 rounded-sm font-display font-black text-xs uppercase tracking-widest text-slate-800 shadow-sm">Seduh Manual Lab</span>
+        <span class="px-5 py-2.5 bg-[#FAF9F6] border border-black/10 rounded-sm font-display font-black text-xs uppercase tracking-widest text-slate-800 shadow-sm">Kopi Titik Temu</span>
+        <span class="px-5 py-2.5 bg-[#FAF9F6] border border-black/10 rounded-sm font-display font-black text-xs uppercase tracking-widest text-slate-800 shadow-sm">Espresso Room Cirebon</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SERIES SELECTION (50/50 SPLIT WITH REAL HIGH-QUALITY PHOTOGRAPHY) -->
+  <section id="series" class="flex flex-col lg:flex-row min-h-[650px] border-b border-black/5 overflow-hidden">
+    
+    <!-- Espresso Series Side (With Crema Photo Overlay) -->
+    <div class="flex-1 bg-[#1A1A1A] text-white p-12 md:p-16 flex flex-col justify-between relative group border-r border-black/20 overflow-hidden min-h-[400px]">
+      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=80" alt="Espresso Crema" class="absolute inset-0 w-full h-full object-cover opacity-35 group-hover:scale-105 transition-transform duration-700 pointer-events-none" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#111827] via-[#111827]/70 to-transparent"></div>
+
+      <div class="relative z-10 space-y-4">
+        <span class="px-3 py-1 bg-[#F1B941] text-black text-[9px] font-black uppercase tracking-widest rounded-sm inline-block">ESPRESSO SERIES</span>
+        <h2 class="font-display font-black text-3xl md:text-4xl uppercase tracking-tight italic text-white leading-tight">Extracted for Power &amp; Balance</h2>
+        <p class="text-xs text-stone-300 max-w-md leading-relaxed">Profil sangrai medium khusus yang menghasilkan bodi tebal, manis karamel, dan crema melimpah untuk espresso &amp; latte.</p>
+      </div>
+
+      <div class="relative z-10 pt-8">
+        <a href="#new-releases" class="inline-block px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-[#F1B941] transition-colors shadow-lg">
+          Lihat Koleksi Espresso ➔
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Series Side (With Pour-Over Photo Overlay) -->
+    <div class="flex-1 bg-[#FAF9F6] text-slate-900 p-12 md:p-16 flex flex-col justify-between relative group overflow-hidden min-h-[400px]">
+      <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=1000&q=80" alt="Filter Coffee" class="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:scale-105 transition-transform duration-700 pointer-events-none" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-[#FAF9F6]/80 to-transparent"></div>
+
+      <div class="relative z-10 space-y-4">
+        <span class="px-3 py-1 bg-[#367F4D] text-white text-[9px] font-black uppercase tracking-widest rounded-sm inline-block">FILTER SERIES</span>
+        <h2 class="font-display font-black text-3xl md:text-4xl uppercase tracking-tight italic text-slate-900 leading-tight">Light Roast Clarity</h2>
+        <p class="text-xs text-stone-600 max-w-md leading-relaxed">Penyangraian tingkat terang (light roast) yang mempertahankan karakter buah, bunga, dan kejernihan cita rasa asal biji.</p>
+      </div>
+
+      <div class="relative z-10 pt-8">
+        <a href="#new-releases" class="inline-block px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-[#367F4D] transition-colors shadow-lg">
+          Lihat Koleksi Filter ➔
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- THE WAY / NILAI FERMION (CLEAN STRAIGHT DIVIDER) -->
+  <section id="the-way" class="py-24 px-6 border-b border-black/5 bg-white">
+    <div class="max-w-7xl mx-auto space-y-16">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <span class="text-[10px] font-black uppercase tracking-[0.35em] text-[#367F4D]">PILAR UTAMA</span>
+        <h2 class="font-display font-black text-3xl md:text-4xl uppercase tracking-tight text-slate-900">Cara Kerja Presisi Fermion</h2>
+        <p class="text-xs text-stone-600">Proses terukur dari hulu hingga kemasan demi menjaga kejernihan rasa.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-8 bg-[#FAF9F6] border border-black/10 rounded-sm space-y-4 card-hover-lift">
+          <div class="w-10 h-10 bg-slate-900 text-white rounded-sm font-display font-black text-sm flex items-center justify-center">01</div>
+          <h3 class="font-display font-black text-lg uppercase italic text-slate-900">Sourcing Terkurasi</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">Biji kopi dipetik dari kemitraan petani lokal dengan evaluasi skor kupping minimal 84+.</p>
+        </div>
+
+        <div class="p-8 bg-[#FAF9F6] border border-black/10 rounded-sm space-y-4 card-hover-lift">
+          <div class="w-10 h-10 bg-[#367F4D] text-white rounded-sm font-display font-black text-sm flex items-center justify-center">02</div>
+          <h3 class="font-display font-black text-lg uppercase italic text-slate-900">Profile Roasting</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">Penyangraian terkontrol secara terukur per batch untuk menonjolkan potensi terbaik biji kopi.</p>
+        </div>
+
+        <div class="p-8 bg-[#FAF9F6] border border-black/10 rounded-sm space-y-4 card-hover-lift">
+          <div class="w-10 h-10 bg-[#F1B941] text-black rounded-sm font-display font-black text-sm flex items-center justify-center">03</div>
+          <h3 class="font-display font-black text-lg uppercase italic text-slate-900">Fresh Packaging</h3>
+          <p class="text-xs text-stone-600 leading-relaxed">Kopi dikemas langsung setelah degassing awal dengan degassing valve satu arah.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- NEW RELEASES SECTION -->
+  <section id="new-releases" class="py-24 px-6 border-b border-black/5 bg-[#FDFBF7]">
+    <div class="max-w-7xl mx-auto space-y-12">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/5 pb-6">
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-[0.35em] text-[#367F4D]">Koleksi Rilis Terbaru</span>
+          <h2 class="font-display font-black text-3xl md:text-4xl uppercase tracking-tight text-slate-900 mt-1">Single Origin Pilihan</h2>
+        </div>
+        <span class="text-xs font-bold text-stone-600 uppercase tracking-wider">Sangrai Segar • Tanpa Fee Marketplace</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="bg-white border border-black/10 p-6 rounded-sm card-hover-lift space-y-4">
+          <div class="aspect-square bg-stone-100 rounded-sm overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=600&q=80" alt="Produk" class="w-full h-full object-cover" />
+            <span class="absolute top-3 left-3 bg-[#367F4D] text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-sm">Filter Roast</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-[#367F4D] uppercase tracking-widest">Garut • Anaerobic</span>
+            <h3 class="font-display font-black text-xl text-slate-900 uppercase italic mt-1">Kamojang Filter</h3>
+            <p class="text-xs text-stone-600 italic mt-2">Notes: Jasmine, Papaya, Red Apple</p>
+          </div>
+          <div class="flex justify-between items-center pt-4 border-t border-black/5">
+            <span class="font-mono font-bold text-base text-slate-900">Rp 125.000</span>
+            <button class="px-4 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-[#367F4D] transition-colors">Beli</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white border border-black/10 p-6 rounded-sm card-hover-lift space-y-4">
+          <div class="aspect-square bg-stone-100 rounded-sm overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=600&q=80" alt="Produk" class="w-full h-full object-cover" />
+            <span class="absolute top-3 left-3 bg-[#F1B941] text-black text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-sm">Filter Roast</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-[#367F4D] uppercase tracking-widest">Banyuwangi • Natural</span>
+            <h3 class="font-display font-black text-xl text-slate-900 uppercase italic mt-1">Ijen Natural</h3>
+            <p class="text-xs text-stone-600 italic mt-2">Notes: Dried Mango, Black Tea, Honey</p>
+          </div>
+          <div class="flex justify-between items-center pt-4 border-t border-black/5">
+            <span class="font-mono font-bold text-base text-slate-900">Rp 110.000</span>
+            <button class="px-4 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-[#367F4D] transition-colors">Beli</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white border border-black/10 p-6 rounded-sm card-hover-lift space-y-4">
+          <div class="aspect-square bg-stone-100 rounded-sm overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?auto=format&fit=crop&w=600&q=80" alt="Produk" class="w-full h-full object-cover" />
+            <span class="absolute top-3 left-3 bg-[#367F4D] text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-sm">Limited Release</span>
+          </div>
+          <div>
+            <span class="text-[9px] font-bold text-[#367F4D] uppercase tracking-widest">Aceh • Wine Process</span>
+            <h3 class="font-display font-black text-xl text-slate-900 uppercase italic mt-1">Gayo Wine</h3>
+            <p class="text-xs text-stone-600 italic mt-2">Notes: Red Wine, Dark Cherry, Molasses</p>
+          </div>
+          <div class="flex justify-between items-center pt-4 border-t border-black/5">
+            <span class="font-mono font-bold text-base text-slate-900">Rp 145.000</span>
+            <button class="px-4 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-[#367F4D] transition-colors">Beli</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER (OFFICIAL FERMION LOGO ENHANCED) -->
+  <footer class="bg-[#111827] text-white py-20 px-6 border-t border-black/10">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+      <div class="space-y-4 text-center md:text-left">
+        <!-- Official Fermion Logo -->
+        <img src="/fermion-logo.png" alt="Fermion Logo" style="width: auto; height: 32px;" class="max-h-8 object-contain mx-auto md:mx-0" />
+        <p class="text-xs text-stone-400 max-w-sm">Specialty Coffee Roastery dari Indonesia dengan fokus pada presisi roasting, filter coffee, dan espresso roast.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-8 text-xs font-black uppercase tracking-widest text-stone-300">
+        <a href="#series" class="hover:text-white transition-colors">Series</a>
+        <a href="#new-releases" class="hover:text-white transition-colors">Koleksi Kopi</a>
+        <a href="#contact" class="hover:text-white transition-colors">Kemitraan B2B</a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[10px] text-stone-500">
+      <p>© 2026 Fermion Roastery. Hak Cipta Dilindungi.</p>
+      <p class="mt-2 md:mt-0">Enhanced Client Brand Concept (Fermion V2)</p>
+    </div>
+  </footer>
+
+</body>
+</html>

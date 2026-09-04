@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fermion Roastery — Editorial Magazine Edition Sample</title>
+  
+  <!-- Fonts: Inter & Space Grotesk for Editorial Hierarchy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            fermion: {
+              paper: '#FAF9F6',
+              surface: '#FDFBF7',
+              dark: '#111827',
+              muted: '#4B5563',
+              green: '#367F4D',
+              gold: '#F1B941',
+              border: '#E5E7EB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAF9F6;
+      color: #111827;
+    }
+    .editorial-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-fermion-green selection:text-white">
+
+  <!-- EDITORIAL HEADER / TOP BAR -->
+  <header class="sticky top-0 z-50 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-fermion-border">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      
+      <!-- Issue / Edition Indicator -->
+      <div class="hidden md:flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-fermion-muted">
+        <span>ISSUE NO. 04</span>
+        <span class="w-1 h-1 rounded-full bg-stone-400"></span>
+        <span>AUTUMN 2026</span>
+      </div>
+
+      <!-- Main Editorial Logo -->
+      <a href="#" class="block text-center">
+        <span class="font-display font-black text-2xl tracking-tighter uppercase text-fermion-dark">
+          FERMION <span class="text-fermion-green font-normal text-xs tracking-[0.3em] ml-1">ROASTERY</span>
+        </span>
+      </a>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-4">
+        <a href="#katalog" class="px-6 py-2.5 bg-fermion-dark text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-fermion-green transition-all shadow-sm">
+          Pesan Kopi
+        </a>
+      </div>
+    </div>
+    
+    <!-- Sub-navigation Editorial Strip -->
+    <div class="border-t border-fermion-border/60 py-2.5 px-6 hidden sm:block bg-fermion-surface/50">
+      <div class="max-w-7xl mx-auto flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-fermion-muted">
+        <a href="#katalog" class="hover:text-fermion-dark transition-colors">01. Katalog Specialty</a>
+        <a href="#origin-story" class="hover:text-fermion-dark transition-colors">02. Origin & Profil Roasting</a>
+        <a href="#kemitraan" class="hover:text-fermion-dark transition-colors">03. Kemitraan B2B & Kafe</a>
+        <a href="#berlangganan" class="hover:text-fermion-dark transition-colors">04. Langganan Bulanan</a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- HERO COVER STORY: Large Editorial Framing & Bold Headline -->
+  <section class="relative border-b border-fermion-border editorial-grid py-16 md:py-24 px-6">
+    <div class="max-w-7xl mx-auto space-y-12">
+      
+      <!-- Top Tagline & Issue Title -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-fermion-border pb-8 gap-6">
+        <div>
+          <span class="text-xs font-bold text-fermion-green uppercase tracking-[0.3em]">Specialty Coffee Editorial</span>
+          <h1 class="font-display text-4xl md:text-6xl font-black text-fermion-dark tracking-tight mt-2 leading-[1.1]">
+            Seni Kurasi Biji &amp;<br> Presisi Profil Roasting
+          </h1>
+        </div>
+        <p class="text-sm text-fermion-muted max-w-md font-medium leading-relaxed">
+          Mengangkat cerita dibalik setiap ceri kopi pilihan petani Indonesia. Disangrai presisi untuk menghasilkan kejernihan cita rasa tanpa kepahitan berlebih.
+        </p>
+      </div>
+
+      <!-- Large Editorial Showcase Card (Main Cover Story) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white border border-fermion-border rounded-2xl p-6 md:p-10 shadow-xl relative overflow-hidden group">
+        
+        <!-- Large High-Impact Image -->
+        <div class="lg:col-span-7 aspect-[16/10] md:aspect-[16/9] bg-stone-100 rounded-xl overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80" alt="Specialty Coffee Roasting" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+          <div class="absolute top-4 left-4 bg-fermion-dark text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-sm">
+            COVER STORY • FEATURED BEAN
+          </div>
+        </div>
+
+        <!-- Editorial Story Content -->
+        <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center gap-2 text-xs font-bold text-fermion-green uppercase tracking-widest">
+              <span>Garut, Jawa Barat</span>
+              <span>•</span>
+              <span>1.400 MDPL</span>
+            </div>
+
+            <h2 class="font-display text-2xl md:text-3xl font-black text-fermion-dark leading-tight">
+              Kamojang Anaerobic Fermentation
+            </h2>
+
+            <p class="text-xs text-fermion-muted leading-relaxed font-normal">
+              Diproses fermentasi anaerobik terbatas selama 72 jam di pegunungan Kamojang. Menghasilkan karakter keasaman buah tropis yang manis dan kejernihan aroma melati yang intens.
+            </p>
+
+            <div class="p-4 bg-fermion-paper border-l-4 border-fermion-gold rounded-r-lg">
+              <p class="text-xs font-bold text-fermion-dark uppercase tracking-wider mb-1">Tasting Notes Profile:</p>
+              <p class="text-xs text-stone-700 italic">Jasmine Floral, Tropical Papaya, Red Apple, Cane Sugar Finish</p>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-fermion-border flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-fermion-muted block">Harga Retail</span>
+              <span class="font-display font-bold text-2xl text-fermion-dark">Rp 125.000 <span class="text-xs font-normal text-fermion-muted">/ 200g</span></span>
+            </div>
+            <a href="#katalog" class="px-6 py-3 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-fermion-green transition-all shadow-md">
+              Pesan Sekarang
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- SECTION 02: EDITORIAL PRODUCT CATALOG -->
+  <section id="katalog" class="py-24 px-6 border-b border-fermion-border">
+    <div class="max-w-7xl mx-auto space-y-16">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-fermion-border pb-6">
+        <div>
+          <span class="text-xs font-bold text-fermion-green uppercase tracking-[0.3em]">01 / KATALOG BEANS</span>
+          <h2 class="font-display text-3xl md:text-4xl font-black text-fermion-dark mt-1">Koleksi Sangrai Minggu Ini</h2>
+        </div>
+        <div class="flex gap-3 text-xs font-bold uppercase tracking-wider">
+          <button class="px-4 py-2 bg-fermion-dark text-white rounded-full">Semua</button>
+          <button class="px-4 py-2 bg-white border border-fermion-border text-fermion-muted hover:text-fermion-dark rounded-full">Filter Roast</button>
+          <button class="px-4 py-2 bg-white border border-fermion-border text-fermion-muted hover:text-fermion-dark rounded-full">Espresso Blend</button>
+        </div>
+      </div>
+
+      <!-- Large Editorial Card Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Large Card 1 -->
+        <article class="bg-white border border-fermion-border rounded-2xl overflow-hidden flex flex-col justify-between hover:border-fermion-green/50 transition-all hover:shadow-xl group">
+          <div>
+            <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=800&q=80" alt="Ijen Natural" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+              <div class="absolute top-4 left-4 bg-fermion-dark text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-sm">
+                Filter Roast • Light
+              </div>
+              <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm border border-black/5">
+                Banyuwangi, Jatim
+              </div>
+            </div>
+
+            <div class="p-6 space-y-3">
+              <h3 class="font-display font-bold text-xl text-fermion-dark group-hover:text-fermion-green transition-colors">
+                Ijen Natural Extended Fermentation
+              </h3>
+              <p class="text-xs text-fermion-muted leading-relaxed">
+                Dipetik dari lereng kawah Gunung Ijen pada ketinggian 1.500 MDPL. Proses natural fermentasi memperkuat manisnya buah kering.
+              </p>
+              
+              <div class="pt-2 border-t border-stone-100">
+                <span class="text-[10px] font-bold text-fermion-muted uppercase tracking-wider block">Flavor Profile:</span>
+                <p class="text-xs text-stone-700 italic mt-0.5">Dried Mango, Black Tea, Honey Sweetness</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 pt-0 flex items-center justify-between border-t border-stone-100 mt-4">
+            <span class="font-display font-bold text-lg text-fermion-dark">Rp 110.000 <span class="text-xs font-normal text-fermion-muted">/ 200g</span></span>
+            <button class="px-4 py-2.5 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-fermion-green transition-colors">
+              Pesan
+            </button>
+          </div>
+        </article>
+
+        <!-- Large Card 2 -->
+        <article class="bg-white border border-fermion-border rounded-2xl overflow-hidden flex flex-col justify-between hover:border-fermion-green/50 transition-all hover:shadow-xl group">
+          <div>
+            <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80" alt="Espresso House Blend" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+              <div class="absolute top-4 left-4 bg-fermion-gold text-fermion-dark text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-sm">
+                Espresso Blend • Medium
+              </div>
+              <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm border border-black/5">
+                Garut &amp; Toraja Blend
+              </div>
+            </div>
+
+            <div class="p-6 space-y-3">
+              <h3 class="font-display font-bold text-xl text-fermion-dark group-hover:text-fermion-green transition-colors">
+                Fermion Signature House Espresso
+              </h3>
+              <p class="text-xs text-fermion-muted leading-relaxed">
+                Kombinasi rasional antara manisnya Arabika Garut dan kekentalan body Toraja. Sempurna untuk berbasis susu maupun americano murni.
+              </p>
+              
+              <div class="pt-2 border-t border-stone-100">
+                <span class="text-[10px] font-bold text-fermion-muted uppercase tracking-wider block">Flavor Profile:</span>
+                <p class="text-xs text-stone-700 italic mt-0.5">Dark Chocolate Truffle, Salted Caramel, Creamy Body</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 pt-0 flex items-center justify-between border-t border-stone-100 mt-4">
+            <span class="font-display font-bold text-lg text-fermion-dark">Rp 95.000 <span class="text-xs font-normal text-fermion-muted">/ 250g</span></span>
+            <button class="px-4 py-2.5 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-fermion-green transition-colors">
+              Pesan
+            </button>
+          </div>
+        </article>
+
+        <!-- Large Card 3 -->
+        <article class="bg-white border border-fermion-border rounded-2xl overflow-hidden flex flex-col justify-between hover:border-fermion-green/50 transition-all hover:shadow-xl group">
+          <div>
+            <div class="aspect-[4/3] bg-stone-100 relative overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?auto=format&fit=crop&w=800&q=80" alt="Gayo Wine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+              <div class="absolute top-4 left-4 bg-fermion-green text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-sm">
+                Limited Release • Light
+              </div>
+              <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm border border-black/5">
+                Takengon, Aceh Gayo
+              </div>
+            </div>
+
+            <div class="p-6 space-y-3">
+              <h3 class="font-display font-bold text-xl text-fermion-dark group-hover:text-fermion-green transition-colors">
+                Aceh Gayo Wine Process Special Batch
+              </h3>
+              <p class="text-xs text-fermion-muted leading-relaxed">
+                Menggunakan teknik fermentasi ceri utuh selama 30 hari. Aroma kompleks menyerupai anggur merah dengan bodi yang kental dan manis.
+              </p>
+              
+              <div class="pt-2 border-t border-stone-100">
+                <span class="text-[10px] font-bold text-fermion-muted uppercase tracking-wider block">Flavor Profile:</span>
+                <p class="text-xs text-stone-700 italic mt-0.5">Fermented Red Wine, Dark Cherry, Syrupy Molasses</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 pt-0 flex items-center justify-between border-t border-stone-100 mt-4">
+            <span class="font-display font-bold text-lg text-fermion-dark">Rp 145.000 <span class="text-xs font-normal text-fermion-muted">/ 200g</span></span>
+            <button class="px-4 py-2.5 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-fermion-green transition-colors">
+              Pesan
+            </button>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- SECTION 03: FEATURE EDITORIAL STORYTELLING (B2B & BERLANGGANAN) -->
+  <section id="kemitraan" class="py-24 px-6 bg-fermion-dark text-white border-b border-stone-800">
+    <div class="max-w-7xl mx-auto space-y-16">
+      
+      <!-- Section Title & Subtitle -->
+      <div class="border-b border-stone-800 pb-8">
+        <span class="text-xs font-bold text-fermion-gold uppercase tracking-[0.3em]">02 / KEMITRAAN &amp; BERLANGGANAN</span>
+        <h2 class="font-display text-4xl md:text-5xl font-black text-white mt-2 leading-tight">
+          Pass-Through Supply Kopi Tanpa Kompromi.
+        </h2>
+      </div>
+
+      <!-- Bold Editorial Quote -->
+      <blockquote class="text-xl md:text-3xl font-display font-bold leading-relaxed text-stone-200 border-l-4 border-fermion-gold pl-6 md:pl-10 max-w-4xl italic">
+        "Kemitraan bisnis kopi tidak boleh terhambat oleh potongan komisi komersial yang tinggi. Kami menghubungkan sangrai presisi roastery langsung ke meja kafe Anda."
+      </blockquote>
+
+      <!-- Two-Column Editorial Story Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-6">
+        
+        <!-- Left Story: B2B Partnership -->
+        <div class="lg:col-span-6 bg-stone-900 border border-stone-800 p-8 md:p-10 rounded-2xl space-y-6">
+          <span class="text-xs font-bold text-fermion-green uppercase tracking-widest">Kemitraan Kafe &amp; B2B</span>
+          <h3 class="font-display text-2xl font-bold text-white">Pasokan Konsisten Tanpa Fee Pihak Ketiga</h3>
+          
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Dapatkan akses langsung ke harga grosir roastery untuk kebutuhan kafe, hotel, dan ruang kerja Anda. Tanpa tambahan biaya komisi marketplace (~30%) dengan jaminan konsistensi profil sangrai bulanan.
+          </p>
+
+          <div class="space-y-3 pt-2 text-xs text-stone-300">
+            <div class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 bg-fermion-gold rounded-full"></span>
+              <span>Kalibrasi resep espresso &amp; cupping session gratis bersama tim roaster.</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-1.5 h-1.5 bg-fermion-gold rounded-full"></span>
+              <span>Pengiriman terjadwal dengan kemasan khusus industri 1 Kg / 5 Kg.</span>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <a href="#" class="inline-block px-8 py-3.5 bg-fermion-gold text-fermion-dark font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-white transition-all">
+              Ajukan Kemitraan B2B
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Story: Subscription -->
+        <div class="lg:col-span-6 bg-stone-900 border border-stone-800 p-8 md:p-10 rounded-2xl space-y-6">
+          <span class="text-xs font-bold text-fermion-gold uppercase tracking-widest">Program Berlangganan Personal</span>
+          <h3 class="font-display text-2xl font-bold text-white">Kopi Sangrai Segar Setiap Bulan</h3>
+          
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Jangan pernah kehabisan biji kopi favorit Anda di rumah. Pilih rotasi varian favorit Anda, dan kami akan mengirimkan kopi yang baru disangrai secara otomatis setiap 2 atau 4 minggu.
+          </p>
+
+          <!-- Transparent Pricing Comparison -->
+          <div class="space-y-3 pt-2 border-t border-stone-800 text-xs">
+            <div class="flex justify-between items-center py-2 border-b border-stone-800/60">
+              <span class="text-stone-300 font-semibold">Paket Filter Explorer (2 Bag 200g / bln)</span>
+              <span class="font-mono font-bold text-fermion-gold">Rp 195.000 / bln</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-stone-800/60">
+              <span class="text-stone-300 font-semibold">Paket Espresso Daily (1 Bag 1 Kg / bln)</span>
+              <span class="font-mono font-bold text-fermion-gold">Rp 320.000 / bln</span>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <a href="#berlangganan" class="inline-block px-8 py-3.5 bg-stone-800 text-white border border-stone-700 font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-stone-700 transition-all">
+              Pilih Paket Berlangganan
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- FOOTER EDITORIAL -->
+  <footer class="bg-fermion-dark text-white border-t border-stone-800 py-16 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+      
+      <div class="md:col-span-5 space-y-4">
+        <div class="font-display font-black text-2xl tracking-tighter uppercase text-white">
+          FERMION <span class="text-fermion-green font-normal text-xs tracking-widest ml-1">ROASTERY</span>
+        </div>
+        <p class="text-xs text-stone-400 max-w-sm leading-relaxed">
+          Specialty coffee roastery mandiri dari Indonesia. Mengutamakan transparansi rasa, presisi penyangraian, dan kebebasan transaksi langsung dari brand.
+        </p>
+      </div>
+
+      <div class="md:col-span-3 space-y-3 text-xs text-stone-400">
+        <p class="font-bold text-fermion-gold uppercase tracking-widest">Navigasi Utama</p>
+        <ul class="space-y-2">
+          <li><a href="#katalog" class="hover:text-white transition-colors">Katalog Specialty Beans</a></li>
+          <li><a href="#kemitraan" class="hover:text-white transition-colors">Kemitraan B2B Kafe</a></li>
+          <li><a href="#berlangganan" class="hover:text-white transition-colors">Berlangganan Rutin</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-4 space-y-3 text-xs text-stone-400">
+        <p class="font-bold text-fermion-gold uppercase tracking-widest">Lokasi Roastery &amp; Kontak</p>
+        <p>Cirebon Timur, Jawa Barat, Indonesia</p>
+        <p>Email: orders@mail.fermionroastery.com</p>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center text-[11px] text-stone-500">
+      <p>© 2026 Fermion Roastery. Hak Cipta Dilindungi.</p>
+      <p class="mt-2 md:mt-0">Konsep Desain: Editorial Magazine Edition</p>
+    </div>
+  </footer>
+
+</body>
+</html>

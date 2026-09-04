@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop · Fermion Roastery</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  .shop { display:grid; grid-template-columns: 260px 1fr; gap: 40px; align-items:start; }
+  .filters { position: sticky; top: 90px; }
+  .filter-group { border-bottom:1px solid var(--border); padding: 18px 0; }
+  .filter-group h4 { font-family:var(--font-sans); font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
+  .check { display:flex; align-items:center; gap:10px; padding:5px 0; font-size:.92rem; cursor:pointer; }
+  .check input { accent-color: var(--ember); width:17px; height:17px; }
+  .check .cnt { margin-left:auto; color:var(--text-muted); font-size:.8rem; }
+  .shop-head { border-radius:var(--r-xl); background:linear-gradient(150deg,var(--pine),var(--pine-2)); color:#fff; padding: clamp(32px,5vw,56px); position:relative; overflow:hidden; }
+  .shop-head::after { content:'☕'; position:absolute; font-size:12rem; right:1rem; top:-2rem; opacity:.1; }
+  .toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin: 28px 0; }
+  @media (max-width:900px){ .shop{grid-template-columns:1fr} .filters{position:static;display:none} }
+</style>
+</head>
+<body>
+
+<div class="announce">✦ Gratis ongkir untuk order di atas Rp 250.000 · <a href="shop.html">Belanja sekarang</a></div>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="index.html"><span class="brand__dot"></span>Fermion</a>
+    <nav class="nav__links">
+      <a href="shop.html" style="color:var(--ember-deep)">Shop</a>
+      <a href="home.html#story">Our Story</a>
+      <a href="home.html#sub">Subscription</a>
+      <a href="home.html#journal">Journal</a>
+      <a href="design-system.html">System</a>
+    </nav>
+    <div class="row gap-sm">
+      <a class="btn btn-ghost btn-sm hide-sm" href="checkout.html">Masuk</a>
+      <a class="btn btn-primary btn-sm cart-btn" href="checkout.html">Cart <span class="cart-btn__count">2</span></a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" style="padding-top:28px">
+  <p class="muted" style="font-size:.85rem"><a href="home.html">Home</a> / <span class="text-ember">Shop</span></p>
+  <div class="shop-head">
+    <span class="eyebrow on-dark">Katalog kopi</span>
+    <h1 style="color:#fff;max-width:16ch;position:relative;z-index:1">Semua roast, satu tempat.</h1>
+    <p style="color:#C9D6CC;max-width:48ch;position:relative;z-index:1">18 single origin & blend, di-roast segar tiap minggu. Filter sesuai selera dan cara seduhmu.</p>
+  </div>
+</div>
+
+<div class="wrap shop" style="padding-top:36px">
+  <!-- FILTERS -->
+  <aside class="filters">
+    <div class="between"><h3 style="margin:0;font-size:1.1rem">Filter</h3><a href="#" class="muted" style="font-size:.82rem">Reset</a></div>
+    <div class="filter-group">
+      <h4>Roast level</h4>
+      <label class="check"><input type="checkbox" checked>Light <span class="cnt">6</span></label>
+      <label class="check"><input type="checkbox">Medium <span class="cnt">8</span></label>
+      <label class="check"><input type="checkbox">Dark <span class="cnt">4</span></label>
+    </div>
+    <div class="filter-group">
+      <h4>Untuk seduhan</h4>
+      <label class="check"><input type="checkbox">Espresso <span class="cnt">7</span></label>
+      <label class="check"><input type="checkbox" checked>Filter / V60 <span class="cnt">9</span></label>
+      <label class="check"><input type="checkbox">French press <span class="cnt">5</span></label>
+    </div>
+    <div class="filter-group">
+      <h4>Origin</h4>
+      <label class="check"><input type="checkbox">Aceh Gayo <span class="cnt">3</span></label>
+      <label class="check"><input type="checkbox">Toraja <span class="cnt">2</span></label>
+      <label class="check"><input type="checkbox">Bali Kintamani <span class="cnt">2</span></label>
+      <label class="check"><input type="checkbox">Flores <span class="cnt">2</span></label>
+    </div>
+    <div class="filter-group" style="border-bottom:0">
+      <h4>Harga</h4>
+      <div class="row"><input class="input" placeholder="Min" style="padding:.6em"><span>–</span><input class="input" placeholder="Max" style="padding:.6em"></div>
+    </div>
+    <button class="btn btn-pine btn-block mt-2">Terapkan filter</button>
+  </aside>
+
+  <!-- GRID -->
+  <div>
+    <div class="toolbar">
+      <div class="row" style="flex-wrap:wrap">
+        <span class="chip active">Semua</span>
+        <span class="chip">Single origin</span>
+        <span class="chip">Blend</span>
+        <span class="chip">Decaf</span>
+        <span class="chip">Gift set</span>
+      </div>
+      <div class="row gap-sm">
+        <span class="muted" style="font-size:.85rem">18 produk</span>
+        <select class="select" style="width:auto;padding:.55em 2em .55em 1em"><option>Terpopuler</option><option>Terbaru</option><option>Harga ↑</option><option>Harga ↓</option></select>
+      </div>
+    </div>
+
+    <div class="grid cols-3">
+      <!-- 9 product cards -->
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#F3D9C6,#E8B48C)">
+          <div class="pcard__tags"><span class="badge badge-solid">Best seller</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Gayo · Aceh</span><a href="product.html" class="pcard__name">Highland Honey</a><span class="stars">★★★★★</span><span class="pcard__notes">Peach · brown sugar · floral</span><div class="pcard__foot"><span class="price">Rp 128k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#D9C3A2,#B98E5E)">
+          <div class="pcard__tags"><span class="badge badge-gold">New</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Toraja · Sulawesi</span><a href="product.html" class="pcard__name">Sapan Natural</a><span class="stars">★★★★☆</span><span class="pcard__notes">Dark cherry · cocoa · spice</span><div class="pcard__foot"><span class="price">Rp 135k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#E4C8B0,#C98A63)">
+          <div class="pcard__tags"><span class="badge badge-berry">–15%</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Kintamani · Bali</span><a href="product.html" class="pcard__name">Citrus Volcano</a><span class="stars">★★★★★</span><span class="pcard__notes">Orange · lemongrass · honey</span><div class="pcard__foot"><span class="price"><del>Rp 130k</del>Rp 110k</span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#3B2A1E,#241C15)">
+          <div class="pcard__tags"><span class="badge" style="background:#0006;color:#fff">Espresso</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">House blend</span><a href="product.html" class="pcard__name">Midnight Pull</a><span class="stars">★★★★★</span><span class="pcard__notes">Dark choc · caramel · nutty</span><div class="pcard__foot"><span class="price">Rp 118k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#EAD6B8,#CDA06A)">
+          <button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Flores · Bajawa</span><a href="product.html" class="pcard__name">Golden Terrace</a><span class="stars">★★★★☆</span><span class="pcard__notes">Caramel · almond · vanilla</span><div class="pcard__foot"><span class="price">Rp 122k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#D4E0D6,#7FA88C)">
+          <div class="pcard__tags"><span class="badge badge-pine">Decaf</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Java · Preanger</span><a href="product.html" class="pcard__name">Quiet Hours</a><span class="stars">★★★★☆</span><span class="pcard__notes">Milk choc · hazelnut · soft</span><div class="pcard__foot"><span class="price">Rp 125k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#F1C97A,#E4A02C)">
+          <div class="pcard__tags"><span class="badge badge-gold">Gift set</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">🎁</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Trio sampler</span><a href="product.html" class="pcard__name">The Explorer Box</a><span class="stars">★★★★★</span><span class="pcard__notes">3× 100g pilihan origin</span><div class="pcard__foot"><span class="price">Rp 210k <small>/box</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#E7B9A0,#C56B4A)">
+          <button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Gayo · Aceh</span><a href="product.html" class="pcard__name">Red Wine Natural</a><span class="stars">★★★★★</span><span class="pcard__notes">Strawberry · wine · syrupy</span><div class="pcard__foot"><span class="price">Rp 148k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <a href="product.html" class="pcard__media" style="background:linear-gradient(150deg,#C9B8D8,#8D5B9E)">
+          <div class="pcard__tags"><span class="badge badge-gold">New</span></div><button class="pcard__fav">♡</button><span style="font-size:3rem">☕</span></a>
+        <div class="pcard__body"><span class="pcard__origin">Experimental</span><a href="product.html" class="pcard__name">Anaerobic 72h</a><span class="stars">★★★★☆</span><span class="pcard__notes">Tropical · funky · juicy</span><div class="pcard__foot"><span class="price">Rp 165k <small>/200g</small></span><button class="btn btn-primary btn-sm">+ Cart</button></div></div>
+      </article>
+    </div>
+
+    <!-- pagination -->
+    <div class="row center mt-4" style="justify-content:center;gap:8px">
+      <button class="btn btn-ghost btn-sm">←</button>
+      <button class="chip active">1</button>
+      <button class="chip">2</button>
+      <button class="chip">3</button>
+      <button class="btn btn-ghost btn-sm">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer" style="margin-top:80px">
+  <div class="wrap grid cols-4" style="gap:32px">
+    <div>
+      <div class="brand" style="color:#fff"><span class="brand__dot"></span>Fermion</div>
+      <p style="color:#9DB0A2;margin-top:12px;max-width:26ch">Specialty coffee roastery dari Cirebon. Roasted with precision, served with heart.</p>
+    </div>
+    <div><h4>Belanja</h4><a href="shop.html">Single origin</a><br><a href="shop.html">Espresso</a><br><a href="home.html#sub">Subscription</a><br><a href="shop.html">Gift set</a></div>
+    <div><h4>Fermion</h4><a href="home.html#story">Our story</a><br><a href="home.html#journal">Journal</a><br><a href="#">Wholesale</a><br><a href="#">Kontak</a></div>
+    <div><h4>Bantuan</h4><a href="#">Lacak order</a><br><a href="#">Pengiriman</a><br><a href="#">FAQ</a><br><a href="#">Kebijakan</a></div>
+  </div>
+  <div class="wrap footer__bottom between"><span>© 2026 Fermion Roastery. Mockup design.</span><span>Warm Editorial · v1</span></div>
+</footer>
+
+</body>
+</html>

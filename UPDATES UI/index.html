@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Update · Fermion Roastery</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  .hub-hero { text-align:center; padding-block: clamp(56px,9vw,110px); position:relative; overflow:hidden; }
+  .swatches { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
+  .sw { width:56px;height:56px;border-radius:16px;box-shadow:var(--sh-sm); position:relative; }
+  .sw span { position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:.68rem; color:var(--text-muted); white-space:nowrap; }
+  .preview { display:block; border-radius:var(--r-lg); overflow:hidden; border:1px solid var(--border); box-shadow:var(--sh-md); transition:transform .2s,box-shadow .2s; background:var(--white); }
+  .preview:hover { transform:translateY(-6px); box-shadow:var(--sh-lg); }
+  .preview__top { aspect-ratio:16/10; display:grid; place-items:center; font-size:3rem; position:relative; }
+  .preview__meta { padding:20px 22px; }
+  .num { font-family:var(--font-display); font-size:1rem; color:var(--ember); font-weight:600; }
+  .blob-a { width:380px;height:380px;background:var(--gold-tint);top:-120px;left:-80px; }
+  .blob-b { width:300px;height:300px;background:var(--ember-tint);bottom:-120px;right:-60px; }
+</style>
+</head>
+<body>
+
+<div class="hub-hero wrap">
+  <span class="blob blob-a"></span><span class="blob blob-b"></span>
+  <span class="eyebrow reveal" style="justify-content:center">Fermion Roastery · UI redesign proposal</span>
+  <h1 class="display reveal d1" style="margin:.2em auto;max-width:14ch">Warm <span class="serif-italic text-ember">Editorial</span></h1>
+  <p class="lead reveal d2 mx-auto" style="text-align:center">Arah desain baru untuk owned marketplace Fermion — <strong>playful, tapi tetap profesional</strong>. Cream hangat, aksen berani, tipografi berkarakter. Klik tiap layar untuk lihat penuh.</p>
+  <div class="swatches reveal d3">
+    <div class="sw" style="background:var(--cream)"><span>Cream</span></div>
+    <div class="sw" style="background:var(--ember)"><span>Ember</span></div>
+    <div class="sw" style="background:var(--pine)"><span>Pine</span></div>
+    <div class="sw" style="background:var(--gold)"><span>Gold</span></div>
+    <div class="sw" style="background:var(--berry)"><span>Berry</span></div>
+    <div class="sw" style="background:var(--ink)"><span>Ink</span></div>
+  </div>
+  <p class="script reveal d4 mt-4" style="font-size:2rem">brew bolder ✦</p>
+</div>
+
+<section class="wrap" style="padding-top:0">
+  <div class="grid cols-2">
+    <a class="preview" href="home.html">
+      <div class="preview__top" style="background:linear-gradient(150deg,#E9B98F,#D8552B)"><span style="color:#fff">🏠</span></div>
+      <div class="preview__meta"><span class="num">01</span><h3 style="margin:.1em 0">Homepage</h3><p class="muted mb-0">Hero, value prop, koleksi, story, subscription, journal, newsletter.</p></div>
+    </a>
+    <a class="preview" href="shop.html">
+      <div class="preview__top" style="background:linear-gradient(150deg,var(--pine),var(--pine-2))"><span>🛍️</span></div>
+      <div class="preview__meta"><span class="num">02</span><h3 style="margin:.1em 0">Shop / Katalog</h3><p class="muted mb-0">Filter sidebar, chips kategori, grid produk, pagination.</p></div>
+    </a>
+    <a class="preview" href="product.html">
+      <div class="preview__top" style="background:linear-gradient(150deg,#F3D9C6,#C98A63)"><span>☕</span></div>
+      <div class="preview__meta"><span class="num">03</span><h3 style="margin:.1em 0">Product Detail</h3><p class="muted mb-0">Gallery, profil rasa, opsi grind/ukuran, spec lot, review.</p></div>
+    </a>
+    <a class="preview" href="checkout.html">
+      <div class="preview__top" style="background:linear-gradient(150deg,#F1C97A,var(--gold))"><span>🧾</span></div>
+      <div class="preview__meta"><span class="num">04</span><h3 style="margin:.1em 0">Cart & Checkout</h3><p class="muted mb-0">Ringkasan keranjang, alamat, ongkir, pembayaran, promo.</p></div>
+    </a>
+  </div>
+  <a class="preview mt-3" href="design-system.html" style="display:block">
+    <div class="between card-pad" style="background:linear-gradient(120deg,var(--ink),#3B2A1E);color:#fff">
+      <div><span class="num text-gold">05</span><h3 style="margin:.1em 0;color:#fff">Design System</h3><p style="color:#C9D6CC;margin:0">Palette, tipografi, tombol, badge, kartu, form — fondasi semua layar.</p></div>
+      <span style="font-size:2.4rem">🎨</span>
+    </div>
+  </a>
+</section>
+
+<section class="wrap center" style="max-width:640px">
+  <div class="divider-beans">• • •</div>
+  <h2 class="mt-3">Kenapa arah ini?</h2>
+  <p class="muted">Cream hangat menjaga kesan artisan & natural. Ember (oranye roasted) memicu selera dan energi — warna khas kopi sangrai. Pine green mengikat semua jadi terasa terpercaya dan matang. Tipografi Fraunces + aksen tulisan tangan bikin brand terasa punya jiwa, bukan template toko generik.</p>
+  <a class="btn btn-primary btn-lg mt-2" href="home.html">Mulai dari Homepage →</a>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__bottom between" style="border-top:0"><span>© 2026 Fermion Roastery. Mockup design proposal.</span><span>Warm Editorial · v1</span></div>
+</footer>
+
+</body>
+</html>

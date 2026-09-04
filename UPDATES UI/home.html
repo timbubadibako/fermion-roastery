@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fermion Roastery · Specialty Coffee</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* --- hero --- */
+  .hero { position: relative; overflow: hidden; padding-block: clamp(48px,7vw,96px); }
+  .hero__grid { display:grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px,5vw,64px); align-items:center; }
+  .hero__art {
+    position: relative; aspect-ratio: 1/1.05; border-radius: var(--r-xl);
+    background: linear-gradient(160deg,#E9B98F 0%, #D8552B 55%, #B3401D 100%);
+    box-shadow: var(--sh-lg); display:grid; place-items:center; overflow:hidden;
+  }
+  .hero__art .emoji { font-size: clamp(7rem,18vw,13rem); filter: drop-shadow(0 20px 30px rgba(0,0,0,.25)); }
+  .hero__pill {
+    position:absolute; background: var(--white); border-radius: var(--r-lg);
+    box-shadow: var(--sh-md); padding: 14px 18px; font-size:.85rem;
+  }
+  .hero__pill.a { top: 26px; left: -14px; }
+  .hero__pill.b { bottom: 28px; right: -14px; }
+  .hero__pill strong { display:block; font-family:var(--font-display); font-size:1.2rem; }
+  .blob-1 { width: 340px; height: 340px; background: var(--gold-tint); top: -80px; right: -60px; }
+  .blob-2 { width: 260px; height: 260px; background: var(--pine-tint); bottom: -60px; left: -80px; }
+
+  .feature-row { display:flex; gap: 14px; align-items:flex-start; }
+  .feature-row .ic { width:44px;height:44px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:1.2rem;background:var(--ember-tint); }
+
+  .story__img { border-radius: var(--r-xl); aspect-ratio: 4/5; background: linear-gradient(150deg,#2C523F,#1F3D30); display:grid;place-items:center; box-shadow: var(--sh-lg); }
+  .stat { font-family: var(--font-display); font-size: clamp(2rem,4vw,2.8rem); font-weight:600; color: var(--gold); }
+
+  .sub-cta { border-radius: var(--r-xl); background: var(--ember); color:#fff; overflow:hidden; position:relative; }
+  .sub-cta::after { content:'☕'; position:absolute; font-size:16rem; right:-2rem; bottom:-5rem; opacity:.12; }
+</style>
+</head>
+<body>
+
+<div class="announce">✦ Gratis ongkir untuk order di atas Rp 250.000 · <a href="shop.html">Belanja sekarang</a></div>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="index.html"><span class="brand__dot"></span>Fermion</a>
+    <nav class="nav__links">
+      <a href="shop.html">Shop</a>
+      <a href="#story">Our Story</a>
+      <a href="#sub">Subscription</a>
+      <a href="#journal">Journal</a>
+      <a href="design-system.html">System</a>
+    </nav>
+    <div class="row gap-sm">
+      <a class="btn btn-ghost btn-sm hide-sm" href="checkout.html">Masuk</a>
+      <a class="btn btn-primary btn-sm cart-btn" href="checkout.html">Cart <span class="cart-btn__count">2</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero wrap">
+  <span class="blob blob-1"></span>
+  <span class="blob blob-2"></span>
+  <div class="hero__grid">
+    <div>
+      <span class="eyebrow reveal">Specialty coffee roastery · Cirebon</span>
+      <h1 class="display reveal d1" style="margin-top:.3em">Brew<br><span class="serif-italic text-ember underline-hand">bolder</span> every<br>morning.</h1>
+      <p class="lead reveal d2 mt-2">Biji kopi single origin yang di-roast segar tiap minggu. Transparan soal petani, proses, dan tanggal roast — supaya secangkir kopimu jujur dari hulu ke hilir.</p>
+      <div class="row gap-sm mt-3 reveal d3" style="flex-wrap:wrap">
+        <a class="btn btn-primary btn-lg" href="shop.html">Belanja kopi →</a>
+        <a class="btn btn-ghost btn-lg" href="#sub">Coba subscription</a>
+      </div>
+      <div class="row gap-lg mt-4 reveal d4" style="flex-wrap:wrap">
+        <div><div class="stat" style="color:var(--ember)">4.9★</div><span class="muted" style="font-size:.85rem">1.2rb+ ulasan</span></div>
+        <div style="width:1px;height:40px;background:var(--border)" class="hide-sm"></div>
+        <div><div class="stat" style="color:var(--ember)">48j</div><span class="muted" style="font-size:.85rem">roast-to-ship</span></div>
+        <div style="width:1px;height:40px;background:var(--border)" class="hide-sm"></div>
+        <div><div class="stat" style="color:var(--ember)">100%</div><span class="muted" style="font-size:.85rem">arabika lokal</span></div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="hero__art">
+        <span class="emoji">☕</span>
+        <div class="hero__pill a"><span class="script" style="font-size:1.4rem">fresh roast</span><strong>Roasted 5 Jul</strong></div>
+        <div class="hero__pill b"><span class="muted" style="font-size:.7rem">mulai dari</span><strong class="text-ember">Rp 98.000</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee band-cream" style="padding-block:22px">
+  <div class="marquee__track">
+    <span>Single Origin ✦</span><span>Fresh Roast ✦</span><span>Honest Sourcing ✦</span><span>Espresso ✦</span><span>Filter ✦</span>
+    <span>Single Origin ✦</span><span>Fresh Roast ✦</span><span>Honest Sourcing ✦</span><span>Espresso ✦</span><span>Filter ✦</span>
+  </div>
+</div>
+
+<!-- VALUE PROP -->
+<section class="wrap">
+  <div class="center" style="max-width:52ch;margin-inline:auto">
+    <span class="eyebrow" style="justify-content:center">Kenapa Fermion</span>
+    <h2>Bukan sekadar kopi. <span class="serif-italic text-ember">Sebuah standar.</span></h2>
+  </div>
+  <div class="grid cols-3 mt-4">
+    <div class="card card-pad">
+      <div class="feature-row"><div class="ic">🌱</div><div>
+        <h3>Sumber transparan</h3>
+        <p class="muted">Kami cantumkan nama petani, ketinggian, dan proses tiap lot. Tidak ada yang disembunyikan.</p>
+      </div></div>
+    </div>
+    <div class="card card-pad">
+      <div class="feature-row"><div class="ic" style="background:var(--pine-tint)">🔥</div><div>
+        <h3>Roast presisi</h3>
+        <p class="muted">Profil roasting dikalibrasi per origin untuk memunculkan karakter rasa terbaiknya.</p>
+      </div></div>
+    </div>
+    <div class="card card-pad">
+      <div class="feature-row"><div class="ic" style="background:var(--gold-tint)">🚚</div><div>
+        <h3>Selalu segar</h3>
+        <p class="muted">Dikirim maksimal 48 jam setelah roast. Roast date selalu tercetak di kemasan.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="wrap band-cream" style="border-radius:var(--r-xl);margin-inline:var(--gutter)">
+  <div class="wrap" style="padding-inline:0">
+    <div class="between mb-0" style="align-items:flex-end;flex-wrap:wrap;gap:16px">
+      <div>
+        <span class="eyebrow">Paling dicari</span>
+        <h2 style="margin:0">Koleksi minggu ini</h2>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="shop.html">Lihat semua →</a>
+    </div>
+    <div class="grid cols-4 mt-4">
+      <article class="card pcard pcard-hover card-hover">
+        <div class="pcard__media" style="background:linear-gradient(150deg,#F3D9C6,#E8B48C)">
+          <div class="pcard__tags"><span class="badge badge-solid">Best seller</span></div>
+          <button class="pcard__fav">♡</button><span style="font-size:3.4rem">☕</span>
+        </div>
+        <div class="pcard__body">
+          <span class="pcard__origin">Gayo · Aceh</span>
+          <span class="pcard__name">Highland Honey</span>
+          <span class="pcard__notes">Peach · brown sugar · floral</span>
+          <div class="pcard__foot"><span class="price">Rp 128k <small>/200g</small></span><button class="btn btn-primary btn-sm">+</button></div>
+        </div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <div class="pcard__media" style="background:linear-gradient(150deg,#D9C3A2,#B98E5E)">
+          <div class="pcard__tags"><span class="badge badge-gold">New</span></div>
+          <button class="pcard__fav">♡</button><span style="font-size:3.4rem">☕</span>
+        </div>
+        <div class="pcard__body">
+          <span class="pcard__origin">Toraja · Sulawesi</span>
+          <span class="pcard__name">Sapan Natural</span>
+          <span class="pcard__notes">Dark cherry · cocoa · spice</span>
+          <div class="pcard__foot"><span class="price">Rp 135k <small>/200g</small></span><button class="btn btn-primary btn-sm">+</button></div>
+        </div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <div class="pcard__media" style="background:linear-gradient(150deg,#E4C8B0,#C98A63)">
+          <div class="pcard__tags"><span class="badge badge-berry">–15%</span></div>
+          <button class="pcard__fav">♡</button><span style="font-size:3.4rem">☕</span>
+        </div>
+        <div class="pcard__body">
+          <span class="pcard__origin">Kintamani · Bali</span>
+          <span class="pcard__name">Citrus Volcano</span>
+          <span class="pcard__notes">Orange · lemongrass · honey</span>
+          <div class="pcard__foot"><span class="price"><del>Rp 130k</del>Rp 110k</span><button class="btn btn-primary btn-sm">+</button></div>
+        </div>
+      </article>
+      <article class="card pcard pcard-hover card-hover">
+        <div class="pcard__media" style="background:linear-gradient(150deg,#3B2A1E,#241C15)">
+          <div class="pcard__tags"><span class="badge" style="background:#0006;color:#fff">Espresso</span></div>
+          <button class="pcard__fav">♡</button><span style="font-size:3.4rem">☕</span>
+        </div>
+        <div class="pcard__body">
+          <span class="pcard__origin">House blend</span>
+          <span class="pcard__name">Midnight Pull</span>
+          <span class="pcard__notes">Dark choc · caramel · nutty</span>
+          <div class="pcard__foot"><span class="price">Rp 118k <small>/200g</small></span><button class="btn btn-primary btn-sm">+</button></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="wrap" id="story">
+  <div class="hero__grid" style="grid-template-columns:.9fr 1.1fr">
+    <div class="story__img"><span style="font-size:7rem">🏔️</span></div>
+    <div>
+      <span class="eyebrow">Our story</span>
+      <h2>Dari kebun di lereng, <span class="serif-italic text-ember">ke meja kamu.</span></h2>
+      <p class="lead">Fermion lahir dari satu keyakinan sederhana: kopi Indonesia layak dinikmati dengan cara yang jujur. Kami bekerja langsung dengan petani, membayar adil, dan me-roast dengan presisi.</p>
+      <div class="grid cols-3 mt-3">
+        <div><div class="stat">12+</div><span class="muted" style="font-size:.85rem">petani mitra</span></div>
+        <div><div class="stat">6</div><span class="muted" style="font-size:.85rem">origin lokal</span></div>
+        <div><div class="stat">2021</div><span class="muted" style="font-size:.85rem">sejak</span></div>
+      </div>
+      <a class="btn btn-pine mt-3" href="#">Baca kisah lengkap →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SUBSCRIPTION CTA -->
+<section class="wrap" id="sub">
+  <div class="sub-cta card-pad" style="padding:clamp(36px,6vw,72px)">
+    <div style="max-width:60%;position:relative;z-index:1" class="sub-cta__inner">
+      <span class="eyebrow on-dark">Subscription</span>
+      <h2 style="color:#fff">Kopi segar, datang sendiri.</h2>
+      <p style="color:#FDE7DC;font-size:1.1rem;max-width:44ch">Pilih ritme kirim tiap 2 atau 4 minggu. Hemat 15%, gratis ongkir, dan bisa skip kapan saja. Tanpa drama.</p>
+      <div class="row gap-sm mt-3" style="flex-wrap:wrap">
+        <a class="btn btn-gold btn-lg" href="#">Mulai dari Rp 98k/bln</a>
+        <a class="btn btn-ghost on-dark" href="shop.html">Lihat paket</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNAL -->
+<section class="wrap band-cream" id="journal" style="border-radius:var(--r-xl);margin-inline:var(--gutter)">
+  <div class="wrap" style="padding-inline:0">
+    <span class="eyebrow">Journal</span>
+    <div class="between" style="align-items:flex-end"><h2 style="margin:0">Belajar ngopi, pelan-pelan</h2><a class="btn btn-ghost btn-sm hide-sm" href="#">Semua artikel →</a></div>
+    <div class="grid cols-3 mt-4">
+      <article class="card card-hover">
+        <div style="aspect-ratio:16/10;background:linear-gradient(140deg,#E9B98F,#D8552B)"></div>
+        <div class="card-pad"><span class="badge badge-ember">Brewing</span><h3 style="margin:.5em 0 .2em">Rasio V60 untuk pemula</h3><p class="muted">Panduan 1:15 yang gampang diulang di rumah.</p></div>
+      </article>
+      <article class="card card-hover">
+        <div style="aspect-ratio:16/10;background:linear-gradient(140deg,#8CADD8,#2C523F)"></div>
+        <div class="card-pad"><span class="badge badge-pine">Sourcing</span><h3 style="margin:.5em 0 .2em">Apa itu proses honey?</h3><p class="muted">Kenapa proses memengaruhi rasa di cangkir.</p></div>
+      </article>
+      <article class="card card-hover">
+        <div style="aspect-ratio:16/10;background:linear-gradient(140deg,#F1C97A,#E4A02C)"></div>
+        <div class="card-pad"><span class="badge badge-gold">Storage</span><h3 style="margin:.5em 0 .2em">Simpan biji biar awet segar</h3><p class="muted">Tiga aturan sederhana menjaga aroma.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="wrap center" style="max-width:640px">
+  <span class="script" style="font-size:2.2rem">stay in the loop</span>
+  <h2>Dapat drop baru & tips duluan</h2>
+  <p class="muted">Satu email seminggu. Tanpa spam, janji.</p>
+  <div class="row mt-3" style="max-width:440px;margin-inline:auto">
+    <input class="input flex-1" placeholder="email kamu">
+    <button class="btn btn-primary">Gabung</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap grid cols-4" style="gap:32px">
+    <div>
+      <div class="brand" style="color:#fff"><span class="brand__dot"></span>Fermion</div>
+      <p style="color:#9DB0A2;margin-top:12px;max-width:26ch">Specialty coffee roastery dari Cirebon. Roasted with precision, served with heart.</p>
+    </div>
+    <div><h4>Belanja</h4><a href="shop.html">Single origin</a><br><a href="shop.html">Espresso</a><br><a href="#sub">Subscription</a><br><a href="shop.html">Gift set</a></div>
+    <div><h4>Fermion</h4><a href="#story">Our story</a><br><a href="#journal">Journal</a><br><a href="#">Wholesale</a><br><a href="#">Kontak</a></div>
+    <div><h4>Bantuan</h4><a href="#">Lacak order</a><br><a href="#">Pengiriman</a><br><a href="#">FAQ</a><br><a href="#">Kebijakan</a></div>
+  </div>
+  <div class="wrap footer__bottom between">
+    <span>© 2026 Fermion Roastery. Mockup design.</span>
+    <span>Warm Editorial · v1</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fermion Roastery — Swiss Modernism Admin Panel Sample</title>
+  
+  <!-- Fonts: Inter & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            fermion: {
+              paper: '#FAF9F6',
+              surface: '#FFFFFF',
+              dark: '#111827',
+              muted: '#4B5563',
+              green: '#367F4D',
+              gold: '#F1B941',
+              border: '#E5E7EB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FAF9F6;
+      color: #111827;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-fermion-green selection:text-white flex min-h-screen">
+
+  <!-- SIDEBAR NAVIGATION (Swiss Grid Fixed Left) -->
+  <aside class="w-64 bg-fermion-dark text-white flex flex-col justify-between p-6 fixed inset-y-0 left-0 z-30">
+    <div class="space-y-8">
+      <!-- Brand Logo -->
+      <div class="border-b border-stone-800 pb-6">
+        <div class="font-display font-black text-xl tracking-tighter uppercase text-white">
+          FERMION <span class="text-fermion-green font-normal text-xs tracking-widest block mt-0.5">ADMIN ENGINE</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1 text-xs font-semibold tracking-wider">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 bg-fermion-green text-white rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Ringkasan Utilitas
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-stone-400 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          Kelola Pesanan
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-stone-400 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          Kelola Pelanggan & B2B
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-stone-400 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          Stok Produk Kopi
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-stone-400 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+          Input Konten & Jurnal
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-stone-400 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
+          Pengaturan Sistem
+        </a>
+      </nav>
+    </div>
+
+    <!-- Admin Profile Footer -->
+    <div class="pt-6 border-t border-stone-800 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-fermion-green text-white font-bold flex items-center justify-center text-xs">
+        SY
+      </div>
+      <div>
+        <p class="text-xs font-bold text-white">Syifa Yaum</p>
+        <p class="text-[10px] text-stone-400">Head Roaster / Admin</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA (Offset ml-64 for fixed sidebar) -->
+  <main class="ml-64 flex-1 p-8 md:p-12 space-y-10">
+
+    <!-- TOP CONTROL BAR -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-fermion-border">
+      <div>
+        <span class="text-xs font-bold text-fermion-green uppercase tracking-widest">Dasbor Operasional</span>
+        <h1 class="font-display text-3xl font-black text-fermion-dark mt-1">Kelola Pelanggan & Konten</h1>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <button class="px-5 py-2.5 bg-white border border-fermion-border rounded-lg text-xs font-bold uppercase tracking-wider text-fermion-dark hover:bg-stone-100 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Ekspor Data
+        </button>
+        <button class="px-5 py-2.5 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-fermion-green transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Tambah Produk / Konten
+        </button>
+      </div>
+    </header>
+
+    <!-- METRICS GRID (Swiss Data Cards) -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      
+      <div class="bg-white border border-fermion-border p-6 rounded-xl space-y-2 shadow-sm">
+        <p class="text-[11px] font-bold text-fermion-muted uppercase tracking-wider">Total Pelanggan Aktif</p>
+        <p class="font-display font-black text-3xl text-fermion-dark">1.482</p>
+        <p class="text-[10px] font-semibold text-fermion-green flex items-center gap-1">
+          ↑ +12% bulan ini
+        </p>
+      </div>
+
+      <div class="bg-white border border-fermion-border p-6 rounded-xl space-y-2 shadow-sm">
+        <p class="text-[11px] font-bold text-fermion-muted uppercase tracking-wider">Partner B2B Terverifikasi</p>
+        <p class="font-display font-black text-3xl text-fermion-dark">38 <span class="text-xs text-fermion-muted font-normal">Kafe</span></p>
+        <p class="text-[10px] font-semibold text-fermion-gold flex items-center gap-1">
+          3 Pengajuan Pending
+        </p>
+      </div>
+
+      <div class="bg-white border border-fermion-border p-6 rounded-xl space-y-2 shadow-sm">
+        <p class="text-[11px] font-bold text-fermion-muted uppercase tracking-wider">Pesanan Bulan Ini</p>
+        <p class="font-display font-black text-3xl text-fermion-dark">342</p>
+        <p class="text-[10px] font-semibold text-fermion-green flex items-center gap-1">
+          Rp 48.500.000 Volume
+        </p>
+      </div>
+
+      <div class="bg-white border border-fermion-border p-6 rounded-xl space-y-2 shadow-sm">
+        <p class="text-[11px] font-bold text-fermion-muted uppercase tracking-wider">Artikel Jurnal Terbit</p>
+        <p class="font-display font-black text-3xl text-fermion-dark">24</p>
+        <p class="text-[10px] font-semibold text-stone-500">
+          Terakhir diupdate kemarin
+        </p>
+      </div>
+
+    </section>
+
+    <!-- FORM INPUT KONTEN & MANAGEMENT GRID -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Column: Input Form (Konten Jurnal / Produk) -->
+      <div class="lg:col-span-5 bg-white border border-fermion-border p-8 rounded-xl space-y-6 shadow-sm">
+        <div>
+          <h2 class="font-display font-bold text-xl text-fermion-dark">Form Input Artikel / Jurnal</h2>
+          <p class="text-xs text-fermion-muted mt-1">Publikasikan edukasi kopi atau berita roastery untuk pembeli.</p>
+        </div>
+
+        <form class="space-y-5">
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-fermion-dark">Judul Artikel</label>
+            <input type="text" placeholder="misal: Profil Roasting Filter Koji Process" class="w-full px-4 py-3 bg-fermion-paper border border-fermion-border rounded-lg text-xs text-fermion-dark focus:outline-none focus:border-fermion-green focus:ring-1 focus:ring-fermion-green">
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-fermion-dark">Kategori Konten</label>
+            <select class="w-full px-4 py-3 bg-fermion-paper border border-fermion-border rounded-lg text-xs text-fermion-dark focus:outline-none focus:border-fermion-green">
+              <option>Roasting Guide</option>
+              <option>Origin Story</option>
+              <option>Barista & B2B Tips</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider text-fermion-dark">Ringkasan (Excerpt)</label>
+            <textarea rows="3" placeholder="Tuliskan ringkasan singkat artikel..." class="w-full px-4 py-3 bg-fermion-paper border border-fermion-border rounded-lg text-xs text-fermion-dark focus:outline-none focus:border-fermion-green focus:ring-1 focus:ring-fermion-green"></textarea>
+          </div>
+
+          <div class="pt-2 flex justify-end gap-3">
+            <button type="button" class="px-5 py-2.5 bg-stone-100 text-stone-700 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-stone-200">Draf</button>
+            <button type="submit" class="px-6 py-2.5 bg-fermion-dark text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-fermion-green transition-colors">Publikasikan</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Column: Data Table (Daftar Pelanggan / Partner B2B) -->
+      <div class="lg:col-span-7 bg-white border border-fermion-border p-8 rounded-xl space-y-6 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display font-bold text-xl text-fermion-dark">Daftar Pelanggan & Partner B2B</h2>
+            <p class="text-xs text-fermion-muted mt-1">Status verifikasi kemitraan kafe dan transaksi retail.</p>
+          </div>
+
+          <div class="relative">
+            <input type="text" placeholder="Cari nama kafe / pelanggan..." class="px-4 py-2 pl-9 bg-fermion-paper border border-fermion-border rounded-lg text-xs text-fermion-dark focus:outline-none focus:border-fermion-green">
+            <svg class="w-4 h-4 text-stone-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </div>
+
+        <!-- Swiss Precision Data Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-fermion-border text-fermion-muted uppercase text-[10px] tracking-wider font-bold">
+                <th class="py-3 px-2">Nama / Usaha</th>
+                <th class="py-3 px-2">Tipe</th>
+                <th class="py-3 px-2">Status</th>
+                <th class="py-3 px-2 text-right">Total Transaksi</th>
+                <th class="py-3 px-2 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100">
+              <tr>
+                <td class="py-4 px-2">
+                  <p class="font-bold text-fermion-dark">Kopi Titik Temu Cirebon</p>
+                  <p class="text-[10px] text-fermion-muted">b2b@titiktemu.id</p>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2.5 py-1 bg-fermion-green/10 text-fermion-green font-bold rounded text-[9px] uppercase tracking-wider">Partner B2B</span>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2 py-0.5 bg-green-100 text-green-800 font-semibold rounded text-[10px]">Aktif</span>
+                </td>
+                <td class="py-4 px-2 text-right font-mono font-bold text-fermion-dark">Rp 12.450.000</td>
+                <td class="py-4 px-2 text-right">
+                  <button class="text-fermion-green hover:underline font-bold">Detail</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="py-4 px-2">
+                  <p class="font-bold text-fermion-dark">Bagus Arisandi</p>
+                  <p class="text-[10px] text-fermion-muted">bagus@gmail.com</p>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2.5 py-1 bg-stone-100 text-stone-700 font-bold rounded text-[9px] uppercase tracking-wider">Retail</span>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2 py-0.5 bg-green-100 text-green-800 font-semibold rounded text-[10px]">Aktif</span>
+                </td>
+                <td class="py-4 px-2 text-right font-mono font-bold text-fermion-dark">Rp 640.000</td>
+                <td class="py-4 px-2 text-right">
+                  <button class="text-fermion-green hover:underline font-bold">Detail</button>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="py-4 px-2">
+                  <p class="font-bold text-fermion-dark">Seduh Senja Coffee</p>
+                  <p class="text-[10px] text-fermion-muted">contact@seduhsenja.com</p>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2.5 py-1 bg-fermion-gold/20 text-yellow-800 font-bold rounded text-[9px] uppercase tracking-wider">Pengajuan B2B</span>
+                </td>
+                <td class="py-4 px-2">
+                  <span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 font-semibold rounded text-[10px]">Pending</span>
+                </td>
+                <td class="py-4 px-2 text-right font-mono font-bold text-fermion-dark">Rp 0</td>
+                <td class="py-4 px-2 text-right">
+                  <button class="text-fermion-dark hover:text-fermion-green font-bold">Verifikasi</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
