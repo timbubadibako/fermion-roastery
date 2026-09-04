@@ -33,10 +33,11 @@ export function LoadingCover() {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] bg-[#FDFBF7]/40 backdrop-blur-[8px] transition-opacity duration-500 ease-out flex items-center justify-center ${
+      className={`fixed inset-0 z-[100] bg-[#FAF9F6]/60 transition-opacity duration-300 ease-out flex items-center justify-center ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
+
       <div className={`flex flex-col items-center gap-3 transition-transform duration-500 ${isVisible ? 'scale-100' : 'scale-95'}`}>
         <div className="w-6 h-6 rounded-full border-2 border-black/10 border-t-[#367F4D] animate-spin" />
       </div>

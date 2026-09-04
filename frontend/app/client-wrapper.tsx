@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { UnifiedSidebar } from "@/components/dashboard/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { LoadingCover } from "@/components/loading-cover";
 import { ChatFloating } from "@/components/chat-floating";
+
 import { CartSync } from "@/components/cart-sync";
 import { SpotlightGuide, SpotlightFAB } from "@/components/ui/spotlight-guide";
 import { usePathname } from "next/navigation";
@@ -55,8 +55,8 @@ export function ClientWrapper({
 
   return (
     <>
-      <LoadingCover />
       {!isLandingPage && <CartSync />}
+
 
       {mounted && activeRole && <UnifiedSidebar role={activeRole} />}
 

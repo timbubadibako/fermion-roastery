@@ -8,12 +8,9 @@ import { useI18n } from "@/lib/i18n";
 const HERO_WORDS = ["CURATED", "ROASTED", "REVERED"];
 
 export function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
   const [canEnhanceHero, setCanEnhanceHero] = useState(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
 
   const t = useI18n();
   const fallbackContent = t.landing.hero;
@@ -29,40 +26,18 @@ export function Hero() {
 
   useEffect(() => {
     if (!canEnhanceHero) return;
-
-    const idleWindow = window as Window & {
-      requestIdleCallback?: (
-        callback: IdleRequestCallback,
-        options?: IdleRequestOptions
-      ) => number;
-      cancelIdleCallback?: (handle: number) => void;
-    };
-
-    const scheduleVideoLoad = () => setShouldLoadVideo(true);
-
-    if (typeof idleWindow.requestIdleCallback === "function") {
-      const idleId = idleWindow.requestIdleCallback(scheduleVideoLoad, { timeout: 2500 });
-      return () => idleWindow.cancelIdleCallback?.(idleId);
-    }
-
-    const timeoutId = window.setTimeout(scheduleVideoLoad, 1800);
-    return () => window.clearTimeout(timeoutId);
-  }, [canEnhanceHero]);
-
-  useEffect(() => {
-    if (!canEnhanceHero || !shouldLoadVideo || !videoReady) return;
-    if (!containerRef.current || !curtainRef.current || !videoRef.current) return;
+    if (!containerRef.current || !curtainRef.current) return;
 
     let mounted = true;
     let cleanup: (() => void) | undefined;
 
-    async function runAnimation() {
+    const timer = setTimeout(async () => {
       const [{ gsap }, { ScrollTrigger }] = await Promise.all([
         import("gsap"),
         import("gsap/ScrollTrigger"),
       ]);
 
-      if (!mounted || !containerRef.current || !curtainRef.current || !videoRef.current) return;
+      if (!mounted || !containerRef.current || !curtainRef.current) return;
 
       gsap.registerPlugin(ScrollTrigger);
 
@@ -70,16 +45,6 @@ export function Hero() {
         const mainTl = gsap.timeline({
           defaults: { ease: "none" },
         });
-
-        mainTl.to(
-          videoRef.current,
-          {
-            currentTime: videoRef.current?.duration || 1,
-            duration: 10,
-            force3D: true,
-          },
-          0
-        );
 
         HERO_WORDS.forEach((word, wordIdx) => {
           const chars = gsap.utils.toArray(`.word-${wordIdx} .char`);
@@ -103,21 +68,21 @@ export function Hero() {
             ease: "power2.inOut",
             force3D: true,
           },
-          2.5
+          2.0
         );
 
       }, containerRef.current);
 
       cleanup = () => ctx.revert();
-    }
-
-    runAnimation();
+    }, 50);
 
     return () => {
       mounted = false;
+      clearTimeout(timer);
       cleanup?.();
     };
-  }, [canEnhanceHero, shouldLoadVideo, videoReady]);
+  }, [canEnhanceHero]);
+
 
   return (
     <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-black">
@@ -131,24 +96,6 @@ export function Hero() {
           className="object-cover"
         />
 
-        {canEnhanceHero ? (
-          <video
-            ref={videoRef}
-            muted
-            playsInline
-            preload="none"
-            autoPlay={shouldLoadVideo}
-            loop
-            poster="/hero-video-poster.jpg"
-            className={`absolute inset-0 h-full w-full object-cover opacity-60 transition-opacity duration-700 ${
-              videoReady ? "opacity-60" : "opacity-0"
-            }`}
-            onCanPlay={() => setVideoReady(true)}
-          >
-            {shouldLoadVideo ? <source src="/watermarked_preview.mp4" type="video/mp4" /> : null}
-          </video>
-        ) : null}
-
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.8)_85%)] pointer-events-none" />
       </div>
 
@@ -160,16 +107,9 @@ export function Hero() {
             boxShadow: "0 -20px 50px rgba(0,0,0,0.4)",
             willChange: "transform",
           }}
-        >
-          <div
-            className="absolute inset-0 opacity-[0.03] pointer-events-none"
-            style={{
-              backgroundImage:
-                'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
-            }}
-          />
-        </div>
+        />
       ) : null}
+
 
       <section className="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center">
         <div className="relative flex min-h-[450px] w-full translate-y-10 items-center justify-center">
