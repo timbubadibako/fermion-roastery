@@ -94,7 +94,9 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
               <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest italic">{t.cartSheet.emptyState.title}</p>
               <SheetClose asChild>
                 <Link href="/our-coffee">
-                  <Button variant="ghost" className="rounded-sm border border-black/10 uppercase text-[9px] font-black tracking-widest">{t.cartSheet.emptyState.exploreButton}</Button>
+                  <button type="button" className="px-6 py-3 bg-[#2A1619] text-white hover:bg-[#367F4D] rounded-sm uppercase text-[9px] font-mono font-bold tracking-widest transition-all shadow-sm">
+                    {t.cartSheet.emptyState.exploreButton}
+                  </button>
                 </Link>
               </SheetClose>
             </div>
@@ -109,7 +111,7 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
                       onClick={() => toggleSelection(item.lineItemId)}
                       className={cn(
                         "w-5 h-5 rounded-sm border border-black/10 flex items-center justify-center transition-all mt-1",
-                        item.selected !== false ? "bg-[#367F4D] text-white" : "bg-white"
+                        item.selected !== false ? "bg-[#367F4D] text-white border-[#367F4D]" : "bg-white"
                       )}
                     >
                       {item.selected !== false && <Check size={10} />}
@@ -132,17 +134,17 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
                         )}
                         <span>• {item.grind}</span>
                       </div>
-                      <p className="text-[11px] font-bold text-stone-900">
+                      <p className="text-[11px] font-bold text-slate-900">
                         Rp {(Number(item.price) || 0).toLocaleString('id-ID')}
                       </p>
                       
                       <div className="flex items-center gap-3 pt-2">
-                        <div className="flex items-center border border-black/5 rounded-sm px-1 py-0.5">
-                          <button type="button" aria-label={`Decrease quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity - 1)} className="p-1 hover:bg-stone-50"><Minus size={10} /></button>
-                          <span className="text-[10px] font-black w-6 text-center">{item.quantity}</span>
-                          <button type="button" aria-label={`Increase quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="p-1 hover:bg-stone-50"><Plus size={10} /></button>
+                        <div className="flex items-center border border-black/10 rounded-sm px-1 py-0.5 bg-[#FAF8F3]">
+                          <button type="button" aria-label={`Decrease quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity - 1)} className="p-1 hover:bg-stone-200/60 rounded-xs transition-colors"><Minus size={10} /></button>
+                          <span className="text-[10px] font-black w-6 text-center font-mono">{item.quantity}</span>
+                          <button type="button" aria-label={`Increase quantity for ${item.name}`} onClick={() => updateQuantity(item.lineItemId, item.quantity + 1)} className="p-1 hover:bg-stone-200/60 rounded-xs transition-colors"><Plus size={10} /></button>
                         </div>
-                        <button type="button" aria-label={`Remove ${item.name} from cart`} onClick={() => removeItem(item.lineItemId)} className="text-stone-300 hover:text-red-500 transition-colors">
+                        <button type="button" aria-label={`Remove ${item.name} from cart`} onClick={() => removeItem(item.lineItemId)} className="text-stone-300 hover:text-red-500 transition-colors p-1">
                           <Trash2 size={12} />
                         </button>
                       </div>
@@ -156,18 +158,20 @@ export function CartSheet({ isScrolled = true, textColor, hideTrigger = false }:
         {items.length > 0 && (
           <SheetFooter className="p-8 bg-white border-t border-black/5 flex-col gap-4">
             <div className="flex justify-between items-center w-full">
-               <span className="text-[9px] font-black uppercase tracking-widest text-stone-400">{t.cartSheet.footer.subtotalLabel} ({selectedCount})</span>
-               <span className="text-xl font-bold text-slate-900">Rp {selectedTotal.toLocaleString('id-ID')}</span>
+               <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-stone-400">{t.cartSheet.footer.subtotalLabel} ({selectedCount})</span>
+               <span className="text-xl font-mono font-black text-slate-900">Rp {selectedTotal.toLocaleString('id-ID')}</span>
             </div>
             
-            <Button 
+            <button 
+              type="button"
               id="tour-checkout-btn"
               onClick={handleCheckout}
               disabled={selectedCount === 0}
-              className="w-full h-14 bg-stone-900 text-white font-black uppercase tracking-widest text-[10px] rounded-sm transition-all hover:bg-[#367F4D] hover:-translate-y-1 active:scale-95"
+              className="w-full h-14 bg-[#2A1619] text-white font-mono font-bold uppercase tracking-[0.2em] text-[10px] rounded-sm transition-all hover:bg-[#367F4D] hover:-translate-y-0.5 active:scale-95 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:bg-[#2A1619] disabled:hover:translate-y-0 cursor-pointer"
             >
-              {t.cartSheet.footer.confirmCheckoutButton}
-            </Button>
+              <span>{t.cartSheet.footer.confirmCheckoutButton}</span>
+              <ArrowRight size={14} />
+            </button>
           </SheetFooter>
         )}
       </SheetContent>

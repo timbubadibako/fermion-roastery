@@ -172,8 +172,8 @@ function HeaderComponent() {
   }, [user, mounted, router]);
 
   // Logic for light/dark text contrast based on page and scroll position
-  const isLandingPage = pathname === "/";
-  const isDarkHero = isLandingPage && !isScrolled;
+  const isDarkHeroPage = pathname === "/" || pathname === "/wholesale" || pathname.startsWith("/journal");
+  const isDarkHero = isDarkHeroPage && !isScrolled;
 
   // 🟢 PERBAIKAN 2: SINKRONISASI WARNA DINAMIS UTK ELEMEN NON-LINKS (Icon / Text / Search Icon)
   // Menjaga agar tombol search dan icon teman-temannya sewarna dengan layout aslinya
@@ -182,9 +182,9 @@ function HeaderComponent() {
   // 🟢 REQUEST KEDUA: STRUKTUR DATA NAVLINKS DENGAN KUSTOMISASI WARNA ACTIVE MASING-MASING
   const isB2B = mounted && user?.role === 'B2B';
   const displayLinks: CustomNavLink[] = [
-    { label: "OUR COFFEE", href: "/our-coffee", activeColor: "text-[#e6b13f]" }, // Ijo roastery khas lu
-    { label: "WHOLESALE", href: "/wholesale", activeColor: "text-stone-900" },   // Cokelat kopi wholesale
-    { label: "SUBSCRIPTION", href: "/subscription", activeColor: "text-[#772c13]" }, // Ijo terang sub
+    { label: "OUR COFFEE", href: "/our-coffee", activeColor: "text-[#367F4D]" }, // Hijau Roastery (tombol keranjang)
+    { label: "WHOLESALE", href: "/wholesale", activeColor: "text-[#F1B941]" },   // Kuning/Gold text!
+    { label: "SUBSCRIPTION", href: "/subscription", activeColor: "text-[#367F4D]" }, 
     { label: "JOURNAL", href: "/journal", activeColor: "text-[#a152ec]" },
     { label: "OUR STORY", href: "/our-story", activeColor: "text-[#1f70da]" },
   ].filter(link => {
@@ -205,7 +205,7 @@ function HeaderComponent() {
           >
             <div className="absolute top-[-12px] right-10 w-12 h-4 bg-white/40 border border-black/5 rotate-[20deg] backdrop-blur-sm shadow-sm"></div>
             <div className="w-full py-1 flex flex-col items-center justify-center gap-1">
-              <p className="text-[14px] font-cloude uppercase tracking-widest text-[#367F4D] leading-none">Free Shipping</p>
+              <p className="text-[12px] font-mono font-bold uppercase tracking-widest text-[#367F4D] leading-none">Free Shipping</p>
               <p className="text-[9px] font-display italic font-black text-stone-400 leading-none">Above Rp 500.000</p>
             </div>
             <svg className="w-16 opacity-10 mt-2" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
@@ -265,12 +265,12 @@ function HeaderComponent() {
                     className={`group relative text-[10px] font-black tracking-[0.2em] transition-all duration-300 uppercase ${isActive
                       ? link.activeColor // Menggunakan warna active custom masing-masing
                       : isDarkHero
-                        ? "text-white/60 hover:text-white" // 🟢 FIXED: Pas di-hover di latar gelap, teks berubah jadi putih terang, gak hitam meredup lagi
+                        ? "text-white/60 hover:text-white"
                         : "text-stone-500 hover:text-stone-950"
                       }`}
                   >
                     {link.label}
-                    {/* 🟢 FIXED UNDERLINE: Lepas kelas bg-[#367F4D] kaku, ganti jadi dinamis sesuai kondisi isDarkHero */}
+                    {/* 🟢 UNDERLINE: Selalu hitam (atau putih pada dark hero), warna khusus hanya pada TEKS */}
                     <span className={`absolute -bottom-1 left-0 h-[1.5px] transition-all duration-500 ${isActive
                       ? `w-full opacity-100 ${isDarkHero ? 'bg-white' : 'bg-[#000000]'}`
                       : `w-0 opacity-0 group-hover:w-full group-hover:opacity-60 ${isDarkHero ? 'bg-white' : 'bg-[#000000]'}`
@@ -344,7 +344,7 @@ function HeaderComponent() {
                                 </div>
                                 <div className="flex-1">
                                   <p className="text-[11px] font-display font-black text-stone-900 leading-tight mb-0.5 uppercase truncate">{product.name}</p>
-                                  <p className="text-[10px] font-cloude text-[#367F4D]">Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}</p>
+                                  <p className="text-[11px] font-mono font-bold text-[#367F4D]">Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}</p>
                                 </div>
                                 <button
                                   type="button"
