@@ -1,21 +1,54 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Globe } from "lucide-react";
 import { AuthForm } from "@/components/auth-form";
-import { useAuthStore } from "@/lib/store";
+import { useAuthStore, useLangStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { Sticker } from "@/components/ui/sticker";
+import { gsap } from "gsap";
 
 export default function AuthPageV2() {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
+  const { language, toggleLanguage } = useLangStore();
   const [mounted, setMounted] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // GSAP Entrance Animations
+  useEffect(() => {
+    if (!mounted || !containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Left Panel Stagger Reveal
+      gsap.fromTo(
+        ".auth-gsap-left",
+        { y: 35, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.15, duration: 0.9, ease: "power3.out" }
+      );
+
+      // Right Photo Block Reveal
+      gsap.fromTo(
+        ".auth-gsap-photo",
+        { scale: 1.08, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1.3, ease: "power2.out" }
+      );
+
+      gsap.fromTo(
+        ".auth-gsap-caption",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, delay: 0.3, ease: "power3.out" }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [mounted]);
 
   const handleAuthSuccess = (profile: any) => {
     setUser(profile);
@@ -29,36 +62,100 @@ export default function AuthPageV2() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#F4F0E6] flex items-center justify-center p-6 relative overflow-hidden font-sans">
+    <div ref={containerRef} className="min-h-screen bg-[#0B101D] text-slate-100 font-sans flex flex-col lg:flex-row overflow-hidden">
       
-      {/* Background Polish */}
-      <div className="fixed inset-0 pointer-events-none z-[0] opacity-[0.04]" 
-           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
-      />
-
-      {/* Main Container: Stacked Paper Effect */}
-      <div className="relative w-full max-w-md">
+      {/* LEFT PANEL: AUTH FORM */}
+      <div className="flex-1 lg:max-w-xl xl:max-w-2xl flex flex-col justify-between p-6 sm:p-10 lg:p-12 bg-[#0B101D] border-r border-slate-800/80">
         
-        {/* Main Card */}
-        <div className="relative bg-white border border-black/10 shadow-[10px_10px_0px_rgba(0,0,0,0.05)] rotate-[-1deg] p-10 flex flex-col rounded-sm">
-           
-           {/* Header */}
-           <div className="flex items-center justify-between mb-10 z-10 relative">
-             <h1 className="text-xl font-black italic tracking-tighter text-slate-900">FERMION.</h1>
-             <Link href="/">
-               <button className="flex items-center gap-2 bg-stone-50 hover:bg-stone-100 text-stone-600 hover:text-stone-900 text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all border border-black/5">
-                 <ArrowLeft size={12} strokeWidth={2.5} /> Hub
-               </button>
-             </Link>
-           </div>
+        {/* Top Header Toolbar */}
+        <div className="auth-gsap-left flex items-center justify-between mb-8">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/fermion-logo.png"
+              alt="Fermion Roastery Logo"
+              width={120}
+              height={40}
+              className="h-8.5 w-auto object-contain"
+              priority
+            />
+            <span className="text-[10px] text-slate-400 font-mono font-medium block border-l border-slate-700/80 pl-3">
+              {language === 'id' ? 'Portal Resmi' : 'Official Portal'}
+            </span>
+          </Link>
 
-           {/* Auth Form Component */}
-           <div className="relative z-10">
-             <AuthForm onSuccess={handleAuthSuccess} />
-           </div>
+          <div className="flex items-center gap-2">
+            {/* Language Switcher Button */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 bg-[#111827] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-bold uppercase tracking-wider px-3 py-2 rounded-xl transition-colors border border-slate-800"
+              title="Ganti Bahasa / Switch Language"
+            >
+              <Globe size={14} className="text-[#367F4D]" />
+              <span className="font-mono text-[11px] font-extrabold text-white">
+                {language.toUpperCase()}
+              </span>
+            </button>
 
-           {/* Tape Accent - Single piece at top */}
-           <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/70 border border-black/5 rotate-[-2deg] backdrop-blur-sm z-20 shadow-sm"></div>
+            {/* Back to Home Link */}
+            <Link href="/">
+              <button className="flex items-center gap-1.5 bg-[#111827] hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl transition-colors border border-slate-800">
+                <ArrowLeft size={14} /> {language === 'id' ? 'Beranda' : 'Home'}
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Auth Form Card Container */}
+        <div className="auth-gsap-left my-auto py-4 space-y-6 max-w-md mx-auto w-full text-left">
+          <div className="space-y-1.5">
+            <h1 className="text-2xl font-extrabold text-white tracking-tight uppercase font-mono">
+              {language === 'id' ? 'Masuk atau Daftar Akun' : 'Sign In or Register'}
+            </h1>
+            <p className="text-xs text-slate-400 font-medium leading-relaxed">
+              {language === 'id'
+                ? 'Masuk akun untuk berbelanja specialty coffee retail, melacak pesanan, berlangganan rutin, atau kemitraan B2B.'
+                : 'Sign in to order specialty coffee retail, track shipments, manage subscriptions, or access B2B wholesale.'}
+            </p>
+          </div>
+
+          <div className="bg-[#111827] border border-slate-800/90 p-6 sm:p-8 rounded-2xl shadow-xl">
+            <AuthForm onSuccess={handleAuthSuccess} />
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div className="auth-gsap-left text-xs text-slate-500 font-medium pt-6 flex justify-between items-center border-t border-slate-800/60">
+          <span>Fermion Roastery &copy; {new Date().getFullYear()}</span>
+          <span className="text-[11px] font-mono text-slate-400">Cirebon, Indonesia</span>
+        </div>
+      </div>
+
+      {/* RIGHT PANEL: PHOTO BLOCK (UNSPLASH HERO PHOTO) */}
+      <div className="hidden lg:flex flex-1 relative bg-slate-950 items-end p-12 overflow-hidden border-l border-slate-800/60">
+        <div 
+          className="auth-gsap-photo absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1600&auto=format&fit=crop')` }}
+        />
+        
+        {/* Clean Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B101D] via-[#0B101D]/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/20" />
+
+        {/* Content Caption Overlay */}
+        <div className="auth-gsap-caption relative z-10 max-w-lg space-y-2 text-left">
+          <p className="text-xs font-mono font-bold tracking-widest text-[#367F4D] uppercase">
+            Specialty Coffee &bull; Cirebon
+          </p>
+          <h2 className="text-2xl font-extrabold text-white tracking-tight uppercase font-mono">
+            {language === 'id' 
+              ? 'Platform Penjualan Retail & Wholesale Direct Brand' 
+              : 'Direct Brand Retail & Wholesale Coffee Platform'}
+          </h2>
+          <p className="text-xs text-slate-300 font-medium leading-relaxed">
+            {language === 'id'
+              ? 'Nikmati kemudahan belanja biji kopi specialty fresh-roast langsung dari brand roastery mandiri untuk kebutuhan personal (B2C) maupun kafe (B2B).'
+              : 'Enjoy direct specialty coffee orders for personal home brewing (B2C) and cafe partnerships (B2B) with fresh roasts delivered straight to you.'}
+          </p>
         </div>
       </div>
     </div>

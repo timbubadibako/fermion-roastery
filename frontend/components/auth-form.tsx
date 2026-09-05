@@ -52,14 +52,14 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password || (mode === "register" && !formData.fullName)) {
-      toast.error(authCopy.fillAllFields);
+      toast.error(authCopy.fillAllFields || "Mohon isi semua bidang yang diperlukan.");
       return;
     }
 
     if (mode === "register") {
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
       if (!passwordRegex.test(formData.password)) {
-        toast.error(authCopy.passwordRequirement);
+        toast.error(authCopy.passwordRequirement || "Kata sandi minimal 8 karakter dengan kombinasi huruf dan angka.");
         return;
       }
     }
@@ -93,9 +93,8 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
       const data = await response.json() as AuthResponse;
       const profile = data.profile;
 
-      if (!profile) throw new Error(authCopy.resolveProfileFailure);
+      if (!profile) throw new Error(authCopy.resolveProfileFailure || "Gagal memproses profil pengguna.");
 
-      // Establish Supabase client-side session so apiFetch can use the token
       if (data.session?.access_token && data.session?.refresh_token) {
         await supabase.auth.setSession({
           access_token: data.session.access_token,
@@ -103,128 +102,154 @@ export function AuthForm({ onSuccess, defaultRole = "RETAIL", initialMode = "log
         });
       }
 
-      // Set security cookie for middleware (expires in 24h)
       document.cookie = `fermion_profile_id=${profile.id}; path=/; max-age=86400; SameSite=Lax`;
       toast.success(data.message || (mode === "login" ? authCopy.submitLogin : authCopy.submitRegister));
       onSuccess(profile); 
     } catch (error: unknown) {
       debugError("Auth error:", error);
-      toast.error(getErrorMessage(error, authCopy.fallbackError));
+      toast.error(getErrorMessage(error, authCopy.fallbackError || "Terjadi kesalahan otentikasi."));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full space-y-6 text-center">
-      <div className="relative min-h-[300px]">
-        <AnimatePresence mode="wait">
-          <motion.form 
-            key={mode}
-            layout
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            onSubmit={handleSubmit} 
-            className="space-y-6 text-left absolute w-full"
-          >
+    <div className="w-full space-y-5 text-left font-sans">
+      
+      {/* Tab Switcher */}
+      <div className="grid grid-cols-2 bg-[#111827] p-1 rounded-xl border border-slate-800 text-xs">
+        <button
+          type="button"
+          onClick={() => setMode("login")}
+          className={`py-2 px-3 font-bold uppercase tracking-wider rounded-lg transition-all ${
+            mode === "login"
+              ? "bg-[#367F4D] text-white shadow-xs"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          Masuk
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("register")}
+          className={`py-2 px-3 font-bold uppercase tracking-wider rounded-lg transition-all ${
+            mode === "register"
+              ? "bg-[#367F4D] text-white shadow-xs"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          Daftar Akun
+        </button>
+      </div>
+
+      {defaultRole === "B2B" && (
+        <div className="p-3 bg-[#111827] border border-slate-800 rounded-xl text-xs font-semibold text-slate-300">
+          Pendaftaran khusus Mitra Cafe & Kemitraan B2B
+        </div>
+      )}
+
+      {/* Form Fields with Smooth Transition */}
+      <AnimatePresence mode="wait">
+        <motion.form
+          key={mode}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
+          {mode === "register" && (
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Nama Lengkap
+              </label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Input 
+                  required
+                  type="text"
+                  placeholder="Nama Lengkap Anda"
+                  className="h-11 pl-10 bg-[#111827] border-slate-800 rounded-xl text-xs font-medium text-slate-100 placeholder-slate-500 focus:border-[#367F4D] focus:ring-1 focus:ring-[#367F4D]"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Email
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Input 
+                required
+                type="email"
+                placeholder="nama@email.com"
+                className="h-11 pl-10 bg-[#111827] border-slate-800 rounded-xl text-xs font-medium text-slate-100 placeholder-slate-500 focus:border-[#367F4D] focus:ring-1 focus:ring-[#367F4D]"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Kata Sandi
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <Input 
+                required
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="h-11 pl-10 pr-10 bg-[#111827] border-slate-800 rounded-xl text-xs font-medium text-slate-100 placeholder-slate-500 focus:border-[#367F4D] focus:ring-1 focus:ring-[#367F4D]"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 focus:outline-none"
+              >
+                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
+            </div>
             {mode === "register" && (
-              <div className="space-y-2 relative">
-                <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">{authCopy.fullNameLabel}</label>
-                <div className="relative">
-                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
-                  <Input 
-                    required
-                    type="text"
-                    placeholder={authCopy.fullNamePlaceholder}
-                    className="h-14 pl-14 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                  />
-                </div>
-              </div>
+              <p className="text-[10px] text-slate-500 font-medium pt-0.5">
+                Minimal 8 karakter, kombinasi huruf dan angka.
+              </p>
             )}
+          </div>
 
-            <div className="space-y-2 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[1deg]">{authCopy.emailLabel}</label>
-              <div className="relative">
-                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
-                <Input 
-                  required
-                  type="email"
-                  placeholder={authCopy.emailPlaceholder}
-                  className="h-14 pl-14 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
+          <Button 
+            type="submit"
+            disabled={loading}
+            className="w-full h-11 bg-[#367F4D] hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors border-none shadow-sm mt-2"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin" size={16} />
+                <span>Memproses...</span>
               </div>
-            </div>
-            
-            <div className="space-y-2 relative">
-              <label className="text-[10px] font-black uppercase tracking-widest text-stone-500 bg-white px-2 absolute -top-2 left-2 z-10 border border-black/5 rotate-[-1deg]">{authCopy.passwordLabel}</label>
-              <div className="relative">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
-                <Input 
-                  required
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="h-14 pl-14 pr-12 bg-white border border-black/10 rounded-sm text-sm font-medium focus:border-[#367F4D] transition-colors shadow-sm"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 focus:outline-none"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
+            ) : (mode === "login" ? "Masuk ke Akun" : "Daftar Akun Baru")}
+          </Button>
+        </motion.form>
+      </AnimatePresence>
 
-            <Button 
-              type="submit"
-              disabled={loading}
-              className="w-full h-14 bg-stone-900 text-white font-black tracking-[0.2em] rounded-sm hover:bg-[#367F4D] transition-all duration-300 uppercase italic mt-2 hover:-translate-y-1 active:scale-95 shadow-md"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={16} />
-                  <span>{authCopy.processing}</span>
-                </div>
-              ) : (mode === "login" ? authCopy.submitLogin : authCopy.submitRegister)}
-            </Button>
-          </motion.form>
-        </AnimatePresence>
-      </div>
-
-      {/* OAUTH BUTTONS TEMPORARILY DISABLED 
-      <div className="flex gap-4">
-        <Button onClick={() => handleOAuth('google')} type="button" variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
-          Google
-        </Button>
-        <Button onClick={() => handleOAuth('facebook')} type="button" variant="outline" className="flex-1 h-12 bg-white border border-black/10 shadow-sm rounded-sm text-[10px] font-black uppercase tracking-widest hover:bg-stone-50">
-          Facebook
-        </Button>
-      </div>
-      */}
-
-      {/* Squiggly line */}
-      <svg className="w-16 mx-auto opacity-10" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="3" strokeLinecap="round" />
-      </svg>
-
-      <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">
-        {mode === "login" ? authCopy.loginPrompt : authCopy.registerPrompt}
+      {/* Switcher Text Prompt */}
+      <div className="pt-2 text-center text-xs text-slate-400">
+        <span>{mode === "login" ? "Belum memiliki akun?" : "Sudah memiliki akun?"}</span>
         <button 
           type="button"
           onClick={() => setMode(mode === "login" ? "register" : "login")}
-          className="text-[#367F4D] hover:text-stone-900 transition-colors ml-1 underline underline-offset-4"
+          className="text-[#367F4D] hover:text-emerald-400 font-bold ml-1.5 underline underline-offset-4 transition-colors"
         >
-          {mode === "login" ? authCopy.switchToRegister : authCopy.switchToLogin}
+          {mode === "login" ? "Daftar Sekarang" : "Masuk Sekarang"}
         </button>
-      </p>
+      </div>
     </div>
   );
 }
