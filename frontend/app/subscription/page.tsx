@@ -157,8 +157,8 @@ export default function SubscriptionPageV2() {
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
       />
 
-      <section ref={heroRef} className="pt-48 pb-24 px-6 relative z-10 text-center bg-[#FFFBEB]">
-        <div className="max-w-5xl mx-auto space-y-8 min-h-[28rem] flex flex-col justify-center items-center">
+      <section ref={heroRef} className="pt-28 md:pt-48 pb-12 md:pb-24 px-6 relative z-10 text-center bg-[#FFFBEB]">
+        <div className="max-w-5xl mx-auto space-y-6 md:space-y-8 min-h-[22rem] md:min-h-[28rem] flex flex-col justify-center items-center">
           <div className="inline-block px-4 py-1.5 bg-white border border-[#F1B941]/30 shadow-[4px_4px_0_rgba(241,185,65,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#92400E] uppercase sub-hero-text">
             {subscriptionHero.badge}
           </div>
@@ -168,16 +168,16 @@ export default function SubscriptionPageV2() {
             <span className="font-display italic font-normal normal-case text-[#F1B941]">{subscriptionHero.title2}</span>
           </h1>
 
-          <p className="w-full min-h-[8.5rem] max-w-2xl mx-auto text-stone-600 font-medium text-lg md:text-xl leading-relaxed bg-white/40 p-5 border-l-4 border-[#F1B941]/40 backdrop-blur-sm shadow-sm sub-hero-text">
+          <p className="w-full min-h-[6rem] md:min-h-[8.5rem] max-w-2xl mx-auto text-stone-600 font-medium text-base md:text-xl leading-relaxed bg-white/40 p-4 md:p-5 border-l-4 border-[#F1B941]/40 backdrop-blur-sm shadow-sm sub-hero-text">
             {tSub.heroDesc}
           </p>
         </div>
       </section>
 
-      <section ref={masterRef} className="py-32 px-6 relative z-20 -mt-20 overflow-hidden bg-[#7C2D12] text-white section-clip-path">
+      <section ref={masterRef} className="py-16 md:py-32 px-6 relative z-20 -mt-10 md:-mt-20 overflow-hidden bg-[#7C2D12] text-white section-clip-path">
         <style jsx>{`
           .section-clip-path {
-            clip-path: none;
+            clip-path: polygon(0 12px, 10% 0%, 20% 12px, 35% 0%, 50% 12px, 65% 0%, 80% 12px, 90% 0%, 100% 12px, 100% 100%, 0 100%);
           }
           @media (min-width: 768px) {
             .section-clip-path {
@@ -185,7 +185,7 @@ export default function SubscriptionPageV2() {
             }
           }
         `}</style>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 md:gap-24 pt-12">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-24 pt-6 md:pt-12">
           <div className="w-full md:w-[45%] master-polaroid relative">
             <div className="bg-white p-4 pb-16 border border-white/10 shadow-[15px_15px_0px_rgba(0,0,0,0.2)] rotate-[-3deg] relative z-20">
               <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-24 h-6 bg-[#F1B941]/40 border border-white/10 rotate-[4deg] z-30 backdrop-blur-sm shadow-sm"></div>
@@ -199,16 +199,16 @@ export default function SubscriptionPageV2() {
             <Sticker rotate={12} className="absolute -bottom-6 -right-6 z-30 border border-white/10 shadow-sm" color="#F1B941">{tSub.sensoryExpert}</Sticker>
           </div>
 
-          <div id="tour-sub-master" className="w-full md:w-[55%] space-y-10 master-quote md:min-h-[42rem] flex flex-col justify-center">
+          <div id="tour-sub-master" className="w-full md:w-[55%] space-y-6 md:space-y-10 master-quote md:min-h-[42rem] flex flex-col justify-center">
             <Quote size={60} className="text-[#F1B941]/10" />
-            <h3 className={`min-h-[20rem] md:min-h-[24rem] font-display font-black tracking-tighter italic leading-tight text-[#FFFBEB] relative z-10 ${
+            <h3 className={`min-h-[14rem] md:min-h-[24rem] font-display font-black tracking-tighter italic leading-tight text-[#FFFBEB] relative z-10 ${
               language === "id"
-                ? "text-4xl md:text-[3.5rem] md:max-w-[40rem]"
-                : "text-4xl md:text-[4.2rem] md:max-w-[34rem]"
+                ? "text-3xl sm:text-4xl md:text-[3.5rem] md:max-w-[40rem]"
+                : "text-3xl sm:text-4xl md:text-[4.2rem] md:max-w-[34rem]"
             }`}>
               {tSub.quote}
             </h3>
-            <div className="flex items-center gap-6 pt-6 border-t border-white/10">
+            <div className="flex items-center gap-6 pt-4 md:pt-6 border-t border-white/10">
               <div className="space-y-1">
                 <p className="text-sm font-black uppercase tracking-widest text-[#F1B941]">Mr. Yanotama</p>
                 <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">{tSub.headRoaster}</p>
@@ -218,19 +218,19 @@ export default function SubscriptionPageV2() {
         </div>
       </section>
 
-      <section ref={stepsRef} className="py-32 px-6 relative z-30 -mt-20 overflow-hidden bg-[#FAF9F6]">
-        <div className="max-w-6xl mx-auto space-y-20">
-          <div className="text-center space-y-4">
+      <section ref={stepsRef} className="py-12 md:py-28 px-6 relative z-30 -mt-8 md:-mt-20 overflow-hidden bg-[#FAF9F6]">
+        <div className="max-w-6xl mx-auto space-y-10 md:space-y-20">
+          <div className="text-center space-y-3 md:space-y-4">
             <div className="flex justify-center items-center gap-3 text-[#F1B941]/60">
               <Microscope size={20} strokeWidth={2.5} />
               <span className="text-[10px] font-black uppercase tracking-[0.4em]">{tSub.stepsBadge}</span>
             </div>
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-sans font-black tracking-tight text-[#2A1619] uppercase leading-none">{tSub.stepsTitle}</h2>
+            <h2 className="text-3xl sm:text-6xl md:text-7xl font-sans font-black tracking-tight text-[#2A1619] uppercase leading-none">{tSub.stepsTitle}</h2>
           </div>
 
-          <div id="tour-sub-steps" className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+          <div id="tour-sub-steps" className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
             {steps.map((step, i) => (
-              <div key={i} className="step-note bg-white p-10 border border-black/10 shadow-lg shadow-black/5 relative flex flex-col items-center text-center gap-6 md:min-h-[16rem]"
+              <div key={i} className="step-note bg-white p-6 sm:p-10 border border-black/10 shadow-lg shadow-black/5 relative flex flex-col items-center text-center gap-4 md:gap-6 md:min-h-[16rem]"
                 style={{ transform: `rotate(${i % 2 === 0 ? -0.5 : 0.5}deg)`, borderRadius: "2px" }}
               >
                 <div className="absolute top-[-5px] left-10 w-10 h-3 bg-[#F1B941]/30 border border-black/10 rotate-[-5deg]"></div>
@@ -242,10 +242,10 @@ export default function SubscriptionPageV2() {
         </div>
       </section>
 
-      <section ref={pricingRef} className="pt-8 pb-16 px-6 relative z-40 overflow-hidden bg-[#FAF9F6]"
-        style={{ clipPath: "polygon(0 3%, 10% 0%, 20% 3%, 30% 0%, 40% 3%, 50% 0%, 60% 3%, 70% 0%, 80% 3%, 90% 0%, 100% 3%, 100% 100%, 0 100%)" }}
+      <section ref={pricingRef} className="pt-6 md:pt-8 pb-12 md:pb-16 px-6 relative z-40 overflow-hidden bg-[#FAF9F6]"
+        style={{ clipPath: "polygon(0 12px, 10% 0%, 20% 12px, 30% 0%, 40% 12px, 50% 0%, 60% 12px, 70% 0%, 80% 12px, 90% 0%, 100% 12px, 100% 100%, 0 100%)" }}
       >
-        <div id="tour-sub-pricing" className="max-w-7xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 min-h-[400px]">
+        <div id="tour-sub-pricing" className="max-w-7xl mx-auto mt-6 md:mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 min-h-[400px]">
           {plans.map((plan, i) => {
             let parsedFeatures = [];
             try {

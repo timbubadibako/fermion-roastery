@@ -92,9 +92,18 @@ export default function JournalPageV2() {
          {/* SECTION 1: HEADER (Dark Purple Hero & Lilac Accents) */}
          <section
             ref={heroRef}
-            className="pt-48 pb-32 px-6 relative z-10 bg-[#2A1728] text-white overflow-hidden border-b border-white/10"
-            style={{ clipPath: "polygon(0 0, 100% 0, 100% 98%, 95% 99%, 90% 98%, 85% 99%, 80% 98%, 75% 99%, 70% 98%, 65% 99%, 60% 98%, 55% 99%, 50% 98%, 45% 99%, 40% 98%, 35% 99%, 30% 98%, 25% 99%, 20% 98%, 15% 99%, 10% 98%, 5% 99%, 0 98%)" }}
+            className="pt-28 md:pt-48 pb-16 md:pb-32 px-6 relative z-10 bg-[#2A1728] text-white overflow-hidden border-b border-white/10 journal-hero-clip"
          >
+            <style jsx>{`
+               .journal-hero-clip {
+                  clip-path: polygon(0 0, 100% 0, 100% 99.2%, 95% 99.6%, 90% 99.2%, 85% 99.6%, 80% 99.2%, 75% 99.6%, 70% 99.2%, 65% 99.6%, 60% 99.2%, 55% 99.6%, 50% 99.2%, 45% 99.6%, 40% 99.2%, 35% 99.6%, 30% 99.2%, 25% 99.6%, 20% 99.2%, 15% 99.6%, 10% 99.2%, 5% 99.6%, 0 99.2%);
+               }
+               @media (min-width: 768px) {
+                  .journal-hero-clip {
+                     clip-path: polygon(0 0, 100% 0, 100% 98%, 95% 99%, 90% 98%, 85% 99%, 80% 98%, 75% 99%, 70% 98%, 65% 99%, 60% 98%, 55% 99%, 50% 98%, 45% 99%, 40% 98%, 35% 99%, 30% 98%, 25% 99%, 20% 98%, 15% 99%, 10% 98%, 5% 99%, 0 98%);
+                  }
+               }
+            `}</style>
             <div
                className="absolute inset-0 pointer-events-none z-[1] opacity-[0.035]"
                style={{
@@ -108,23 +117,23 @@ export default function JournalPageV2() {
                Archive
             </div>
 
-            <div className="max-w-7xl mx-auto space-y-12 relative z-10">
-               <div className="space-y-6">
+            <div className="max-w-7xl mx-auto space-y-8 md:space-y-12 relative z-10">
+               <div className="space-y-4 md:space-y-6">
                   <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/15 shadow-sm rotate-[-1deg] text-[10px] font-mono font-bold tracking-[0.35em] text-[#C48DF6] uppercase journal-hero-text opacity-0">
                      <PenTool size={12} className="inline mr-2" /> Field Notes &amp; Records
                   </div>
 
-                  <h1 id="tour-journal-hero" className="text-4xl sm:text-7xl md:text-9xl font-sans font-black tracking-tight leading-[0.8] journal-hero-text opacity-0 uppercase text-white">
+                  <h1 id="tour-journal-hero" className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-sans font-black tracking-tight leading-[0.85] md:leading-[0.8] journal-hero-text opacity-0 uppercase text-white">
                      Stories from <br /> <span className="font-display italic font-normal normal-case text-[#C48DF6]">the Field.</span>
                   </h1>
                </div>
 
-               <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 journal-hero-text opacity-0">
-                  <p className="max-w-xl text-stone-300 font-medium text-lg leading-relaxed border-l-2 border-[#C48DF6]/40 pl-6">
+               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-10 journal-hero-text opacity-0">
+                  <p className="max-w-xl text-stone-300 font-medium text-base md:text-lg leading-relaxed border-l-2 border-[#C48DF6]/40 pl-4 md:pl-6">
                      A repository of sourcing journals, sensory analysis, and technical records from the Fermion Roastery.
                   </p>
 
-                  <div id="tour-journal-search" className="flex items-center gap-4 bg-white/10 border border-white/15 rounded-full px-6 py-3.5 min-w-[320px] backdrop-blur-sm focus-within:border-[#C48DF6] focus-within:bg-white/15 transition-all group/search">
+                  <div id="tour-journal-search" className="flex items-center gap-4 bg-white/10 border border-white/15 rounded-full px-5 py-3 md:px-6 md:py-3.5 min-w-[280px] sm:min-w-[320px] backdrop-blur-sm focus-within:border-[#C48DF6] focus-within:bg-white/15 transition-all group/search">
                      <Search size={16} className="text-[#C48DF6] transition-transform duration-300 group-focus-within/search:scale-105" strokeWidth={2.5} />
                      <input
                         type="text"
@@ -137,54 +146,62 @@ export default function JournalPageV2() {
          </section>
 
          {/* SECTION 2: THE DYNAMIC SCRAPBOOK (Scattered Polaroid Concept) */}
-         <section className="py-40 px-6 relative z-20 -mt-16 bg-[#F0ECE1] overflow-hidden"
-            style={{ clipPath: "polygon(0 40px, 12% 0, 25% 40px, 38% 0, 50% 40px, 62% 0, 75% 40px, 88% 0, 100% 40px, 100% 100%, 0 100%)" }}
-         >
-            <div id="tour-journal-grid" ref={gridRef} className="max-w-7xl mx-auto relative pt-20 pb-32">
-               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+         <section className="py-16 md:py-32 px-4 sm:px-6 relative z-20 -mt-8 md:-mt-16 bg-[#F0ECE1] overflow-hidden journal-body-clip">
+            <style jsx>{`
+               .journal-body-clip {
+                  clip-path: polygon(0 14px, 12% 0, 25% 14px, 38% 0, 50% 14px, 62% 0, 75% 14px, 88% 0, 100% 14px, 100% 100%, 0 100%);
+               }
+               @media (min-width: 768px) {
+                  .journal-body-clip {
+                     clip-path: polygon(0 40px, 12% 0, 25% 40px, 38% 0, 50% 40px, 62% 0, 75% 40px, 88% 0, 100% 40px, 100% 100%, 0 100%);
+                  }
+               }
+            `}</style>
+            <div id="tour-journal-grid" ref={gridRef} className="max-w-7xl mx-auto relative pt-10 md:pt-20 pb-16 md:pb-32">
+               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-start">
                   
                   {/* Left Column: Article 1 (Large) & Note */}
-                  <div className="lg:col-span-7 space-y-16">
+                  <div className="lg:col-span-7 space-y-8 md:space-y-16">
                      {pinnedPosts[0] && (
                      <div className="article-scrap opacity-0">
-                        <Link href={`/journal/${pinnedPosts[0].slug}`} className="group block bg-white p-6 md:p-8 border border-black/10 shadow-sm rounded-[2px] rotate-[-1deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:shadow-md relative">
-                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-8 bg-stone-50 border border-black/5">
+                        <Link href={`/journal/${pinnedPosts[0].slug}`} className="group block bg-white p-5 sm:p-6 md:p-8 border border-black/10 shadow-sm rounded-[2px] rotate-[-1deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:shadow-md relative">
+                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-6 md:mb-8 bg-stone-50 border border-black/5">
                               <Image src={pinnedPosts[0].featured_image || 'https://placehold.co/800x800/4B365F/e2dacb?text=LAB+PROCESS'} alt={pinnedPosts[0].title} fill className="object-cover filter contrast-125 grayscale group-hover:grayscale-0 transition-all duration-1000" />
-                              <Sticker rotate={-10} className="top-6 left-6" color="#F1B941">LATEST ENTRY</Sticker>
+                              <Sticker rotate={-10} className="top-4 left-4 sm:top-6 sm:left-6" color="#F1B941">LATEST ENTRY</Sticker>
                            </div>
-                           <div className="space-y-4">
-                              <div className="flex items-center gap-4 text-[#A288E3]">
-                                 <Microscope size={18} strokeWidth={2.5} />
+                           <div className="space-y-3 md:space-y-4">
+                              <div className="flex items-center gap-3 text-[#A288E3]">
+                                 <Microscope size={16} strokeWidth={2.5} />
                                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{dateFormatted(pinnedPosts[0].published_at || pinnedPosts[0].created_at)} / {pinnedPosts[0].category}</span>
                               </div>
-                              <h2 className="text-4xl md:text-5xl font-display font-black text-slate-900 leading-[0.95] tracking-tight uppercase italic">{pinnedPosts[0].title}</h2>
-                              <p className="text-stone-500 text-base max-w-xl font-medium leading-relaxed">"{pinnedPosts[0].excerpt}"</p>
+                              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-slate-900 leading-[0.95] tracking-tight uppercase italic">{pinnedPosts[0].title}</h2>
+                              <p className="text-stone-500 text-sm md:text-base max-w-xl font-medium leading-relaxed">"{pinnedPosts[0].excerpt}"</p>
                            </div>
                         </Link>
                      </div>
                      )}
 
                      {/* Decorative Note */}
-                     <div className="article-scrap opacity-0 w-3/4 ml-auto rotate-[2deg] bg-[#EBA294]/10 p-8 border border-[#EBA294]/20 hidden lg:block mt-20 rounded-[2px]">
-                        <Quote size={32} className="text-[#EBA294] opacity-30 mb-4" />
+                     <div className="article-scrap opacity-0 w-3/4 ml-auto rotate-[2deg] bg-[#EBA294]/10 p-6 md:p-8 border border-[#EBA294]/20 hidden lg:block mt-12 md:mt-20 rounded-[2px]">
+                        <Quote size={28} className="text-[#EBA294] opacity-30 mb-3" />
                         <p className="text-[13px] font-medium text-[#2E2140] leading-relaxed italic">
                            "The archive is not just a collection of past roasts, but a roadmap for future progress."
                         </p>
-                        <p className="text-[9px] font-black uppercase tracking-widest mt-6 text-[#2E2140]/40">— Curator's Note</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest mt-4 text-[#2E2140]/40">— Curator's Note</p>
                      </div>
 
                      {/* Article 4: Medium Bottom-Left */}
                      {pinnedPosts[3] && (
-                     <div className="article-scrap opacity-0 mt-20">
-                        <Link href={`/journal/${pinnedPosts[3].slug}`} className="group block bg-stone-50 p-6 md:p-8 border border-black/5 shadow-sm rounded-[2px] rotate-[1.5deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:bg-white hover:shadow-md relative">
+                     <div className="article-scrap opacity-0 mt-8 md:mt-20">
+                        <Link href={`/journal/${pinnedPosts[3].slug}`} className="group block bg-stone-50 p-5 sm:p-6 md:p-8 border border-black/5 shadow-sm rounded-[2px] rotate-[1.5deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:bg-white hover:shadow-md relative">
                            <div className="flex flex-col md:flex-row gap-6 items-center">
                               <div className="w-full md:w-1/2 aspect-square relative overflow-hidden rounded-[2px] border border-black/5">
                                  <Image src={pinnedPosts[3].featured_image || 'https://placehold.co/800x800/4B365F/ffffff?text=LOCAL+HERO'} alt={pinnedPosts[3].title} fill className="object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000" />
                               </div>
-                              <div className="w-full md:w-1/2 space-y-4">
+                              <div className="w-full md:w-1/2 space-y-3 md:space-y-4">
                                  <div className="inline-block px-3 py-1 bg-[#2E2140] text-white text-[9px] font-black uppercase tracking-widest">{dateFormatted(pinnedPosts[3].published_at || pinnedPosts[3].created_at)} / {pinnedPosts[3].category}</div>
-                                 <h3 className="text-3xl font-display font-black text-slate-900 leading-tight uppercase italic tracking-tight">{pinnedPosts[3].title}</h3>
-                                 <ArrowRight size={20} className="text-stone-300 group-hover:text-[#A288E3] group-hover:translate-x-2 transition-all" />
+                                 <h3 className="text-2xl sm:text-3xl font-display font-black text-slate-900 leading-tight uppercase italic tracking-tight">{pinnedPosts[3].title}</h3>
+                                 <ArrowRight size={18} className="text-stone-300 group-hover:text-[#A288E3] group-hover:translate-x-2 transition-all" />
                               </div>
                            </div>
                         </Link>
@@ -193,17 +210,17 @@ export default function JournalPageV2() {
                   </div>
 
                   {/* Right Column: Article 2 & 3 */}
-                  <div className="lg:col-span-5 space-y-16 lg:mt-32">
+                  <div className="lg:col-span-5 space-y-8 md:space-y-16 lg:mt-32">
                      {pinnedPosts[1] && (
                      <div className="article-scrap opacity-0">
-                        <Link href={`/journal/${pinnedPosts[1].slug}`} className="group block bg-white p-6 border border-black/10 shadow-sm rounded-[2px] rotate-[1deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:shadow-md relative">
-                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-6 bg-stone-100 border border-black/5">
+                        <Link href={`/journal/${pinnedPosts[1].slug}`} className="group block bg-white p-5 sm:p-6 border border-black/10 shadow-sm rounded-[2px] rotate-[1deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:shadow-md relative">
+                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-5 bg-stone-100 border border-black/5">
                               <Image src={pinnedPosts[1].featured_image || 'https://placehold.co/800x800/e2dacb/4B365F?text=FIELD+WORK'} alt={pinnedPosts[1].title} fill className="object-cover filter sepia-[0.4]" />
                            </div>
                            <div className="space-y-3">
                               <p className="text-[10px] font-black text-[#A288E3] uppercase tracking-widest">{dateFormatted(pinnedPosts[1].published_at || pinnedPosts[1].created_at)} / {pinnedPosts[1].category}</p>
-                              <h3 className="text-3xl font-display font-black text-slate-900 leading-none uppercase italic tracking-tight">{pinnedPosts[1].title}</h3>
-                              <div className="pt-4 border-t border-black/5 flex items-center justify-between mt-4">
+                              <h3 className="text-2xl sm:text-3xl font-display font-black text-slate-900 leading-none uppercase italic tracking-tight">{pinnedPosts[1].title}</h3>
+                              <div className="pt-3 border-t border-black/5 flex items-center justify-between mt-3">
                                  <span className="text-[9px] font-black uppercase tracking-widest text-stone-400 group-hover:text-[#A288E3]">Open File</span>
                                  <ArrowRight size={14} className="text-stone-300 group-hover:text-[#A288E3]" />
                               </div>
@@ -214,14 +231,14 @@ export default function JournalPageV2() {
 
                      {pinnedPosts[2] && (
                      <div className="article-scrap opacity-0">
-                        <Link href={`/journal/${pinnedPosts[2].slug}`} className="group block bg-stone-50 p-6 border border-black/5 shadow-sm rounded-[2px] rotate-[-1.5deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:bg-white hover:shadow-md">
-                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-6 border border-black/5">
+                        <Link href={`/journal/${pinnedPosts[2].slug}`} className="group block bg-stone-50 p-5 sm:p-6 border border-black/5 shadow-sm rounded-[2px] rotate-[-1.5deg] transition-all duration-500 hover:-translate-y-2 hover:rotate-0 hover:bg-white hover:shadow-md">
+                           <div className="aspect-square relative overflow-hidden rounded-[2px] mb-5 border border-black/5">
                               <Image src={pinnedPosts[2].featured_image || 'https://placehold.co/800x800/2E2140/f4f0e6?text=HOME+BREW'} alt={pinnedPosts[2].title} fill className="object-cover filter contrast-125 saturate-50" />
                            </div>
                            <div className="space-y-3">
                               <p className="text-[10px] font-black text-[#EBA294] uppercase tracking-widest">{dateFormatted(pinnedPosts[2].published_at || pinnedPosts[2].created_at)} / {pinnedPosts[2].category}</p>
-                              <h3 className="text-3xl font-display font-black text-slate-900 leading-none uppercase italic tracking-tight">{pinnedPosts[2].title}</h3>
-                              <p className="text-sm text-stone-500 font-medium mt-3 line-clamp-2">{pinnedPosts[2].excerpt}</p>
+                              <h3 className="text-2xl sm:text-3xl font-display font-black text-slate-900 leading-none uppercase italic tracking-tight">{pinnedPosts[2].title}</h3>
+                              <p className="text-xs sm:text-sm text-stone-500 font-medium mt-2 line-clamp-2">{pinnedPosts[2].excerpt}</p>
                            </div>
                         </Link>
                      </div>
@@ -232,29 +249,29 @@ export default function JournalPageV2() {
 
 
             {/* Explore Section (Small Cards) */}
-            <div id="tour-journal-explore" ref={exploreRef} className="mt-10 pt-10 pb-20 max-w-7xl mx-auto">
-               <div className="flex items-center gap-4 mb-8">
-                  <div className="h-1 w-12 bg-[#2E2140]"></div>
-                  <h3 className="text-xl font-black uppercase tracking-[0.2em] text-[#2E2140]">Jelajahi Arsip</h3>
+            <div id="tour-journal-explore" ref={exploreRef} className="mt-6 md:mt-10 pt-6 md:pt-10 pb-12 md:pb-20 max-w-7xl mx-auto">
+               <div className="flex items-center gap-3 mb-6">
+                  <div className="h-1 w-10 md:w-12 bg-[#2E2140]"></div>
+                  <h3 className="text-lg md:text-xl font-black uppercase tracking-[0.2em] text-[#2E2140]">Jelajahi Arsip</h3>
                </div>
                
-               <div className="flex overflow-x-auto gap-6 pb-8 pt-4 px-2 -mx-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+               <div className="flex overflow-x-auto gap-4 sm:gap-6 pb-6 pt-2 px-1 -mx-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                   {explorePosts.map((post) => (
-                     <Link key={post.id} href={`/journal/${post.slug}`} className="group block bg-white border border-black/5 rounded-[2px] p-4 hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[220px] md:w-[260px] shrink-0 snap-start">
-                        <div className="aspect-square relative overflow-hidden rounded-[2px] mb-4 bg-stone-100">
+                     <Link key={post.id} href={`/journal/${post.slug}`} className="group block bg-white border border-black/5 rounded-[2px] p-3.5 sm:p-4 hover:shadow-md transition-all duration-300 hover:-translate-y-1 w-[190px] sm:w-[230px] md:w-[260px] shrink-0 snap-start">
+                        <div className="aspect-square relative overflow-hidden rounded-[2px] mb-3 bg-stone-100">
                            <Image src={post.featured_image || `https://placehold.co/500x500/eaeaea/2A1619?text=${post.category}`} alt={post.title} fill className="object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                            <p className="text-[9px] font-black uppercase tracking-widest text-[#A288E3]">{dateFormatted(post.published_at || post.created_at)}</p>
-                           <h4 className="text-lg font-display font-black text-slate-900 leading-tight uppercase italic tracking-tight line-clamp-2 group-hover:text-[#A288E3] transition-colors">{post.title}</h4>
-                           <p className="text-xs text-stone-500 font-medium line-clamp-3 leading-relaxed">{post.excerpt}</p>
+                           <h4 className="text-base md:text-lg font-display font-black text-slate-900 leading-tight uppercase italic tracking-tight line-clamp-2 group-hover:text-[#A288E3] transition-colors">{post.title}</h4>
+                           <p className="text-[11px] md:text-xs text-stone-500 font-medium line-clamp-2 leading-relaxed">{post.excerpt}</p>
                         </div>
                      </Link>
                   ))}
                </div>
 
                {explorePosts.length === 0 && (
-                  <div className="text-center text-stone-500 py-12 italic border border-dashed border-stone-300">
+                  <div className="text-center text-stone-500 py-10 italic border border-dashed border-stone-300 text-xs sm:text-sm">
                      Tidak ada artikel tambahan di arsip saat ini.
                   </div>
                )}

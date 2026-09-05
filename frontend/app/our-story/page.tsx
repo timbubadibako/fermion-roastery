@@ -70,25 +70,25 @@ export default function StoryPageV2() {
       />
 
       {/* SECTION 1: HERO (Character: Horizon Blue & White) */}
-      <section ref={heroRef} className="pt-48 pb-40 px-6 relative z-10 bg-[#E8F1F8]">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
+      <section ref={heroRef} className="pt-24 md:pt-32 pb-8 md:pb-12 px-6 relative z-10 bg-[#E8F1F8]">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 md:gap-16 items-center">
            
-           <div className="flex-1 space-y-10 order-2 lg:order-1 lg:min-h-[42rem] flex flex-col justify-center items-start">
+           <div className="flex-1 space-y-4 md:space-y-8 order-1 min-h-0 flex flex-col justify-center items-start">
               <div className="inline-block px-4 py-1.5 bg-white border border-[#8CADD8]/30 shadow-[4px_4px_0_rgba(140,173,216,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#0F3A8D] uppercase story-hero-text">
                  <Archive size={12} className="inline mr-2" /> {storyHero.badge}
               </div>
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-sans font-black tracking-tight text-slate-900 leading-[0.82] uppercase story-hero-text">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-sans font-black tracking-tight text-slate-900 leading-[0.85] uppercase story-hero-text">
                  {storyHero.title1} <br/> <span className="font-display italic font-normal normal-case text-[#8CADD8]">{storyHero.title2}</span>
               </h1>
-              <div className="w-full min-h-[13rem] space-y-6 text-stone-600 font-medium text-lg md:text-lg leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
+              <div className="w-full space-y-3 md:space-y-4 text-stone-600 font-medium text-base md:text-lg leading-relaxed max-w-2xl bg-white/40 p-4 md:p-5 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
                  <p>{t.ourStory.desc1}</p>
                  <p className="italic">{t.ourStory.desc2}</p>
               </div>
            </div>
 
-           <div className="w-full lg:w-[500px] relative aspect-[4/5] order-1 lg:order-2 hero-polaroid">
-              <div className="absolute top-2 right-0 w-[88%] bg-white p-4 pb-20 border border-black/10 shadow-[20px_20px_0px_rgba(0,0,0,0.02)] rotate-[3deg] relative z-20">
-                 <div className="absolute top-[-15px] left-1/2 -translate-x-1/2 w-32 h-8 bg-white/60 border border-black/5 rotate-[-2deg] z-30 backdrop-blur-sm shadow-sm opacity-80"></div>
+           <div className="w-full lg:w-[440px] relative aspect-[4/3.5] sm:aspect-[4/4.5] order-2 hero-polaroid">
+              <div className="absolute top-2 right-0 w-[90%] bg-white p-3.5 pb-12 md:pb-14 border border-black/10 shadow-[16px_16px_0px_rgba(0,0,0,0.02)] rotate-[3deg] relative z-20">
+                 <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-28 h-6 bg-white/60 border border-black/5 rotate-[-2deg] z-30 backdrop-blur-sm shadow-sm opacity-80"></div>
 
                  <div className="relative aspect-[4/3] w-full bg-[#E8F1F8] overflow-hidden border border-black/5">
                     <Image 
@@ -99,21 +99,21 @@ export default function StoryPageV2() {
                     />
                  </div>
 
-                 <div className="absolute left-6 right-6 bottom-6 flex items-end justify-between gap-4">
+                 <div className="absolute left-4 right-4 bottom-3 md:bottom-4 flex items-end justify-between gap-4">
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-[0.28em] text-[#0F3A8D]">Bandung, 2026</p>
-                      <p className="mt-2 text-2xl font-display italic text-slate-800">First roast setup.</p>
+                      <p className="mt-0.5 md:mt-1 text-lg md:text-xl font-display italic text-slate-800">First roast setup.</p>
                     </div>
-                    <p className="font-mono font-bold text-[#8CADD8] text-sm uppercase">{t.ourStory.est}</p>
+                    <p className="font-mono font-bold text-[#8CADD8] text-xs sm:text-sm uppercase">{t.ourStory.est}</p>
                  </div>
               </div>
-              <Sticker rotate={-12} className="absolute top-0 left-10 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
+              <Sticker rotate={-12} className="absolute top-0 left-6 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
            </div>
         </div>
       </section>
 
-      <section className="py-32 px-6 relative z-20 bg-[#FAF9F6]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <section className="py-8 md:py-16 px-6 relative z-20 bg-[#FAF9F6]">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center gap-3 text-[#0F3A8D]">
               <Microscope size={20} />
@@ -134,11 +134,11 @@ export default function StoryPageV2() {
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-8 lg:pt-14">
-            <p className="text-xl md:text-2xl font-display italic text-slate-800 leading-relaxed border-l-4 border-[#0F3A8D] pl-6">
+          <div className="lg:col-span-7 space-y-6 md:space-y-8 lg:pt-14">
+            <p className="text-lg md:text-2xl font-display italic text-slate-800 leading-relaxed border-l-4 border-[#0F3A8D] pl-4 md:pl-6">
               {t.ourStory.philDesc1}
             </p>
-            <p className="text-stone-600 leading-relaxed font-medium text-base md:text-lg">
+            <p className="text-stone-600 leading-relaxed font-medium text-sm md:text-lg">
               {t.ourStory.philDesc2}
             </p>
           </div>
@@ -146,16 +146,24 @@ export default function StoryPageV2() {
       </section>
 
       {/* SECTION 2: PHILOSOPHY (Roastery Note Cards - Character: Dark Navy) */}
-      <section ref={philosophyRef} className="py-48 px-6 relative z-20 -mt-16 overflow-hidden bg-[#1A2B40] text-white"
-        style={{ clipPath: "polygon(0 40px, 12% 0%, 25% 40px, 38% 0%, 50% 40px, 62% 0%, 75% 40px, 88% 0%, 100% 40px, 100% 100%, 0 100%)" }}
-      >
-        <div className="max-w-7xl mx-auto space-y-12 pt-12">
+      <section ref={philosophyRef} className="py-16 md:py-36 px-6 relative z-20 -mt-6 md:-mt-12 overflow-hidden bg-[#1A2B40] text-white story-zigzag-1">
+        <style jsx>{`
+          .story-zigzag-1 {
+            clip-path: polygon(0 12px, 12% 0%, 25% 12px, 38% 0%, 50% 12px, 62% 0%, 75% 12px, 88% 0%, 100% 12px, 100% 100%, 0 100%);
+          }
+          @media (min-width: 1024px) {
+            .story-zigzag-1 {
+              clip-path: polygon(0 40px, 12% 0%, 25% 40px, 38% 0%, 50% 40px, 62% 0%, 75% 40px, 88% 0%, 100% 40px, 100% 100%, 0 100%);
+            }
+          }
+        `}</style>
+        <div className="max-w-7xl mx-auto space-y-8 md:space-y-12 pt-6 md:pt-10">
            <div className="max-w-3xl">
-              <p className="text-[10px] font-black text-[#8CADD8] tracking-[0.4em] uppercase mb-5">{t.ourStory.coffeeTitle}</p>
+              <p className="text-[10px] font-black text-[#8CADD8] tracking-[0.4em] uppercase mb-3 md:mb-5">{t.ourStory.coffeeTitle}</p>
               <h2 className="text-3xl sm:text-5xl md:text-6xl font-sans font-black text-white leading-[0.9] uppercase">{t.ourStory.galleryTitle}</h2>
-              <p className="text-white/60 leading-relaxed font-medium text-lg mt-6">{t.ourStory.coffeeIntro}</p>
+              <p className="text-white/60 leading-relaxed font-medium text-base md:text-lg mt-4 md:mt-6">{t.ourStory.coffeeIntro}</p>
            </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
            {[
               { 
                 idx: "01", category: t.ourStory.philCategory1, title: t.ourStory.philTitle1, icon: <Globe2 size={24} />,
@@ -166,16 +174,16 @@ export default function StoryPageV2() {
                 desc: t.ourStory.philDesc2
               }
            ].map((p, i) => (
-             <div key={i} className="philosophy-card bg-[#233854] p-12 border border-white/5 shadow-2xl rounded-xl relative overflow-hidden group">
+             <div key={i} className="philosophy-card bg-[#233854] p-6 sm:p-12 border border-white/5 shadow-2xl rounded-xl relative overflow-hidden group">
                 <div className="absolute -top-4 right-12 w-4 h-12 rounded-full border-4 border-white/10 bg-transparent rotate-12 z-20"></div>
-                <div className="w-16 h-16 bg-[#1A2B40] border border-white/10 rounded-2xl flex items-center justify-center text-[#8CADD8] group-hover:scale-110 transition-transform duration-500 mb-8">
+                <div className="w-12 h-12 md:w-16 md:h-16 bg-[#1A2B40] border border-white/10 rounded-2xl flex items-center justify-center text-[#8CADD8] group-hover:scale-110 transition-transform duration-500 mb-6 md:mb-8">
                    {p.icon}
                 </div>
-                <div className="space-y-6 relative z-10">
+                <div className="space-y-4 md:space-y-6 relative z-10">
                    <p className="text-[10px] font-black text-[#8CADD8] tracking-[0.4em] uppercase">{p.idx} / {p.category}</p>
-                   <h2 className="text-4xl font-display font-black text-white uppercase italic tracking-tighter leading-none">{p.title}</h2>
+                   <h2 className="text-3xl md:text-4xl font-display font-black text-white uppercase italic tracking-tighter leading-none">{p.title}</h2>
                    <svg className="w-16 opacity-10" viewBox="0 0 100 10"><path d="M 0 5 Q 12.5 0, 25 5 T 50 5 T 75 5 T 100 5" stroke="currentColor" fill="transparent" strokeWidth="3" strokeLinecap="round" /></svg>
-                   <p className="text-white/60 leading-relaxed font-medium text-lg">{p.desc}</p>
+                   <p className="text-white/60 leading-relaxed font-medium text-base md:text-lg">{p.desc}</p>
                </div>
              </div>
            ))}
@@ -184,11 +192,19 @@ export default function StoryPageV2() {
       </section>
 
       {/* SECTION 3: GALLERY (Stacked Records - Character: Light Stone) */}
-      <section ref={galleryRef} className="py-48 px-6 relative z-30 -mt-16 overflow-hidden bg-[#FAF9F6]"
-        style={{ clipPath: "polygon(0 40px, 15% 0%, 30% 40px, 45% 0%, 60% 40px, 75% 0%, 85% 40px, 100% 0%, 100% 100%, 0 100%)" }}
-      >
-         <div className="max-w-7xl mx-auto space-y-24 pt-12">
-           <div className="text-center space-y-6">
+      <section ref={galleryRef} className="py-16 md:py-36 px-6 relative z-30 -mt-6 md:-mt-12 overflow-hidden bg-[#FAF9F6] story-zigzag-2">
+        <style jsx>{`
+          .story-zigzag-2 {
+            clip-path: polygon(0 12px, 15% 0%, 30% 12px, 45% 0%, 60% 12px, 75% 0%, 85% 12px, 100% 0%, 100% 100%, 0 100%);
+          }
+          @media (min-width: 1024px) {
+            .story-zigzag-2 {
+              clip-path: polygon(0 40px, 15% 0%, 30% 40px, 45% 0%, 60% 40px, 75% 0%, 85% 40px, 100% 0%, 100% 100%, 0 100%);
+            }
+          }
+        `}</style>
+         <div className="max-w-7xl mx-auto space-y-10 md:space-y-24 pt-6 md:pt-10">
+           <div className="text-center space-y-4 md:space-y-6">
               <div className="inline-flex items-center gap-3 text-stone-400">
                  <Microscope size={20} />
                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.ourStory.galleryBadge}</span>
@@ -196,7 +212,7 @@ export default function StoryPageV2() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-black uppercase tracking-tight text-slate-900 leading-none">{t.ourStory.galleryTitle}</h2>
            </div>
            
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 pt-10">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pt-6 md:pt-10">
               {[
                 { title: t.ourStory.galleryItem1Title, text: t.ourStory.galleryItem1Text, color: "#F1B941", img: "https://placehold.co/600x800/0f3a8d/e8f1f8?text=THE+PROBAT" },
                 { title: t.ourStory.galleryItem2Title, text: t.ourStory.galleryItem2Text, color: "#8CADD8", img: "https://placehold.co/600x800/1a2b20/ffffff?text=CALIBRATION" },
@@ -218,16 +234,24 @@ export default function StoryPageV2() {
       </section>
 
       {/* SECTION 4: MANIFESTO (Character: Pale Beige Archive) */}
-      <section className="py-48 px-6 relative z-40 -mt-16 overflow-hidden bg-[#F4F0E6] text-[#1A2B40]"
-        style={{ clipPath: "polygon(0 40px, 10% 0, 20% 40px, 35% 0, 50% 40px, 65% 0, 80% 40px, 90% 0, 100% 40px, 100% 100%, 0 100%)" }}
-      >
-         <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10 pt-10">
+      <section className="pt-16 md:pt-32 pb-24 md:pb-44 px-6 relative z-40 -mt-6 md:-mt-12 overflow-hidden bg-[#F4F0E6] text-[#1A2B40] story-zigzag-3">
+        <style jsx>{`
+          .story-zigzag-3 {
+            clip-path: polygon(0 12px, 10% 0, 20% 12px, 35% 0, 50% 12px, 65% 0, 80% 12px, 90% 0, 100% 12px, 100% 100%, 0 100%);
+          }
+          @media (min-width: 1024px) {
+            .story-zigzag-3 {
+              clip-path: polygon(0 40px, 10% 0, 20% 40px, 35% 0, 50% 40px, 65% 0, 80% 40px, 90% 0, 100% 40px, 100% 100%, 0 100%);
+            }
+          }
+        `}</style>
+         <div className="max-w-4xl mx-auto text-center space-y-8 md:space-y-12 relative z-10 pt-4 md:pt-8 pb-4 md:pb-8">
             <Quote size={60} className="text-[#367F4D] opacity-10 mx-auto" />
-            <h2 className="text-4xl md:text-6xl font-display font-black italic tracking-tighter leading-tight text-balance">
+            <h2 className="text-3xl md:text-6xl font-display font-black italic tracking-tighter leading-tight text-balance">
                {t.ourStory.manifestoQuote}
             </h2>
             <div className="w-24 h-1 bg-[#8CADD8]/50 mx-auto rotate-1"></div>
-            <p className="font-mono font-bold text-[#0F3A8D] text-lg tracking-widest uppercase">
+            <p className="font-mono font-bold text-[#0F3A8D] text-base md:text-lg tracking-widest uppercase">
                {t.ourStory.manifestoSign}
             </p>
          </div>

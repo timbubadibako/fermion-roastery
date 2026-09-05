@@ -529,23 +529,19 @@ function HeaderComponent() {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-8 mt-4 border-t border-black/5 flex flex-col gap-6 text-center">
-                {mounted && user?.role === 'RETAIL' && (
-                  <Link href="/account" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Account</Link>
-                )}
-                {mounted && user?.role === 'B2B' && (
-                  <Link href="/b2b" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Hub</Link>
-                )}
-                {mounted && user?.role === 'ADMIN' && (
-                  <Link href="/admin" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Admin Portal</Link>
-                )}
-                {mounted && !user && (
-                  <Link href="/auth" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Login Account</Link>
-                )}
-                {mounted && (
-                  <Link href="/cart" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Cart</Link>
-                )}
-              </div>
+              {mounted && (user?.role === 'RETAIL' || user?.role === 'B2B' || user?.role === 'ADMIN') && (
+                <div className="pt-6 mt-2 border-t border-black/5 flex flex-col gap-4 text-center">
+                  {user?.role === 'RETAIL' && (
+                    <Link href="/account" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>My Account</Link>
+                  )}
+                  {user?.role === 'B2B' && (
+                    <Link href="/b2b" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Partner Hub</Link>
+                  )}
+                  {user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="text-[11px] font-black tracking-[0.3em] uppercase italic" onClick={() => setIsMenuOpen(false)}>Admin Portal</Link>
+                  )}
+                </div>
+              )}
             </nav>
           </div>
         )}
