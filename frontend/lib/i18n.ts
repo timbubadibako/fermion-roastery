@@ -541,7 +541,9 @@ export const translations = {
         description: "Fermion Roastery builds an owned coffee experience for people who want precise filter releases, dependable espresso roasts, and a brand worth returning to.",
         cta_primary: "Explore Our Coffee",
         cta_secondary: "View Current Lineup",
-        stickers: { origin: "Origin", quality: "Roasted Fresh" }
+        stickers: { origin: "Origin", quality: "Roasted Fresh" },
+        pills: { singleOrigin: "SINGLE ORIGIN", freshRoasted: "FRESHLY ROASTED", beanGround: "BEAN & GROUND" },
+        scrollDown: "SCROLL DOWN"
       },
       partnerRibbon: { placeholder: "Cafe Partners" },
       series: {
@@ -1470,7 +1472,9 @@ export const translations = {
         description: "Fermion Roastery membangun pengalaman kopi milik brand sendiri untuk penikmat yang mencari rilis filter yang presisi, espresso roast yang konsisten, dan brand yang layak dipercaya kembali.",
         cta_primary: "Jelajahi Kopi Kami",
         cta_secondary: "Lihat Lineup Saat Ini",
-        stickers: { origin: "Origin", quality: "Fresh Roast" }
+        stickers: { origin: "Origin", quality: "Fresh Roast" },
+        pills: { singleOrigin: "SINGLE ORIGIN", freshRoasted: "SANGRAI SEGAR", beanGround: "BIJI & BUBUK" },
+        scrollDown: "GULIR KE BAWAH"
       },
       partnerRibbon: { placeholder: "Mitra Kafe" },
       series: {

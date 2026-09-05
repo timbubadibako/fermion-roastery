@@ -201,9 +201,9 @@ export function Hero() {
 
                 {/* Pillar Micro-Pills (Authentic Product Specs) */}
                 <div className="flex flex-wrap justify-center items-center gap-2 pt-2 text-[8px] font-black uppercase tracking-widest text-stone-500">
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ SINGLE ORIGIN ]</span>
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ SANGRAI SEGAR ]</span>
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ BIJI & BUBUK ]</span>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.singleOrigin || "SINGLE ORIGIN"} ]</span>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.freshRoasted || "SANGRAI SEGAR"} ]</span>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.beanGround || "BIJI & BUBUK"} ]</span>
                 </div>
 
               </div>
@@ -238,7 +238,7 @@ export function Hero() {
             className="flex flex-col items-center gap-1.5 text-stone-300 hover:text-white transition-colors group cursor-pointer"
           >
             <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-80 group-hover:opacity-100">
-              GULIR KE BAWAH
+              {fallbackContent.scrollDown || "SCROLL DOWN"}
             </span>
             <ChevronDown size={16} className="animate-bounce text-[#367F4D]" />
           </a>
