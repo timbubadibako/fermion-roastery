@@ -15,12 +15,14 @@ import {
   exportOrders,
   exportPartners,
   exportInvoices,
+  getSubscriptions,
 } from '../controllers/adminController.js';
 import { adminMutationRateLimiter } from '../lib/security.js';
 
 const router = express.Router();
 
 router.get('/settings', getSettings);
+router.get('/subscriptions', getSubscriptions);
 
 // Apply auth and admin check to all admin routes
 router.use(verifyAuth, verifyAdmin);

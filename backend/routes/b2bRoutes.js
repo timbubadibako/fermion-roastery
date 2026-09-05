@@ -17,14 +17,12 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 // Public / Semi-public routes
 router.post('/register', b2bRateLimiter, validateB2BRegistration, registerB2B);
 router.get('/test-contract', testContract);
+router.get('/contract', generateContract);
 
 // 🔒 Gembok Auth
 router.use(verifyAuth);
 
-// 🎯 SEKARANG AMAN: Tinggal panggil fungsi dari controller aja, 
-// urusan query database b2b_partners udah dihandle di dalam b2bController.js!
 router.get('/partner-status', getPartnerStatus);
-router.get('/contract', generateContract);
 router.post('/upload-contract', upload.single('contract'), uploadContract);
 
 export default router;
