@@ -430,32 +430,72 @@ export function SpotlightGuide() {
     height: targetRect.height + padding * 2,
   };
 
-  // Smarter Card placement: check position preference
-  const cardWidth = 300;
-  const cardHeight = 250; // approximate
-  
+  // Smarter Card placement: check target dimensions and viewport bounds
+  const cardWidth = 320;
+  const cardHeight = 260; // approximate including card padding & action buttons
+  const margin = 20;
+
+  const spaceRight = windowSize.width - targetRect.right - margin;
+  const spaceLeft = targetRect.left - margin;
+  const spaceTop = targetRect.top - margin;
+  const spaceBottom = windowSize.height - targetRect.bottom - margin;
+
+  const isTall = targetRect.height > windowSize.height * 0.35 || targetRect.height > 280;
+  const isWide = targetRect.width > windowSize.width * 0.7;
+
   let cardTop = 0;
   let cardLeft = 0;
 
-  if (stepInfo.position === "right") {
-    // Position to the right of the target
-    cardTop = Math.max(20, Math.min(targetRect.top, windowSize.height - cardHeight - 20));
-    cardLeft = targetRect.right + 40;
-    
-    // Fallback to left if no space on right
-    if (cardLeft + cardWidth > windowSize.width - 20) {
-      cardLeft = targetRect.left - cardWidth - 40;
+  // 🧠 Smart Decision Logic for Card Placement
+  if (isTall && !isWide) {
+    // Tall element (e.g. Checkout/Cart Address Form > 300px height): Place on side (right preferred, fallback left)
+    if (spaceRight >= cardWidth) {
+      cardLeft = targetRect.right + margin;
+      cardTop = targetRect.top + margin;
+    } else if (spaceLeft >= cardWidth) {
+      cardLeft = targetRect.left - cardWidth - margin;
+      cardTop = targetRect.top + margin;
+    } else {
+      cardLeft = targetRect.left + margin;
+      cardTop = targetRect.top + margin;
     }
+  } else if (isWide && isTall) {
+    // Huge element (occupying major screen area): Place inside target at top-right or top-left
+    cardLeft = Math.max(margin, targetRect.right - cardWidth - margin * 2);
+    cardTop = targetRect.top + margin * 2;
   } else {
-    // Default Top/Bottom logic
-    const spaceBelow = windowSize.height - targetRect.bottom;
-    const showAbove = spaceBelow < cardHeight + 40;
-    
-    cardTop = showAbove 
-        ? targetRect.top - cardHeight - 40 
-        : targetRect.bottom + 20;
-    cardLeft = Math.max(20, Math.min(targetRect.left, windowSize.width - cardWidth - 20));
+    // Normal element: respect stepInfo position or auto-fit based on space
+    let preferredPos = stepInfo.position || "bottom";
+
+    if (preferredPos === "right" && spaceRight < cardWidth && spaceLeft >= cardWidth) {
+      preferredPos = "left";
+    } else if (preferredPos === "left" && spaceLeft < cardWidth && spaceRight >= cardWidth) {
+      preferredPos = "right";
+    } else if (preferredPos === "top" && spaceTop < cardHeight && spaceBottom >= cardHeight) {
+      preferredPos = "bottom";
+    } else if (preferredPos === "bottom" && spaceBottom < cardHeight && spaceTop >= cardHeight) {
+      preferredPos = "top";
+    }
+
+    if (preferredPos === "right") {
+      cardLeft = targetRect.right + margin;
+      cardTop = targetRect.top;
+    } else if (preferredPos === "left") {
+      cardLeft = targetRect.left - cardWidth - margin;
+      cardTop = targetRect.top;
+    } else if (preferredPos === "top") {
+      cardLeft = targetRect.left;
+      cardTop = targetRect.top - cardHeight - margin;
+    } else {
+      // bottom
+      cardLeft = targetRect.left;
+      cardTop = targetRect.bottom + margin;
+    }
   }
+
+  // 🛡️ STRICT VIEWPORT BOUNDS: Guarantee card NEVER exits visible viewport
+  cardTop = Math.max(margin, Math.min(cardTop, windowSize.height - cardHeight - margin));
+  cardLeft = Math.max(margin, Math.min(cardLeft, windowSize.width - cardWidth - margin));
 
   const cardStyle = {
     top: cardTop,
@@ -511,7 +551,7 @@ export function SpotlightGuide() {
               <X size={16} />
             </button>
 
-            <span className="text-3xl font-cloude text-stone-200 absolute -top-2 right-6 -z-10 select-none">
+            <span className="text-3xl font-mono font-bold text-stone-300 absolute -top-2 right-6 -z-10 select-none">
                {currentStep + 1}
             </span>
 
