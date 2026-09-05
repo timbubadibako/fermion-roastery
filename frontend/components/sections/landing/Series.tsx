@@ -62,14 +62,14 @@ export function Series() {
   return (
     <section 
       ref={sectionRef}
-      className={`flex flex-col lg:flex-row min-h-[650px] relative group/section z-40 border-b border-black/5 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
+      className={`flex flex-col lg:flex-row min-h-[550px] lg:min-h-[750px] relative group/section z-40 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
     >
       
       {/* Espresso Series Panel (Dark Coffee Roast Theme with Rich Espresso Extraction Photo Overlay) */}
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="series-panel flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[440px]"
+        className="series-panel flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[480px] lg:min-h-[750px]"
       >
         {/* Real Espresso Extraction Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -87,9 +87,9 @@ export function Series() {
           <span className="px-3.5 py-1.5 bg-[#F1B941] text-black text-[9px] font-black uppercase tracking-widest rounded-sm inline-block shadow-sm">
             ESPRESSO SERIES
           </span>
-          <h3 className="text-4xl md:text-6xl font-cloude text-white leading-[0.95] relative">
+          <h3 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black text-white uppercase tracking-tight leading-[0.95] relative">
             Espresso<br />
-            <span className="text-[#F1B941]">Series.</span>
+            <span className="font-display italic font-normal normal-case text-[#F1B941]">Series.</span>
           </h3>
           <p className="text-stone-300 text-xs font-medium leading-relaxed pt-2">
             {content.espresso.subtitle}
@@ -113,7 +113,7 @@ export function Series() {
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="series-panel flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[440px]"
+        className="series-panel flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[480px] lg:min-h-[750px]"
       >
         {/* Real Filter Pour-Over Coffee Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -131,9 +131,9 @@ export function Series() {
           <span className="px-3.5 py-1.5 bg-[#367F4D] text-white text-[9px] font-black uppercase tracking-widest rounded-sm inline-block shadow-sm">
             FILTER SERIES
           </span>
-          <h3 className="text-4xl md:text-6xl font-cloude text-slate-900 leading-[0.95] relative">
+          <h3 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black text-slate-900 uppercase tracking-tight leading-[0.95] relative">
             Filter<br />
-            <span className="text-[#367F4D]">Series.</span>
+            <span className="font-display italic font-normal normal-case text-[#367F4D]">Series.</span>
           </h3>
           <p className="text-stone-600 text-xs font-medium leading-relaxed pt-2">
             {content.filter.subtitle}

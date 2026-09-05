@@ -200,7 +200,7 @@ export function Hero() {
                 </div>
 
                 {/* Pillar Micro-Pills (Authentic Product Specs) */}
-                <div className="flex flex-wrap justify-center items-center gap-2 pt-2 text-[8px] font-black uppercase tracking-widest text-stone-500">
+                <div className="flex flex-wrap justify-center items-center gap-2 pt-2 text-[8px] font-black uppercase tracking-widest text-stone-700">
                   <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.singleOrigin || "SINGLE ORIGIN"} ]</span>
                   <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.freshRoasted || "SANGRAI SEGAR"} ]</span>
                   <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.beanGround || "BIJI & BUBUK"} ]</span>
@@ -230,18 +230,14 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Accessibility Scroll Down Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
-          <a 
-            href="#partner-ribbon" 
-            aria-label="Scroll down to partner section"
-            className="flex flex-col items-center gap-1.5 text-stone-300 hover:text-white transition-colors group cursor-pointer"
-          >
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-80 group-hover:opacity-100">
+        {/* Scroll Down Visual Indicator (Non-clickable) */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none select-none">
+          <div className="flex flex-col items-center gap-1.5 text-stone-300">
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-80">
               {fallbackContent.scrollDown || "SCROLL DOWN"}
             </span>
             <ChevronDown size={16} className="animate-bounce text-[#367F4D]" />
-          </a>
+          </div>
         </div>
 
       </section>

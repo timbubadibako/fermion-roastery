@@ -77,8 +77,8 @@ export default function StoryPageV2() {
               <div className="inline-block px-4 py-1.5 bg-white border border-[#8CADD8]/30 shadow-[4px_4px_0_rgba(140,173,216,0.1)] rotate-[-1deg] text-[10px] font-black tracking-[0.3em] text-[#0F3A8D] uppercase story-hero-text">
                  <Archive size={12} className="inline mr-2" /> {storyHero.badge}
               </div>
-              <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-cloude tracking-tighter text-slate-900 leading-[0.82] story-hero-text">
-                 {storyHero.title1} <br/> <span className="font-display italic text-[#8CADD8]">{storyHero.title2}</span>
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-sans font-black tracking-tight text-slate-900 leading-[0.82] uppercase story-hero-text">
+                 {storyHero.title1} <br/> <span className="font-display italic font-normal normal-case text-[#8CADD8]">{storyHero.title2}</span>
               </h1>
               <div className="w-full min-h-[13rem] space-y-6 text-stone-600 font-medium text-lg md:text-lg leading-relaxed max-w-2xl bg-white/40 p-6 border-l-4 border-[#8CADD8]/40 backdrop-blur-sm shadow-sm story-hero-text">
                  <p>{t.ourStory.desc1}</p>
@@ -104,7 +104,7 @@ export default function StoryPageV2() {
                       <p className="text-[9px] font-black uppercase tracking-[0.28em] text-[#0F3A8D]">Bandung, 2026</p>
                       <p className="mt-2 text-2xl font-display italic text-slate-800">First roast setup.</p>
                     </div>
-                    <p className="font-cloude text-[#8CADD8] text-xl opacity-80 uppercase">{t.ourStory.est}</p>
+                    <p className="font-mono font-bold text-[#8CADD8] text-sm uppercase">{t.ourStory.est}</p>
                  </div>
               </div>
               <Sticker rotate={-12} className="absolute top-0 left-10 z-40 border border-black/10 shadow-sm" color="#F1B941">{t.ourStory.garage}</Sticker>
@@ -119,7 +119,7 @@ export default function StoryPageV2() {
               <Microscope size={20} />
               <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.ourStory.identityTitle}</span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-cloude tracking-tighter text-slate-900 leading-[0.9]">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-sans font-black tracking-tight text-slate-900 leading-[0.9] uppercase">
               {t.ourStory.philTitle1}
             </h2>
             <div className="relative pt-4">
@@ -128,42 +128,19 @@ export default function StoryPageV2() {
                   src="https://placehold.co/800x1000/e8f1f8/1a2b40?text=ROASTING+NOTES"
                   alt="Roasting notes and cupping archive"
                   fill
-                  className="object-cover grayscale-[0.15] contrast-110"
+                  className="object-cover grayscale contrast-125"
                 />
-              </div>
-              <div className="absolute -bottom-4 -right-2 md:right-10 bg-[#F4F0E6] border border-black/10 shadow-sm px-4 py-3 rotate-[2deg] max-w-[220px]">
-                <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#367F4D] mb-2">
-                  Archive Notes
-                </p>
-                <p className="text-sm leading-relaxed text-stone-600 font-medium">
-                  Setiap batch dibangun dari catatan kecil yang akhirnya membentuk rasa besar.
-                </p>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-8">
-            <div className="space-y-5 text-stone-600 font-medium text-base md:text-lg leading-relaxed max-w-3xl">
-              {t.ourStory.identityParagraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              <div className="bg-white border border-black/10 p-8 shadow-sm md:min-h-[20rem]">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#367F4D] mb-5">{t.ourStory.filterTitle}</p>
-                <p className="text-stone-600 leading-relaxed font-medium">{t.ourStory.filterDesc}</p>
-              </div>
-              <div className="bg-[#1A2B40] border border-black/10 p-8 shadow-sm text-white md:min-h-[20rem]">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8CADD8] mb-5">{t.ourStory.espressoTitle}</p>
-                <p className="text-white/70 leading-relaxed font-medium">{t.ourStory.espressoDesc}</p>
-              </div>
-            </div>
-
-            <div className="border-l-4 border-[#8CADD8] pl-6 pt-2">
-              <h3 className="text-2xl md:text-3xl font-display font-black italic tracking-tight text-slate-900">{t.ourStory.closingTitle}</h3>
-              <p className="mt-3 text-stone-500 font-medium leading-relaxed">{t.ourStory.closingDesc}</p>
-            </div>
+          <div className="lg:col-span-7 space-y-8 lg:pt-14">
+            <p className="text-xl md:text-2xl font-display italic text-slate-800 leading-relaxed border-l-4 border-[#0F3A8D] pl-6">
+              {t.ourStory.philDesc1}
+            </p>
+            <p className="text-stone-600 leading-relaxed font-medium text-base md:text-lg">
+              {t.ourStory.philDesc2}
+            </p>
           </div>
         </div>
       </section>
@@ -175,7 +152,7 @@ export default function StoryPageV2() {
         <div className="max-w-7xl mx-auto space-y-12 pt-12">
            <div className="max-w-3xl">
               <p className="text-[10px] font-black text-[#8CADD8] tracking-[0.4em] uppercase mb-5">{t.ourStory.coffeeTitle}</p>
-              <h2 className="text-4xl md:text-6xl font-cloude text-white leading-[0.9]">{t.ourStory.galleryTitle}</h2>
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-sans font-black text-white leading-[0.9] uppercase">{t.ourStory.galleryTitle}</h2>
               <p className="text-white/60 leading-relaxed font-medium text-lg mt-6">{t.ourStory.coffeeIntro}</p>
            </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
@@ -216,7 +193,7 @@ export default function StoryPageV2() {
                  <Microscope size={20} />
                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.ourStory.galleryBadge}</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-cloude tracking-tighter text-slate-900 leading-none italic">{t.ourStory.galleryTitle}</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-black uppercase tracking-tight text-slate-900 leading-none">{t.ourStory.galleryTitle}</h2>
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 pt-10">
@@ -250,7 +227,7 @@ export default function StoryPageV2() {
                {t.ourStory.manifestoQuote}
             </h2>
             <div className="w-24 h-1 bg-[#8CADD8]/50 mx-auto rotate-1"></div>
-            <p className="font-cloude text-[#0F3A8D] text-2xl tracking-widest uppercase">
+            <p className="font-mono font-bold text-[#0F3A8D] text-lg tracking-widest uppercase">
                {t.ourStory.manifestoSign}
             </p>
          </div>

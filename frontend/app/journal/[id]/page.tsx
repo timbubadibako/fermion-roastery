@@ -74,7 +74,7 @@ export default function JournalReadPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FAF9F6] text-stone-500">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F0ECE1] text-stone-500">
         <Loader2 size={40} className="animate-spin text-stone-800" />
         <p className="text-xs font-black uppercase tracking-[0.3em]">Memuat Artikel...</p>
       </div>
@@ -84,7 +84,7 @@ export default function JournalReadPage() {
   if (!post) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-800 pt-32 pb-24 selection:bg-stone-800 selection:text-white">
+    <div className="min-h-screen bg-[#F0ECE1] text-stone-800 pt-32 pb-24 selection:bg-stone-800 selection:text-white">
       <div className="container max-w-4xl mx-auto px-4">
         
         {/* Navigation */}
@@ -99,7 +99,7 @@ export default function JournalReadPage() {
 
         {/* Header */}
         <header className="mb-12 text-center">
-          <Badge variant="outline" className="mb-6 font-cloude text-xl px-4 py-1 border-stone-300">
+          <Badge variant="outline" className="mb-6 font-mono font-bold text-xs uppercase px-4 py-1.5 border-stone-300">
             {post.category || "Jurnal"}
           </Badge>
           
@@ -192,7 +192,7 @@ export default function JournalReadPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-500" 
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-stone-300 font-cloude text-3xl">{other.category}</div>
+                      <div className="w-full h-full flex items-center justify-center text-stone-300 font-display font-black text-2xl uppercase">{other.category}</div>
                     )}
                   </div>
                   <div className="p-5 space-y-2">

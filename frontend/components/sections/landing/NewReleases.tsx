@@ -10,6 +10,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { ProductCard } from "@/components/ui/product-card";
+
 gsap.registerPlugin(ScrollTrigger);
 
 interface NewReleaseProduct {
@@ -93,29 +95,42 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#2A1619] py-32 relative z-20 overflow-hidden text-[#E2DACB] border-b border-black/20"
+      className="bg-[#F0ECE1] py-32 relative z-20 overflow-hidden text-stone-900 border-b border-black/10"
     >
+      {/* Clean Micro Dot Matrix Accent */}
       <div 
-        className="absolute inset-0 opacity-[0.05] pointer-events-none" 
-        style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }} 
+        className="absolute inset-0 opacity-[0.025] pointer-events-none" 
+        style={{
+          backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}
+      />
+
+      {/* Subtle SVG Grid Line Accent */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[1] opacity-[0.03]"
+        style={{
+          backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
+          backgroundSize: '32px 32px'
+        }}
       />
 
       <div className="max-w-7xl mx-auto space-y-20 relative z-10 px-6">
 
         {/* Section Title Header */}
         <div className="text-center lg:text-left lg:ml-6 space-y-6 release-title relative">
-          <Sticker rotate={-8} className="-top-8 -left-4 hidden lg:block border border-black/10 shadow-sm scale-110" color="#F1B941" variant="solid">
+          <Sticker rotate={-8} className="-top-8 -left-4 hidden lg:block border border-black/10 shadow-xs scale-110" color="#F1B941" variant="solid">
             Fresh Roast
           </Sticker>
 
-          <h2 className="text-6xl md:text-7xl font-cloude tracking-tighter leading-[0.8] text-white">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-sans font-black tracking-tight uppercase leading-[0.8] text-stone-900">
             {content.title.split(' ')[0]} <br />
-            <span className="font-display italic text-[#EBA294]">{content.title.split(' ')[1]}</span>
+            <span className="font-display italic font-normal normal-case text-[#D99B26]">{content.title.split(' ')[1]}</span>
           </h2>
 
-          <div className="w-32 h-1 bg-[#EBA294] mx-auto lg:mx-0 rotate-1"></div>
+          <div className="w-32 h-1 bg-[#D99B26] mx-auto lg:mx-0 rotate-1"></div>
 
-          <p className="text-[#EBA294] font-bold uppercase tracking-[0.4em] text-xs font-sans bg-black/40 inline-block px-4 py-1 border border-black/20 rotate-[-1deg]">
+          <p className="text-[#B57C17] font-mono font-bold uppercase tracking-[0.35em] text-xs bg-white/80 backdrop-blur-xs inline-block px-4 py-1.5 border border-stone-300/80 shadow-2xs rotate-[-1deg] rounded-xs">
             {content.subtitle}
           </p>
         </div>
@@ -125,106 +140,16 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
 
           {products.length === 0 ? (
             [1, 2, 3].map(i => (
-              <div key={i} className="aspect-[3/4] bg-white/10 animate-pulse border border-black/5 rounded-sm" />
+              <div key={i} className="aspect-[3/4] bg-stone-200/60 animate-pulse border border-black/5 rounded-xs" />
             ))
-          ) : products.map((product, idx) => {
-            const tastingNotesList = product.notes
-              ? product.notes.split(/[,•|]/).map(n => n.trim()).filter(Boolean)
-              : ["Specialty Grade", "Fresh Roasted"];
-
-            return (
-              <div
-                key={product.id}
-                className={`product-card group bg-[#FDFBF7] border border-black/10 shadow-[8px_8px_0px_rgba(0,0,0,0.06)] hover:shadow-[16px_16px_0px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-500 rounded-sm overflow-hidden flex flex-col text-slate-900 ${
-                  idx % 2 === 0 ? 'lg:-rotate-[1deg]' : 'lg:rotate-[1deg]'
-                }`}
-              >
-                {/* Top Craft Spec Bar */}
-                <div className="bg-[#FAF8F3] px-6 py-3 border-b border-black/10 flex justify-between items-center text-[9px] font-black tracking-widest uppercase text-stone-600">
-                  <span className="inline-flex items-center gap-1.5 text-[#367F4D]">
-                    <Sparkles size={11} />
-                    {product.origin || 'SINGLE ORIGIN'}
-                  </span>
-                  <span className="text-stone-400 font-mono">LOT #{idx + 1024}</span>
-                </div>
-
-                {/* Product Image Container */}
-                <div className="aspect-[4/3] bg-stone-200 relative overflow-hidden border-b border-black/10 group-hover:bg-stone-300 transition-colors">
-                  {product.image_url ? (
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover grayscale-[0.15] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-cloude text-4xl text-stone-400 rotate-[-5deg]">
-                      Fermion
-                    </div>
-                  )}
-
-                  {/* Category Pill Tag Overlay */}
-                  <div className="absolute top-3 left-3 bg-slate-900/90 text-white backdrop-blur-sm px-3 py-1 text-[8px] font-black uppercase tracking-[0.25em] rounded-xs shadow-sm">
-                    {product.category || 'WHOLE BEAN'}
-                  </div>
-                </div>
-
-                {/* Editorial Tasting Spec Content */}
-                <div className="p-6 sm:p-7 space-y-6 flex-1 flex flex-col justify-between">
-                  
-                  {/* Title & Origin Details */}
-                  <div className="space-y-2">
-                    <span className="text-[10px] font-bold text-[#367F4D] uppercase tracking-[0.2em] block">
-                      {product.origin || 'INDONESIA SPECIALTY'}
-                    </span>
-
-                    <h3 className="font-display font-black text-2xl uppercase tracking-tight leading-tight text-slate-900 group-hover:text-[#367F4D] transition-colors">
-                      {product.name}
-                    </h3>
-                  </div>
-
-                  {/* Tasting Notes Chips Pill Grid */}
-                  <div className="space-y-2 pt-2 border-t border-black/10">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-stone-400 block">
-                      PROFIL &amp; TASTING NOTES
-                    </span>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {tastingNotesList.map((note, i) => (
-                        <span 
-                          key={i} 
-                          className="px-2.5 py-1 bg-[#FAF8F3] border border-black/10 text-[9px] font-black uppercase tracking-wider text-slate-800 rounded-sm shadow-2xs"
-                        >
-                          {note}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price & Action Button */}
-                  <div className="pt-4 border-t border-black/10 flex items-center justify-between gap-4 mt-auto">
-                    <div className="space-y-0.5">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-stone-400 block">
-                        HARGA RETAIL
-                      </span>
-                      <span className="font-display font-black text-xl text-slate-900">
-                        Rp {Number(product.price_retail).toLocaleString('id-ID')}
-                      </span>
-                    </div>
-
-                    <Link href={`/our-coffee/${product.id}`}>
-                      <button className="bg-[#367F4D] hover:bg-[#2b643d] text-white py-3 px-5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 active:scale-95 shadow-md flex items-center gap-1.5 group-hover:translate-x-0.5">
-                        <span>{content.ctaViewDetails}</span>
-                        <ArrowRight size={13} />
-                      </button>
-                    </Link>
-                  </div>
-
-                </div>
-              </div>
-            );
-          })}
+          ) : products.map((product, idx) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={idx}
+              rotate={true}
+            />
+          ))}
         </div>
       </div>
     </section>

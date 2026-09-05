@@ -61,10 +61,10 @@ function PartnerRibbonComponent() {
   };
 
   return (
-    <section className={`py-6 md:py-8 bg-white relative z-30 overflow-hidden border-b border-black/5 ${isScrolling ? "pointer-events-none" : ""}`}>
+    <section className={`pt-6 md:pt-8 pb-0 bg-white relative z-30 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}>
       
       {/* Header Badge */}
-      <div className="text-center mb-4 px-4">
+      <div className="text-center mb-3 px-4">
         <span className="inline-block px-4 py-1.5 bg-[#FAF9F6] border border-black/10 rounded-sm text-[9px] font-black uppercase tracking-[0.35em] text-stone-500 shadow-sm">
           {content.placeholder || "DIPERCAYA OLEH KAFE & PARTNER B2B PILIHAN"}
         </span>
@@ -75,7 +75,7 @@ function PartnerRibbonComponent() {
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20" />
 
       {/* Infinite Scrolling Ticker */}
-      <div className="flex overflow-hidden opacity-100 transition-opacity duration-700 py-2 md:py-3">
+      <div className="flex overflow-hidden opacity-100 transition-opacity duration-700 pt-2 pb-0">
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes ribbonScroll {
             from { transform: translateX(0); }
@@ -103,9 +103,6 @@ function PartnerRibbonComponent() {
           </div>
         </div>
       </div>
-
-      {/* Bottom Subtle Border */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-black/5" />
     </section>
   );
 }

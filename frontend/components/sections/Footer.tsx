@@ -61,7 +61,7 @@ export function Footer() {
             {/* Patterned Plaster Tape */}
             <PlasterTape width={90} height={28} rotate={4} pattern="cross" className="absolute -top-4 left-1/2 -translate-x-1/2 z-20" />
             
-            <h2 className="text-4xl font-cloude leading-[0.9] text-white relative z-10">
+            <h2 className="text-3xl sm:text-4xl font-sans font-black tracking-tight leading-[0.9] text-white uppercase relative z-10">
               {content.statementTop}<br />
               <span className="text-[#8CADD8]">{content.statementMiddle}</span><br />
               <span className="italic font-display text-fermion-coral text-5xl">{content.statementAccent}</span>
@@ -114,7 +114,7 @@ export function Footer() {
             <p className="text-[10px] text-[#E2DACB]/50 font-bold tracking-widest uppercase">
               {content.copyright}
             </p>
-            <p className="text-4xl font-cloude text-[#E2DACB]/20 mt-2">
+            <p className="text-2xl sm:text-3xl font-display font-black italic tracking-wider text-[#E2DACB]/20 mt-2 uppercase">
               {content.signature}
             </p>
           </div>

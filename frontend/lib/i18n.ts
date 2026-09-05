@@ -540,7 +540,7 @@ export const translations = {
         subtitle: "Specialty coffee shaped by invisible variables, roasted for clarity, balance, and repeatable pleasure.",
         description: "Fermion Roastery builds an owned coffee experience for people who want precise filter releases, dependable espresso roasts, and a brand worth returning to.",
         cta_primary: "Explore Our Coffee",
-        cta_secondary: "View Current Lineup",
+        cta_secondary: "B2B & Cafe Partnership",
         stickers: { origin: "Origin", quality: "Roasted Fresh" },
         pills: { singleOrigin: "SINGLE ORIGIN", freshRoasted: "FRESHLY ROASTED", beanGround: "BEAN & GROUND" },
         scrollDown: "SCROLL DOWN"
@@ -1471,7 +1471,7 @@ export const translations = {
         subtitle: "Specialty coffee shaped by invisible variables, roasted for clarity, balance, and repeatable pleasure.",
         description: "Fermion Roastery membangun pengalaman kopi milik brand sendiri untuk penikmat yang mencari rilis filter yang presisi, espresso roast yang konsisten, dan brand yang layak dipercaya kembali.",
         cta_primary: "Jelajahi Kopi Kami",
-        cta_secondary: "Lihat Lineup Saat Ini",
+        cta_secondary: "Kemitraan B2B & Kafe",
         stickers: { origin: "Origin", quality: "Fresh Roast" },
         pills: { singleOrigin: "SINGLE ORIGIN", freshRoasted: "SANGRAI SEGAR", beanGround: "BIJI & BUBUK" },
         scrollDown: "GULIR KE BAWAH"

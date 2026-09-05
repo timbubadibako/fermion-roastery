@@ -163,9 +163,9 @@ export default function SubscriptionPageV2() {
             {subscriptionHero.badge}
           </div>
 
-          <h1 id="tour-sub-hero" className="text-5xl md:text-8xl lg:text-[7rem] font-cloude tracking-tighter text-[#2A1619] leading-[0.82] sub-hero-text">
+          <h1 id="tour-sub-hero" className="text-4xl sm:text-7xl md:text-8xl lg:text-[7rem] font-sans font-black tracking-tight text-[#2A1619] leading-[0.82] uppercase sub-hero-text">
             {subscriptionHero.title1} <br />
-            <span className="font-display italic text-[#F1B941]">{subscriptionHero.title2}</span>
+            <span className="font-display italic font-normal normal-case text-[#F1B941]">{subscriptionHero.title2}</span>
           </h1>
 
           <p className="w-full min-h-[8.5rem] max-w-2xl mx-auto text-stone-600 font-medium text-lg md:text-xl leading-relaxed bg-white/40 p-5 border-l-4 border-[#F1B941]/40 backdrop-blur-sm shadow-sm sub-hero-text">
@@ -193,7 +193,7 @@ export default function SubscriptionPageV2() {
                 <Image src="https://placehold.co/800x1000/7c2d12/f1b941?text=MASTER+ROASTER" alt="Master" fill className="object-cover filter contrast-125 grayscale" />
               </div>
               <div className="absolute bottom-4 left-6">
-                <p className="font-cloude text-stone-300 text-2xl opacity-40 italic">{tSub.premiumAccess}</p>
+                <p className="font-display italic text-stone-300 text-xl opacity-60">{tSub.premiumAccess}</p>
               </div>
             </div>
             <Sticker rotate={12} className="absolute -bottom-6 -right-6 z-30 border border-white/10 shadow-sm" color="#F1B941">{tSub.sensoryExpert}</Sticker>
@@ -225,7 +225,7 @@ export default function SubscriptionPageV2() {
               <Microscope size={20} strokeWidth={2.5} />
               <span className="text-[10px] font-black uppercase tracking-[0.4em]">{tSub.stepsBadge}</span>
             </div>
-            <h2 className="text-7xl font-cloude tracking-tighter text-[#2A1619] leading-none">{tSub.stepsTitle}</h2>
+            <h2 className="text-4xl sm:text-6xl md:text-7xl font-sans font-black tracking-tight text-[#2A1619] uppercase leading-none">{tSub.stepsTitle}</h2>
           </div>
 
           <div id="tour-sub-steps" className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
@@ -266,7 +266,7 @@ export default function SubscriptionPageV2() {
                 <div className="flex-1 space-y-8">
                   <div className="text-center space-y-4">
                     {visual.icon}
-                    <h3 className="text-3xl font-cloude text-[#2A1619]">{plan.name}</h3>
+                    <h3 className="text-2xl sm:text-3xl font-display font-black italic uppercase text-[#2A1619]">{plan.name}</h3>
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-bold text-slate-950 leading-none">Rp {Number(plan.price).toLocaleString('id-ID')}</span>
                       <span className="text-[11px] font-black uppercase text-stone-500">{tSub.perMonth}</span>

@@ -120,9 +120,9 @@ export function HeroSection() {
                 className="relative z-30 text-center px-12 pointer-events-none"
                 style={{ opacity: textOpacity }}
               >
-                <h1 className="font-cloude text-white leading-[0.8] tracking-tighter">
-                  <span className="block mr-3 text-[6vw]">FERMION</span>
-                  <span className="block text-[4vw] -mt-[0.25vw] tracking-[0.2em]">roastery</span>
+                <h1 className="font-sans font-black text-white leading-[0.8] tracking-tight uppercase">
+                  <span className="block text-[6vw]">FERMION</span>
+                  <span className="block text-[3.5vw] font-display italic font-normal normal-case -mt-[0.25vw] tracking-wider text-[#E5B13F]">roastery</span>
                 </h1>
               </div>
             </div>

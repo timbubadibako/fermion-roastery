@@ -158,7 +158,7 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
               FAQ
             </Sticker>
             
-            <h2 className="text-5xl md:text-7xl font-cloude leading-[0.92] text-[#FAF9F6] relative drop-shadow-md">
+            <h2 className="text-4xl sm:text-6xl md:text-7xl font-sans font-black tracking-tight uppercase leading-[0.92] text-[#FAF9F6] relative drop-shadow-md">
               {t.landing.faq.title}
               <svg className="absolute -bottom-3 left-0 w-3/4 h-5 text-[#F1B941] -z-10" viewBox="0 0 100 20" preserveAspectRatio="none">
                 <path d="M0 10 Q 50 20 100 0" stroke="currentColor" strokeWidth="7" fill="none" />
@@ -196,7 +196,7 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
 
                   <div className="flex gap-4 items-center justify-between">
                     <div className="flex gap-3.5 items-center">
-                      <span aria-hidden="true" className="text-xl font-cloude text-black/50 pointer-events-none shrink-0">
+                      <span aria-hidden="true" className="text-lg font-mono font-bold text-black/70 pointer-events-none shrink-0">
                         {(idx + 1).toString().padStart(2, '0')}
                       </span>
                       <h3 className="text-base sm:text-lg font-display font-bold text-black group-hover:text-[#367F4D] transition-colors pointer-events-none leading-snug">

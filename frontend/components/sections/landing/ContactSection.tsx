@@ -85,9 +85,9 @@ export function ContactSection() {
                 {content.badge}
               </div>
               
-              <h2 className="text-6xl md:text-8xl font-cloude tracking-tighter text-black leading-[0.8] relative">
+              <h2 className="text-4xl sm:text-6xl md:text-8xl font-sans font-black tracking-tight text-black leading-[0.8] uppercase relative">
                 Get in<br />
-                <span className="font-display italic text-[#367F4D]">Touch</span>
+                <span className="font-display italic font-normal normal-case text-[#367F4D]">Touch</span>
               </h2>
               
               {/* Squiggly line separator */}
