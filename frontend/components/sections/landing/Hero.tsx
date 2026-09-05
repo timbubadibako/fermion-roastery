@@ -107,7 +107,7 @@ export function Hero() {
 
 
   return (
-    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#0A0D12]">
+    <div ref={containerRef} className="relative min-h-[100dvh] w-full overflow-hidden bg-[#0A0D12] flex flex-col justify-between py-12 md:py-0">
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/hero-video-poster.jpg"
@@ -118,7 +118,7 @@ export function Hero() {
           className="object-cover"
         />
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.8)_85%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.85)_85%)] pointer-events-none" />
       </div>
 
       {canEnhanceHero ? (
@@ -133,9 +133,9 @@ export function Hero() {
       ) : null}
 
 
-      <section className="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center">
-        <div className="relative flex min-h-[480px] w-full translate-y-6 items-center justify-center">
-          <div className="relative min-h-[380px] w-[94%] max-w-4xl">
+      <section className="relative z-20 flex min-h-[100dvh] w-full flex-col items-center justify-center px-4 sm:px-6 text-center py-6 md:py-0">
+        <div className="relative flex min-h-[380px] sm:min-h-[440px] md:min-h-[480px] w-full translate-y-2 md:translate-y-6 items-center justify-center">
+          <div className="relative min-h-[320px] sm:min-h-[360px] md:min-h-[380px] w-[96%] sm:w-[92%] max-w-4xl">
             {/* Background Paper Layer 1 (Medium Muted Sage Paper) */}
             <div className="hero-paper-layer-1 absolute inset-0 rotate-[2.5deg] border border-black/10 bg-[#B8C5B9] shadow-sm rounded-sm" />
 
@@ -143,7 +143,7 @@ export function Hero() {
             <div className="hero-paper-layer-2 absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#D9CDB8] shadow-sm rounded-sm" />
 
             {/* Main Ticket Paper Card */}
-            <div className="hero-paper-main-card absolute inset-0 rotate-[-1.5deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-10 shadow-lg md:shadow-[14px_14px_0px_rgba(0,0,0,0.06)] rounded-sm" style={{ transform: "translateZ(0)" }}>
+            <div className="hero-paper-main-card absolute inset-0 rotate-[-1.5deg] border border-black/10 bg-[#FDFBF7] p-4 sm:p-8 md:p-10 shadow-lg md:shadow-[14px_14px_0px_rgba(0,0,0,0.06)] rounded-sm" style={{ transform: "translateZ(0)" }}>
               
               {/* Masking Tape with Micro Text */}
               <div className="absolute -top-5 left-1/2 z-50 flex h-7 w-32 -translate-x-1/2 rotate-[-1deg] items-center justify-center border border-black/5 bg-white/70 px-2 text-[7px] font-black uppercase tracking-[0.25em] text-stone-500 shadow-sm backdrop-blur-sm">
@@ -171,24 +171,24 @@ export function Hero() {
                 }}
               />
 
-              <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-5 py-4">
+              <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-3 sm:gap-4 md:gap-5 py-2 sm:py-4">
                 
                 {/* Micro Tagline Ribbon */}
-                <span className="text-[9px] font-black uppercase tracking-[0.35em] text-[#367F4D]">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.35em] text-[#367F4D]">
                   SPECIALTY COFFEE ROASTERY • INDONESIA
                 </span>
 
                 {/* Main Dynamic Words */}
-                <div className="space-y-1">
+                <div className="space-y-0.5 sm:space-y-1">
                   {HERO_WORDS.map((word, wordIdx) => (
                     <div
                       key={wordIdx}
-                      className={`word-${wordIdx} flex items-center justify-center gap-1 md:gap-3`}
+                      className={`word-${wordIdx} flex items-center justify-center gap-0.5 sm:gap-1 md:gap-3`}
                     >
                       {word.split("").map((char, charIdx) => (
                         <span
                           key={charIdx}
-                          className={`char inline-block text-5xl font-display font-black uppercase leading-none tracking-tighter italic md:text-7xl ${
+                          className={`char inline-block text-3xl min-[375px]:text-4xl sm:text-5xl font-display font-black uppercase leading-none tracking-tighter italic md:text-7xl ${
                             word === "ROASTED" ? "text-[#367F4D]" : "text-slate-900"
                           }`}
                         >
@@ -200,10 +200,10 @@ export function Hero() {
                 </div>
 
                 {/* Pillar Micro-Pills (Authentic Product Specs) */}
-                <div className="flex flex-wrap justify-center items-center gap-2 pt-2 text-[8px] font-black uppercase tracking-widest text-stone-700">
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.singleOrigin || "SINGLE ORIGIN"} ]</span>
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.freshRoasted || "SANGRAI SEGAR"} ]</span>
-                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.beanGround || "BIJI & BUBUK"} ]</span>
+                <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 pt-1 sm:pt-2 text-[7.5px] sm:text-[8px] font-black uppercase tracking-widest text-stone-700">
+                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.singleOrigin || "SINGLE ORIGIN"} ]</span>
+                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.freshRoasted || "SANGRAI SEGAR"} ]</span>
+                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-stone-100 border border-black/5 rounded-full">[ {fallbackContent.pills?.beanGround || "BIJI & BUBUK"} ]</span>
                 </div>
 
               </div>
@@ -211,19 +211,19 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="hero-final-reveal relative z-30 mt-10 space-y-8">
-          <p className="mx-auto max-w-3xl text-[10px] font-black uppercase tracking-[0.35em] text-[#8CADD8] md:tracking-[0.5em]">
+        <div className="hero-final-reveal relative z-30 mt-6 sm:mt-8 md:mt-10 space-y-5 sm:space-y-6 md:space-y-8 px-2 w-full max-w-xl mx-auto">
+          <p className="mx-auto max-w-3xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] md:tracking-[0.5em] text-[#8CADD8]">
             {fallbackContent.subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link href="/our-coffee">
-              <button className="px-8 py-4 bg-[#367F4D] text-white rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#2b643d] transition-all duration-300 active:scale-95 shadow-xl">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0">
+            <Link href="/our-coffee" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-[#367F4D] text-white rounded-full text-[10px] font-black tracking-[0.2em] sm:tracking-[0.25em] uppercase hover:bg-[#2b643d] transition-all duration-300 active:scale-95 shadow-xl">
                 {fallbackContent.cta_primary}
               </button>
             </Link>
-            <Link href="/wholesale">
-              <button className="px-8 py-4 bg-white/10 border border-white/20 text-white backdrop-blur-sm rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-white hover:text-black transition-all duration-300 active:scale-95 shadow-xl">
+            <Link href="/wholesale" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-white/10 border border-white/20 text-white backdrop-blur-sm rounded-full text-[10px] font-black tracking-[0.2em] sm:tracking-[0.25em] uppercase hover:bg-white hover:text-black transition-all duration-300 active:scale-95 shadow-xl">
                 {fallbackContent.cta_secondary}
               </button>
             </Link>
@@ -231,12 +231,12 @@ export function Hero() {
         </div>
 
         {/* Scroll Down Visual Indicator (Non-clickable) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none select-none">
-          <div className="flex flex-col items-center gap-1.5 text-stone-300">
+        <div className="relative md:absolute bottom-2 md:bottom-6 left-1/2 md:-translate-x-1/2 z-30 pointer-events-none select-none mt-6 md:mt-0">
+          <div className="flex flex-col items-center gap-1 text-stone-300">
             <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-80">
               {fallbackContent.scrollDown || "SCROLL DOWN"}
             </span>
-            <ChevronDown size={16} className="animate-bounce text-[#367F4D]" />
+            <ChevronDown size={14} className="animate-bounce text-[#367F4D]" />
           </div>
         </div>
 

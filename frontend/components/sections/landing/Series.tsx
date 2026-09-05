@@ -69,7 +69,7 @@ export function Series() {
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="series-panel flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[480px] lg:min-h-[750px]"
+        className="series-panel flex-1 bg-[#14110F] text-white flex flex-col justify-between p-8 sm:p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[420px] lg:min-h-[750px]"
       >
         {/* Real Espresso Extraction Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -96,7 +96,7 @@ export function Series() {
           </p>
         </div>
 
-        <div className="relative z-10 pt-8">
+        <div className="relative z-10 pt-8 pb-4 lg:pb-0">
           <Link href="/our-coffee?type=espresso">
             <button className="px-8 py-4 bg-white text-black rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#F1B941] transition-all duration-300 active:scale-95 shadow-xl">
               {content.espresso.cta} ➔
@@ -113,7 +113,7 @@ export function Series() {
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="series-panel flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[480px] lg:min-h-[750px]"
+        className="series-panel flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-8 sm:p-12 md:p-20 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[420px] lg:min-h-[750px] pb-16 sm:pb-20 md:pb-20"
       >
         {/* Real Filter Pour-Over Coffee Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -140,7 +140,7 @@ export function Series() {
           </p>
         </div>
 
-        <div className="relative z-10 pt-8">
+        <div className="relative z-10 pt-8 pb-6 lg:pb-0">
           <Link href="/our-coffee?type=filter">
             <button className="px-8 py-4 bg-slate-900 text-white rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#367F4D] transition-all duration-300 active:scale-95 shadow-xl">
               {content.filter.cta} ➔
