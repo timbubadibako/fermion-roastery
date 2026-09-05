@@ -1464,9 +1464,9 @@ export const translations = {
     },
     landing: {
       hero: {
-        badge: "Roastery Kopi Eksklusif",
-        title: "TERKURASI, DIPANGGANG, | DIHORMATI",
-        subtitle: "Specialty coffee yang dibentuk oleh variabel tak terlihat, lalu disangrai untuk kejernihan rasa, keseimbangan, dan kenikmatan yang mudah diulang.",
+        badge: "Exclusive Coffee Roastery",
+        title: "CURATED, ROASTED, | REVERED",
+        subtitle: "Specialty coffee shaped by invisible variables, roasted for clarity, balance, and repeatable pleasure.",
         description: "Fermion Roastery membangun pengalaman kopi milik brand sendiri untuk penikmat yang mencari rilis filter yang presisi, espresso roast yang konsisten, dan brand yang layak dipercaya kembali.",
         cta_primary: "Jelajahi Kopi Kami",
         cta_secondary: "Lihat Lineup Saat Ini",
@@ -1474,20 +1474,20 @@ export const translations = {
       },
       partnerRibbon: { placeholder: "Mitra Kafe" },
       series: {
-        espresso: { title: "Seri Espresso.", subtitle: "Konsisten • Mudah Dial-In • Siap untuk service harian", cta: "Jelajahi Espresso Roast", sticker: "Siap Dial-In" },
-        filter: { title: "Seri Filter.", subtitle: "Terkurasi • Ekspresif • Diperbarui dengan lot segar", cta: "Jelajahi Rilis Filter", sticker: "Kurasi Bulanan" }
+        espresso: { title: "Espresso Series.", subtitle: "Consistent • Easy to Dial • Built for daily service", cta: "Jelajahi Espresso Roast", sticker: "Dial-In Ready" },
+        filter: { title: "Filter Series.", subtitle: "Curated • Expressive • Updated with fresh lots", cta: "Jelajahi Rilis Filter", sticker: "Monthly Curated" }
       },
       theWay: {
         titleMain: "The", titleSub: "Fermion Way.", description: "Variabel kecil. Cangkir lebih bersih. Rasa yang lebih disengaja.",
         pillars: [
-          { id: "01", title: "Varietas", desc: "Setiap kopi dimulai dari karakter asal yang layak dijaga sampai ke cangkir." },
-          { id: "02", title: "Fermentasi", desc: "Metode proses diperlakukan sebagai penentu rasa, bukan sekadar detail belakang layar." },
+          { id: "01", title: "Variety", desc: "Setiap kopi dimulai dari karakter asal yang layak dijaga sampai ke cangkir." },
+          { id: "02", title: "Fermentation", desc: "Metode proses diperlakukan sebagai penentu rasa, bukan sekadar detail belakang layar." },
           { id: "03", title: "Moisture", desc: "Kestabilan kadar air membantu menentukan arah perkembangan roasting dan resting." },
           { id: "04", title: "Density", desc: "Kepadatan biji memandu cara panas bekerja dan struktur rasa terbentuk." },
           { id: "05", title: "Development", desc: "Profil sangrai disusun untuk kejernihan rasa, sweetness, dan keseimbangan." },
           { id: "06", title: "Consistency", desc: "Kami menyangrai agar seduhan terasa stabil, ekspresif, dan mudah diulang." }
         ],
-        stickers: { roastery: "Variabel Tak Terlihat", map: "Memori Rasa" }
+        stickers: { roastery: "Invisible Variables", map: "Taste Memory" }
       },
       labRecords: {
         title: "Catatan Roastery.", subtitle: "Data QC Real-time", ctaExplore: "Jelajahi Roastery",
@@ -1495,8 +1495,8 @@ export const translations = {
         ctaDiveTitle: "Selami data kami lebih dalam.", ctaDiveDesc: "Buka spesifikasi teknis untuk setiap panen.", ctaDiveBtn: "Jelajahi Semua Catatan"
       },
       newReleases: {
-        title: "Roast Terbaru.",
-        subtitle: "Pilihan kopi yang baru disangrai dari lineup Fermion saat ini",
+        title: "Latest Roasts.",
+        subtitle: "Freshly roasted coffees from the current Fermion lineup",
         cta: "Tambah ke Keranjang",
         ctaViewDetails: "Lihat Detail"
       },
@@ -1505,13 +1505,13 @@ export const translations = {
         readReport: "Baca Laporan"
       },
       faq: {
-        title: "Pertanyaan yang Sering Diajukan",
-        subtitle: "Panduan singkat tentang kopi kami, ritme roasting, alur pengiriman, dan proses pembelian.",
+        title: "Frequently Asked Questions",
+        subtitle: "A quick guide to our coffees, roasting rhythm, shipping flow, and buying process.",
       },
       contact: {
-        badge: "Akses Langsung",
-        title: "Mari",
-        accent: "terhubung.",
+        badge: "Direct Access",
+        title: "Get in",
+        accent: "touch.",
         description: "Diskusikan pilihan kopi, kebutuhan suplai wholesale, pertanyaan subscription, atau arah roasting yang paling cocok untuk bar maupun seduhan harian Anda.",
         name: "Nama Lengkap",
         email: "Alamat Email",
