@@ -70,8 +70,7 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
   return (
     <section 
       ref={sectionRef}
-      // Light side of the zig-zag (Soft Horizon Blue-Gray Paper Tint)
-      className="py-40 relative z-10 -mt-32 overflow-hidden bg-[#EBF1F5]"
+      className="py-20 md:py-24 px-6 relative z-30 overflow-hidden bg-[#EBF1F5] border-b border-black/5 flex flex-col justify-center"
     >
       {/* Paper Grain Overlay */}
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }}></div>
@@ -81,15 +80,11 @@ export function JournalSection({ initialPosts }: JournalSectionProps) {
          Chronicle
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 w-full">
         
         {/* Header */}
-        <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between gap-8 my-20">
+        <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-8 md:mb-10">
           <div className="space-y-4 relative">
-             <Sticker rotate={15} className="-top-12 -left-8 hidden md:block border border-black/10 shadow-sm" color="#8CADD8" variant="dashed">
-               Baca
-             </Sticker>
-             
              <div className="flex items-center gap-3 text-black">
                 <BookOpen size={24} strokeWidth={2} />
                 <span className="text-[12px] font-black uppercase tracking-[0.4em] bg-white px-2 border border-black/10 shadow-[4px_4px_0_rgba(0,0,0,0.03)] rotate-[-2deg]">

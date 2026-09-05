@@ -1,20 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Sticker } from "@/components/ui/sticker";
 import { useI18n } from "@/lib/i18n";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * SECTION 3: SERIES SELECTION (50/50 SPLIT WITH REAL COFFEE PHOTOGRAPHY)
+ * SECTION 3: SERIES SELECTION (50/50 SPLIT WITH REAL COFFEE PHOTOGRAPHY & GSAP REVEAL)
  * High-craft split layout between Espresso Series and Filter Series with real photo overlays
  */
 export function Series() {
   const t = useI18n();
   const content = t.landing.series;
   const [isScrolling, setIsScrolling] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -33,8 +38,30 @@ export function Series() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".series-panel", {
+        y: 50,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 1.0,
+        ease: "power3.out",
+        force3D: true,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        }
+      });
+    }, sectionRef.current);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section 
+      ref={sectionRef}
       className={`flex flex-col lg:flex-row min-h-[650px] relative group/section z-40 border-b border-black/5 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
     >
       
@@ -42,7 +69,7 @@ export function Series() {
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[440px]"
+        className="series-panel flex-1 bg-[#14110F] text-white flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out border-r border-black/20 min-h-[440px]"
       >
         {/* Real Espresso Extraction Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -86,7 +113,7 @@ export function Series() {
       <motion.div 
         whileHover={{ flex: 1.35 }}
         style={{ willChange: "flex, transform" }}
-        className="flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[440px]"
+        className="series-panel flex-1 bg-[#FAF9F6] text-slate-900 flex flex-col justify-between p-12 md:p-16 relative overflow-hidden group transition-[flex,transform] duration-700 ease-out min-h-[440px]"
       >
         {/* Real Filter Pour-Over Coffee Photography Background Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -121,7 +148,7 @@ export function Series() {
           </Link>
         </div>
 
-        <Sticker rotate={10} className="top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/10 shadow-md" color="#8CADD8" variant="solid">
+        <Sticker rotate={8} className="top-10 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 border border-black/10 shadow-md" color="#367F4D" variant="solid">
           {content.filter.sticker}
         </Sticker>
       </motion.div>

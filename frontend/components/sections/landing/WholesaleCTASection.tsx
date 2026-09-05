@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, CheckCircle2, MessageSquare, Calculator, FileText } from "lucide-react";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * SECTION: WHOLESALE B2B CTA SECTION WITH REFINED MONOCHROME & FOREST GREEN CALCULATOR
+ * SECTION: WHOLESALE B2B CTA SECTION WITH REFINED MONOCHROME & FOREST GREEN CALCULATOR + GSAP REVEAL
  * Clean, high-craft dark editorial B2B partnership section.
  */
 export function WholesaleCTASection() {
@@ -13,6 +17,7 @@ export function WholesaleCTASection() {
   const [tier, setTier] = useState<string>("Silver Tier");
   const [discountPerKg, setDiscountPerKg] = useState<number>(15000);
   const [savings, setSavings] = useState<number>(375000);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let currentDiscount = 10000;
@@ -34,6 +39,40 @@ export function WholesaleCTASection() {
     setSavings(volume * currentDiscount);
   }, [volume]);
 
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".wholesale-reveal", {
+        y: 45,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.9,
+        ease: "power3.out",
+        force3D: true,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        }
+      });
+
+      gsap.from(".wholesale-calc-card", {
+        y: 60,
+        scale: 0.97,
+        opacity: 0,
+        duration: 1.0,
+        ease: "power2.out",
+        force3D: true,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 75%",
+        }
+      });
+    }, sectionRef.current);
+
+    return () => ctx.revert();
+  }, []);
+
   const formatCurrency = (val: number) => {
     if (val >= 1000000) {
       return { value: (val / 1000000).toFixed(val % 1000000 === 0 ? 0 : 1), unit: "JUTA" };
@@ -44,7 +83,7 @@ export function WholesaleCTASection() {
   const formattedSavings = formatCurrency(savings);
 
   return (
-    <section id="wholesale" className="py-24 px-6 bg-[#111827] text-white relative z-20 overflow-hidden border-b border-white/5">
+    <section id="wholesale" ref={sectionRef} className="py-24 px-6 bg-[#111827] text-white relative z-20 overflow-hidden border-b border-white/5">
       
       {/* Background Subtle Grid */}
       <div 
@@ -62,7 +101,7 @@ export function WholesaleCTASection() {
           {/* Left Column: B2B Value Proposition */}
           <div className="lg:col-span-6 space-y-8">
             
-            <div className="space-y-4">
+            <div className="space-y-4 wholesale-reveal">
               <span className="inline-block px-3 py-1 bg-white/10 border border-white/15 text-white text-[9px] font-black uppercase tracking-[0.35em] rounded-sm">
                 KEMITRAAN &amp; GROSIR B2B
               </span>
@@ -78,7 +117,7 @@ export function WholesaleCTASection() {
             </div>
 
             {/* 3 B2B Advantages - Clean Uniform Style */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 wholesale-reveal">
               
               <div className="bg-[#1E293B]/70 p-5 border border-white/10 rounded-sm space-y-2">
                 <div className="flex items-center gap-2 text-[#367F4D]">
@@ -116,7 +155,7 @@ export function WholesaleCTASection() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center gap-4 pt-4 wholesale-reveal">
               <Link href="/b2b/register">
                 <button className="px-8 py-4 bg-[#367F4D] text-white rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#2b643d] transition-all duration-300 active:scale-95 shadow-xl flex items-center gap-2">
                   <span>DAFTAR AKUN B2B</span>
@@ -139,7 +178,7 @@ export function WholesaleCTASection() {
           </div>
 
           {/* Right Column: Clean & Minimal Partner Calculator */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 wholesale-calc-card">
             <div className="bg-[#1E293B]/90 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-8 relative overflow-hidden">
               
               {/* Header */}

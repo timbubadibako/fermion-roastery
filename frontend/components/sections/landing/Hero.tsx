@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const HERO_WORDS = ["CURATED", "ROASTED", "REVERED"];
@@ -60,6 +61,7 @@ export function Hero() {
           );
         });
 
+        // Curtain landing animation at t = 2.0s
         mainTl.to(
           curtainRef.current,
           {
@@ -69,6 +71,26 @@ export function Hero() {
             force3D: true,
           },
           2.0
+        );
+
+        // Tactile Rotation Only after curtain closes (NO opacity hiding on page load)
+        mainTl.fromTo(
+          ".hero-paper-layer-1",
+          { rotate: 0 },
+          { rotate: 2.5, duration: 0.5, ease: "back.out(1.2)", force3D: true },
+          2.1
+        );
+        mainTl.fromTo(
+          ".hero-paper-layer-2",
+          { rotate: 0 },
+          { rotate: -1, duration: 0.5, ease: "back.out(1.2)", force3D: true },
+          2.25
+        );
+        mainTl.fromTo(
+          ".hero-paper-main-card",
+          { rotate: 0 },
+          { rotate: -1.5, duration: 0.5, ease: "back.out(1.2)", force3D: true },
+          2.4
         );
 
       }, containerRef.current);
@@ -115,13 +137,13 @@ export function Hero() {
         <div className="relative flex min-h-[480px] w-full translate-y-6 items-center justify-center">
           <div className="relative min-h-[380px] w-[94%] max-w-4xl">
             {/* Background Paper Layer 1 (Medium Muted Sage Paper) */}
-            <div className="absolute inset-0 rotate-[2.5deg] border border-black/10 bg-[#B8C5B9] shadow-sm rounded-sm" />
+            <div className="hero-paper-layer-1 absolute inset-0 rotate-[2.5deg] border border-black/10 bg-[#B8C5B9] shadow-sm rounded-sm" />
 
             {/* Background Paper Layer 2 (Warm Medium Kraft Paper) */}
-            <div className="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#D9CDB8] shadow-sm rounded-sm" />
+            <div className="hero-paper-layer-2 absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#D9CDB8] shadow-sm rounded-sm" />
 
             {/* Main Ticket Paper Card */}
-            <div className="absolute inset-0 rotate-[-1.5deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-10 shadow-lg md:shadow-[14px_14px_0px_rgba(0,0,0,0.06)] rounded-sm" style={{ transform: "translateZ(0)" }}>
+            <div className="hero-paper-main-card absolute inset-0 rotate-[-1.5deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-10 shadow-lg md:shadow-[14px_14px_0px_rgba(0,0,0,0.06)] rounded-sm" style={{ transform: "translateZ(0)" }}>
               
               {/* Masking Tape with Micro Text */}
               <div className="absolute -top-5 left-1/2 z-50 flex h-7 w-32 -translate-x-1/2 rotate-[-1deg] items-center justify-center border border-black/5 bg-white/70 px-2 text-[7px] font-black uppercase tracking-[0.25em] text-stone-500 shadow-sm backdrop-blur-sm">
@@ -194,22 +216,35 @@ export function Hero() {
             {fallbackContent.subtitle}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/our-coffee">
-              <button className="rounded-full bg-[#F1B941] px-10 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-black shadow-xl transition-all hover:bg-white active:scale-95">
-                {fallbackContent.cta_primary} ➔
+              <button className="px-8 py-4 bg-[#367F4D] text-white rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-[#2b643d] transition-all duration-300 active:scale-95 shadow-xl">
+                {fallbackContent.cta_primary}
               </button>
             </Link>
-            <Link href="/b2b">
-              <button className="rounded-full bg-white/10 border border-white/30 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white backdrop-blur-sm transition-all hover:bg-white hover:text-slate-900 active:scale-95">
-                KEMITRAAN B2B
+            <Link href="/wholesale">
+              <button className="px-8 py-4 bg-white/10 border border-white/20 text-white backdrop-blur-sm rounded-full text-[10px] font-black tracking-[0.25em] uppercase hover:bg-white hover:text-black transition-all duration-300 active:scale-95 shadow-xl">
+                {fallbackContent.cta_secondary}
               </button>
             </Link>
           </div>
         </div>
-      </section>
 
-      <div className="absolute bottom-0 left-0 z-40 h-px w-full bg-black/5" />
+        {/* Accessibility Scroll Down Indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
+          <a 
+            href="#partner-ribbon" 
+            aria-label="Scroll down to partner section"
+            className="flex flex-col items-center gap-1.5 text-stone-300 hover:text-white transition-colors group cursor-pointer"
+          >
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-80 group-hover:opacity-100">
+              GULIR KE BAWAH
+            </span>
+            <ChevronDown size={16} className="animate-bounce text-[#367F4D]" />
+          </a>
+        </div>
+
+      </section>
     </div>
   );
 }

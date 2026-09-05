@@ -65,7 +65,7 @@ export function ContactSection() {
     <section 
       ref={sectionRef}
       // Light side of the zig-zag
-      className="py-32 px-6 bg-[#FDFBF7] text-stone-900 font-sans relative z-50 -mt-20 overflow-hidden"
+      className="py-24 md:py-32 px-6 bg-[#FDFBF7] text-stone-900 font-sans relative z-50 overflow-hidden"
     >
       {/* Background Flourish (Ink stains/Watercolor) */}
       <div className="absolute top-0 -right-20 w-[600px] h-[600px] bg-amber-100 rounded-full blur-[120px] -z-0 opacity-60 mix-blend-multiply" />

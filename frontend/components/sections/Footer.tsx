@@ -45,7 +45,7 @@ export function Footer() {
   return (
     <footer 
       ref={footerRef}
-      className="w-full bg-[#1A202C] text-[#E2DACB] pt-32 pb-16 px-6 font-sans relative z-60 -mt-20 overflow-hidden"
+      className="w-full bg-[#1A202C] text-[#E2DACB] pt-16 pb-16 px-6 font-sans relative z-60 -mt-8 overflow-hidden"
       style={{
         // Torn paper edge effect for the top border
         clipPath: footerClip
@@ -71,10 +71,6 @@ export function Footer() {
               {content.statementNote}
             </p>
           </div>
-
-          <Sticker rotate={-15} className="absolute -bottom-8 -right-8 scale-90 border border-black/10 shadow-sm" color="#f472b6" variant="dashed">
-            ENGINEERED JOY
-          </Sticker>
         </div>
 
         {/* Dynamic Link Groups */}
@@ -108,7 +104,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-7xl mx-auto mt-24 pt-8 border-t-2 border-[#2D3748] border-dashed flex flex-col md:flex-row justify-between items-center gap-6 relative footer-reveal">
+      <div className="max-w-7xl mx-auto mt-8 pt-8 border-t-2 border-[#2D3748] border-dashed flex flex-col md:flex-row justify-between items-center gap-6 relative footer-reveal">
           <div className="relative bg-white/10 p-2 backdrop-blur-sm rotate-6 border border-white/20">
             <Image src="/fermion-logo.png" alt="Fermion Logo" width={100} height={32} style={{ width: "auto", height: "auto" }} className="max-h-8 object-contain" />
 

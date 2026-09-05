@@ -1,15 +1,67 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useI18n } from "@/lib/i18n";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * SECTION 4: THE FERMION WAY / NILAI FERMION
+ * SECTION 4: THE FERMION WAY / NILAI FERMION WITH SAFE GSAP REVEAL
  * Editorial 4-Stage Roastery Process Timeline with craft details & micro-specs
  */
 function TheWayComponent() {
   const t = useI18n();
   const content = t.landing.theWay;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    let ctx: gsap.Context;
+    const timer = setTimeout(() => {
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".way-title",
+          { y: 35, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            force3D: true,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 85%",
+            }
+          }
+        );
+
+        gsap.fromTo(
+          ".way-step-card",
+          { y: 45, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            stagger: 0.12,
+            duration: 0.9,
+            ease: "power2.out",
+            force3D: true,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 85%",
+            }
+          }
+        );
+      }, sectionRef.current || undefined);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
+  }, []);
 
   const pillars = [
     {
@@ -51,15 +103,15 @@ function TheWayComponent() {
   ];
 
   return (
-    <section id="the-way" className="py-28 px-6 border-b border-black/5 bg-[#EDE8DF] relative z-30 overflow-hidden">
+    <section id="the-way" ref={sectionRef} className="py-28 px-6 border-b border-black/5 bg-[#EDE8DF] relative z-30 overflow-hidden">
       
-      {/* Background Decorative Ambient Lines */}
+      {/* Background Decorative Ambient Texture */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }} />
 
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/10 pb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-black/10 pb-8 way-title">
           <div className="space-y-3 max-w-2xl">
             <span className="inline-block px-3 py-1 bg-white border border-black/10 text-[9px] font-black uppercase tracking-[0.35em] text-[#367F4D] rounded-sm shadow-sm">
               METODOLOGI ROASTERY
@@ -77,57 +129,49 @@ function TheWayComponent() {
           </div>
         </div>
 
-        {/* 4-Step Process Timeline Cards */}
+        {/* 4-Step Process Timeline Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           
-          {/* Horizontal Connecting Craft Line (Desktop) */}
-          <div className="hidden lg:block absolute top-12 left-0 right-0 h-px border-t border-dashed border-black/15 z-0" />
+          {/* Subtle Connecting Process Line */}
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-black/15 -z-0 -translate-y-6" />
 
-          {pillars.map((p) => (
+          {pillars.map((pillar, i) => (
             <div 
-              key={p.num}
-              className="bg-white border border-black/10 p-8 rounded-sm shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-3 hover:scale-[1.01] hover:border-black/25 relative group overflow-hidden flex flex-col justify-between min-h-[340px] z-10"
+              key={i}
+              className="way-step-card group bg-[#FAF9F6] border border-black/10 p-7 rounded-sm shadow-[6px_6px_0px_rgba(0,0,0,0.03)] hover:shadow-[12px_12px_0px_rgba(0,0,0,0.06)] hover:-translate-y-2 transition-all duration-500 flex flex-col justify-between relative overflow-hidden min-h-[320px] cursor-pointer"
             >
               {/* Oversized Background Watermark Number */}
-              <span 
-                className="absolute -bottom-4 -right-2 text-8xl font-display font-black italic opacity-5 group-hover:opacity-20 group-hover:scale-105 transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] pointer-events-none select-none"
-                style={{ color: p.accent }}
-              >
-                {p.num}
-              </span>
+              <div className="absolute -bottom-4 -right-2 text-7xl font-display font-black text-black/5 select-none pointer-events-none group-hover:text-black/10 group-hover:scale-110 transition-all duration-500">
+                {pillar.num}
+              </div>
 
-              {/* Masking Tape Accent at Top Right */}
-              <div className="absolute top-0 right-8 w-12 h-3 bg-[#E2DACB]/60 border-x border-b border-black/5 opacity-70 group-hover:opacity-100 transition-opacity" />
-
-              {/* Card Header & Stage Badge */}
               <div className="space-y-4 relative z-10">
-                <div className="flex justify-between items-center">
-                  <span className={`w-8 h-8 ${p.badgeBg} rounded-sm font-display font-black text-xs flex items-center justify-center shadow-sm`}>
-                    {p.num}
+                <div className="flex items-center justify-between">
+                  <span className={`inline-block px-2.5 py-1 text-[8px] font-black uppercase tracking-widest rounded-xs ${pillar.badgeBg}`}>
+                    {pillar.stage}
                   </span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-stone-400">
-                    {p.stage}
+                  <span className="text-xs font-mono font-bold text-stone-400">
+                    PHASE {pillar.num}
                   </span>
                 </div>
 
-                <h3 className="font-display font-black text-xl uppercase italic text-slate-900 tracking-tight pt-2">
-                  {p.title}
+                <h3 className="font-display font-black text-xl uppercase italic text-slate-900 tracking-tight pt-2 group-hover:text-[#367F4D] transition-colors">
+                  {pillar.title}
                 </h3>
 
-                <p className="text-xs text-stone-600 leading-relaxed font-medium">
-                  {p.desc}
+                <p className="text-xs text-stone-600 font-medium leading-relaxed">
+                  {pillar.desc}
                 </p>
               </div>
 
-              {/* Card Footer Micro Spec Chip */}
-              <div className="pt-6 relative z-10 border-t border-black/5 mt-4">
-                <span className="inline-block px-2.5 py-1 bg-[#FAF9F6] border border-black/10 text-[7.5px] font-black uppercase tracking-widest text-slate-700 rounded-sm">
-                  {p.chip}
+              <div className="pt-6 relative z-10 border-t border-black/5 mt-6">
+                <span className="text-[9px] font-mono font-bold text-stone-400 tracking-tighter uppercase block">
+                  {pillar.chip}
                 </span>
               </div>
-
             </div>
           ))}
+
         </div>
 
       </div>

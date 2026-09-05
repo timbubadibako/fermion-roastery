@@ -153,8 +153,8 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
         <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-start">
           
           {/* Section Header */}
-          <div ref={titleRef} className="md:w-1/3 space-y-5 relative">
-            <Sticker rotate={-10} className="-top-6 -left-3 hidden md:block border border-black/10 shadow-sm" color="#E2DACB" variant="solid">
+          <div ref={titleRef} className="md:w-1/3 space-y-4 relative">
+            <Sticker rotate={-10} className="mb-2 hidden md:inline-block border border-black/10 shadow-sm" color="#E2DACB" variant="solid">
               FAQ
             </Sticker>
             
@@ -170,8 +170,8 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
             </p>
           </div>
 
-          {/* Accordion Cards Stack — Spacious Margin & Comfortable Spacing */}
-          <div ref={qnaRef} className="md:w-2/3 space-y-8 w-full">
+          {/* Accordion Cards Stack — Balanced Spacing & Comfortable Margin */}
+          <div ref={qnaRef} className="md:w-2/3 space-y-4 sm:space-y-5 w-full">
             {faqs.map((faq, idx) => {
               const isOpen = openId === faq.id;
               return (
