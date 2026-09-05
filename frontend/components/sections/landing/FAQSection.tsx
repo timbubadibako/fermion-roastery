@@ -103,7 +103,7 @@ function FAQSectionComponent({ initialFaqs }: FAQSectionProps) {
     <section 
       id="faq"
       ref={sectionRef}
-      className={`min-h-screen pt-32 pb-32 px-6 bg-[#2B4031] text-white relative z-40 overflow-hidden font-sans flex flex-col justify-center ${isScrolling ? "pointer-events-none" : ""}`} 
+      className={`min-h-screen pt-32 pb-32 px-6 bg-[#1D3E26] text-white relative z-40 overflow-hidden font-sans flex flex-col justify-center ${isScrolling ? "pointer-events-none" : ""}`} 
     >
       <div className="absolute inset-0 opacity-[0.06] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
 

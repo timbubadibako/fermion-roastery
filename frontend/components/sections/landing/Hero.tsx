@@ -85,7 +85,7 @@ export function Hero() {
 
 
   return (
-    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-black">
+    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#0A0D12]">
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/hero-video-poster.jpg"
