@@ -4,6 +4,7 @@ import { PartnerRibbon } from "@/components/sections/landing/PartnerRibbon";
 import { Series } from "@/components/sections/landing/Series";
 import { TheWay } from "@/components/sections/landing/TheWay";
 import { NewReleases } from "@/components/sections/landing/NewReleases";
+import { WholesaleCTASection } from "@/components/sections/landing/WholesaleCTASection";
 import { JournalSection } from "@/components/sections/landing/JournalSection";
 import { FAQSection } from "@/components/sections/landing/FAQSection";
 import { ContactSection } from "@/components/sections/landing/ContactSection";
@@ -93,6 +94,7 @@ export default async function LandingPage() {
       <Series />
       <TheWay />
       <NewReleases initialProducts={newReleaseProducts} />
+      <WholesaleCTASection />
       <JournalSection initialPosts={journalPosts} />
       <FAQSection initialFaqs={faqItems} />
       <ContactSection />

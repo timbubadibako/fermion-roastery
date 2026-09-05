@@ -112,15 +112,36 @@ export function Hero() {
 
 
       <section className="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center">
-        <div className="relative flex min-h-[450px] w-full translate-y-10 items-center justify-center">
-          <div className="relative min-h-[350px] w-[90%] max-w-4xl">
-            <div className="absolute inset-0 rotate-[1deg] border border-black/5 bg-[#E2DACB] shadow-sm" />
+        <div className="relative flex min-h-[480px] w-full translate-y-6 items-center justify-center">
+          <div className="relative min-h-[380px] w-[94%] max-w-4xl">
+            {/* Background Paper Layer 1 (Medium Muted Sage Paper) */}
+            <div className="absolute inset-0 rotate-[2.5deg] border border-black/10 bg-[#B8C5B9] shadow-sm rounded-sm" />
 
-            <div className="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-12 shadow-sm md:shadow-[10px_10px_0px_rgba(0,0,0,0.05)]" style={{ transform: "translateZ(0)" }}>
-              <div className="absolute -top-6 left-1/2 z-50 h-8 w-24 -translate-x-1/2 rotate-[-2deg] border border-black/5 bg-white/50 shadow-sm backdrop-blur-sm" />
+            {/* Background Paper Layer 2 (Warm Medium Kraft Paper) */}
+            <div className="absolute inset-0 rotate-[-1deg] border border-black/10 bg-[#D9CDB8] shadow-sm rounded-sm" />
 
+            {/* Main Ticket Paper Card */}
+            <div className="absolute inset-0 rotate-[-1.5deg] border border-black/10 bg-[#FDFBF7] p-6 md:p-10 shadow-lg md:shadow-[14px_14px_0px_rgba(0,0,0,0.06)] rounded-sm" style={{ transform: "translateZ(0)" }}>
+              
+              {/* Masking Tape with Micro Text */}
+              <div className="absolute -top-5 left-1/2 z-50 flex h-7 w-32 -translate-x-1/2 rotate-[-1deg] items-center justify-center border border-black/5 bg-white/70 px-2 text-[7px] font-black uppercase tracking-[0.25em] text-stone-500 shadow-sm backdrop-blur-sm">
+                ROASTERY TICKET
+              </div>
+
+              {/* Floating Top Right Badge (Establishment Tag) */}
+              <div className="absolute top-4 right-4 hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#FAF9F6] border border-black/10 text-[8px] font-black uppercase tracking-widest text-slate-800 rounded-sm shadow-sm rotate-[2deg]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#367F4D] animate-pulse"></span>
+                <span>SINCE 2024</span>
+              </div>
+
+              {/* Floating Bottom Left Badge */}
+              <div className="absolute bottom-4 left-4 hidden md:flex items-center gap-1.5 px-3 py-1 bg-[#FAF9F6] border border-black/10 text-[8px] font-black uppercase tracking-widest text-slate-800 rounded-sm shadow-sm rotate-[-2deg]">
+                <span>SPECIALTY GRADE</span>
+              </div>
+
+              {/* Grid Background Overlay */}
               <div
-                className="absolute inset-0 opacity-[0.05] pointer-events-none"
+                className="absolute inset-0 opacity-[0.04] pointer-events-none"
                 style={{
                   backgroundImage:
                     "linear-gradient(to right, #367F4D 1px, transparent 1px), linear-gradient(to bottom, #367F4D 1px, transparent 1px)",
@@ -128,38 +149,60 @@ export function Hero() {
                 }}
               />
 
-              <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-6">
-                {HERO_WORDS.map((word, wordIdx) => (
-                  <div
-                    key={wordIdx}
-                    className={`word-${wordIdx} flex items-center justify-center gap-1 md:gap-3`}
-                  >
-                    {word.split("").map((char, charIdx) => (
-                      <span
-                        key={charIdx}
-                        className={`char inline-block text-5xl font-display font-black uppercase leading-none tracking-tighter text-slate-900 italic md:text-7xl ${
-                            "opacity-100"
-                        }`}
-                      >
-                        {char}
-                      </span>
-                    ))}
-                  </div>
-                ))}
+              <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-4 md:gap-5 py-4">
+                
+                {/* Micro Tagline Ribbon */}
+                <span className="text-[9px] font-black uppercase tracking-[0.35em] text-[#367F4D]">
+                  SPECIALTY COFFEE ROASTERY • INDONESIA
+                </span>
+
+                {/* Main Dynamic Words */}
+                <div className="space-y-1">
+                  {HERO_WORDS.map((word, wordIdx) => (
+                    <div
+                      key={wordIdx}
+                      className={`word-${wordIdx} flex items-center justify-center gap-1 md:gap-3`}
+                    >
+                      {word.split("").map((char, charIdx) => (
+                        <span
+                          key={charIdx}
+                          className={`char inline-block text-5xl font-display font-black uppercase leading-none tracking-tighter italic md:text-7xl ${
+                            word === "ROASTED" ? "text-[#367F4D]" : "text-slate-900"
+                          }`}
+                        >
+                          {char}
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pillar Micro-Pills (Authentic Product Specs) */}
+                <div className="flex flex-wrap justify-center items-center gap-2 pt-2 text-[8px] font-black uppercase tracking-widest text-stone-500">
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ SINGLE ORIGIN ]</span>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ SANGRAI SEGAR ]</span>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-black/5 rounded-full">[ BIJI & BUBUK ]</span>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
 
-        <div className="hero-final-reveal relative z-30 mt-12 space-y-8">
+        <div className="hero-final-reveal relative z-30 mt-10 space-y-8">
           <p className="mx-auto max-w-3xl text-[10px] font-black uppercase tracking-[0.35em] text-[#8CADD8] md:tracking-[0.5em]">
             {fallbackContent.subtitle}
           </p>
 
-          <div className="flex justify-center gap-6">
+          <div className="flex flex-wrap justify-center gap-4">
             <Link href="/our-coffee">
-              <button className="rounded-full bg-[#F1B941] px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-black shadow-2xl transition-all hover:bg-white active:scale-95">
-                {fallbackContent.cta_primary}
+              <button className="rounded-full bg-[#F1B941] px-10 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-black shadow-xl transition-all hover:bg-white active:scale-95">
+                {fallbackContent.cta_primary} ➔
+              </button>
+            </Link>
+            <Link href="/b2b">
+              <button className="rounded-full bg-white/10 border border-white/30 px-8 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white backdrop-blur-sm transition-all hover:bg-white hover:text-slate-900 active:scale-95">
+                KEMITRAAN B2B
               </button>
             </Link>
           </div>
