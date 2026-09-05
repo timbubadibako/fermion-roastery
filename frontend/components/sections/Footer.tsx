@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
+import { PlasterTape } from "@/components/ui/plaster-tape";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -50,15 +51,15 @@ export function Footer() {
         clipPath: footerClip
       }}
     >
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }}></div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 relative z-10">
         
         {/* Brand Statement - Scrapbook Note Style */}
         <div className="md:col-span-1 space-y-6 relative footer-reveal">
           <div className="bg-[#2D3748] p-8 border border-white/10 shadow-[6px_6px_0px_rgba(0,0,0,0.2)] rotate-[-2deg] relative">
-            {/* Tape */}
-            <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-16 h-4 bg-white/20 border border-white/5 rotate-3"></div>
+            {/* Patterned Plaster Tape */}
+            <PlasterTape width={90} height={28} rotate={4} pattern="cross" className="absolute -top-4 left-1/2 -translate-x-1/2 z-20" />
             
             <h2 className="text-4xl font-cloude leading-[0.9] text-white relative z-10">
               {content.statementTop}<br />

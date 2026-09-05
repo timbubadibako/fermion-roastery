@@ -93,15 +93,11 @@ export function NewReleases({ initialProducts }: NewReleasesProps) {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#2A1619] py-32 relative z-20 overflow-hidden text-[#E2DACB]"
-      style={{
-        clipPath: sectionClip
-      }}
+      className="bg-[#2A1619] py-32 relative z-20 overflow-hidden text-[#E2DACB] border-b border-black/20"
     >
-      {/* Texture noise filter overlay */}
       <div 
         className="absolute inset-0 opacity-[0.05] pointer-events-none" 
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+        style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }} 
       />
 
       <div className="max-w-7xl mx-auto space-y-20 relative z-10 px-6">

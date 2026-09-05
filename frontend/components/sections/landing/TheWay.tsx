@@ -54,7 +54,7 @@ function TheWayComponent() {
     <section id="the-way" className="py-28 px-6 border-b border-black/5 bg-[#EDE8DF] relative z-30 overflow-hidden">
       
       {/* Background Decorative Ambient Lines */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }} />
 
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         

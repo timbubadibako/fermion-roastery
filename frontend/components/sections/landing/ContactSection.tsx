@@ -72,7 +72,7 @@ export function ContactSection() {
       <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-blue-100 rounded-full blur-[100px] -z-0 opacity-50 mix-blend-multiply" />
 
       {/* Decorative Texture/Noise over the background */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }}></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-20 items-center">
