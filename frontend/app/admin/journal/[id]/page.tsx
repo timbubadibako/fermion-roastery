@@ -95,7 +95,7 @@ export default function JournalFormPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-24 text-left">
+    <div className="w-full space-y-12 pb-24 text-left">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black/5 pb-10">
         <div className="space-y-4">
@@ -114,10 +114,10 @@ export default function JournalFormPage() {
                 value={formData.status} 
                 onValueChange={(val) => setFormData({...formData, status: val})}
             >
-                <SelectTrigger className="h-14 bg-stone-100 border-none rounded-sm px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 outline-none focus:ring-1 focus:ring-[#367F4D] w-[180px]">
+                <SelectTrigger className="h-14 bg-stone-100 border-none rounded-xl px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 outline-none focus:ring-1 focus:ring-[#367F4D] w-[180px]">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
+                <SelectContent className="rounded-xl border-black/5 shadow-2xl bg-white p-1">
                     <SelectItem value="published" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-slate-900 outline-none">Tampilkan</SelectItem>
                     <SelectItem value="draft" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-slate-900 outline-none">Simpan Draft</SelectItem>
                 </SelectContent>
@@ -126,7 +126,7 @@ export default function JournalFormPage() {
             <Button 
                 onClick={handleSave} 
                 disabled={saving}
-                className="bg-[#367F4D] text-white rounded-sm h-14 px-10 gap-3 font-black uppercase tracking-widest italic shadow-xl hover:bg-[#2d6a41] transition-all border-none"
+                className="bg-[#367F4D] text-white rounded-xl h-14 px-10 gap-3 font-black uppercase tracking-widest italic shadow-xl hover:bg-[#2d6a41] transition-all border-none"
             >
                 {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                 {isEdit ? "Simpan Perubahan" : "Simpan Tulisan"}
@@ -137,20 +137,20 @@ export default function JournalFormPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
         {/* MAIN EDITOR AREA */}
         <div className="lg:col-span-3 space-y-10">
-            <div className="bg-white border border-black/5 rounded-sm p-10 space-y-10 shadow-sm">
+            <div className="bg-white border border-black/5 rounded-2xl p-10 space-y-10 shadow-sm">
                 
                 {/* Language Toggle */}
                 <div className="flex border-b border-black/5 pb-6 gap-4">
                   <Button 
                     variant={activeLang === 'id' ? 'default' : 'outline'}
-                    className={activeLang === 'id' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
+                    className={activeLang === 'id' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41] rounded-xl' : 'text-stone-500 rounded-xl'}
                     onClick={() => setActiveLang('id')}
                   >
                     Indonesian (ID)
                   </Button>
                   <Button 
                     variant={activeLang === 'en' ? 'default' : 'outline'}
-                    className={activeLang === 'en' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
+                    className={activeLang === 'en' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41] rounded-xl' : 'text-stone-500 rounded-xl'}
                     onClick={() => setActiveLang('en')}
                   >
                     English (EN)
@@ -166,7 +166,7 @@ export default function JournalFormPage() {
                       value={activeLang === 'en' ? (formData.title_en || '') : formData.title} 
                       onChange={e => setFormData(activeLang === 'en' ? {...formData, title_en: e.target.value} : {...formData, title: e.target.value})} 
                       placeholder={activeLang === 'en' ? "Example: Tales from the Farm: Gayo Harvest" : "Contoh: Cerita dari Kebun: Panen Gayo Tahun Ini"} 
-                      className="h-16 bg-stone-50 border-black/5 font-bold rounded-sm text-2xl px-6 focus-visible:ring-[#367F4D]" 
+                      className="h-16 bg-stone-50 border-black/5 font-bold rounded-xl text-2xl px-6 focus-visible:ring-[#367F4D]" 
                     />
                 </div>
 
@@ -178,7 +178,7 @@ export default function JournalFormPage() {
                         value={activeLang === 'en' ? (formData.excerpt_en || '') : formData.excerpt} 
                         onChange={e => setFormData(activeLang === 'en' ? {...formData, excerpt_en: e.target.value} : {...formData, excerpt: e.target.value})} 
                         placeholder={activeLang === 'en' ? "Write 1-2 introductory sentences..." : "Tuliskan 1-2 kalimat pengantar untuk pembaca..."} 
-                        className="w-full h-32 bg-stone-50 border border-black/5 rounded-sm p-6 text-sm font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D] uppercase tracking-wider opacity-70" 
+                        className="w-full h-32 bg-stone-50 border border-black/5 rounded-xl p-6 text-sm font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D] uppercase tracking-wider opacity-70" 
                     />
                 </div>
 
@@ -191,7 +191,7 @@ export default function JournalFormPage() {
                         value={activeLang === 'en' ? (formData.content_en || '') : formData.content} 
                         onChange={e => setFormData(activeLang === 'en' ? {...formData, content_en: e.target.value} : {...formData, content: e.target.value})} 
                         placeholder={activeLang === 'en' ? "Write your blog content here..." : "Tuangkan isi tulisan blog Anda di sini..."} 
-                        className="w-full h-[600px] bg-stone-50 border border-black/5 rounded-sm p-10 text-base font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D]" 
+                        className="w-full h-[600px] bg-stone-50 border border-black/5 rounded-xl p-10 text-base font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D]" 
                     />
                 </div>
             </div>
@@ -199,17 +199,17 @@ export default function JournalFormPage() {
 
         {/* SIDEBAR SETTINGS */}
         <div className="space-y-10">
-            <div className="bg-white border border-black/5 rounded-sm p-10 space-y-8 shadow-sm">
+            <div className="bg-white border border-black/5 rounded-2xl p-10 space-y-8 shadow-sm">
                 <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kategori Blog</label>
                     <Select 
                         value={formData.category} 
                         onValueChange={(val) => setFormData({...formData, category: val})}
                     >
-                        <SelectTrigger className="w-full h-14 bg-stone-50 border border-black/5 rounded-sm px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 outline-none focus:ring-1 focus:ring-[#367F4D]">
+                        <SelectTrigger className="w-full h-14 bg-stone-50 border border-black/5 rounded-xl px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 outline-none focus:ring-1 focus:ring-[#367F4D]">
                             <SelectValue placeholder="Pilih Kategori" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
+                        <SelectContent className="rounded-xl border-black/5 shadow-2xl bg-white p-1">
                             <SelectItem value="Eksperimen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Eksperimen Roastery</SelectItem>
                             <SelectItem value="Panen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Laporan Panen</SelectItem>
                             <SelectItem value="Edukasi" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Edukasi Kopi</SelectItem>
@@ -220,13 +220,13 @@ export default function JournalFormPage() {
 
                 <div className="space-y-4 pt-6 border-t border-black/5 text-left">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Gambar Utama (URL)</label>
-                    <div className="aspect-[3/2] bg-stone-50 rounded-sm border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative">
+                    <div className="aspect-[3/2] bg-stone-50 rounded-xl border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative">
                         {formData.featured_image ? (
                             <>
                                 <img src={formData.featured_image} alt="Preview" className="w-full h-full object-cover" />
                                 <button 
                                     onClick={() => setFormData({...formData, featured_image: ""})}
-                                    className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-sm text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-lg text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
                                 >
                                     <X size={16} />
                                 </button>
@@ -243,7 +243,7 @@ export default function JournalFormPage() {
                             </>
                         )}
                     </div>
-                    <Input value={formData.featured_image} onChange={e => setFormData({...formData, featured_image: e.target.value})} placeholder="https://..." className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 text-[10px] focus-visible:ring-[#367F4D]" />
+                    <Input value={formData.featured_image} onChange={e => setFormData({...formData, featured_image: e.target.value})} placeholder="https://..." className="h-12 bg-stone-50 border-black/5 font-bold rounded-xl px-4 text-[10px] focus-visible:ring-[#367F4D]" />
                 </div>
 
                 {isEdit && (
@@ -255,9 +255,9 @@ export default function JournalFormPage() {
                 )}
             </div>
 
-            <div className="bg-slate-900 text-white rounded-sm p-10 space-y-6 shadow-2xl text-left">
+            <div className="bg-slate-900 text-white rounded-2xl p-10 space-y-6 shadow-2xl text-left">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-[#367F4D]"><BookOpen size={16} /></div>
+                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#367F4D]"><BookOpen size={16} /></div>
                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em]">Info Blog</h4>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-medium uppercase tracking-wider">Gunakan bahasa yang menginspirasi penikmat kopi Anda. Cerita yang bagus meningkatkan nilai artisan produk.</p>

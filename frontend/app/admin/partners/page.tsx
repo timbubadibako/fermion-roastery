@@ -1,6 +1,5 @@
 "use client";
 
-import { apiFetch } from "@/lib/api"; // atau "../../lib/api" tergantung posisi file
 import React, { useState, useEffect } from "react";
 import {
   Users,
@@ -13,7 +12,13 @@ import {
   ExternalLink,
   MoreVertical,
   ChevronRight,
-  Search
+  Search,
+  Building2,
+  Bell,
+  Check,
+  Award,
+  CreditCard,
+  Ban
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,8 +34,9 @@ import {
   DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { apiFetch } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 interface Partner {
   id: string;
@@ -41,14 +47,16 @@ interface Partner {
   status: string;
   tier_name: string;
   email: string;
-  full_name: string;
+  full_name?: string;
   customer_phone?: string;
+  created_at?: string;
 }
 
 export default function PartnerManagement() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [partnerToReject, setPartnerToReject] = useState<string | null>(null);
 
@@ -57,35 +65,70 @@ export default function PartnerManagement() {
   }, []);
 
   const fetchPartners = async () => {
-  try {
-    // 🎯 KUNCI UTAMANYA: Ganti fetch mentah menjadi apiFetch biar token ADMIN nempel otomatis
-    const res = await apiFetch("/api/admin/partners");
-    if (res.ok) setPartners(await res.json());
-  } catch (error) {
-    console.error("Fetch partners error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      
+      // 1. Primary Fetch via Express Backend Admin Endpoint (with auth token & service role)
+      const res = await apiFetch("/api/admin/partners");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setPartners(data);
+          return;
+        }
+      }
+
+      // 2. Fallback via Supabase Client
+      const { data: sData, error } = await supabase
+        .from('b2b_partners')
+        .select(`
+          *,
+          profiles:profile_id (email, full_name, phone)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (sData && sData.length > 0) {
+        const mapped = sData.map((item: any) => ({
+          ...item,
+          email: item.profiles?.email || 'N/A',
+          full_name: item.profiles?.full_name || item.company_name,
+          customer_phone: item.profiles?.phone || ''
+        }));
+        setPartners(mapped);
+      } else {
+        setPartners([]);
+      }
+    } catch (error) {
+      console.error("Fetch partners error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUpdateStatus = async (id: string, status: string, tier?: string | null) => {
     const payload: any = { status };
     if (tier !== undefined) payload.tier_name = tier;
 
     try {
+      // Optimistic UI update
+      setPartners(prev => prev.map(p => p.id === id ? { ...p, status, tier_name: tier || p.tier_name } : p));
+
       const res = await apiFetch(`/api/admin/partners/${id}`, {
         method: 'PUT',
         body: JSON.stringify(payload)
       });
+
       if (res.ok) {
-        toast.success(`Data mitra telah diperbarui.`);
+        toast.success(`Status mitra berhasil diperbarui ke ${status.toUpperCase()} (${tier || 'Standard'})`);
         fetchPartners();
       } else {
         const data = await res.json().catch(() => null);
         toast.error(data?.message || "Gagal memperbarui data mitra.");
+        fetchPartners();
       }
     } catch (error) {
       toast.error("Gagal memperbarui data mitra.");
+      fetchPartners();
     }
   };
 
@@ -97,218 +140,330 @@ export default function PartnerManagement() {
     }
   };
 
-  const filteredPartners = partners.filter(p =>
-    p.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (loading) return (
-    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
-      <div className="w-10 h-10 border-4 border-stone-900 border-t-transparent rounded-full animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Mengakses Data Kemitraan...</p>
-    </div>
-  );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'onboarding':
-      case 'pending':
-      case 'awaiting_contract_review':
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full">
-            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-            <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Menunggu Persetujuan</span>
-          </div>
-        );
-      case 'approved':
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full">
-            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Mitra Aktif</span>
-          </div>
-        );
-      case 'flagged':
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 rounded-full">
-            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
-            <span className="text-[9px] font-black text-yellow-700 uppercase tracking-widest">Perlu Diperhatikan</span>
-          </div>
-        );
-      case 'suspended':
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full">
-            <div className="w-1.5 h-1.5 bg-slate-500 rounded-full" />
-            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Ditangguhkan</span>
-          </div>
-        );
-      case 'rejected':
-        return (
-          <div className="flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-100 rounded-full">
-            <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-            <span className="text-[9px] font-black text-red-600 uppercase tracking-widest">Ditolak</span>
-          </div>
-        );
-      default:
-        return <span className="text-[10px] font-bold text-slate-400">{status}</span>;
+  const handleDownloadContract = async (profileId: string, companyName: string) => {
+    try {
+      const res = await apiFetch(`/api/b2b/contract?profileId=${profileId}`);
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const win = window.open(url, '_blank');
+        if (!win) {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Perjanjian_B2B_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+          a.click();
+        }
+      } else {
+        toast.error("Gagal mengunduh PDF Perjanjian.");
+      }
+    } catch (err) {
+      toast.error("Gagal mengunduh PDF Perjanjian.");
     }
   };
 
-  return (
-    <div className="space-y-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-black/5 pb-10">
-        <div className="space-y-3 text-left">
-          <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">Manajemen <br /> Kemitraan.</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Verifikasi kontrak dan kendali siklus bisnis B2B.</p>
-        </div>
-      </div>
+  const pendingPartners = partners.filter(p => p.status === 'pending' || p.status === 'onboarding' || p.status === 'awaiting_contract_review');
+  const activePartners = partners.filter(p => p.status === 'approved' || p.status === 'active');
+  const rejectedPartners = partners.filter(p => p.status === 'rejected' || p.status === 'suspended');
 
-      <div className="bg-white border border-black/5 rounded-sm overflow-hidden shadow-sm">
-        <div className="p-8 border-b border-black/5 flex items-center justify-between bg-stone-50/50">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Database Mitra</h3>
-          <div className="flex gap-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={14} />
-              <Input
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Cari Nama Cafe atau Email..."
-                className="pl-12 h-10 w-64 bg-white border-black/10 rounded-sm text-xs font-bold focus:ring-[#367F4D]"
-              />
-            </div>
+  const filteredPartners = partners.filter(p => {
+    const matchesSearch =
+      (p.company_name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (p.email?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (p.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase());
+
+    if (activeTab === 'pending') return matchesSearch && (p.status === 'pending' || p.status === 'onboarding' || p.status === 'awaiting_contract_review');
+    if (activeTab === 'approved') return matchesSearch && (p.status === 'approved' || p.status === 'active');
+    if (activeTab === 'rejected') return matchesSearch && (p.status === 'rejected' || p.status === 'suspended');
+    return matchesSearch;
+  });
+
+  if (loading && partners.length === 0) return (
+    <div className="h-[65vh] flex flex-col items-center justify-center gap-4 text-slate-400 font-sans">
+      <div className="w-10 h-10 border-4 border-slate-900 border-t-[#367F4D] rounded-full animate-spin" />
+      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Mengakses Data Kemitraan B2B...</p>
+    </div>
+  );
+
+  return (
+    <div className="w-full space-y-6 font-sans text-left">
+      {/* Top Action Toolbar */}
+      <div className="bg-white border border-slate-200/80 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-[#367F4D]/10 text-[#367F4D] rounded-xl">
+            <Building2 size={20} />
+          </div>
+          <div>
+            <h1 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+              <span>KEMITRAAN B2B & PENGATURAN TIER CAFE</span>
+            </h1>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Kelola verifikasi pengajuan mitra cafe, tingkat tier, dan dokumen perjanjian.
+            </p>
           </div>
         </div>
 
+        {/* Filter Tab Buttons */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <button 
+            onClick={() => setActiveTab('all')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              activeTab === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <span>Semua Mitra</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
+              {partners.length}
+            </span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('pending')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              activeTab === 'pending' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+            }`}
+          >
+            <Bell size={13} className="animate-pulse" />
+            <span>Pending</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === 'pending' ? 'bg-slate-950/20 text-slate-950' : 'bg-amber-200 text-amber-900'}`}>
+              {pendingPartners.length}
+            </span>
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('approved')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              activeTab === 'approved' ? 'bg-[#367F4D] text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+            }`}
+          >
+            <CheckCircle2 size={13} />
+            <span>Approved</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === 'approved' ? 'bg-white/20 text-white' : 'bg-emerald-200 text-emerald-900'}`}>
+              {activePartners.length}
+            </span>
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('rejected')}
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+              activeTab === 'rejected' ? 'bg-rose-600 text-white shadow-xs' : 'bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100'
+            }`}
+          >
+            <XCircle size={13} />
+            <span>Rejected</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${activeTab === 'rejected' ? 'bg-white/20 text-white' : 'bg-rose-200 text-rose-900'}`}>
+              {rejectedPartners.length}
+            </span>
+          </button>
+
+          <div className="relative ml-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <Input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Cari Nama Cafe / Email..."
+              className="pl-9 h-9 w-52 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Pending Application Queue Banner */}
+      {pendingPartners.length > 0 && (
+        <div className="bg-amber-50/80 border-2 border-amber-300 p-4 rounded-2xl shadow-xs space-y-3">
+          <div className="flex items-center justify-between border-b border-amber-200 pb-2">
+            <div className="flex items-center gap-2 text-amber-950 font-extrabold text-xs">
+              <Bell size={16} className="text-amber-600 animate-bounce" />
+              <span>PENDAFTARAN B2B BARU MEMBUTUHKAN VERIFIKASI SECEPATNYA ({pendingPartners.length} PENDING):</span>
+            </div>
+            <span className="text-[10px] text-amber-800 font-bold uppercase tracking-wider">AKSI CEPAT 1-KLIK</span>
+          </div>
+
+          <div className="space-y-3">
+            {pendingPartners.map(p => (
+              <div key={p.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-3.5 border border-amber-200 rounded-xl text-xs text-slate-800 items-center shadow-xs">
+                <div>
+                  <span className="text-[10px] uppercase text-slate-400 block font-bold">NAMA CAFE / PT</span>
+                  <span className="font-extrabold text-sm text-slate-900 block">{p.company_name}</span>
+                  <span className="text-[11px] text-slate-500 font-medium">{p.email}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-slate-400 block font-bold">ESTIMASI KEBUTUHAN</span>
+                  <span className="font-mono font-extrabold text-[#367F4D]">{p.estimated_volume_kg || '50'} KG / BULAN</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-slate-400 block font-bold">ALAMAT & LOKASI</span>
+                  <span className="text-[11px] text-slate-700 truncate block font-medium">{p.address || "Indonesia"}</span>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="px-3.5 py-2 bg-[#367F4D] hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-xs">
+                        <Check size={14} />
+                        <span>APPROVE & SET TIER</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-white border border-slate-200 shadow-xl p-1 font-sans text-xs rounded-xl">
+                      <DropdownMenuItem onClick={() => handleUpdateStatus(p.id, 'approved', 'Bronze')} className="cursor-pointer font-bold py-2">
+                        Approve (Tier Bronze)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleUpdateStatus(p.id, 'approved', 'Silver')} className="cursor-pointer font-bold py-2">
+                        Approve (Tier Silver)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleUpdateStatus(p.id, 'approved', 'Gold')} className="cursor-pointer font-bold py-2 text-amber-600">
+                        Approve (Tier Gold)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <button 
+                    onClick={() => { setPartnerToReject(p.id); setIsRejectModalOpen(true); }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-700 font-bold rounded-xl text-xs uppercase tracking-wider transition-colors"
+                  >
+                    TOLAK
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Partners Directory Table */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+            Direktori Mitra Kemitraan ({filteredPartners.length})
+          </h3>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-stone-50 border-b border-black/5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                <th className="p-8 font-black">Detail Entitas</th>
-                <th className="p-8 font-black">Dokumen</th>
-                <th className="p-8 font-black">Target Volume</th>
-                <th className="p-8 font-black">Status Kemitraan</th>
-                <th className="p-8 text-right font-black">Aksi</th>
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="bg-slate-900 text-slate-200 uppercase tracking-wider text-[10px]">
+              <tr>
+                <th className="p-4 font-bold">Nama Cafe / Perusahaan</th>
+                <th className="p-4 font-bold">Dokumen Perjanjian</th>
+                <th className="p-4 font-bold text-center font-mono">Estimasi Volume</th>
+                <th className="p-4 font-bold text-center">Tier Kemitraan</th>
+                <th className="p-4 font-bold text-center">Status</th>
+                <th className="p-4 text-right font-bold">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-black/5">
+            <tbody className="divide-y divide-slate-100 text-slate-800">
               {filteredPartners.length === 0 ? (
-                <tr><td colSpan={5} className="p-24 text-center text-stone-300 font-bold uppercase tracking-widest text-xs italic">Belum ada catatan kemitraan terdeteksi.</td></tr>
+                <tr>
+                  <td colSpan={6} className="p-16 text-center text-slate-400 font-bold uppercase text-xs">
+                    Tidak ada catatan mitra terdaftar pada kategori ini.
+                  </td>
+                </tr>
               ) : (
-                filteredPartners.map((partner, i) => (
-                  <motion.tr
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    key={partner.id}
-                    className="hover:bg-stone-50/50 transition-colors group"
-                  >
-                    <td className="p-8">
-                      <div className="space-y-1">
-                        <p className="font-bold uppercase tracking-tight text-slate-900">{partner.company_name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{partner.email}</p>
-                      </div>
+                filteredPartners.map((partner) => (
+                  <tr key={partner.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4">
+                      <span className="font-extrabold text-slate-900 text-xs block uppercase leading-tight">{partner.company_name}</span>
+                      <span className="text-[11px] text-slate-500 font-medium">{partner.email}</span>
                     </td>
-                    <td className="p-8">
-                      <a 
-                        href={`/api/b2b/contract?profileId=${partner.profile_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-slate-400 hover:text-[#367F4D] transition-colors group/link"
+                    <td className="p-4">
+                      <button 
+                        type="button"
+                        onClick={() => handleDownloadContract(partner.profile_id, partner.company_name)}
+                        className="inline-flex items-center gap-1.5 text-slate-700 hover:text-[#367F4D] font-bold text-xs transition-colors cursor-pointer bg-transparent border-none p-0"
                       >
-                        <FileText size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest border-b border-transparent group-hover/link:border-[#367F4D]">Perjanjian_B2B.pdf</span>
-                      </a>
+                        <FileText size={14} className="text-[#367F4D]" />
+                        <span className="underline">Perjanjian_B2B.pdf</span>
+                      </button>
                     </td>
-                    <td className="p-8 font-mono font-bold text-xs text-slate-600">
-                      {partner.estimated_volume_kg} <span className="text-slate-300 font-medium">KG / BLN</span>
+                    <td className="p-4 text-center font-mono font-bold text-slate-900 text-xs">
+                      {partner.estimated_volume_kg || "50"} <span className="text-slate-400 font-medium">KG / BLN</span>
                     </td>
-                    <td className="p-8">
-                      <div className="flex flex-col gap-2 items-start">
-                        {getStatusBadge(partner.status)}
-                        {partner.status === 'approved' && (
-                          <p className="text-[8px] font-black text-[#367F4D] uppercase tracking-[0.2em] ml-3 opacity-60">{partner.tier_name} Level</p>
+                    <td className="p-4 text-center">
+                      <span className={`px-2.5 py-1 font-bold text-[10px] rounded-full border uppercase ${
+                        partner.tier_name === 'Gold' ? 'bg-amber-100 text-amber-900 border-amber-300' :
+                        partner.tier_name === 'Silver' ? 'bg-slate-100 text-slate-900 border-slate-300' :
+                        'bg-orange-50 text-orange-900 border-orange-200'
+                      }`}>
+                        {partner.tier_name || 'Bronze'} Tier
+                      </span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className={`px-2.5 py-1 font-bold text-[10px] rounded-full uppercase inline-flex items-center gap-1 ${
+                        partner.status === 'approved' || partner.status === 'active' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                        partner.status === 'rejected' || partner.status === 'suspended' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 
+                        'bg-amber-50 text-amber-900 border border-amber-200'
+                      }`}>
+                        {partner.status === 'approved' ? (
+                          <><CheckCircle2 size={12} /> Approved</>
+                        ) : partner.status === 'rejected' ? (
+                          <><XCircle size={12} /> Rejected</>
+                        ) : (
+                          <><Clock size={12} /> Pending</>
                         )}
-                      </div>
+                      </span>
                     </td>
-                    <td className="p-8 text-right">
+                    <td className="p-4 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button className="h-10 w-10 rounded-sm bg-stone-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border-none shadow-none outline-none">
-                            <MoreVertical size={18} />
+                          <Button className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-900 hover:text-white transition-all border-none p-0 shadow-none">
+                            <MoreVertical size={16} />
                           </Button>
                         </DropdownMenuTrigger>
 
-                        {/* Ganti bagian DropdownMenuContent lu dengan versi yang sudah di-refactor ini: */}
-                        <DropdownMenuContent align="end" className="w-56 rounded-sm border border-black/10 shadow-2xl p-1 bg-white">
+                        <DropdownMenuContent align="end" className="w-52 bg-white border border-slate-200 shadow-xl p-1 font-sans text-xs rounded-xl">
                           <DropdownMenuItem
-                            className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-[#367F4D] focus:bg-[#367F4D]/5 focus:text-[#367F4D] outline-none"
+                            className="text-xs font-bold uppercase py-2 cursor-pointer text-[#367F4D]"
                             onClick={() => {
-                              // Normalisasi otomatis nomor hp 08xxx -> 628xxx
                               let phone = partner.customer_phone?.replace(/\D/g, '') || '';
                               if (phone.startsWith('0')) phone = '62' + phone.slice(1);
-                              window.open(`https://wa.me/${phone}`, '_blank');
+                              if (!phone) {
+                                toast.info(`Email mitra: ${partner.email}`);
+                              } else {
+                                window.open(`https://wa.me/${phone}`, '_blank');
+                              }
                             }}
                           >
-                            Hubungi WhatsApp
+                            Hubungi via WhatsApp / Email
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-black/5" />
-
-                          {/* Mengganti fokus ungu bawaan menjadi slate minimalis sesuai tema */}
+                          <DropdownMenuSeparator className="bg-slate-100" />
+                          
                           <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-slate-900 focus:text-white data-[state=open]:bg-slate-900 data-[state=open]:text-white outline-none">
-                              Ubah Level (Tier)
+                            <DropdownMenuSubTrigger className="text-xs font-bold uppercase py-2 cursor-pointer">
+                              Set Level (Tier)
                             </DropdownMenuSubTrigger>
-
-                            {/* 🟢 WAJIB tambahkan DropdownMenuPortal di sini agar sub-menu bisa merembes keluar */}
                             <DropdownMenuPortal>
-                              <DropdownMenuSubContent className="rounded-sm border border-black/10 shadow-xl p-1 bg-white min-w-[8rem] z-[60]">
-                                <DropdownMenuItem
-                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
-                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Bronze')}
-                                >
-                                  Bronze
+                              <DropdownMenuSubContent className="bg-white border border-slate-200 shadow-xl p-1 min-w-[9rem] font-sans text-xs rounded-xl">
+                                <DropdownMenuItem className="text-xs font-bold uppercase py-2 cursor-pointer" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Bronze')}>
+                                  Bronze Tier
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
-                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Silver')}
-                                >
-                                  Silver
+                                <DropdownMenuItem className="text-xs font-bold uppercase py-2 cursor-pointer" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Silver')}>
+                                  Silver Tier
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  className="text-[10px] font-black uppercase py-3 cursor-pointer focus:bg-[#367F4D] focus:text-white outline-none"
-                                  onClick={() => handleUpdateStatus(partner.id, 'approved', 'Gold')}
-                                >
-                                  Gold
+                                <DropdownMenuItem className="text-xs font-bold uppercase py-2 cursor-pointer text-amber-600" onClick={() => handleUpdateStatus(partner.id, 'approved', 'Gold')}>
+                                  Gold Tier
                                 </DropdownMenuItem>
                               </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                           </DropdownMenuSub>
 
-                          {/* Memperbaiki teks invisible dengan menambahkan focus:text-slate-950 */}
-                          <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-100 focus:text-slate-950 outline-none" onClick={() => handleUpdateStatus(partner.id, 'flagged')}>
-                            Perlu Perhatian
-                          </DropdownMenuItem>
-
-                          {partner.status !== 'suspended' ? (
-                            <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer focus:bg-stone-100 focus:text-slate-950 outline-none" onClick={() => handleUpdateStatus(partner.id, 'suspended')}>
-                              Tangguhkan Mitra
-                            </DropdownMenuItem>
-                          ) : (
-                            <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700 outline-none" onClick={() => handleUpdateStatus(partner.id, 'approved')}>
-                              Aktifkan Kembali
+                          <DropdownMenuSeparator className="bg-slate-100" />
+                          {partner.status !== 'approved' && (
+                            <DropdownMenuItem
+                              className="text-xs font-bold uppercase py-2 cursor-pointer text-emerald-700"
+                              onClick={() => handleUpdateStatus(partner.id, 'approved', partner.tier_name || 'Bronze')}
+                            >
+                              Setuju / Approve
                             </DropdownMenuItem>
                           )}
-
-                          <DropdownMenuSeparator className="bg-black/5" />
-                          <DropdownMenuItem className="text-[10px] font-black uppercase tracking-widest py-3 cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 outline-none" onClick={() => {
-                            setPartnerToReject(partner.id);
-                            setIsRejectModalOpen(true);
-                          }}>
-                            Tolak Kemitraan
+                          <DropdownMenuItem 
+                            className="text-xs font-bold uppercase py-2 cursor-pointer text-rose-600"
+                            onClick={() => {
+                              setPartnerToReject(partner.id);
+                              setIsRejectModalOpen(true);
+                            }}
+                          >
+                            Tolak / Bekukan
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                  </motion.tr>
+                  </tr>
                 ))
               )}
             </tbody>
@@ -320,9 +475,9 @@ export default function PartnerManagement() {
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         onConfirm={confirmReject}
-        title="Tolak Kemitraan?"
-        description="Tindakan ini akan menolak aplikasi cafe ini. Mereka tidak akan memiliki akses ke katalog harga khusus mitra roastery."
-        confirmText="Tolak Permanen"
+        title="Tolak Kemitraan B2B?"
+        description="Tindakan ini akan membatalkan status terverifikasi cafe ini."
+        confirmText="Tolak Kemitraan"
         cancelText="Batal"
         variant="danger"
       />

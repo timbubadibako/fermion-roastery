@@ -11,11 +11,11 @@ import {
   Loader2,
   Calendar,
   BookOpen,
-  FileText
+  Upload,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Select,
   SelectContent,
@@ -24,15 +24,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 export default function JournalFormPage() {
   const router = useRouter();
   const params = useParams();
-  const isEdit = !!params.id;
+  const isEdit = !!params?.id;
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [activeLang, setActiveLang] = useState<"id" | "en">("id");
 
   const [formData, setFormData] = useState({
@@ -48,7 +49,7 @@ export default function JournalFormPage() {
   });
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && params?.id) {
       fetch(`/api/journal/${params.id}`)
         .then(res => res.json())
         .then(data => {
@@ -60,7 +61,36 @@ export default function JournalFormPage() {
           router.push("/admin/journal");
         });
     }
-  }, [isEdit, params.id]);
+  }, [isEdit, params?.id]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingImage(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `covers/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('journal-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('journal-images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, featured_image: publicUrlData.publicUrl }));
+      toast.success("Gambar artikel berhasil diupload ke Supabase Storage!");
+    } catch (err: any) {
+      toast.error("Upload gagal: " + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,180 +118,187 @@ export default function JournalFormPage() {
   };
 
   if (loading) return (
-    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
-      <Loader2 size={40} className="animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Membuka Arsip Blog...</p>
+    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400 font-mono">
+      <Loader2 size={36} className="animate-spin text-[#367F4D]" />
+      <p className="text-[10px] font-bold uppercase tracking-[0.3em]">Membuka Form Journal Studio...</p>
     </div>
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-24 text-left">
+    <div className="w-full space-y-6 pb-24 text-left font-mono">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black/5 pb-10">
-        <div className="space-y-4">
+      <div className="bg-white border border-stone-300 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+        <div className="space-y-1">
           <button 
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
+            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-500 hover:text-slate-900 transition-colors"
           >
-            <ArrowLeft size={14} /> Kembali ke Daftar Blog
+            <ArrowLeft size={14} /> Kembali ke Daftar Journal
           </button>
-          <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">
-            {isEdit ? "Edit \nTulisan." : "Tulis \nBaru."}
+          <h1 className="text-base font-black uppercase text-slate-900 flex items-center gap-2">
+            <span>{isEdit ? "EDIT ARTIKEL JURNAL" : "TULIS ARTIKEL BARU"}</span>
           </h1>
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
-            <Select 
-                value={formData.status} 
-                onValueChange={(val) => setFormData({...formData, status: val})}
-            >
-                <SelectTrigger className="h-14 bg-stone-100 border-none rounded-sm px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 outline-none focus:ring-1 focus:ring-[#367F4D] w-[180px]">
-                    <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                    <SelectItem value="published" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-slate-900 outline-none">Tampilkan</SelectItem>
-                    <SelectItem value="draft" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-slate-900 outline-none">Simpan Draft</SelectItem>
-                </SelectContent>
-            </Select>
 
-            <Button 
-                onClick={handleSave} 
-                disabled={saving}
-                className="bg-[#367F4D] text-white rounded-sm h-14 px-10 gap-3 font-black uppercase tracking-widest italic shadow-xl hover:bg-[#2d6a41] transition-all border-none"
-            >
-                {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                {isEdit ? "Simpan Perubahan" : "Simpan Tulisan"}
-            </Button>
+        <div className="flex items-center gap-2.5">
+          <Select 
+            value={formData.status} 
+            onValueChange={(val) => setFormData({...formData, status: val})}
+          >
+            <SelectTrigger className="h-9 bg-stone-50 border-stone-300 rounded-xl text-[10px] font-bold uppercase tracking-wider text-slate-900 outline-none w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-stone-200 shadow-xl bg-white p-1 font-mono">
+              <SelectItem value="published" className="text-[10px] font-bold uppercase py-2 cursor-pointer text-[#367F4D]">Published</SelectItem>
+              <SelectItem value="draft" className="text-[10px] font-bold uppercase py-2 cursor-pointer">Draft</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button 
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/admin/journal")}
+            className="h-9 px-4 text-[10px] font-bold uppercase tracking-wider border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition-all rounded-xl shadow-xs"
+          >
+            Batal
+          </Button>
+
+          <Button 
+            onClick={handleSave} 
+            disabled={saving}
+            className="bg-[#367F4D] text-white rounded-xl h-9 px-6 gap-2 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-700 transition-all border-none shadow-xs"
+          >
+            {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+            {isEdit ? "Simpan Perubahan" : "Publish Artikel"}
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* MAIN EDITOR AREA */}
-        <div className="lg:col-span-3 space-y-10">
-            <div className="bg-white border border-black/5 rounded-sm p-10 space-y-10 shadow-sm">
-                
-                {/* Language Toggle */}
-                <div className="flex border-b border-black/5 pb-6 gap-4">
-                  <Button 
-                    variant={activeLang === 'id' ? 'default' : 'outline'}
-                    className={activeLang === 'id' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
-                    onClick={() => setActiveLang('id')}
-                  >
-                    Indonesian (ID)
-                  </Button>
-                  <Button 
-                    variant={activeLang === 'en' ? 'default' : 'outline'}
-                    className={activeLang === 'en' ? 'bg-[#367F4D] text-white hover:bg-[#2d6a41]' : 'text-stone-500'}
-                    onClick={() => setActiveLang('en')}
-                  >
-                    English (EN)
-                  </Button>
-                </div>
-
-                <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
-                      Judul Utama {activeLang === 'en' ? '(EN)' : '(ID)'}
-                    </label>
-                    <Input 
-                      required={activeLang === 'id'} 
-                      value={activeLang === 'en' ? (formData.title_en || '') : formData.title} 
-                      onChange={e => setFormData(activeLang === 'en' ? {...formData, title_en: e.target.value} : {...formData, title: e.target.value})} 
-                      placeholder={activeLang === 'en' ? "Example: Tales from the Farm: Gayo Harvest" : "Contoh: Cerita dari Kebun: Panen Gayo Tahun Ini"} 
-                      className="h-16 bg-stone-50 border-black/5 font-bold rounded-sm text-2xl px-6 focus-visible:ring-[#367F4D]" 
-                    />
-                </div>
-
-                <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
-                      Ringkasan Singkat {activeLang === 'en' ? '(EN)' : '(ID)'}
-                    </label>
-                    <textarea 
-                        value={activeLang === 'en' ? (formData.excerpt_en || '') : formData.excerpt} 
-                        onChange={e => setFormData(activeLang === 'en' ? {...formData, excerpt_en: e.target.value} : {...formData, excerpt: e.target.value})} 
-                        placeholder={activeLang === 'en' ? "Write 1-2 introductory sentences..." : "Tuliskan 1-2 kalimat pengantar untuk pembaca..."} 
-                        className="w-full h-32 bg-stone-50 border border-black/5 rounded-sm p-6 text-sm font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D] uppercase tracking-wider opacity-70" 
-                    />
-                </div>
-
-                <div className="space-y-3 pt-6 border-t border-black/5">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
-                      Isi Tulisan {activeLang === 'en' ? '(EN)' : '(ID)'}
-                    </label>
-                    <textarea 
-                        required={activeLang === 'id'} 
-                        value={activeLang === 'en' ? (formData.content_en || '') : formData.content} 
-                        onChange={e => setFormData(activeLang === 'en' ? {...formData, content_en: e.target.value} : {...formData, content: e.target.value})} 
-                        placeholder={activeLang === 'en' ? "Write your blog content here..." : "Tuangkan isi tulisan blog Anda di sini..."} 
-                        className="w-full h-[600px] bg-stone-50 border border-black/5 rounded-sm p-10 text-base font-medium leading-relaxed resize-none outline-none focus:ring-1 focus:ring-[#367F4D]" 
-                    />
-                </div>
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white border border-stone-300 rounded-2xl p-6 space-y-6 shadow-xs">
+            {/* Language Selector */}
+            <div className="flex border-b border-stone-200 pb-4 gap-2">
+              <Button 
+                type="button"
+                variant={activeLang === 'id' ? 'default' : 'outline'}
+                className={`h-8 text-[10px] font-bold uppercase rounded-lg ${activeLang === 'id' ? 'bg-[#367F4D] text-white' : 'text-stone-600'}`}
+                onClick={() => setActiveLang('id')}
+              >
+                Versi Bahasa Indonesia (ID)
+              </Button>
+              <Button 
+                type="button"
+                variant={activeLang === 'en' ? 'default' : 'outline'}
+                className={`h-8 text-[10px] font-bold uppercase rounded-lg ${activeLang === 'en' ? 'bg-[#367F4D] text-white' : 'text-stone-600'}`}
+                onClick={() => setActiveLang('en')}
+              >
+                Versi English (EN)
+              </Button>
             </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                Judul Utama {activeLang === 'en' ? '(EN)' : '(ID)'}
+              </label>
+              <Input 
+                required={activeLang === 'id'} 
+                value={activeLang === 'en' ? (formData.title_en || '') : formData.title} 
+                onChange={e => setFormData(activeLang === 'en' ? {...formData, title_en: e.target.value} : {...formData, title: e.target.value})} 
+                placeholder={activeLang === 'en' ? "Title..." : "Judul artikel..."} 
+                className="h-12 bg-stone-50 border-stone-300 font-bold rounded-xl text-base px-4 focus:bg-white focus:border-[#367F4D]" 
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                Ringkasan / Abstract {activeLang === 'en' ? '(EN)' : '(ID)'}
+              </label>
+              <textarea 
+                value={activeLang === 'en' ? (formData.excerpt_en || '') : formData.excerpt} 
+                onChange={e => setFormData(activeLang === 'en' ? {...formData, excerpt_en: e.target.value} : {...formData, excerpt: e.target.value})} 
+                placeholder="Tulis ringkasan singkat 1-2 kalimat..." 
+                className="w-full h-24 bg-stone-50 border border-stone-300 rounded-xl p-3 text-xs font-medium leading-relaxed resize-none outline-none focus:bg-white focus:border-[#367F4D]" 
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                Isi Artikel (Format Markdown Supported) {activeLang === 'en' ? '(EN)' : '(ID)'}
+              </label>
+              <textarea 
+                required={activeLang === 'id'} 
+                value={activeLang === 'en' ? (formData.content_en || '') : formData.content} 
+                onChange={e => setFormData(activeLang === 'en' ? {...formData, content_en: e.target.value} : {...formData, content: e.target.value})} 
+                placeholder="Tuangkan isi jurnal eksperimen di sini..." 
+                className="w-full h-[500px] bg-stone-50 border border-stone-300 rounded-xl p-4 text-xs font-mono leading-relaxed outline-none focus:bg-white focus:border-[#367F4D]" 
+              />
+            </div>
+          </div>
         </div>
 
-        {/* SIDEBAR SETTINGS */}
-        <div className="space-y-10">
-            <div className="bg-white border border-black/5 rounded-sm p-10 space-y-8 shadow-sm">
-                <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kategori Blog</label>
-                    <Select 
-                        value={formData.category} 
-                        onValueChange={(val) => setFormData({...formData, category: val})}
+        {/* SIDEBAR METADATA & IMAGE UPLOAD */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white border border-stone-300 rounded-2xl p-6 space-y-6 shadow-xs">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Kategori Artikel</label>
+              <Select 
+                value={formData.category} 
+                onValueChange={(val) => setFormData({...formData, category: val})}
+              >
+                <SelectTrigger className="w-full h-10 bg-stone-50 border-stone-300 rounded-xl text-[11px] font-bold uppercase text-slate-900 outline-none">
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-stone-200 shadow-xl bg-white p-1 font-mono">
+                  <SelectItem value="Eksperimen" className="text-[10px] font-bold uppercase py-2 cursor-pointer">Eksperimen Roastery</SelectItem>
+                  <SelectItem value="Panen" className="text-[10px] font-bold uppercase py-2 cursor-pointer">Laporan Panen</SelectItem>
+                  <SelectItem value="Edukasi" className="text-[10px] font-bold uppercase py-2 cursor-pointer">Edukasi Kopi</SelectItem>
+                  <SelectItem value="Berita" className="text-[10px] font-bold uppercase py-2 cursor-pointer">Berita Roastery</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Direct Supabase Image Upload Container */}
+            <div className="space-y-3 pt-4 border-t border-stone-200">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">Gambar Sampul (Cover)</label>
+              
+              <div className="aspect-[16/9] bg-stone-50 rounded-xl border-2 border-dashed border-stone-300 overflow-hidden flex flex-col items-center justify-center gap-2 relative group hover:border-[#367F4D]">
+                {formData.featured_image ? (
+                  <>
+                    <img src={formData.featured_image} alt="Preview" className="w-full h-full object-cover" />
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({...formData, featured_image: ""})}
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-lg text-red-600 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                        <SelectTrigger className="w-full h-14 bg-stone-50 border border-black/5 rounded-sm px-6 text-[10px] font-black uppercase tracking-widest text-slate-900 outline-none focus:ring-1 focus:ring-[#367F4D]">
-                            <SelectValue placeholder="Pilih Kategori" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                            <SelectItem value="Eksperimen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Eksperimen Roastery</SelectItem>
-                            <SelectItem value="Panen" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Laporan Panen</SelectItem>
-                            <SelectItem value="Edukasi" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Edukasi Kopi</SelectItem>
-                            <SelectItem value="Berita" className="text-[10px] font-bold uppercase py-3 cursor-pointer focus:bg-stone-50 focus:text-[#367F4D] outline-none">Berita Roastery</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div className="space-y-4 pt-6 border-t border-black/5 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Gambar Utama (URL)</label>
-                    <div className="aspect-[3/2] bg-stone-50 rounded-sm border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative">
-                        {formData.featured_image ? (
-                            <>
-                                <img src={formData.featured_image} alt="Preview" className="w-full h-full object-cover" />
-                                <button 
-                                    onClick={() => setFormData({...formData, featured_image: ""})}
-                                    className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-sm text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                                    <ImageIcon size={24} className="text-stone-300 group-hover:text-[#367F4D] transition-colors" />
-                                </div>
-                                <div className="text-center space-y-1">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">Klik atau Drop Gambar</p>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Minimal 1200x800px</p>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                    <Input value={formData.featured_image} onChange={e => setFormData({...formData, featured_image: e.target.value})} placeholder="https://..." className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 text-[10px] focus-visible:ring-[#367F4D]" />
-                </div>
-
-                {isEdit && (
-                    <div className="pt-6 border-t border-black/5 space-y-1 text-left">
-                        <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                            <Calendar size={12} /> Ditulis Pada: {new Date().toLocaleDateString('id-ID')}
-                        </p>
-                    </div>
+                      <X size={14} />
+                    </button>
+                  </>
+                ) : (
+                  <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                    {uploadingImage ? (
+                      <Loader2 size={24} className="animate-spin text-[#367F4D]" />
+                    ) : (
+                      <>
+                        <Upload size={24} className="text-stone-400 mb-1 group-hover:text-[#367F4D] transition-colors" />
+                        <span className="text-[10px] font-bold uppercase text-stone-700">Upload Gambar ke Supabase</span>
+                        <span className="text-[8px] text-stone-400 uppercase">PNG, JPG, WEBP MAX 10MB</span>
+                      </>
+                    )}
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploadingImage} />
+                  </label>
                 )}
-            </div>
+              </div>
 
-            <div className="bg-slate-900 text-white rounded-sm p-10 space-y-6 shadow-2xl text-left">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-[#367F4D]"><BookOpen size={16} /></div>
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em]">Info Blog</h4>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed font-medium uppercase tracking-wider">Gunakan bahasa yang menginspirasi penikmat kopi Anda. Cerita yang bagus meningkatkan nilai artisan produk.</p>
+              <Input 
+                value={formData.featured_image} 
+                onChange={e => setFormData({...formData, featured_image: e.target.value})} 
+                placeholder="Atau masukan URL Gambar (https://...)" 
+                className="h-9 bg-stone-50 border-stone-300 text-[10px] font-mono" 
+              />
             </div>
+          </div>
         </div>
       </div>
     </div>

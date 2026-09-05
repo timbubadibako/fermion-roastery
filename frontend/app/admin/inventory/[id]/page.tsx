@@ -5,34 +5,34 @@ import { useRouter, useParams } from "next/navigation";
 import {
   ArrowLeft,
   Save,
-  Coffee,
   MapPin,
-  Tag,
   Image as ImageIcon,
   Beaker,
   Boxes,
   Loader2,
-  FileText,
   Link as LinkIcon,
   ChevronDown,
   X,
   Plus,
   Trash2,
-  Sparkles
+  Sparkles,
+  FileSpreadsheet,
+  Package,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
+import { downloadCsvTemplate } from "@/lib/csvHelper";
 
 interface VariantItem {
   id?: string;
@@ -71,7 +71,7 @@ const normalizeVariants = (variants: unknown): VariantItem[] => {
   });
 };
 
-export default function ProductFormPage() {
+export default function ProductEditPage() {
   const router = useRouter();
   const params = useParams();
   const isEdit = !!params.id;
@@ -90,27 +90,23 @@ export default function ProductFormPage() {
     process: "",
     altitude: "",
     price_retail: 0,
+    stock_quantity: 0,
     roast_profile: "Light to Medium",
     description: "",
     farm: "",
     image_url: "",
-    fermentation: 3,
-    sweetness: 3, // Menggunakan angka murni 3 agar slider aman
-    acidity: 3,
-    body: 3,
-    stock_quantity: 0,
     category: "filter",
     sub_category: "filter_specialty",
+    linked_journal_id: "",
     b2b_discount_enabled: true,
     is_active: true,
-    linked_journal_id: "",
-
-    // 🟢 Flag Marketing Baru
+    fermentation: 3,
+    sweetness: 3,
+    acidity: 3,
+    body: 3,
     is_new_release: false,
     is_promoted: false,
     search_upsell_headline: "",
-
-    // 🟢 Wadah Varian Berat Dinamis
     variants: [] as VariantItem[]
   });
 
@@ -152,7 +148,6 @@ export default function ProductFormPage() {
           const productRes = await fetch(`/api/products/${params.id}`);
           if (productRes.ok) {
             const data = await productRes.json();
-            // 🟢 Hidrasi data varian jika berpindah ke mode edit produk
             setFormData({
               ...data,
               name: textValue(data.name),
@@ -195,7 +190,6 @@ export default function ProductFormPage() {
     fetchData();
   }, [isEdit, params.id]);
 
-  // 🟢 Handler Varian Berat
   const handleVariantChange = (index: number, field: keyof VariantItem, value: any) => {
     const updatedVariants = [...formData.variants];
     updatedVariants[index] = { ...updatedVariants[index], [field]: value };
@@ -252,137 +246,192 @@ export default function ProductFormPage() {
   };
 
   if (loading) return (
-    <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-stone-400">
-      <Loader2 size={40} className="animate-spin text-stone-900" />
-      <p className="text-[10px] font-black uppercase tracking-[0.3em]">Menyusun Spesifikasi...</p>
+    <div className="h-[60vh] flex flex-col items-center justify-center gap-3 text-slate-400 font-sans">
+      <div className="w-10 h-10 border-4 border-slate-900 border-t-[#367F4D] rounded-full animate-spin" />
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Memuat Spesifikasi Produk...</p>
     </div>
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-24 text-left">
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black/5 pb-10">
-        <div className="space-y-4">
+    <div className="space-y-6 font-sans text-left w-full pb-16">
+      {/* HEADER TOOLBAR CARD */}
+      <div className="bg-white border border-slate-200/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-xl text-slate-600 transition-colors"
+            title="Kembali"
           >
-            <ArrowLeft size={14} /> Kembali ke Inventaris
+            <ArrowLeft size={18} />
           </button>
-          <h1 className="text-5xl md:text-7xl font-display italic font-bold tracking-tighter text-slate-900 leading-none">
-            {isEdit ? "Edit \nSpesifikasi." : "Produk \nBaru."}
-          </h1>
+          <div>
+            <h1 className="text-sm font-extrabold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+              <span>{isEdit ? "EDIT SPESIFIKASI PRODUK" : "TAMBAH KOPI BARU"}</span>
+              <span className="text-[10px] font-bold text-[#367F4D] bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full font-mono">
+                {formData.category.toUpperCase()}
+              </span>
+            </h1>
+            <p className="text-xs font-medium text-slate-500">
+              {isEdit ? `ID: ${params.id}` : "Kelola rincian SKU, profil rasa, varian kemasan, dan harga."}
+            </p>
+          </div>
         </div>
-        <div className="flex gap-4">
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2.5 text-xs">
+          {!isEdit && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={downloadCsvTemplate}
+              className="h-9 border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-xl px-3.5 gap-2 shadow-xs"
+            >
+              <FileSpreadsheet size={14} className="text-[#367F4D]" /> Template CSV
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="h-9 border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-xl px-4 shadow-xs"
+          >
+            Batal
+          </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-[#367F4D] text-white rounded-sm h-14 px-10 gap-3 font-black uppercase tracking-widest italic shadow-xl hover:bg-[#2d6a41] transition-all border-none"
+            className="h-9 bg-[#367F4D] hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl px-5 gap-2 border-none shadow-xs"
           >
-            {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+            {saving ? <Loader2 className="animate-spin" size={15} /> : <Save size={15} />}
             {isEdit ? "Simpan Perubahan" : "Daftarkan Produk"}
           </Button>
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* LEFT COLUMN: Main Info */}
-        <div className="lg:col-span-2 space-y-10">
-          <div className="bg-white border border-black/5 rounded-sm p-10 space-y-10 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Nama SKU Produk</label>
-                <Input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Nama produk atau lot kopi" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* LEFT COLUMN: Main Info & Flavor & Variants */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Card 1: Informasi Dasar Produk */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Package size={16} className="text-[#367F4D]" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Informasi Dasar Produk</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Nama SKU Produk *</label>
+                <Input
+                  required
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value, slug: formData.slug ? formData.slug : slugify(e.target.value) })}
+                  placeholder="Contoh: Sumedang Anaerob Natural"
+                  className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]"
+                />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Slug URL</label>
-                <Input required value={formData.slug} onChange={e => setFormData({ ...formData, slug: slugify(e.target.value) })} placeholder="slug-produk-unik" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
-                <p className="text-[9px] font-bold text-stone-400">Dipakai untuk URL. Sistem akan merapikan huruf besar, spasi, dan simbol otomatis.</p>
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Slug URL *</label>
+                <Input
+                  required
+                  value={formData.slug}
+                  onChange={e => setFormData({ ...formData, slug: slugify(e.target.value) })}
+                  placeholder="sumedang-anaerob-natural"
+                  className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kategori Utama</label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(val) => {
-                    setFormData({
-                      ...formData,
-                      category: val,
-                      sub_category: val === "filter" ? "filter_specialty" : "espresso_commercial"
-                    })
-                  }}
-                >
-                  <SelectTrigger className="w-full h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus:ring-[#367F4D]">
-                    <SelectValue placeholder="Pilih Kategori" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                    <SelectItem value="filter" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Coffee</SelectItem>
-                    <SelectItem value="espresso" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* KATEGORI UTAMA */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Kategori Utama</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full h-10 bg-slate-50 border-slate-200 rounded-xl px-3.5 text-xs font-semibold text-slate-900 hover:bg-slate-100 justify-between items-center shadow-none">
+                      <span>{formData.category === "filter" ? "Filter Coffee" : "Espresso"}</span>
+                      <ChevronDown size={14} className="text-slate-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56 rounded-xl border border-slate-200 shadow-xl p-1 bg-white z-50">
+                    <DropdownMenuItem
+                      className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100 focus:text-slate-900"
+                      onClick={() => setFormData({ ...formData, category: "filter", sub_category: "filter_specialty" })}
+                    >
+                      Filter Coffee
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100 focus:text-slate-900"
+                      onClick={() => setFormData({ ...formData, category: "espresso", sub_category: "espresso_commercial" })}
+                    >
+                      Espresso
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Sub Kategori</label>
-                <Select
-                  value={formData.sub_category}
-                  onValueChange={(val) => setFormData({ ...formData, sub_category: val })}
-                >
-                  <SelectTrigger className="w-full h-14 bg-stone-50 border-black/5 rounded-sm px-6 text-xs font-bold text-slate-900 focus:ring-[#367F4D]">
-                    <SelectValue placeholder="Pilih Sub Kategori" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
+
+              {/* SUB KATEGORI */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Sub Kategori</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full h-10 bg-slate-50 border-slate-200 rounded-xl px-3.5 text-xs font-semibold text-slate-900 hover:bg-slate-100 justify-between items-center shadow-none">
+                      <span className="capitalize">
+                        {formData.sub_category === "espresso_commercial" ? "Espresso Aja" : formData.sub_category === "espresso_commodity" ? "Espresso Komoditi" : formData.sub_category.replace('_', ' ')}
+                      </span>
+                      <ChevronDown size={14} className="text-slate-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56 rounded-xl border border-slate-200 shadow-xl p-1 bg-white z-50">
                     {formData.category === "filter" ? (
                       <>
-                        <SelectItem value="filter_specialty" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Specialty</SelectItem>
-                        <SelectItem value="filter_exotic" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Filter Exotic</SelectItem>
+                        <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, sub_category: "filter_specialty" })}>Filter Specialty</DropdownMenuItem>
+                        <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, sub_category: "filter_exotic" })}>Filter Exotic</DropdownMenuItem>
                       </>
                     ) : (
                       <>
-                        <SelectItem value="espresso_commodity" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso Komoditi</SelectItem>
-                        <SelectItem value="espresso_commercial" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Espresso Aja</SelectItem>
+                        <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, sub_category: "espresso_commodity" })}>Espresso Komoditi</DropdownMenuItem>
+                        <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, sub_category: "espresso_commercial" })}>Espresso Aja</DropdownMenuItem>
                       </>
                     )}
-                  </SelectContent>
-                </Select>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Deskripsi Naratif</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Deskripsi Naratif Produk</label>
               <Textarea
                 value={formData.description}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Ceritakan tentang profil, sejarah, atau keunikan kopi ini..."
-                className="min-h-[200px] bg-stone-50 border-black/5 rounded-sm p-6 text-sm font-medium leading-relaxed focus-visible:ring-[#367F4D]"
+                placeholder="Ceritakan tentang profil rasa, asal kebun, atau rekomendasi penyeduhan..."
+                className="min-h-[120px] bg-slate-50 border-slate-200 rounded-xl p-3.5 text-xs font-medium focus:bg-white focus:border-[#367F4D]"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Origin / Wilayah</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Origin / Wilayah</label>
                 <div className="relative">
-                  <Input value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value })} placeholder="Wilayah origin kopi" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 pl-14 focus-visible:ring-[#367F4D]" />
-                  <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-stone-300" size={16} />
+                  <Input value={formData.origin} onChange={e => setFormData({ ...formData, origin: e.target.value })} placeholder="Sumedang, Jawa Barat" className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold pl-9 focus:bg-white focus:border-[#367F4D]" />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                 </div>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Kebun / Farm</label>
-                <Input value={formData.farm} onChange={e => setFormData({ ...formData, farm: e.target.value })} placeholder="Nama kebun, koperasi, atau produsen" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Kebun / Produsen</label>
+                <Input value={formData.farm} onChange={e => setFormData({ ...formData, farm: e.target.value })} placeholder="Kebun Manglayang" className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]" />
               </div>
             </div>
           </div>
 
-          {/* Profil Rasa Section */}
-          <div className="bg-white border border-black/5 rounded-sm p-10 space-y-10 shadow-sm">
-            <div className="flex items-center gap-3 border-b border-black/5 pb-6">
-              <Beaker size={18} className="text-[#367F4D]" />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Analisa Profil Rasa</h3>
+          {/* Card 2: Profil Rasa Section */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Beaker size={16} className="text-[#367F4D]" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Analisa Profil Rasa (Cupping)</h3>
             </div>
 
-            <div className="space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { id: 'fermentation', label: 'Intensitas Fermentasi' },
                 { id: 'sweetness', label: 'Intensitas Sweetness' },
@@ -393,72 +442,72 @@ export default function ProductFormPage() {
                 const sensorValue = (formData[sensorKey] as number) || 0;
 
                 return (
-                  <div key={sensor.id} className="space-y-4">
-                    <div className="flex justify-between items-end">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{sensor.label}</label>
-                      {/* 🟢 AMAN: Ditambahkan pengecekan toFixed pangkas eror runtime */}
-                      <span className="text-xl font-black italic text-[#367F4D]">{sensorValue.toFixed(1)}/5.0</span>
+                  <div key={sensor.id} className="space-y-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">{sensor.label}</label>
+                      <span className="text-xs font-black text-[#367F4D] font-mono bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                        {sensorValue.toFixed(1)} / 5.0
+                      </span>
                     </div>
                     <input
                       type="range" min="0" max="5" step="0.1"
                       value={sensorValue}
                       onChange={(e) => setFormData({ ...formData, [sensor.id]: parseFloat(e.target.value) || 0 })}
-                      className="w-full h-1.5 bg-stone-100 appearance-none cursor-pointer rounded-full accent-[#367F4D]"
+                      className="w-full h-1.5 bg-slate-200 appearance-none cursor-pointer rounded-full accent-[#367F4D]"
                     />
                   </div>
                 );
               })}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-6">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Proses Pasca Panen</label>
-                <Input value={formData.process} onChange={e => setFormData({ ...formData, process: e.target.value })} placeholder="Natural, Washed, Honey, atau lainnya" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Proses Pasca Panen</label>
+                <Input value={formData.process} onChange={e => setFormData({ ...formData, process: e.target.value })} placeholder="Anaerob Natural, Full Washed, Honey" className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]" />
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Ketinggian (MASL)</label>
-                <Input value={formData.altitude} onChange={e => setFormData({ ...formData, altitude: e.target.value })} placeholder="1400 - 1600 mdpl" className="h-14 bg-stone-50 border-black/5 font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Ketinggian (MASL)</label>
+                <Input value={formData.altitude} onChange={e => setFormData({ ...formData, altitude: e.target.value })} placeholder="1400 - 1600 mdpl" className="h-10 bg-slate-50 border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-[#367F4D]" />
               </div>
             </div>
           </div>
 
-          {/* 🟢 MANAJEMEN VARIAN BERAT DINAMIS */}
-          <div className="bg-white border border-black/5 rounded-sm p-10 space-y-8 shadow-sm">
-            <div className="flex items-center justify-between border-b border-black/5 pb-6">
-              <div className="flex items-center gap-3">
-                <Boxes size={18} className="text-[#367F4D]" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">Spesifikasi Varian Ukuran Kemasan</h3>
+          {/* Card 3: Varian Ukuran Kemasan */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Boxes size={16} className="text-[#367F4D]" />
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Varian Ukuran Kemasan</h3>
               </div>
-              {/* Tombol Tambah Varian Melengkung Indah (rounded-sm) */}
               <button
                 type="button"
                 onClick={addVariantRow}
-                className="flex items-center gap-2 bg-[#367F4D] text-white px-4 py-2 text-[9px] font-black tracking-widest uppercase rounded-sm hover:bg-emerald-800 transition-colors"
+                className="flex items-center gap-1.5 bg-[#367F4D] text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-colors"
               >
-                <Plus size={12} strokeWidth={3} /> Tambah Varian
+                <Plus size={13} strokeWidth={2.5} /> Tambah Varian
               </button>
             </div>
 
             {formData.variants.length === 0 ? (
-              <div className="p-8 border border-dashed border-stone-200 text-center text-[10px] font-bold text-stone-400 uppercase tracking-wider bg-stone-50/50 rounded-sm">
-                Kosong (Default sistem otomatis mendaftarkan ukuran kemasan 150gr & 250gr saat disimpan). Harga transaksi tetap mengikuti harga varian.
+              <div className="p-6 border border-dashed border-slate-200 text-center text-xs font-semibold text-slate-400 rounded-xl bg-slate-50">
+                Belum ada varian custom. Sistem akan otomatis mendaftarkan varian default (150g & 250g).
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {formData.variants.map((variant, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 bg-stone-50/60 border border-black/5 relative group rounded-sm">
-                    <div className="space-y-2">
-                      <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Berat Kemasan</label>
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl relative group">
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold tracking-wider text-slate-600 uppercase">Ukuran / Berat</label>
                       <Input
                         required
-                        placeholder="150g, 250g, atau 1kg"
+                        placeholder="150g, 250g, 1kg"
                         value={variant.weight}
                         onChange={e => handleVariantChange(index, "weight", e.target.value)}
-                        className="h-10 bg-white border-black/10 rounded-sm font-bold text-xs focus-visible:ring-[#367F4D]"
+                        className="h-9 bg-white border-slate-200 rounded-lg font-semibold text-xs focus:border-[#367F4D]"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Harga Retail Varian (IDR)</label>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold tracking-wider text-slate-600 uppercase">Harga Retail (Rp)</label>
                       <Input
                         required
                         type="text"
@@ -466,11 +515,11 @@ export default function ProductFormPage() {
                         placeholder="0"
                         value={formatNumberInput(variant.price)}
                         onChange={e => handleVariantChange(index, "price", parseNumericInput(e.target.value))}
-                        className="h-10 bg-white border-black/10 rounded-sm font-mono text-xs focus-visible:ring-[#367F4D]"
+                        className="h-9 bg-white border-slate-200 rounded-lg font-mono font-bold text-xs focus:border-[#367F4D]"
                       />
                     </div>
-                    <div className="space-y-2 relative pr-10">
-                      <label className="block text-[8px] font-black tracking-widest text-stone-500 uppercase">Stok Varian</label>
+                    <div className="space-y-1 relative pr-9">
+                      <label className="block text-[10px] font-bold tracking-wider text-slate-600 uppercase">Stok Pack</label>
                       <Input
                         required
                         type="text"
@@ -478,14 +527,15 @@ export default function ProductFormPage() {
                         placeholder="0"
                         value={formatNumberInput(variant.stock_quantity)}
                         onChange={e => handleVariantChange(index, "stock_quantity", parseNumericInput(e.target.value))}
-                        className="h-10 bg-white border-black/10 rounded-sm font-mono text-xs focus-visible:ring-[#367F4D]"
+                        className="h-9 bg-white border-slate-200 rounded-lg font-mono font-bold text-xs focus:border-[#367F4D]"
                       />
                       <button
                         type="button"
                         onClick={() => removeVariantRow(index)}
-                        className="absolute right-0 bottom-1 p-2 text-red-500 hover:bg-red-50 rounded-sm transition-colors"
+                        className="absolute right-0 bottom-0.5 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus Varian"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </div>
@@ -495,125 +545,133 @@ export default function ProductFormPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Sidebar Stats & Campaign Panel */}
-        <div className="space-y-10 text-left">
-          {/* Inventory & Price */}
-          <div className="bg-slate-900 text-white rounded-sm p-10 space-y-10 shadow-2xl">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Harga Display / Mulai Dari (IDR)</label>
-                <div className="relative">
-                  {/* AMAN: Menggunakan fallback OR string kosong menghalau eror NaN */}
-                  <Input type="text" inputMode="numeric" required value={formatNumberInput(formData.price_retail)} onChange={e => setFormData({ ...formData, price_retail: parseNumericInput(e.target.value) })} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
-                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-tighter italic">DISPLAY</span>
-                </div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">Dipakai untuk katalog dan fallback. Harga transaksi utama tetap dari baris varian.</p>
-              </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Stok Inventaris (Unit)</label>
-                <div className="relative">
-                  {/* AMAN: Menggunakan fallback OR string kosong menghalau eror NaN */}
-                  <Input type="text" inputMode="numeric" required value={formatNumberInput(formData.stock_quantity)} onChange={e => setFormData({ ...formData, stock_quantity: parseNumericInput(e.target.value) })} className="h-16 bg-white/5 border-white/10 text-2xl font-bold rounded-sm px-6 focus-visible:ring-[#367F4D]" />
-                  <Boxes className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20" size={24} />
-                </div>
-              </div>
+        {/* RIGHT COLUMN: Display Price, Marketing, Media & Status */}
+        <div className="space-y-6 text-left">
+          {/* Card 1: Display Price & Inventory Overview */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <DollarSign size={16} className="text-[#367F4D]" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Harga Display & Stok Total</h3>
             </div>
 
-            <div className="space-y-3 pt-6 border-t border-white/5">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Profil Pemanggangan</label>
-              <Select
-                value={formData.roast_profile}
-                onValueChange={(val) => setFormData({ ...formData, roast_profile: val })}
-              >
-                <SelectTrigger className="w-full h-14 bg-white/5 border-white/10 rounded-sm px-6 text-xs font-bold text-white outline-none focus:ring-[#367F4D]">
-                  <SelectValue placeholder="Pilih Profil" />
-                </SelectTrigger>
-                <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                  <SelectItem value="Light" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Light Roast</SelectItem>
-                  <SelectItem value="Light to Medium" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Light to Medium</SelectItem>
-                  <SelectItem value="Medium" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Medium Roast</SelectItem>
-                  <SelectItem value="Medium to Dark" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">Medium to Dark</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* 🟢 DISCOVERY & MARKETING CAMPAIGN PANEL (Bulat Kapsul / rounded-full Luar-Dalam) */}
-          <div className="bg-white border border-black/5 rounded-sm p-10 space-y-6 shadow-sm text-left">
-            <div className="flex items-center gap-2.5 border-b border-black/5 pb-4">
-              <Sparkles size={16} className="text-[#367F4D]" />
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900">Pengaturan Campaign & Discovery</h4>
-            </div>
-
-            <div className="flex items-center justify-between py-2">
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Aktifkan Diskon B2B</p>
-                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Matikan untuk exotic/nano lot agar margin aman</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={formData.b2b_discount_enabled}
-                onChange={e => setFormData({ ...formData, b2b_discount_enabled: e.target.checked })}
-                className="w-10 h-6 appearance-none bg-stone-100 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-1 after:left-1 checked:after:left-5 after:transition-all shadow-inner border border-black/5"
-              />
-            </div>
-
-            {/* New Release Badge Custom Control */}
-            <div className="flex items-center justify-between py-2">
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Badge New Release</p>
-                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Injeksi Banner "Just Roasted"</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={formData.is_new_release}
-                onChange={e => setFormData({ ...formData, is_new_release: e.target.checked })}
-                className="w-10 h-6 appearance-none bg-stone-100 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-1 after:left-1 checked:after:left-5 after:transition-all shadow-inner border border-black/5"
-              />
-            </div>
-
-            {/* Pre-Search Upsell Control */}
-            <div className="flex items-center justify-between py-2 border-t border-black/5">
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-900">Promoted Search</p>
-                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-wide">Rekomendasikan sebelum user mencari</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={formData.is_promoted}
-                onChange={e => setFormData({ ...formData, is_promoted: e.target.checked })}
-                className="w-10 h-6 appearance-none bg-stone-100 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-1 after:left-1 checked:after:left-5 after:transition-all shadow-inner border border-black/5"
-              />
-            </div>
-
-            {/* Input Teks Headline Promosi */}
-            <AnimatePresence>
-              {formData.is_promoted && (
-                <motion.div
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="space-y-2 pt-2 border-t border-dashed border-black/10"
-                >
-                  <label className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400 ml-0.5">Headline Promosi (Search Bar Clip)</label>
-                  <Input
-                    value={formData.search_upsell_headline || ""}
-                    onChange={e => setFormData({ ...formData, search_upsell_headline: e.target.value })}
-                    placeholder="Contoh: Profil anaerob paling manis bulan ini."
-                    className="h-10 bg-stone-50 border-black/10 font-medium rounded-sm text-xs focus-visible:ring-[#367F4D]"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Media & Metadata */}
-          <div className="bg-white border border-black/5 rounded-sm p-10 space-y-8 shadow-sm text-left">
             <div className="space-y-4">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Media Produk (URL)</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Harga Display Catalog (Rp) *</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  value={formatNumberInput(formData.price_retail)}
+                  onChange={e => setFormData({ ...formData, price_retail: parseNumericInput(e.target.value) })}
+                  className="h-11 bg-slate-50 border-slate-200 text-lg font-mono font-bold rounded-xl px-3.5 focus:bg-white focus:border-[#367F4D] text-slate-900"
+                />
+                <p className="text-[10px] font-medium text-slate-400">Harga "Mulai Dari" yang muncul di halaman depan.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Total Stok Inventaris *</label>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  value={formatNumberInput(formData.stock_quantity)}
+                  onChange={e => setFormData({ ...formData, stock_quantity: parseNumericInput(e.target.value) })}
+                  className="h-11 bg-slate-50 border-slate-200 text-lg font-mono font-bold rounded-xl px-3.5 focus:bg-white focus:border-[#367F4D] text-slate-900"
+                />
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Profil Pemanggangan</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full h-10 bg-slate-50 border-slate-200 rounded-xl px-3.5 text-xs font-semibold text-slate-900 hover:bg-slate-100 justify-between items-center shadow-none">
+                      <span>{formData.roast_profile}</span>
+                      <ChevronDown size={14} className="text-slate-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56 rounded-xl border border-slate-200 shadow-xl p-1 bg-white z-50">
+                    <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, roast_profile: "Light" })}>Light Roast</DropdownMenuItem>
+                    <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, roast_profile: "Light to Medium" })}>Light to Medium</DropdownMenuItem>
+                    <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, roast_profile: "Medium" })}>Medium Roast</DropdownMenuItem>
+                    <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, roast_profile: "Medium to Dark" })}>Medium to Dark</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Marketing & Discovery Panel */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Sparkles size={16} className="text-[#367F4D]" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Campaign & Discovery</h3>
+            </div>
+
+            <div className="space-y-3 divide-y divide-slate-100 text-xs">
+              <div className="flex items-center justify-between pt-1">
+                <div>
+                  <p className="font-bold text-slate-900">Diskon B2B / Mitra</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Aktifkan potongan khusus partner</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.b2b_discount_enabled}
+                  onChange={e => setFormData({ ...formData, b2b_discount_enabled: e.target.checked })}
+                  className="w-9 h-5 appearance-none bg-slate-200 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.75 after:left-0.75 checked:after:left-4.75 after:transition-all shadow-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3">
+                <div>
+                  <p className="font-bold text-slate-900">Badge New Release</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Tampilkan pita "Just Roasted"</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.is_new_release}
+                  onChange={e => setFormData({ ...formData, is_new_release: e.target.checked })}
+                  className="w-9 h-5 appearance-none bg-slate-200 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.75 after:left-0.75 checked:after:left-4.75 after:transition-all shadow-xs"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3">
+                <div>
+                  <p className="font-bold text-slate-900">Promoted Search</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Rekomendasi teratas saat cari</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.is_promoted}
+                  onChange={e => setFormData({ ...formData, is_promoted: e.target.checked })}
+                  className="w-9 h-5 appearance-none bg-slate-200 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.75 after:left-0.75 checked:after:left-4.75 after:transition-all shadow-xs"
+                />
+              </div>
+
+              {formData.is_promoted && (
+                <div className="pt-3 space-y-1.5">
+                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600">Headline Promosi</label>
+                  <Input
+                    value={formData.search_upsell_headline}
+                    onChange={e => setFormData({ ...formData, search_upsell_headline: e.target.value })}
+                    placeholder="Profil anaerob paling manis bulan ini."
+                    className="h-9 bg-slate-50 border-slate-200 font-medium rounded-xl text-xs focus:border-[#367F4D]"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Card 3: Media & Metadata */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <ImageIcon size={16} className="text-[#367F4D]" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Foto & Status Publikasi</h3>
+            </div>
+
+            <div className="space-y-4">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="aspect-[4/5] bg-stone-50 rounded-sm border-2 border-dashed border-black/10 overflow-hidden flex flex-col items-center justify-center gap-4 group hover:border-[#367F4D]/40 transition-all cursor-pointer relative"
+                className="aspect-[4/3] bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 overflow-hidden flex flex-col items-center justify-center gap-2 hover:border-[#367F4D] transition-all cursor-pointer relative group"
               >
                 <input
                   type="file"
@@ -623,9 +681,9 @@ export default function ProductFormPage() {
                   className="hidden"
                 />
                 {uploading ? (
-                  <div className="flex flex-col items-center gap-3">
-                    <Loader2 size={30} className="animate-spin text-[#367F4D]" />
-                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Mengunggah...</p>
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 size={24} className="animate-spin text-[#367F4D]" />
+                    <p className="text-[10px] font-bold text-slate-400">Mengunggah...</p>
                   </div>
                 ) : (imagePreviewUrl || formData.image_url) ? (
                   <>
@@ -637,66 +695,69 @@ export default function ProductFormPage() {
                         setFormData({ ...formData, image_url: "" });
                         setImagePreviewUrl("");
                       }}
-                      className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-sm text-red-500 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-lg text-red-500 shadow-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <X size={16} />
+                      <X size={14} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                      <ImageIcon size={24} className="text-stone-300 group-hover:text-[#367F4D] transition-colors" />
+                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform border border-slate-200">
+                      <ImageIcon size={18} className="text-slate-400 group-hover:text-[#367F4D] transition-colors" />
                     </div>
-                    <div className="text-center space-y-1">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-600">Klik atau Drop Gambar</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Minimal 800x1000px</p>
-                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600">Unggah Berkas Foto</p>
                   </>
                 )}
               </div>
-              <Input value={formData.image_url} onChange={e => {
-                const value = e.target.value;
-                setFormData({ ...formData, image_url: value });
-                setImagePreviewUrl(value);
-              }} placeholder="Storage path internal atau URL gambar" className="h-12 bg-stone-50 border-black/5 font-bold rounded-sm px-4 text-[10px] focus-visible:ring-[#367F4D]" />
-            </div>
-
-            {/* Journal Linking */}
-            <div className="space-y-4 pt-6 border-t border-black/5">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 flex items-center gap-2">
-                <LinkIcon size={12} /> Hubungkan Jurnal (Opsional)
-              </label>
-              <Select
-                value={formData.linked_journal_id || "none"}
-                onValueChange={(val) => setFormData({ ...formData, linked_journal_id: val === "none" ? "" : val })}
-              >
-                <SelectTrigger className="w-full h-12 bg-stone-50 border-black/5 rounded-sm px-4 text-[10px] font-bold focus:ring-[#367F4D]">
-                  <SelectValue placeholder="Pilih Cerita Kopi" />
-                </SelectTrigger>
-                <SelectContent className="rounded-sm border-black/5 shadow-2xl bg-white p-1">
-                  <SelectItem value="none" className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50">Tanpa Tautan</SelectItem>
-                  {journalPosts.map(post => (
-                    <SelectItem key={post.id} value={post.id} className="text-[10px] font-bold uppercase py-3 focus:bg-stone-50 focus:text-[#367F4D] outline-none">
-                      {post.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest leading-relaxed">Produk ini akan menampilkan tautan "Baca Cerita" di halaman retail.</p>
-            </div>
-
-            {/* Status Aktif Custom Control */}
-            <div className="pt-6 border-t border-black/5 flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Status Aktif</p>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Tampilkan di katalog utama</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={formData.is_active}
-                onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-10 h-6 appearance-none bg-stone-100 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-1 after:left-1 checked:after:left-5 after:transition-all shadow-inner border border-black/5"
+              <Input
+                value={formData.image_url}
+                onChange={e => {
+                  const value = e.target.value;
+                  setFormData({ ...formData, image_url: value });
+                  setImagePreviewUrl(value);
+                }}
+                placeholder="Path internal atau URL gambar"
+                className="h-9 bg-slate-50 border-slate-200 font-mono text-[10px] rounded-xl focus:border-[#367F4D]"
               />
+
+              {/* Hubungkan Jurnal */}
+              <div className="space-y-2 pt-3 border-t border-slate-100">
+                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <LinkIcon size={12} /> Hubungkan Jurnal (Opsional)
+                </label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full h-9 bg-slate-50 border-slate-200 rounded-xl px-3 text-xs font-semibold text-slate-900 hover:bg-slate-100 justify-between items-center shadow-none">
+                      <span className="truncate">
+                        {journalPosts.find(post => post.id === formData.linked_journal_id)?.title || "Tanpa Tautan"}
+                      </span>
+                      <ChevronDown size={14} className="text-slate-400 shrink-0" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56 rounded-xl border border-slate-200 shadow-xl p-1 bg-white max-h-56 overflow-y-auto z-50">
+                    <DropdownMenuItem className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, linked_journal_id: "" })}>Tanpa Tautan</DropdownMenuItem>
+                    {journalPosts.map(post => (
+                      <DropdownMenuItem key={post.id} className="text-xs font-bold py-2 px-3 cursor-pointer rounded-lg focus:bg-slate-100" onClick={() => setFormData({ ...formData, linked_journal_id: post.id })}>
+                        {post.title}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Status Aktif */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Status Aktif Katalog</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Tampilkan di etalase pembeli</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.is_active}
+                  onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
+                  className="w-9 h-5 appearance-none bg-slate-200 rounded-full checked:bg-[#367F4D] relative cursor-pointer transition-all after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.75 after:left-0.75 checked:after:left-4.75 after:transition-all shadow-xs"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { UnifiedSidebar } from "@/components/dashboard/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { ChatFloating } from "@/components/chat-floating";
 
 import { CartSync } from "@/components/cart-sync";
 import { SpotlightGuide, SpotlightFAB } from "@/components/ui/spotlight-guide";
@@ -50,26 +49,22 @@ export function ClientWrapper({
   const isLandingPage = pathname === "/";
   const hideMainLayout = pathname === '/auth' || pathname === '/b2b/register' || isAdmin || isB2BPortal;
 
-  // Final role determination for sidebar
-  const activeRole = isAdmin ? "ADMIN" : (isB2BPortal ? "B2B" : null);
+  // Sidebar role determination (Only B2B portal uses side sidebar; Admin uses Admin V2 Top Header Nav)
+  const activeSidebarRole = isB2BPortal ? "B2B" : null;
 
   return (
     <>
       {!isLandingPage && <CartSync />}
 
-
-      {mounted && activeRole && <UnifiedSidebar role={activeRole} />}
+      {mounted && activeSidebarRole && <UnifiedSidebar role={activeSidebarRole} />}
 
       {!hideMainLayout && <Header />}
 
-      <main className={`${(mounted && activeRole) ? "ml-64 min-h-screen bg-slate-50 flex flex-col items-center print:ml-0 print:bg-white print:min-h-0" : ""}`}>
-        <div className={`${(mounted && activeRole) ? "w-full max-w-[1440px] px-8 lg:px-12 py-16 print:p-0 print:max-w-none" : "min-h-screen"}`}>
+      <main className={`${(mounted && activeSidebarRole) ? "ml-64 min-h-screen bg-slate-50 flex flex-col items-center print:ml-0 print:bg-white print:min-h-0" : ""}`}>
+        <div className={`${(mounted && activeSidebarRole) ? "w-full max-w-[1440px] px-8 lg:px-12 py-16 print:p-0 print:max-w-none" : "min-h-screen"}`}>
           {children}
         </div>
       </main>
-
-      {/* Temporarily hidden chat feature */}
-      {/* {!hideMainLayout && <ChatFloating />} */}
 
       {!isLandingPage && <SpotlightGuide />}
       {!isLandingPage && <SpotlightFAB />}

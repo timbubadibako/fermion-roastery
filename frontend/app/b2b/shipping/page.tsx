@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/lib/store";
 import { motion } from "framer-motion";
 import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function ShippingTracker() {
   const { user } = useAuthStore();
@@ -238,7 +239,17 @@ export default function ShippingTracker() {
                    </div>
 
                    {selectedOrder?.shipping_awb !== 'INTERNAL' && selectedOrder?.shipping_awb ? (
-                     <Button className="w-full bg-white/5 border border-white/10 hover:bg-[#367F4D] text-white hover:text-white rounded-sm h-14 uppercase text-[10px] font-black tracking-widest transition-all shadow-none mt-8">
+                     <Button 
+                       onClick={() => {
+                         const awb = selectedOrder?.shipping_awb;
+                         if (awb && awb !== 'MENUNGGU RESI' && awb !== 'MENUNGGU_RESI') {
+                           window.open(`https://biteship.com/track/${awb}`, '_blank');
+                         } else {
+                           toast.info("Nomor resi (AWB) belum diterbitkan oleh pihak kurir.");
+                         }
+                       }}
+                       className="w-full bg-white/5 border border-white/10 hover:bg-[#367F4D] text-white hover:text-white rounded-sm h-14 uppercase text-[10px] font-black tracking-widest transition-all shadow-none mt-8"
+                     >
                         Lacak via Portal Biteship <ExternalLink size={14} className="ml-2" />
                      </Button>
                    ) : (
