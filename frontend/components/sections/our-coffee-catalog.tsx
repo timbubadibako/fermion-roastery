@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore, useAuthStore, useSpotlightStore } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import { Sticker } from "@/components/ui/sticker";
+import { PlasterTape } from "@/components/ui/plaster-tape";
+import { ProductCard } from "@/components/ui/product-card";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -48,7 +50,7 @@ export function RetailCatalog() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cols, setCols] = useState<2 | 3 | 4>(3);
+  const [cols, setCols] = useState<2 | 3 | 4>(4);
   const [showFilter, setShowFilter] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -231,66 +233,92 @@ export function RetailCatalog() {
 
       <div
         ref={headerRef}
-        className="bg-[#e9e8e2] text-white pt-48 pb-32 px-6 relative z-10 will-change-transform overflow-hidden" // 🟢 Tambahkan overflow-hidden biar noise gak luber
-        style={{ clipPath: "polygon(0 0, 100% 0, 100% 98%, 95% 99%, 90% 98%, 85% 99%, 80% 98%, 75% 99%, 70% 98%, 65% 99%, 60% 98%, 55% 99%, 50% 98%, 45% 99%, 40% 98%, 35% 99%, 30% 98%, 25% 99%, 20% 98%, 15% 99%, 10% 98%, 5% 99%, 0 98%)" }}
+        className="bg-[#F0ECE1] text-stone-900 pt-28 sm:pt-36 md:pt-40 pb-16 sm:pb-20 md:pb-24 px-6 relative z-10 will-change-transform overflow-hidden border-b border-black/10"
       >
-        {/* 🟢 ELEMEN EFEK KERTAS (PURE PAPER GRAIN TEXTURE MIXIN) */}
-        {/* Menggunakan mix-blend-multiply atau overlay agar menyatu sempurna dengan warna dasar #e9e8e2 */}
+        {/* Clean Micro Dot Matrix Accent */}
+        <div 
+          className="absolute inset-0 opacity-[0.025] pointer-events-none z-[1]" 
+          style={{
+            backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }}
+        />
+
+        {/* Subtle SVG Grid Line Accent */}
         <div
-          className="absolute inset-0 pointer-events-none z-[1] opacity-[0.4] mix-blend-multiply"
-          style={{ backgroundImage: 'url("/textures/grain-noise.svg")' }}
+          className="absolute inset-0 pointer-events-none z-[1] opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
+            backgroundSize: '32px 32px'
+          }}
         />
 
         {/* MAIN CONTENT CONTAINER */}
-        {/* Tambahkan z-10 agar konten teks berada di atas lapisan efek kertas */}
-        <div className="max-w-7xl mx-auto space-y-8 px-4 md:px-10 relative z-10">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-7 px-4 md:px-10 relative z-10">
           <div className="relative inline-block catalog-hero-text will-change-transform opacity-0">
+            {/* Plaster Tape Accent */}
+            <PlasterTape width={76} height={20} rotate={-3} pattern="cross" className="absolute -top-3.5 left-8 z-30 pointer-events-none" />
+
             {/* Paper Badge */}
-            <div className="px-5 py-2.5 bg-[#2e1b1d] text-[#FFFFFF] rotate-[0.5deg] text-[10px] font-sans font-black tracking-[0.4em] uppercase flex items-center gap-3 relative shadow-sm">
-              <Archive size={12} /> {tCat.badge}
+            <div className="px-4 py-2 bg-[#2E1B1D] text-white rotate-[0.5deg] text-[10px] font-mono font-bold tracking-[0.3em] uppercase flex items-center gap-2.5 relative shadow-xs rounded-xs">
+              <Archive size={13} className="text-[#E5B13F]" /> {tCat.badge}
             </div>
-            {/* Tape - Explicitly on top (z-20) */}
-            <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/20 border border-white/10 rotate-[-4deg] z-25"></div>
           </div>
 
-          <h1 className="text-5xl md:text-9xl font-cloude tracking-tighter text-stone-900 leading-[0.8] relative catalog-hero-text will-change-transform opacity-0">
-            {tCat.titleMain} <br />
-            <span className="font-display italic text-[#e5b13f]">{tCat.titleSub}</span>
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-sans font-black tracking-tight text-stone-900 leading-[0.9] uppercase relative catalog-hero-text will-change-transform opacity-0">
+            {tCat.titleMain}{" "}
+            <span className="font-display italic font-normal normal-case text-[#D99B26] block sm:inline mt-1 sm:mt-0">
+              {tCat.titleSub}
+            </span>
           </h1>
 
-          {/* 🟢 DISKUSI WARNA: Diubah ke text-stone-700/80 agar menyatu dengan serat kertas purba #e9e8e2 */}
-          <p className="max-w-xl text-stone-700 font-medium text-lg leading-relaxed italic catalog-hero-text will-change-transform opacity-0">
+          <p className="max-w-2xl text-stone-700 font-medium text-base sm:text-lg leading-relaxed catalog-hero-text will-change-transform opacity-0">
             {tCat.description}
           </p>
+
+          {/* Micro Specs Bar */}
+          <div className="pt-2 flex flex-wrap items-center gap-2.5 catalog-hero-text will-change-transform opacity-0">
+            <span className="px-3 py-1 bg-white/70 backdrop-blur-xs text-stone-700 text-[10px] font-mono font-semibold tracking-wider uppercase rounded-full border border-stone-300/70 shadow-2xs">
+              100% Specialty Arabica
+            </span>
+            <span className="px-3 py-1 bg-white/70 backdrop-blur-xs text-stone-700 text-[10px] font-mono font-semibold tracking-wider uppercase rounded-full border border-stone-300/70 shadow-2xs">
+              Fresh Weekly Roasts
+            </span>
+            <span className="px-3 py-1 bg-[#367F4D]/10 text-[#2D663E] text-[10px] font-mono font-semibold tracking-wider uppercase rounded-full border border-[#367F4D]/20 shadow-2xs">
+              Espresso & Filter Specs
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Action Bar - Solid Paper Strip */}
-      <div className="sticky top-20 md:top-28 z-40 mb-12 md:mb-16 px-4 md:px-10">
+      <div className="sticky top-16 md:top-24 z-40 mb-10 md:mb-14 px-4 md:px-10">
         <div className="max-w-7xl mx-auto relative group">
-          <motion.div className="bg-white border border-black/5 rounded-sm h-14 md:h-16 flex items-center justify-between px-6 md:px-8 shadow-lg shadow-black/[0.02] relative">
-            <div className="flex items-center gap-6 md:gap-10 relative z-10">
+          <motion.div className="bg-white border border-black/10 rounded-sm h-14 md:h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 shadow-md shadow-black/[0.03] relative">
+            <div className="flex items-center gap-4 sm:gap-6 md:gap-8 relative z-10">
+              
+              {/* Dropdown Filter Button */}
               <div className="relative">
                 <button
                   id="catalog-tools-btn"
                   onClick={() => setShowFilter(!showFilter)}
-                  className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.2em] text-slate-900 hover:text-[#367F4D] transition-all uppercase"
+                  className="flex items-center gap-2 text-[9px] font-black tracking-[0.2em] text-slate-900 hover:text-[#367F4D] transition-all uppercase px-3 py-2 bg-stone-100/70 border border-black/5 rounded-xs"
                 >
-                  <SlidersHorizontal size={14} strokeWidth={2.5} />
-                  <span className="hidden sm:inline">{tCat.tools}</span>
+                  <SlidersHorizontal size={13} strokeWidth={2.5} />
+                  <span>{tCat.tools}</span>
                 </button>
                 <AnimatePresence>
                   {showFilter && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full left-0 mt-4 w-48 bg-white shadow-xl border border-black/5 rounded-sm p-4 z-50 origin-top-left"
+                      className="absolute top-full left-0 mt-3 w-48 bg-white shadow-xl border border-black/10 rounded-sm p-4 z-50 origin-top-left"
                     >
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {["ALL", "ESPRESSO", "FILTER", ...Array.from(new Set(products.map(p => p.process ? p.process.toUpperCase() : ""))).filter(Boolean)].map((opt) => (
                           <p
                             key={opt}
                             onClick={() => { setActiveFilter(opt); setShowFilter(false); }}
-                            className={`text-[9px] font-black cursor-pointer uppercase tracking-[0.2em] transition-all ${activeFilter === opt ? 'text-[#367F4D]' : 'text-stone-400 hover:text-stone-900'}`}
+                            className={`text-[9px] font-black cursor-pointer uppercase tracking-[0.2em] transition-all ${activeFilter === opt ? 'text-[#367F4D]' : 'text-stone-500 hover:text-stone-900'}`}
                           >
                             {opt}
                           </p>
@@ -301,15 +329,38 @@ export function RetailCatalog() {
                 </AnimatePresence>
               </div>
 
-              <div className="h-6 w-[1px] bg-black/5 hidden md:block" />
+              {/* Quick Filter Pills (Desktop & Tablet) */}
+              <div className="hidden sm:flex items-center gap-2 border-l border-black/10 pl-4 sm:pl-6">
+                {["ALL", "ESPRESSO", "FILTER"].map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => setActiveFilter(opt)}
+                    className={`px-3 py-1 text-[8.5px] font-black tracking-[0.2em] uppercase transition-all rounded-xs border ${
+                      activeFilter === opt
+                        ? "bg-[#367F4D] text-white border-[#367F4D] shadow-2xs"
+                        : "bg-stone-50 text-stone-600 border-black/5 hover:bg-stone-100"
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
 
-              <div className="hidden md:flex items-center gap-6">
-                <div className="flex gap-4">
+              <div className="h-5 w-[1px] bg-black/10 hidden md:block" />
+
+              {/* Column Layout Switcher */}
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-[8px] font-black uppercase tracking-widest text-stone-400 mr-1">GRID:</span>
+                <div className="flex gap-1.5">
                   {[2, 3, 4].map(n => (
                     <button
                       key={n}
                       onClick={() => setCols(n as 2 | 3 | 4)}
-                      className={`text-[11px] font-black transition-all ${cols === n ? "text-[#367F4D] scale-110" : "text-stone-300 hover:text-stone-500"}`}
+                      className={`px-2.5 py-1 text-[9px] font-black transition-all rounded-xs border ${
+                        cols === n
+                          ? "bg-slate-900 text-white border-slate-900"
+                          : "bg-stone-50 text-stone-500 border-black/5 hover:bg-stone-100"
+                      }`}
                     >
                       {n}
                     </button>
@@ -358,18 +409,19 @@ export function RetailCatalog() {
       {/* Grid Container */}
       <div ref={catalogRef} className="max-w-7xl mx-auto px-4 md:px-10 relative z-10">
         {loading ? (
-          <div className={`grid gap-8 md:gap-10 ${cols === 2 ? "grid-cols-1 md:grid-cols-2" :
-            cols === 3 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
-              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-            }`}>
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="aspect-[4/5] bg-stone-100 animate-pulse rounded-sm border border-black/[0.03]"></div>
+          <div className={`grid gap-6 md:gap-8 ${
+            cols === 2 ? "grid-cols-2" :
+            cols === 3 ? "grid-cols-2 md:grid-cols-3" :
+            "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}>
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="aspect-[3/4] bg-stone-200/60 animate-pulse rounded-sm border border-black/5"></div>
             ))}
           </div>
         ) : displayProducts.length === 0 ? (
           <div className="py-32 flex flex-col items-center justify-center text-center px-4 border border-dashed border-black/10 rounded-sm bg-stone-50/50">
             <Search size={48} className="text-stone-300 mb-6" strokeWidth={1} />
-            <h3 className="text-3xl font-cloude text-stone-900 mb-3 tracking-wide">
+            <h3 className="text-2xl sm:text-3xl font-sans font-black text-stone-900 mb-3 uppercase tracking-tight">
               {tCat.emptyStateTitle}
             </h3>
             <p className="text-sm font-sans font-medium text-stone-500 max-w-md">
@@ -383,69 +435,26 @@ export function RetailCatalog() {
             </button>
           </div>
         ) : (
-          <div className={`grid transition-all duration-500 gap-8 md:gap-10 ${cols === 2 ? "grid-cols-1 md:grid-cols-2" :
-            cols === 3 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" :
-              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-            }`}>
-            {currentItems.map((product, index) => (
-              <Link key={product.id} href={`/our-coffee/${product.id}`} className="group relative flex flex-col product-kopi-card will-change-transform opacity-0 translate-y-8">
-                <div className="bg-white p-5 pb-8 flex flex-col gap-6 transition-[transform,shadow,border-color] duration-500 shadow-md shadow-black/[0.02] group-hover:-translate-y-1 group-hover:shadow-xl group-hover:shadow-black/5 group-hover:border-black/10 border border-black/[0.03] h-full rounded-sm relative">
-
-                  <div className="relative aspect-[4/5] bg-stone-50 overflow-hidden border border-black/[0.03]">
-                    {(() => {
-                      const sticker = getSticker(product, index);
-                      if (!sticker) return null;
-                      return (
-                        <Sticker rotate={6} className="absolute top-3 right-3 z-10 border border-black/5 shadow-sm" color={sticker.color}>
-                          {sticker.text}
-                        </Sticker>
-                      );
-                    })()}
-
-                    <Image
-                      src={product.image_url || "https://placehold.co/800x1000/e2e8f0/94a3b8?text=FERMION+COFFEE"}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-[transform,filter] duration-700 grayscale-[0.12] group-hover:grayscale-0 group-hover:scale-[1.035]"
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                  </div>
-
-                  <div className="space-y-4 px-1 flex-1 flex flex-col">
-                    <div className="space-y-2 text-center">
-                      <p className="text-[8px] font-black tracking-[0.2em] text-[#367F4D] uppercase">
-                        {product.origin}
-                      </p>
-                      <h3 className="text-xl md:text-2xl font-display font-black uppercase tracking-tighter text-slate-900 leading-tight italic transition-colors duration-300 group-hover:text-[#367F4D]">
-                        {product.name}
-                      </h3>
-                      {product.notes ? (
-                        <p className="text-[10px] font-medium leading-relaxed text-stone-500 line-clamp-2 min-h-[2.5rem] px-2">
-                          {product.notes}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col items-center pt-2 mt-auto gap-6">
-                      <div className="text-center">
-                        <span className="text-[8px] font-black text-stone-300 uppercase tracking-[0.2em] block mb-1">{tCat.perWeight}</span>
-                        <span className="text-xl font-sans font-bold text-slate-900 tabular-nums">
-                          Rp {Number(product.product_variants?.[0]?.price ?? product.price ?? product.price_retail).toLocaleString('id-ID')}
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={(e) => handleAddToCart(e, product)}
-                        className="w-full bg-slate-900 text-white px-4 py-3.5 rounded-sm text-[9px] font-black uppercase tracking-[0.3em] hover:bg-[#367F4D] transition-colors duration-300 active:scale-95 shadow-lg shadow-black/10 flex justify-center items-center gap-2"
-                      >
-                        <span>{tCat.addToCart}</span>
-                        <Plus size={14} strokeWidth={3} />
-                      </button>
-                    </div>
-                  </div>
+          <div className={`grid transition-all duration-500 gap-6 md:gap-8 ${
+            cols === 2 ? "grid-cols-2" :
+            cols === 3 ? "grid-cols-2 md:grid-cols-3" :
+            "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}>
+            {currentItems.map((product, index) => {
+              const sticker = getSticker(product, index);
+              return (
+                <div key={product.id} className="product-kopi-card opacity-0 translate-y-8 will-change-transform h-full">
+                  <ProductCard
+                    product={product}
+                    index={index}
+                    rotate={false}
+                    sticker={sticker}
+                    onAddToCart={(e) => handleAddToCart(e, product)}
+                    className="h-full"
+                  />
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
 
