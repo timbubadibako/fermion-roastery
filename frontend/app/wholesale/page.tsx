@@ -311,7 +311,7 @@ export default function WholesalePageV2() {
         </div>
       </section>
 
-      <section ref={benefitsRef} className="py-32 px-6 relative z-10 bg-[#FAF6F0] border-b border-black/5 overflow-hidden" id="tour-wholesale-benefits">
+      <section ref={benefitsRef} className="pt-20 md:pt-28 pb-12 md:pb-16 px-6 relative z-10 bg-[#FAF6F0] border-b border-black/5 overflow-hidden" id="tour-wholesale-benefits">
         {/* Soft Large Grid Lines */}
         <div 
           className="absolute inset-0 opacity-[0.035] pointer-events-none"
@@ -321,19 +321,19 @@ export default function WholesalePageV2() {
           }}
         />
 
-        <div className="max-w-7xl mx-auto space-y-20 relative z-10">
+        <div className="max-w-7xl mx-auto space-y-16 md:space-y-20 relative z-10">
            <div className="text-center space-y-4">
               <span className="text-[10px] font-mono font-bold uppercase tracking-[0.35em] text-[#EBA294] block">KEMITRAAN &amp; GROSIR</span>
               <h2 className="text-5xl sm:text-7xl md:text-8xl font-sans font-black tracking-tight text-slate-900 leading-none uppercase">{tWholesale.whyPartner}</h2>
               <div className="w-24 h-1 bg-[#EBA294] mx-auto rotate-1"></div>
            </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
               {benefits.map((benefit, i) => (
                 <div 
                   key={i}
                   id={i === 0 ? "tour-wholesale-benefit-card" : undefined}
-                  className="benefit-card bg-[#2A1619] text-white p-10 border border-white/10 shadow-[8px_8px_0px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:border-[#EBA294] hover:shadow-[12px_12px_0px_rgba(235,162,148,0.25)] transition-all duration-500 group relative flex flex-col"
+                  className="benefit-card bg-[#2A1619] text-white p-8 md:p-10 border border-white/10 shadow-[8px_8px_0px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:border-[#EBA294] hover:shadow-[12px_12px_0px_rgba(235,162,148,0.25)] transition-all duration-500 group relative flex flex-col"
                   style={{ 
                     transform: `rotate(${i % 2 === 0 ? -1 : 1.5}deg)`,
                     borderRadius: "4px 2px 6px 3px"
@@ -355,27 +355,27 @@ export default function WholesalePageV2() {
         </div>
       </section>
 
-      <section ref={ctaRef} className="cta-reveal py-32 px-6 relative z-10 overflow-hidden bg-[#F0ECE1]">
+      <section ref={ctaRef} className="cta-reveal pt-8 md:pt-12 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden bg-[#F0ECE1]">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-[#2A1619] p-12 md:p-24 rounded-2xl border border-black/20 shadow-2xl relative overflow-hidden group"
+          <div className="bg-[#2A1619] p-8 sm:p-12 md:p-16 rounded-2xl border border-black/20 shadow-2xl relative overflow-hidden group"
                style={{ clipPath: "polygon(0 3%, 8% 0, 16% 3%, 24% 0, 32% 3%, 40% 0, 48% 3%, 56% 0, 64% 3%, 72% 0, 80% 3%, 88% 0, 96% 3%, 100% 0, 100% 100%, 0 100%)" }}
           >
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
             
-            <Sticker rotate={-10} className="top-10 left-10 border border-white/10 shadow-sm" color="#F1B941" variant="solid">
+            <Sticker rotate={-10} className="top-6 left-6 border border-white/10 shadow-sm" color="#F1B941" variant="solid">
               <span className="p-2 text-slate-900 uppercase font-black tracking-widest text-[9px]">{tWholesale.confidential}</span>
             </Sticker>
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16 text-center lg:text-left mt-16 lg:mt-0">
-              <div className="space-y-6 flex-1">
-                <h2 className="text-4xl sm:text-6xl md:text-7xl font-sans font-black uppercase text-white leading-tight tracking-tight">{tWholesale.initialize} <br/> <span className="text-[#EBA294] italic font-display font-normal normal-case">{tWholesale.onboarding}</span></h2>
-                <p className="text-white/60 font-medium text-lg max-w-xl">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-16 text-center lg:text-left mt-8 lg:mt-0">
+              <div className="space-y-4 md:space-y-6 flex-1">
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black uppercase text-white leading-tight tracking-tight">{tWholesale.initialize} <br/> <span className="text-[#EBA294] italic font-display font-normal normal-case">{tWholesale.onboarding}</span></h2>
+                <p className="text-white/60 font-medium text-base md:text-lg max-w-xl">
                   {tWholesale.ctaDesc}
                 </p>
               </div>
               
               <Link href="/b2b/register" className="w-full lg:w-auto shrink-0" id="tour-wholesale-join">
-                <button className="w-full lg:w-auto h-20 px-12 bg-white text-slate-900 font-black tracking-[0.3em] rounded-xl hover:bg-[#EBA294] transition-all duration-500 uppercase text-xs shadow-sm hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4">
+                <button className="w-full lg:w-auto h-16 sm:h-20 px-8 sm:px-12 bg-white text-slate-900 font-black tracking-[0.25em] md:tracking-[0.3em] rounded-xl hover:bg-[#EBA294] transition-all duration-500 uppercase text-xs shadow-sm hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4">
                   {tWholesale.beginRegistration} <ArrowRight size={18} strokeWidth={3} />
                 </button>
               </Link>

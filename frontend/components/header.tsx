@@ -75,9 +75,15 @@ function HeaderComponent() {
     const newLang = language === 'id' ? 'en' : 'id';
     toggleLanguage();
     if (newLang === 'en') {
-      toast.success('Language switched to English', { description: 'All contents have been translated.' });
+      toast.success('EN • English Language', { 
+        duration: 1500,
+        position: 'bottom-center'
+      });
     } else {
-      toast.success('Berhasil ganti bahasa', { description: 'Bahasa diubah ke Indonesia.' });
+      toast.success('ID • Bahasa Indonesia', { 
+        duration: 1500,
+        position: 'bottom-center'
+      });
     }
   };
 
