@@ -69,8 +69,8 @@ export function ClientWrapper({
 
       {!isAdmin && <DevNoticeModal />}
 
-      {!isLandingPage && <SpotlightGuide />}
-      {!isLandingPage && <SpotlightFAB />}
+      <SpotlightGuide />
+      <SpotlightFAB />
 
       <Toaster
         position="top-center"
