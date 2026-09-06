@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { UnifiedSidebar } from "@/components/dashboard/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { DevNoticeModal } from "@/components/ui/dev-notice-modal";
 
 import { CartSync } from "@/components/cart-sync";
 import { SpotlightGuide, SpotlightFAB } from "@/components/ui/spotlight-guide";
@@ -65,6 +66,8 @@ export function ClientWrapper({
           {children}
         </div>
       </main>
+
+      {!isAdmin && <DevNoticeModal />}
 
       {!isLandingPage && <SpotlightGuide />}
       {!isLandingPage && <SpotlightFAB />}
