@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { X, Sparkles, Coffee, ArrowRight } from "lucide-react";
+import { X, Sparkles, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sticker } from "./sticker";
 
 export function DevNoticeModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,83 +28,75 @@ export function DevNoticeModal() {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          {/* Dark Overlay */}
+          {/* Backdrop Blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-stone-950/75 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-stone-950/60 backdrop-blur-md transition-opacity"
           />
 
-          {/* Ad Popup Poster Card */}
+          {/* Premium Roastery Announcement Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.85, y: 25, rotate: -2 }}
-            animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 15, rotate: 2 }}
-            transition={{ type: "spring", stiffness: 280, damping: 22 }}
-            className="relative w-full max-w-sm sm:max-w-md bg-[#FDFBF7] border border-black/10 shadow-[16px_20px_0px_rgba(0,0,0,0.25)] rounded-2xl overflow-hidden z-10 my-auto"
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="relative w-full max-w-md bg-[#FDFBF7] border border-black/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-6 sm:p-8 overflow-hidden z-10 my-auto"
           >
-            {/* Top Tape Accent */}
-            <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-32 h-6 bg-white/70 border border-black/10 rotate-[-2deg] z-30 backdrop-blur-sm shadow-sm" />
+            {/* Scrapbook Tape Accent */}
+            <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-28 h-5 bg-white/80 border border-black/5 rotate-[-1deg] backdrop-blur-sm shadow-sm" />
 
-            {/* Floating Sticker */}
-            <Sticker rotate={8} className="-top-2 -right-2 z-40 border border-black/10 shadow-md" color="#F1B941">
-              DEVELOPMENT PHASE
-            </Sticker>
-
-            {/* Close Button "X" */}
+            {/* Close Button X */}
             <button
               type="button"
-              aria-label="Tutup iklan"
+              aria-label="Tutup pengumuman"
               onClick={handleClose}
-              className="absolute top-3 left-3 w-9 h-9 rounded-full bg-stone-900/80 text-white hover:bg-stone-900 hover:scale-110 flex items-center justify-center transition-all z-40 shadow-md border border-white/20"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 hover:text-stone-950 flex items-center justify-center transition-all z-30 focus:outline-none"
             >
-              <X size={18} strokeWidth={2.5} />
+              <X size={16} strokeWidth={2.2} />
             </button>
 
-            {/* Poster Header Image Banner */}
-            <div className="relative aspect-[16/9] w-full bg-[#1A2B40] overflow-hidden">
-              <Image
-                src="https://placehold.co/800x450/1a2b40/f1b941?text=FERMION+ROASTERY"
-                alt="Fermion Roastery Announcement"
-                fill
-                className="object-cover filter contrast-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent flex items-end p-5">
-                <div className="flex items-center gap-2 text-white">
-                  <Coffee size={18} className="text-[#F1B941]" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-200">Official Announcement</span>
+            <div className="space-y-6 pt-2">
+              {/* Logo & Tag */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Image
+                    src="/fermion-logo.png"
+                    alt="Fermion Roastery"
+                    width={90}
+                    height={36}
+                    style={{ width: "auto", height: "auto" }}
+                    className="h-7 w-auto object-contain"
+                  />
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#367F4D]/10 border border-[#367F4D]/20 rounded-full text-[9px] font-black uppercase tracking-[0.2em] text-[#367F4D]">
+                    <Sparkles size={11} />
+                    <span>Uji Coba System</span>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Ad Content */}
-            <div className="p-6 sm:p-7 space-y-4 text-stone-900">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-[#367F4D] text-[10px] font-black uppercase tracking-[0.25em]">
-                  <Sparkles size={14} />
-                  <span>Platform Notice</span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-display font-black uppercase tracking-tight text-stone-900 italic leading-tight">
-                  Halo Coffee Enthusiast!
+                <h3 className="text-xl sm:text-2xl font-display font-black uppercase tracking-tight text-stone-900 leading-tight">
+                  Tahap Pengembangan
                 </h3>
               </div>
 
-              <p className="text-xs sm:text-sm font-medium text-stone-600 leading-relaxed">
-                Terima kasih telah berkunjung. Situs web <strong>Fermion Roastery</strong> saat ini masih dalam <strong>tahap pengembangan &amp; penyempurnaan sistem</strong>. 
-              </p>
-
-              <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-xl text-xs font-semibold text-amber-900 leading-relaxed">
-                ⚡ Fitur keranjang &amp; pembelian online belum dibuka untuk umum saat ini.
+              {/* Message */}
+              <div className="space-y-3 text-stone-600 font-medium text-xs sm:text-sm leading-relaxed border-l-2 border-[#367F4D]/40 pl-4 py-1">
+                <p>
+                  Selamat datang di situs <strong>Fermion Roastery</strong>. Platform digital kami saat ini masih dalam <strong>tahap pengembangan &amp; pengujian sistem</strong>.
+                </p>
+                <p className="text-stone-500 italic text-[11px] sm:text-xs">
+                  Mohon maaf, fitur pesanan dan transaksi pembayaran online belum dibuka untuk umum saat ini.
+                </p>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col gap-2.5">
+              {/* Footer CTA */}
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="w-full py-3.5 bg-stone-900 hover:bg-[#367F4D] text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-300 shadow-lg flex items-center justify-center gap-2 group"
+                  className="w-full py-3.5 bg-stone-900 hover:bg-[#367F4D] text-white text-[10px] font-black uppercase tracking-[0.25em] rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
                 >
                   <span>Lanjut Jelajahi Web</span>
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
