@@ -459,6 +459,7 @@ function HeaderComponent() {
               )}
 
               <button
+                id="tour-hamburger-btn"
                 type="button"
                 aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
                 aria-expanded={isMenuOpen}

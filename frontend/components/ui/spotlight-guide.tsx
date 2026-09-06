@@ -371,11 +371,10 @@ export function SpotlightGuide() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isTourActive, isMobile, TOUR_STEPS.length]);
+  }, [isTourActive, TOUR_STEPS.length]);
 
-  // Find target element bounds when step changes
   useEffect(() => {
-    if (!isTourActive || !isReady || isMobile || TOUR_STEPS.length === 0) return;
+    if (!isTourActive || !isReady || TOUR_STEPS.length === 0) return;
 
     const step = TOUR_STEPS[currentStep];
     if (!step) {
@@ -383,23 +382,35 @@ export function SpotlightGuide() {
       return;
     }
 
-    // Wait a bit for layout to settle if navigating or just starting
     const timeout = setTimeout(() => {
-      const element = document.querySelector(step.selector);
+      let element = document.querySelector(step.selector);
+
+      if (window.innerWidth < 1024) {
+        const isHidden = !element || (element.getBoundingClientRect().width === 0 && element.getBoundingClientRect().height === 0);
+        if (isHidden) {
+          const hamburgerBtn = document.querySelector("#tour-hamburger-btn") as HTMLButtonElement;
+          if (hamburgerBtn) {
+            hamburgerBtn.click();
+            setTimeout(() => {
+              const elAfterClick = document.querySelector(step.selector) || hamburgerBtn;
+              const rect = elAfterClick.getBoundingClientRect();
+              setTargetRect(rect);
+              elAfterClick.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            return;
+          }
+        }
+      }
+
       if (element) {
         const rect = element.getBoundingClientRect();
         setTargetRect(rect);
-        
-        // Temporarily unlock scroll for the smooth scroll
         document.body.style.overflow = '';
-        
-        // Spotlight directs the scroll
         element.scrollIntoView({
             behavior: 'smooth',
             block: 'center'
         });
         
-        // Update rect smoothly during scroll animation
         let isScrolling = true;
         const updateRect = () => {
           if (!isScrolling) return;
@@ -413,12 +424,10 @@ export function SpotlightGuide() {
             isScrolling = false;
             const finalRect = document.querySelector(step.selector)?.getBoundingClientRect();
             if(finalRect) setTargetRect(finalRect);
-            // Lock scroll again after animation finishes
             if (isTourActive) document.body.style.overflow = 'hidden';
         }, 800);
 
       } else {
-        // Element not found, skip step
         if (currentStep < TOUR_STEPS.length - 1) {
           nextStep();
         } else {
@@ -428,14 +437,13 @@ export function SpotlightGuide() {
     }, 100);
 
     return () => clearTimeout(timeout);
-  }, [currentStep, isTourActive, isReady, windowSize, isMobile, pathname]);
+  }, [currentStep, isTourActive, isReady, windowSize, pathname]);
 
-  if (!isReady || !isTourActive || isMobile || TOUR_STEPS.length === 0) return null;
+  if (!isReady || !isTourActive || TOUR_STEPS.length === 0) return null;
 
   const stepInfo = TOUR_STEPS[currentStep];
   if (!stepInfo || !targetRect) return null;
 
-  // Calculate position for the scrapbook note card
   const padding = 10;
   const highlightStyle = {
     top: targetRect.top - padding,
@@ -444,10 +452,9 @@ export function SpotlightGuide() {
     height: targetRect.height + padding * 2,
   };
 
-  // Smarter Card placement: check target dimensions and viewport bounds
-  const cardWidth = 320;
-  const cardHeight = 260; // approximate including card padding & action buttons
-  const margin = 20;
+  const cardWidth = Math.min(320, windowSize.width - 32);
+  const cardHeight = 260; 
+  const margin = 16;
 
   const spaceRight = windowSize.width - targetRect.right - margin;
   const spaceLeft = targetRect.left - margin;
@@ -460,9 +467,7 @@ export function SpotlightGuide() {
   let cardTop = 0;
   let cardLeft = 0;
 
-  // 🧠 Smart Decision Logic for Card Placement
   if (isTall && !isWide) {
-    // Tall element (e.g. Checkout/Cart Address Form > 300px height): Place on side (right preferred, fallback left)
     if (spaceRight >= cardWidth) {
       cardLeft = targetRect.right + margin;
       cardTop = targetRect.top + margin;
@@ -474,11 +479,9 @@ export function SpotlightGuide() {
       cardTop = targetRect.top + margin;
     }
   } else if (isWide && isTall) {
-    // Huge element (occupying major screen area): Place inside target at top-right or top-left
     cardLeft = Math.max(margin, targetRect.right - cardWidth - margin * 2);
     cardTop = targetRect.top + margin * 2;
   } else {
-    // Normal element: respect stepInfo position or auto-fit based on space
     let preferredPos = stepInfo.position || "bottom";
 
     if (preferredPos === "right" && spaceRight < cardWidth && spaceLeft >= cardWidth) {
@@ -501,13 +504,11 @@ export function SpotlightGuide() {
       cardLeft = targetRect.left;
       cardTop = targetRect.top - cardHeight - margin;
     } else {
-      // bottom
       cardLeft = targetRect.left;
       cardTop = targetRect.bottom + margin;
     }
   }
 
-  // 🛡️ STRICT VIEWPORT BOUNDS: Guarantee card NEVER exits visible viewport
   cardTop = Math.max(margin, Math.min(cardTop, windowSize.height - cardHeight - margin));
   cardLeft = Math.max(margin, Math.min(cardLeft, windowSize.width - cardWidth - margin));
 
@@ -525,7 +526,6 @@ export function SpotlightGuide() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop with cutout */}
           <div 
             className="absolute transition-all duration-500 ease-in-out pointer-events-none"
             style={{
@@ -539,23 +539,20 @@ export function SpotlightGuide() {
             }}
           />
 
-          {/* Invisible overlay */}
           <div className="absolute inset-0 z-0" onClick={endTour}></div>
 
-          {/* The Scrapbook Note Card */}
           <motion.div
-            key={`${pathname}-${currentStep}`} // Re-animate on step or page change
+            key={`${pathname}-${currentStep}`}
             initial={{ y: 20, opacity: 0, rotate: -2 }}
             animate={{ y: 0, opacity: 1, rotate: 1 }}
             exit={{ y: 20, opacity: 0 }}
             transition={{ type: "spring", bounce: 0.4 }}
-            className="absolute w-[300px] bg-[#FDFBF7] p-6 shadow-[8_8px_0px_rgba(0,0,0,0.15)] border border-black/10 z-10"
+            className="absolute w-[calc(100vw-32px)] sm:w-[320px] bg-[#FDFBF7] p-6 shadow-[8px_8px_0px_rgba(0,0,0,0.15)] border border-black/10 z-10"
             style={{
               ...cardStyle,
               borderRadius: '4px 8px 3px 6px',
             }}
           >
-            {/* Masking tape */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/80 border border-black/10 rotate-3 shadow-sm"></div>
 
             <button 
@@ -612,7 +609,6 @@ export function SpotlightGuide() {
 }
 
 export function SpotlightFAB() {
-  const isMobile = useIsMobile();
   const { startTour, isTourActive } = useSpotlightStore();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
@@ -622,11 +618,8 @@ export function SpotlightFAB() {
     setMounted(true);
   }, []);
 
-  debugLog("SpotlightFAB Debug:", { mounted, isTourActive, isMobile, pathname });
+  if (!mounted || isTourActive) return null;
 
-  if (!mounted || isTourActive || isMobile) return null;
-
-  // Show FAB on allowed pages
   const allowedPages = ["/", "/our-coffee", "/wholesale", "/subscription", "/subscription/checkout", "/journal", "/our-story", "/cart", "/checkout", "/b2b/register", "/b2b/contract"];
   if (!allowedPages.includes(pathname)) return null;
 
