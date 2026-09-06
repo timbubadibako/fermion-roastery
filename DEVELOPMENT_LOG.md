@@ -29,7 +29,7 @@ Dokumen ini adalah **single source of truth** untuk perkembangan projek **Fermio
 - [ ] **Dokumentasi Formal SDLC 5-Category Framework**:
   - [x] Pembaruan aturan global `~/.gemini/config/rules/sdlc_behavior.md`.
   - [x] Inisialisasi `DEVELOPMENT_LOG.md` di root projek.
-  - [ ] Pembuatan `docs/PRD_AND_SRS.md` (Requirements & Product Specs).
+  - [x] Pembuatan `docs/PRD_AND_SRS.md` (Requirements & Product Specs).
   - [ ] Pembuatan `docs/ARCHITECTURE_AND_ERD.md` (System Architecture & Database Schema).
   - [ ] Pembuatan `docs/API_SPECIFICATION.md` (OpenAPI/Endpoints & Integration Specs).
 - [ ] **Transaction Readiness & Payment Gateway**:

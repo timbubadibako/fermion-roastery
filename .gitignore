@@ -44,7 +44,6 @@ check_cart.sql
 backend/seed*.sql
 
 # Documentation & AI Folders
-docs/
 .agents/
 
 # Raw Assets
