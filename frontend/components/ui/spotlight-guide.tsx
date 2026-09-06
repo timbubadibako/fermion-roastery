@@ -484,7 +484,24 @@ export function SpotlightGuide() {
   let cardTop = 0;
   let cardLeft = 0;
 
-  if (window.innerWidth < 1024 || (isWide && isTall) || isTall) {
+  if (window.innerWidth < 1024) {
+    cardLeft = Math.max(16, (windowSize.width - cardWidth) / 2);
+    const isTargetInDrawer =
+      stepInfo.selector.includes("nav a[href") ||
+      stepInfo.selector.includes("account") ||
+      stepInfo.selector.includes("b2b") ||
+      stepInfo.selector.includes("tour-search-mobile");
+
+    if (isTargetInDrawer || targetRect.bottom < windowSize.height * 0.55) {
+      // For elements in the upper screen/drawer (e.g. subscription link), position card near bottom so target stays 100% visible
+      cardTop = Math.max(16, windowSize.height - cardHeight - 24);
+    } else if (targetRect.top > windowSize.height * 0.45) {
+      // For elements in lower screen, position card near top
+      cardTop = 24;
+    } else {
+      cardTop = Math.max(16, (windowSize.height - cardHeight) / 2);
+    }
+  } else if ((isWide && isTall) || isTall) {
     cardLeft = Math.max(16, (windowSize.width - cardWidth) / 2);
     cardTop = Math.max(16, (windowSize.height - cardHeight) / 2);
   } else {
