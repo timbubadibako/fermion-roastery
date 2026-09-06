@@ -26,12 +26,12 @@ Dokumen ini adalah **single source of truth** untuk perkembangan projek **Fermio
 - [x] **Responsive Header & Brand Alignment**:
   - [x] Penyesuaian ukuran logo Fermion 75% pada mobile/tablet (`h-[22px]` / `md:h-[24px]` / `lg:h-8`) sejajar dengan icon hamburger & keranjang.
   - [x] Anti-ritual copywriting enforcement (Pesanan, Kemitraan, Berlangganan).
-- [ ] **Dokumentasi Formal SDLC 5-Category Framework**:
+- [x] **Dokumentasi Formal SDLC 5-Category Framework**:
   - [x] Pembaruan aturan global `~/.gemini/config/rules/sdlc_behavior.md`.
   - [x] Inisialisasi `DEVELOPMENT_LOG.md` di root projek.
   - [x] Pembuatan `docs/PRD_AND_SRS.md` (Requirements & Product Specs).
-  - [ ] Pembuatan `docs/ARCHITECTURE_AND_ERD.md` (System Architecture & Database Schema).
-  - [ ] Pembuatan `docs/API_SPECIFICATION.md` (OpenAPI/Endpoints & Integration Specs).
+  - [x] Pembuatan `docs/ARCHITECTURE_AND_ERD.md` (System Architecture & Database Schema).
+  - [x] Pembuatan `docs/API_SPECIFICATION.md` (OpenAPI/Endpoints & Integration Specs).
 - [ ] **Transaction Readiness & Payment Gateway**:
   - [ ] Validasi end-to-end payment gateway Xendit (QRIS, VA, E-Wallet) pada environment produksi.
   - [ ] Webhook signature verification & idempotency handling.
