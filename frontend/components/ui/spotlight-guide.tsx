@@ -378,66 +378,74 @@ export function SpotlightGuide() {
 
     const step = TOUR_STEPS[currentStep];
     if (!step) {
-      endTour();
+      handleEndTour();
       return;
     }
 
     const timeout = setTimeout(() => {
-      let element = document.querySelector(step.selector);
+      const hamburgerBtn = document.querySelector("#tour-hamburger-btn") as HTMLButtonElement;
+      const isDrawerOpen = hamburgerBtn?.getAttribute("aria-expanded") === "true";
+      const isTargetInDrawer = step.selector.includes("nav a[href") || step.selector.includes("account") || step.selector.includes("b2b");
 
-      if (window.innerWidth < 1024) {
-        const isHidden = !element || (element.getBoundingClientRect().width === 0 && element.getBoundingClientRect().height === 0);
-        if (isHidden) {
-          const hamburgerBtn = document.querySelector("#tour-hamburger-btn") as HTMLButtonElement;
-          if (hamburgerBtn) {
-            hamburgerBtn.click();
-            setTimeout(() => {
-              const elAfterClick = document.querySelector(step.selector) || hamburgerBtn;
-              const rect = elAfterClick.getBoundingClientRect();
-              setTargetRect(rect);
-              elAfterClick.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
-            return;
-          }
+      if (window.innerWidth < 1024 && hamburgerBtn) {
+        if (isTargetInDrawer && !isDrawerOpen) {
+          hamburgerBtn.click();
+        } else if (!isTargetInDrawer && isDrawerOpen) {
+          hamburgerBtn.click();
         }
       }
 
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        setTargetRect(rect);
-        document.body.style.overflow = '';
-        element.scrollIntoView({
+      setTimeout(() => {
+        let element = document.querySelector(step.selector);
+        if (!element && window.innerWidth < 1024 && isTargetInDrawer && hamburgerBtn) {
+          element = hamburgerBtn;
+        }
+
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          setTargetRect(rect);
+          document.body.style.overflow = '';
+          element.scrollIntoView({
             behavior: 'smooth',
             block: 'center'
-        });
-        
-        let isScrolling = true;
-        const updateRect = () => {
-          if (!isScrolling) return;
-          const newRect = document.querySelector(step.selector)?.getBoundingClientRect();
-          if (newRect) setTargetRect(newRect);
+          });
+          
+          let isScrolling = true;
+          const updateRect = () => {
+            if (!isScrolling) return;
+            const newRect = document.querySelector(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
+            if (newRect) setTargetRect(newRect);
+            requestAnimationFrame(updateRect);
+          };
           requestAnimationFrame(updateRect);
-        };
-        requestAnimationFrame(updateRect);
 
-        setTimeout(() => {
+          setTimeout(() => {
             isScrolling = false;
-            const finalRect = document.querySelector(step.selector)?.getBoundingClientRect();
-            if(finalRect) setTargetRect(finalRect);
+            const finalRect = document.querySelector(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
+            if (finalRect) setTargetRect(finalRect);
             if (isTourActive) document.body.style.overflow = 'hidden';
-        }, 800);
+          }, 600);
 
-      } else {
-        if (currentStep < TOUR_STEPS.length - 1) {
-          nextStep();
         } else {
-          endTour();
+          if (currentStep < TOUR_STEPS.length - 1) {
+            nextStep();
+          } else {
+            handleEndTour();
+          }
         }
-      }
-    }, 100);
+      }, 250);
+    }, 50);
 
     return () => clearTimeout(timeout);
   }, [currentStep, isTourActive, isReady, windowSize, pathname]);
+
+  const handleEndTour = () => {
+    const hamburgerBtn = document.querySelector("#tour-hamburger-btn") as HTMLButtonElement;
+    if (hamburgerBtn && hamburgerBtn.getAttribute("aria-expanded") === "true") {
+      hamburgerBtn.click();
+    }
+    endTour();
+  };
 
   if (!isReady || !isTourActive || TOUR_STEPS.length === 0) return null;
 
@@ -456,32 +464,21 @@ export function SpotlightGuide() {
   const cardHeight = 260; 
   const margin = 16;
 
-  const spaceRight = windowSize.width - targetRect.right - margin;
-  const spaceLeft = targetRect.left - margin;
-  const spaceTop = targetRect.top - margin;
-  const spaceBottom = windowSize.height - targetRect.bottom - margin;
-
   const isTall = targetRect.height > windowSize.height * 0.35 || targetRect.height > 280;
   const isWide = targetRect.width > windowSize.width * 0.7;
 
   let cardTop = 0;
   let cardLeft = 0;
 
-  if (isTall && !isWide) {
-    if (spaceRight >= cardWidth) {
-      cardLeft = targetRect.right + margin;
-      cardTop = targetRect.top + margin;
-    } else if (spaceLeft >= cardWidth) {
-      cardLeft = targetRect.left - cardWidth - margin;
-      cardTop = targetRect.top + margin;
-    } else {
-      cardLeft = targetRect.left + margin;
-      cardTop = targetRect.top + margin;
-    }
-  } else if (isWide && isTall) {
-    cardLeft = Math.max(margin, targetRect.right - cardWidth - margin * 2);
-    cardTop = targetRect.top + margin * 2;
+  if (window.innerWidth < 1024 || (isWide && isTall) || isTall) {
+    cardLeft = Math.max(16, (windowSize.width - cardWidth) / 2);
+    cardTop = Math.max(16, (windowSize.height - cardHeight) / 2);
   } else {
+    const spaceRight = windowSize.width - targetRect.right - margin;
+    const spaceLeft = targetRect.left - margin;
+    const spaceTop = targetRect.top - margin;
+    const spaceBottom = windowSize.height - targetRect.bottom - margin;
+
     let preferredPos = stepInfo.position || "bottom";
 
     if (preferredPos === "right" && spaceRight < cardWidth && spaceLeft >= cardWidth) {
@@ -507,10 +504,10 @@ export function SpotlightGuide() {
       cardLeft = targetRect.left;
       cardTop = targetRect.bottom + margin;
     }
-  }
 
-  cardTop = Math.max(margin, Math.min(cardTop, windowSize.height - cardHeight - margin));
-  cardLeft = Math.max(margin, Math.min(cardLeft, windowSize.width - cardWidth - margin));
+    cardTop = Math.max(margin, Math.min(cardTop, windowSize.height - cardHeight - margin));
+    cardLeft = Math.max(margin, Math.min(cardLeft, windowSize.width - cardWidth - margin));
+  }
 
   const cardStyle = {
     top: cardTop,
@@ -539,7 +536,7 @@ export function SpotlightGuide() {
             }}
           />
 
-          <div className="absolute inset-0 z-0" onClick={endTour}></div>
+          <div className="absolute inset-0 z-0" onClick={handleEndTour}></div>
 
           <motion.div
             key={`${pathname}-${currentStep}`}
@@ -556,7 +553,7 @@ export function SpotlightGuide() {
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/80 border border-black/10 rotate-3 shadow-sm"></div>
 
             <button 
-              onClick={endTour}
+              onClick={handleEndTour}
               className="absolute top-2 right-2 text-stone-400 hover:text-black transition-colors"
             >
               <X size={16} />
@@ -594,7 +591,7 @@ export function SpotlightGuide() {
                 </button>
               ) : (
                 <button 
-                  onClick={endTour}
+                  onClick={handleEndTour}
                   className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.2em] bg-slate-900 text-white px-3 py-1.5 hover:bg-[#367F4D] transition-colors"
                 >
                   {t.spotlight.buttons.gotIt} <Check size={12} />
