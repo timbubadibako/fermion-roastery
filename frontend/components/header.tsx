@@ -478,7 +478,7 @@ function HeaderComponent() {
             <nav className="flex flex-col gap-8 text-center">
               <div className="relative mb-8 scrapbook-note px-2">
                 <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 w-20 h-5 bg-white/60 border border-black/5 rotate-[-2deg] z-20 backdrop-blur-sm shadow-sm"></div>
-                <div className="bg-[#FFFDF9] border border-black/10 rounded-sm px-5 py-4 flex items-center gap-3 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] rotate-[0.5deg]">
+                <div id="tour-search-mobile" className="bg-[#FFFDF9] border border-black/10 rounded-sm px-5 py-4 flex items-center gap-3 shadow-[6px_6px_0px_rgba(0,0,0,0.03)] rotate-[0.5deg]">
                   <Search size={18} className="text-stone-500" />
                   <input
                     type="text"

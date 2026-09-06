@@ -15,7 +15,7 @@ const getStepsConfig = (t: any): Record<string, any[]> => ({
   "/": [
     {
       id: "header-search",
-      selector: "#tour-search-btn",
+      selector: "#tour-search-btn, #tour-search-mobile",
       title: t.spotlight.headerSearch?.title || "1. PENCARIAN & ARSIP KOPI",
       content: t.spotlight.headerSearch?.content || "Cari varietal kopi, origin, dan notes rasa secara presisi dengan katalog terindeks.",
       position: "bottom",
@@ -373,6 +373,16 @@ export function SpotlightGuide() {
     };
   }, [isTourActive, TOUR_STEPS.length]);
 
+  const getVisibleElement = (selector: string): HTMLElement | null => {
+    if (typeof document === "undefined") return null;
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(selector));
+    const visible = elements.find((el) => {
+      const rect = el.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    return visible || elements[0] || null;
+  };
+
   useEffect(() => {
     if (!isTourActive || !isReady || TOUR_STEPS.length === 0) return;
 
@@ -385,7 +395,11 @@ export function SpotlightGuide() {
     const timeout = setTimeout(() => {
       const hamburgerBtn = document.querySelector("#tour-hamburger-btn") as HTMLButtonElement;
       const isDrawerOpen = hamburgerBtn?.getAttribute("aria-expanded") === "true";
-      const isTargetInDrawer = step.selector.includes("nav a[href") || step.selector.includes("account") || step.selector.includes("b2b");
+      const isTargetInDrawer =
+        step.selector.includes("nav a[href") ||
+        step.selector.includes("account") ||
+        step.selector.includes("b2b") ||
+        step.selector.includes("tour-search-mobile");
 
       if (window.innerWidth < 1024 && hamburgerBtn) {
         if (isTargetInDrawer && !isDrawerOpen) {
@@ -396,8 +410,8 @@ export function SpotlightGuide() {
       }
 
       setTimeout(() => {
-        let element = document.querySelector(step.selector);
-        if (!element && window.innerWidth < 1024 && isTargetInDrawer && hamburgerBtn) {
+        let element = getVisibleElement(step.selector);
+        if ((!element || (element.getBoundingClientRect().width === 0 && element.getBoundingClientRect().height === 0)) && window.innerWidth < 1024 && isTargetInDrawer && hamburgerBtn) {
           element = hamburgerBtn;
         }
 
@@ -413,7 +427,7 @@ export function SpotlightGuide() {
           let isScrolling = true;
           const updateRect = () => {
             if (!isScrolling) return;
-            const newRect = document.querySelector(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
+            const newRect = getVisibleElement(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
             if (newRect) setTargetRect(newRect);
             requestAnimationFrame(updateRect);
           };
@@ -421,7 +435,7 @@ export function SpotlightGuide() {
 
           setTimeout(() => {
             isScrolling = false;
-            const finalRect = document.querySelector(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
+            const finalRect = getVisibleElement(step.selector)?.getBoundingClientRect() || element?.getBoundingClientRect();
             if (finalRect) setTargetRect(finalRect);
             if (isTourActive) document.body.style.overflow = 'hidden';
           }, 600);
