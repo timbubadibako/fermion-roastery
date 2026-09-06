@@ -83,7 +83,7 @@ export function WholesaleCTASection() {
   const formattedSavings = formatCurrency(savings);
 
   return (
-    <section id="wholesale" ref={sectionRef} className="py-24 px-6 bg-[#2A1619] text-white relative z-20 overflow-hidden border-b border-white/10">
+    <section id="tour-wholesale-section" ref={sectionRef} className="py-24 px-6 bg-[#2A1619] text-white relative z-20 overflow-hidden border-b border-white/10">
       
       {/* Background Subtle Grid */}
       <div 

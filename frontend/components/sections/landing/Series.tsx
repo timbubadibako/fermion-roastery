@@ -62,6 +62,7 @@ export function Series() {
   return (
     <section 
       ref={sectionRef}
+      id="tour-series-section"
       className={`flex flex-col lg:flex-row min-h-[550px] lg:min-h-[750px] relative group/section z-40 overflow-hidden ${isScrolling ? "pointer-events-none" : ""}`}
     >
       
