@@ -252,8 +252,7 @@ function HeaderComponent() {
                     alt="Fermion Roastery"
                     width={88}
                     height={35}
-                    style={{ width: "auto", height: "auto" }}
-                    className={`w-auto h-auto object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}
+                    className={`h-[22px] md:h-[24px] lg:h-8 w-auto object-contain transition-all duration-300 ${isDarkHero ? 'opacity-90' : ''}`}
                     priority
                   />
 
